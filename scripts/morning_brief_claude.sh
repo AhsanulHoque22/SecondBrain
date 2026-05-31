@@ -10,11 +10,6 @@ WEEKDAY=$(date '+%A')
 export HOME=/home/ahsanul-hoque
 export PATH="/home/ahsanul-hoque/.local/bin:/usr/local/bin:/usr/bin:/bin"
 
-# DeepSeek API routing
-export ANTHROPIC_BASE_URL="https://api.deepseek.com/anthropic"
-export ANTHROPIC_AUTH_TOKEN="sk-a8acfbddc39647798d6fd8a5f51a2f91"
-export ANTHROPIC_MODEL="deepseek-v4-pro[1m]"
-
 LOG="/tmp/secondbrain_morning_$(date '+%Y%m%d').log"
 
 echo "[$(date)] Morning brief starting" >> "$LOG"

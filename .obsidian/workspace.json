@@ -1,0 +1,212 @@
+{
+  "main": {
+    "id": "5f92761608bab81c",
+    "type": "split",
+    "children": [
+      {
+        "id": "8d60acae4a093bd9",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "3c4b25164d05238d",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "00_Dashboard.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "00_Dashboard"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "4246236d227aa495",
+    "type": "split",
+    "children": [
+      {
+        "id": "ba2e77e674b15165",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "05fdcbf348c8d247",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical",
+                "autoReveal": false
+              },
+              "icon": "lucide-folder-closed",
+              "title": "Files"
+            }
+          },
+          {
+            "id": "421bd74109c6be38",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              },
+              "icon": "lucide-search",
+              "title": "Search"
+            }
+          },
+          {
+            "id": "05296ad143040aff",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {},
+              "icon": "lucide-bookmark",
+              "title": "Bookmarks"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "right": {
+    "id": "0f1b920583d4d09c",
+    "type": "split",
+    "children": [
+      {
+        "id": "66fe4df5cb07bb9b",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "2f042711d6a56578",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-coming-in",
+              "title": "Backlinks"
+            }
+          },
+          {
+            "id": "8037a0c2ce5320c3",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-going-out",
+              "title": "Outgoing links"
+            }
+          },
+          {
+            "id": "88cd8c777ec109f1",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-tags",
+              "title": "Tags"
+            }
+          },
+          {
+            "id": "92e1ee9cd33d5763",
+            "type": "leaf",
+            "state": {
+              "type": "all-properties",
+              "state": {
+                "sortOrder": "frequency",
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-archive",
+              "title": "All properties"
+            }
+          },
+          {
+            "id": "223f0adbe1e7ecd5",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "followCursor": false,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-list",
+              "title": "Outline"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:Open quick switcher": false,
+      "graph:Open graph view": false,
+      "canvas:Create new canvas": false,
+      "daily-notes:Open today's daily note": false,
+      "templates:Insert template": false,
+      "command-palette:Open command palette": false,
+      "bases:Create new base": false
+    }
+  },
+  "active": "3c4b25164d05238d",
+  "lastOpenFiles": [
+    "scripts/data/bot.db-wal",
+    "scripts/data/overnight_result.txt",
+    "scripts/data/overnight_task.txt",
+    "CLAUDE.md.tmp.21889.bd2ec47aaee4",
+    "scripts/setup_cron.sh.tmp.21889.0e333041571f",
+    "scripts/overnight_livora.sh",
+    "scripts/overnight_livora.sh.tmp.21889.dbbcea5ee98a",
+    "scripts/overnight_rollover.sh",
+    "scripts/overnight_rollover.sh.tmp.21889.c17a297c2ef2",
+    "scripts/evening_reminder.sh",
+    "scripts/evening_reminder.sh.tmp.21889.328392906f34",
+    "02_Courses/CSE715_Graphics/NotebookLM_Sources.md",
+    "02_Courses/CSE713_AI/_TopicQuestionMap.md",
+    "02_Courses/CSE713_AI/_5Day_Plan.md",
+    "02_Courses/CSE719_Distributed/NotebookLM_Sources.md",
+    "02_Courses/CSE717_InfoSec/NotebookLM_Sources.md",
+    "02_Courses/CSE713_AI/NotebookLM_Sources.md",
+    "02_Courses/CSE711_Compiler/NotebookLM_Sources.md",
+    "02_Courses/CSE700_Thesis/NotebookLM_Sources.md",
+    "07_Daily_Routine/Template.md",
+    "06_Relationships/README.md",
+    "04_Livora/SaaS_Build_Log.md",
+    "SYSTEM_BUILD_PLAN.md",
+    "02_Courses/CSE713_AI/_PastPapers.md",
+    "02_Courses/CSE713_AI/_Syllabus.md",
+    "02_Courses/CSE713_AI/_Topics.md"
+  ]
+}

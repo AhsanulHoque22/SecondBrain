@@ -1,0 +1,19 @@
+# Secrets
+scripts/.env
+scripts/data/bot.db*
+
+# Overnight task/result (ephemeral, not worth tracking)
+scripts/data/overnight_task.txt
+scripts/data/overnight_result.txt
+
+# Logs
+/tmp/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Large binary files (PDFs stay — they're study materials)
+*.mp4
+*.avi
+*.mov

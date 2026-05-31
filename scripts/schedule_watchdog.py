@@ -127,15 +127,18 @@ def send_checkin(event: dict):
     if is_study(event):
         msg = (
             f"📊 *Check-in: {title}*\n\n"
-            f"What % of the session did you complete?\n"
-            f"Reply with a number: `100` ✅ · `80` · `60` · `40` · `0` ❌\n\n"
-            f"_(or reply `skip` to skip)_"
+            f"How did it go? Reply in any format:\n\n"
+            f"• `done` — finished everything\n"
+            f"• `70%` — roughly how much you covered\n"
+            f"• `done except A* search` — what you didn't finish\n"
+            f"• `only did agents and search` — what you did finish\n"
+            f"• `70%, couldn't finish past papers` — both\n\n"
+            f"_(reply `skip` to skip)_"
         )
     else:
         msg = (
             f"✅ *Quick check: {title}*\n\n"
-            f"Did you complete this?\n"
-            f"Reply `yes` or `no`"
+            f"Did you complete this? Reply `yes` or `no`"
         )
 
     pending = {

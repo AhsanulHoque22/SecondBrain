@@ -79,22 +79,42 @@ A check-in is pending whenever `scripts/data/pending_checkin.json` is non-empty.
 
 **When a study check-in reply arrives (is_study = true):**
 
-The reply is a completion percentage (e.g. "70", "40%", "100").
+The reply can be in ANY of these forms — parse all of them:
+- `done` or `100` → 100% complete, no carry-forward
+- `70%` or `70` → ~70% complete, estimate incomplete topics from session plan
+- `done except A* search` → 100% complete but one named topic incomplete
+- `done except A* search and past papers` → multiple named incomplete topics
+- `only did agents` or `only did agents and search` → named completed topics, rest incomplete
+- `70%, couldn't finish past papers` → percentage + named incomplete topic
+- `couldn't do anything` or `0` → 0% complete
 
-Step 1 — Record completion:
-- Parse the percentage (e.g. "70" → 70%)
+**Step 1 — Parse the reply carefully:**
+
+Priority order for determining incomplete topics:
+1. **Explicit topic names mentioned as incomplete** — use these EXACTLY as stated. Do not guess or estimate.
+2. **Explicit topic names mentioned as completed** — mark everything else in the session as incomplete.
+3. **Percentage only (no topic names)** — read the session plan from `pending_checkin.json` description, estimate which topics from the END of the session plan were not reached based on the percentage.
+
+Examples:
+- "done except A* search" → incomplete = ["A* Search"]
+- "only did agents" → read session plan, mark everything except "Intelligent Agents" as incomplete
+- "70%" → read session plan, estimate the last 30% of scheduled topics as incomplete
+- "70%, couldn't finish past papers" → incomplete = ["Past Paper Practice"] (explicit beats estimate)
+
+Step 2 — Record completion:
+- Extract a rough pct (100 for "done", 0 for "couldn't do anything", explicit % if given, estimate if only topics named)
 - Read `completion_history.json`
-- Append entry: `{date, event_title, type: "study", pct_complete, energy: null, timestamp}`
+- Append: `{date, event_title, type: "study", pct_complete, incomplete_topics: [...], completed_topics: [...], timestamp}`
 - Save `completion_history.json`
 
-Step 2 — Handle incomplete work (pct < 100):
-- Read the event description from `pending_checkin.json`
-- Identify which topics were likely NOT covered based on the % (e.g. 60% done → last 40% of the session topics are incomplete)
+Step 3 — Update carry_forward.json:
 - Read `scripts/data/carry_forward.json`
-- Add incomplete topics to `carry_forward.json`:
+- For each incomplete topic, add an entry:
   ```json
-  {"topic": "[topic name]", "remaining_pct": [estimated %], "source_date": "[today]", "source_event": "[event title]"}
+  {"topic": "[exact topic name as user stated or inferred from plan]", "source_date": "[today]", "source_event": "[event title]", "remaining_pct": 100}
   ```
+- If topic already exists in carry_forward (from a previous day), UPDATE it — don't duplicate.
+- Remove topics from carry_forward that were explicitly completed today.
 - Save `carry_forward.json`
 
 Step 3 — Adjust tomorrow's schedule if significantly behind:

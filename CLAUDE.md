@@ -69,6 +69,120 @@ These scripts run autonomously while Ahsanul sleeps. No interaction needed.
 When "Tonight's Livora task: [X]" is received via Telegram, ALWAYS write the task
 to `scripts/data/overnight_task.txt` immediately so the 2 AM cron can pick it up.
 
+## Progress Log Protocol (MANDATORY — runs whenever Ahsanul logs his day)
+
+Triggered by any message like:
+- "Update my log: did [X], energy [N], blocker [Y]"
+- "I finished [topic]"
+- "Log: topics done = [X], energy = [N]"
+- Any end-of-day summary message
+
+**Execute ALL these steps in order. Do not skip any.**
+
+### Step 1 — Parse the message
+Extract:
+- Topics completed (may be partial names — fuzzy-match against `_Topics.md`)
+- Topics NOT completed (mentioned as skipped or unfinished)
+- Energy level (1–5)
+- Blockers (if any)
+- Confidence ratings (if given, e.g. "confidence on A*: 3")
+
+### Step 2 — Update today's daily log
+In `03_Daily_Logs/[TODAY].md`, fill in the 'End-of-day log' section:
+- Did: [list what was done]
+- Topics completed: [exact topic names from _Topics.md]
+- Confidence updates: [topic: X/5 for any rated topics]
+- Energy/focus: [N/5]
+- Blockers: [what got in the way, or "none"]
+- Slippage reason: [why incomplete tasks weren't done, or "on track"]
+- Tomorrow's #1 thing: [single most important item]
+
+Also tick off completed items: change `- [ ]` to `- [x]` in 'Planned blocks'.
+
+### Step 3 — Update _Topics.md
+For every completed topic:
+1. Change status to ✅
+2. Write TODAY's date in 'Last Reviewed' column (format: YYYY-MM-DD)
+3. Compute 'Next Recall': today + 2 days (for first completion), or use spaced rep intervals
+4. Write confidence in 'Conf' column (use what was given, or leave — if not rated)
+
+For topics still in progress (📖):
+1. Change status to 📖 if it was 🔲
+
+### Step 4 — Run spaced rep and build tomorrow's log
+Run: `python3 scripts/spaced_rep.py`
+This updates `scripts/data/recall_due.md` with tomorrow's due topics.
+
+Then create/update `03_Daily_Logs/[TOMORROW].md`:
+1. Copy the _Template.md structure
+2. In 'Planned blocks': carry forward INCOMPLETE tasks first (in priority order), then add next topics from `01_Master_Plan.md`
+3. In '🔁 Recall due today': paste due topics from `scripts/data/recall_due.md`
+4. Adjust block count — max 7 blocks per day. Cut lowest-yield items if overloaded.
+5. Leave 'End-of-day log' blank.
+
+### Step 5 — Update Dashboard
+In `00_Dashboard.md` status board:
+- Update 'High-yield done' count for the active course
+- Update 'Confidence /5' (average of all rated topics)
+
+### Step 6 — Git commit
+```
+git add -A
+git commit -m "log: [DATE] — [N] topics done, energy [X]/5"
+```
+
+### Step 7 — Confirm via Telegram
+Send a summary:
+```
+✅ *Log updated — [DATE]*
+Topics done: [list]
+Next recall due: [topics from spaced rep, or "none"]
+Tomorrow's Block 1: [topic]
+Energy today: [N]/5
+```
+
+---
+
+## Quiz Mode Protocol (exam simulator)
+
+Triggered by: "Quiz me on [topic]" or "Test me on [topic]"
+
+1. Read `02_Courses/[active course]/_TopicQuestionMap.md` to find questions for that topic.
+2. Select 3–5 questions in order of difficulty (easiest first).
+3. Send the FIRST question only. Wait for the answer.
+4. When answer arrives:
+   - Grade it: ✅ correct / ⚠️ partial / ❌ wrong
+   - Give the correct answer if wrong/partial (keep it brief)
+   - Ask: "Confidence on this? (1–5)"
+5. Send the next question. Repeat until all questions done.
+6. Final summary: score X/Y, weakest point, update `_Topics.md` confidence.
+
+Quiz format rules:
+- One question at a time — never dump all questions at once
+- Give exam-style questions (matching the past paper format from `_TopicQuestionMap.md`)
+- After the quiz, update confidence in `_Topics.md` and run `python3 scripts/spaced_rep.py`
+
+---
+
+## Confidence Update Protocol
+
+Triggered by: "Confidence on [topic]: [1-5]" or after any quiz
+
+1. Find the topic in `_Topics.md` (fuzzy match is fine)
+2. Update the 'Conf' column with the number
+3. Run `python3 scripts/spaced_rep.py` to update the JSON state
+4. If confidence ≤ 2: add the topic to tomorrow's Block 1 (highest priority slot)
+5. Confirm: "Updated confidence for [topic]: [N]/5"
+
+Confidence scale:
+- 1 — I can barely remember it
+- 2 — I know the concept but would blank in an exam
+- 3 — I can explain it but make mistakes on details
+- 4 — I can explain it cold and solve past paper questions
+- 5 — Bulletproof. Could teach it.
+
+---
+
 ## Risk Assessment Protocol (MANDATORY — every Telegram and automated session)
 
 Before executing any task, silently classify it. Do not announce the classification unless it is HIGH.

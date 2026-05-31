@@ -4,9 +4,9 @@
 
 ## Right now
 - **Active exam:** CSE 713 — Artificial Intelligence — **Wed 10 Jun 2026, 10:30 AM**
-- **Days left:** ~12 (your longest runway of the whole season — use it)
-- **Phase:** Setup + AI core learning
-- **Single most important thing today:** get your AI syllabus + past papers into the vault, then start Topic Block 1.
+- **Days left:** 9
+- **Phase:** AI core learning — Day 3
+- **Single most important thing today:** Forward + Backward Chaining (Block 1) — trace the R1–R5 rule-based example cold.
 
 ## Season map
 ```

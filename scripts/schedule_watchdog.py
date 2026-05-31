@@ -95,12 +95,14 @@ Description: {event.get('description', '')[:600]}
 
 Instructions:
 1. Read scripts/data/carry_forward.json for any additional carry-forward topics.
-2. Combine carry-forward topics with topics from the session description.
-3. Distribute ALL topics across the {duration}-minute session with realistic timestamps starting at {start_str}.
-4. Put carry-forward topics first.
-5. Reserve last 10 minutes for active recall.
+2. List the files inside 02_Courses/ (use LS or Bash: find 02_Courses -type f) to see all available source materials.
+3. For each topic in this session, identify which source file(s) from 02_Courses/ are relevant (PDFs, notes, etc.). Match by filename keywords — e.g. "Ch01-02.pdf" for Agents, "Chapter 3.pdf" for Search, "Rule-Based Systems.pdf" for FC/BC.
+4. Combine carry-forward topics with topics from the session description.
+5. Distribute ALL topics across the {duration}-minute session with realistic timestamps starting at {start_str}.
+6. Put carry-forward topics first.
+7. Reserve last 10 minutes for active recall.
 
-Output a Telegram message in this format (use Markdown):
+Output a Telegram message in this EXACT format (use Markdown):
 📚 *{event['title']}*
 🕐 {start_str} · {duration} min
 
@@ -109,12 +111,19 @@ Output a Telegram message in this format (use Markdown):
 `HH:MM` Topic 2 — X min
 `HH:MM` Active recall — 10 min
 
+*Sources for this session:*
+📄 Topic 1 → `filename.pdf` (pages/sections if known)
+📄 Topic 2 → `filename.pdf`
+
 *Carry-forward:* [list or "None"]
 *Goal:* [one sentence — what does success look like?]
 
-Be realistic. Never schedule more content than fits in {duration} minutes."""
+Rules:
+- Only list source files that actually exist in 02_Courses/. Do not invent filenames.
+- If a topic has no matching source file, write "→ lecture notes / memory" for it.
+- Be realistic. Never schedule more content than fits in {duration} minutes."""
 
-    result = run_claude(prompt, tools="Read")
+    result = run_claude(prompt, tools="Read,LS,Bash")
     if result:
         tg(result)
 

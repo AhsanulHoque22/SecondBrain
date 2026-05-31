@@ -8,11 +8,17 @@ Checks today_schedule.json for:
 """
 
 import json
+import os
 import subprocess
 import sys
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from zoneinfo import ZoneInfo
+
+# DeepSeek API routing — ensures watchdog uses DeepSeek regardless of cron env
+os.environ.setdefault("ANTHROPIC_BASE_URL", "https://api.deepseek.com/anthropic")
+os.environ.setdefault("ANTHROPIC_AUTH_TOKEN", "sk-a8acfbddc39647798d6fd8a5f51a2f91")
+os.environ.setdefault("ANTHROPIC_MODEL", "deepseek-v4-pro[1m]")
 
 VAULT      = Path(__file__).parent.parent
 DATA       = Path(__file__).parent / "data"

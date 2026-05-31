@@ -5,8 +5,9 @@
 ## Right now
 - **Active exam:** CSE 713 — Artificial Intelligence — **Wed 10 Jun 2026, 10:30 AM**
 - **Days left:** 9
-- **Phase:** AI core learning — Day 3
-- **Single most important thing today:** Forward + Backward Chaining (Block 1) — trace the R1–R5 rule-based example cold.
+- **Phase:** AI core learning — Day 1
+- **Single most important thing today:** Intelligent Agents + Environments (PAGE model, 5 architectures, 6 env types) — Block 1 at 5:10 AM.
+- **⚠️ Rule:** Google Calendar is the ONLY source of truth for daily plans. Never use the overnight rollover log for scheduling.
 
 ## Season map
 ```

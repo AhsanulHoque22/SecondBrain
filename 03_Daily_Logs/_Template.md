@@ -1,4 +1,5 @@
 # Daily Log — {DATE}
+> [[00_Dashboard]] · [[{COURSE_TOPICS_LINK}|{COURSE} Topics]] · [[01_Master_Plan]]
 
 **Active exam:** {COURSE} · {DAYS} days out
 **Theme:** {THEME}

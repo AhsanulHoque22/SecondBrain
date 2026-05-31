@@ -1,4 +1,5 @@
 # CSE 713 — AI · Topic Tracker
+> [[_Syllabus]] · [[_TopicQuestionMap]] · [[00_Dashboard]] · [[01_Master_Plan]]
 
 Status: 🔲 not started · 📖 learning · 🔁 needs recall · ✅ can explain it cold
 

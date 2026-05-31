@@ -1,4 +1,5 @@
 # CSE 713 — AI · Syllabus (CONFIRMED from lecture materials + past papers)
+> [[_Topics]] · [[_TopicQuestionMap]] · [[00_Dashboard]]
 
 > Updated 2026-05-29 by Claude Code after reading all PDFs + 5-year past paper analysis.
 > Topics are ranked by exam yield. Study in this order.

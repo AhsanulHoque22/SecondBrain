@@ -329,6 +329,34 @@ Triggers:
 
 ---
 
+## Obsidian Wikilink Protocol (MANDATORY — every note created or edited)
+
+Every markdown file must have at least one `[[wikilink]]`. Rules:
+
+**Always add a navigation line at the top of every file** (line 2, after the title):
+```
+> [[00_Dashboard]] · [[relevant_file]] · [[another_relevant_file]]
+```
+
+**Standard links by file type:**
+- Daily logs → `[[00_Dashboard]]` + `[[active course _Topics]]` + `[[01_Master_Plan]]`
+- Course _Topics.md → `[[_Syllabus]]` + `[[_TopicQuestionMap]]` + `[[00_Dashboard]]`
+- Course _Syllabus.md → `[[_Topics]]` + `[[_TopicQuestionMap]]`
+- Course _TopicQuestionMap.md → `[[_Topics]]` + `[[_Syllabus]]`
+- Any new note about a topic → link to the topic's source course file AND `[[_Topics]]`
+
+**When mentioning a course in any file**, use a wikilink:
+- AI → `[[02_Courses/CSE713_AI/_Topics|AI]]`
+- InfoSec → `[[02_Courses/CSE717_InfoSec/README|InfoSec]]`
+- Compiler → `[[02_Courses/CSE711_Compiler/README|Compiler]]`
+- Distributed → `[[02_Courses/CSE719_Distributed/README|Distributed]]`
+- Graphics → `[[02_Courses/CSE715_Graphics/README|Graphics]]`
+
+**When writing daily logs**, always `[[link]]` every topic name to its course file.
+Example: "Studied [[_TopicQuestionMap|Search Algorithms]]" not "Studied Search Algorithms".
+
+---
+
 ## Git Auto-commit Protocol (MANDATORY — after every task that changes files)
 
 After completing any task that creates, edits, or moves files:

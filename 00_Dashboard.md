@@ -35,9 +35,12 @@ Prayers structure the day — each gap is a study block:
 ## Status board (Claude updates)
 | Course | Topics mapped | High-yield done | Past paper attempts | Confidence /5 |
 |--------|:-:|:-:|:-:|:-:|
-| AI (713) | ✅ mapped (11 topics) | 🔲 Block 1 starting | 0 | – |
-| InfoSec (717) | – | – | – | – |
-| Compiler (711) | – | – | – | – |
-| Distributed (719) | – | – | – | – |
-| Graphics (715) | – | – | – | – |
-| Thesis (700) | – | – | – | – |
+| [[02_Courses/CSE713_AI/_Topics\|AI (713)]] | ✅ mapped (11 topics) | 🔲 Block 1 starting | 0 | – |
+| [[02_Courses/CSE717_InfoSec/README\|InfoSec (717)]] | – | – | – | – |
+| [[02_Courses/CSE711_Compiler/README\|Compiler (711)]] | – | – | – | – |
+| [[02_Courses/CSE719_Distributed/README\|Distributed (719)]] | – | – | – | – |
+| [[02_Courses/CSE715_Graphics/README\|Graphics (715)]] | – | – | – | – |
+| [[02_Courses/CSE700_Thesis/README\|Thesis (700)]] | – | – | – | – |
+
+## Navigation
+[[01_Master_Plan]] · [[07_Daily_Routine/Template]] · [[04_Livora/README]] · [[05_Skills/Public_Speaking]]

@@ -1,4 +1,5 @@
 # CSE 713 AI — Topic-Wise Question Map (2020–2024)
+> [[_Topics]] · [[_Syllabus]] · [[00_Dashboard]]
 
 > Maps each exam topic to exact question numbers in `AI Previous Year Questions(2024-2016).pdf`.
 > Point your PDF to the page, find the question number, and solve it.

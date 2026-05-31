@@ -8,7 +8,7 @@ nothing is studied yet. After that, every subject gets exactly 7.
 
 ---
 
-## Window 1 — AI (CSE 713) · 29 May → 10 Jun · 12 days
+## Window 1 — [[02_Courses/CSE713_AI/_Topics|AI (CSE 713)]] · 29 May → 10 Jun · 12 days
 
 | Day | Date | Focus |
 |-----|------|-------|
@@ -45,10 +45,10 @@ Tue  ◄ last 2 days    SUBJECT ONLY: cheat sheet, final recall, sleep early.
 Wed                   EXAM 10:30 AM → then load the next subject.
 ```
 
-- **Window 2 — InfoSec (CSE 717):** 10 → 17 Jun
-- **Window 3 — Compiler (CSE 711):** 17 → 24 Jun  *(historically heavy — phases, grammars, parsing. Give it your sharpest mornings.)*
-- **Window 4 — Distributed & Cloud (CSE 719):** 24 Jun → 1 Jul
-- **Window 5 — Computer Graphics (CSE 715):** 1 → 8 Jul  *(math-heavy: transformations, rasterization. Practice the numericals.)*
+- **Window 2 — [[02_Courses/CSE717_InfoSec/README|InfoSec (CSE 717)]]:** 10 → 17 Jun
+- **Window 3 — [[02_Courses/CSE711_Compiler/README|Compiler (CSE 711)]]:** 17 → 24 Jun  *(historically heavy — phases, grammars, parsing. Give it your sharpest mornings.)*
+- **Window 4 — [[02_Courses/CSE719_Distributed/README|Distributed & Cloud (CSE 719)]]:** 24 Jun → 1 Jul
+- **Window 5 — [[02_Courses/CSE715_Graphics/README|Computer Graphics (CSE 715)]]:** 1 → 8 Jul  *(math-heavy: transformations, rasterization. Practice the numericals.)*
 
 ---
 

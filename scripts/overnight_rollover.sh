@@ -47,3 +47,11 @@ else
   bash "$SCRIPT_DIR/tg_send.sh" "⚠️ Overnight rollover failed — check /tmp/secondbrain_rollover_$(date '+%Y%m%d').log"
   echo "[$(date)] ERROR: Claude returned empty output" >> "$LOG"
 fi
+
+# Git commit — capture everything done overnight
+cd "$VAULT_DIR"
+if ! git diff --quiet || ! git diff --cached --quiet || [ -n "$(git ls-files --others --exclude-standard)" ]; then
+  git add -A
+  git commit -m "auto: overnight rollover $TODAY" >> "$LOG" 2>&1
+  echo "[$(date)] Git commit done" >> "$LOG"
+fi

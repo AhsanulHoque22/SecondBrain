@@ -46,3 +46,11 @@ else
   bash "$SCRIPT_DIR/tg_send.sh" "⚠️ Morning brief failed — check /tmp/secondbrain_morning_$(date '+%Y%m%d').log"
   echo "[$(date)] ERROR: Claude returned empty output" >> "$LOG"
 fi
+
+# Git commit — if rollover wrote tomorrow's log, capture it
+cd "$VAULT_DIR"
+if ! git diff --quiet || ! git diff --cached --quiet || [ -n "$(git ls-files --others --exclude-standard)" ]; then
+  git add -A
+  git commit -m "auto: morning brief $TODAY" >> "$LOG" 2>&1
+  echo "[$(date)] Git commit done" >> "$LOG"
+fi

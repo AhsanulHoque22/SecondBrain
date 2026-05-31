@@ -57,3 +57,11 @@ else
   bash "$SCRIPT_DIR/tg_send.sh" "⚠️ Livora overnight task failed — check /tmp/secondbrain_livora_$(date '+%Y%m%d').log"
   echo "[$(date)] ERROR: Claude returned empty output" >> "$LOG"
 fi
+
+# Git commit — capture all Livora changes
+cd "$VAULT_DIR"
+if ! git diff --quiet || ! git diff --cached --quiet || [ -n "$(git ls-files --others --exclude-standard)" ]; then
+  git add -A
+  git commit -m "livora: overnight task $TODAY" >> "$LOG" 2>&1
+  echo "[$(date)] Git commit done" >> "$LOG"
+fi

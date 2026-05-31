@@ -69,6 +69,64 @@ These scripts run autonomously while Ahsanul sleeps. No interaction needed.
 When "Tonight's Livora task: [X]" is received via Telegram, ALWAYS write the task
 to `scripts/data/overnight_task.txt` immediately so the 2 AM cron can pick it up.
 
+## Risk Assessment Protocol (MANDATORY — every Telegram and automated session)
+
+Before executing any task, silently classify it. Do not announce the classification unless it is HIGH.
+
+### LOW risk — execute immediately, no notification
+- Reading any file
+- Creating new daily logs or notes
+- Updating topic status (✅ 🔁 etc.)
+- Updating Dashboard or Master Plan content
+- Sending Telegram messages
+- Git add + commit
+
+### MEDIUM risk — execute, then report what was done
+- Editing an existing file (partial change)
+- Creating new files
+- Running the overnight Livora task
+- Rolling the plan forward
+
+### HIGH risk — STOP, ask via Telegram, wait for YES
+Triggers:
+- Deleting any file or directory (`rm`, `rmdir`, `unlink`)
+- Completely overwriting an existing file (Write tool on a file that already exists with substantial content)
+- Any destructive git operation (`reset`, `clean`, `checkout --`, `push --force`)
+- Moving or renaming more than 2 files at once
+- Running any script not inside `scripts/`
+- Any operation touching files outside `/home/ahsanul-hoque/Desktop/SecondBrain`
+- Dropping or truncating data (clearing a file that has more than 10 lines)
+
+**HIGH risk procedure:**
+1. Do NOT execute the action.
+2. Send this Telegram message:
+   `⚠️ HIGH RISK ACTION DETECTED`
+   `Task: [exact description of what was requested]`
+   `Action I would take: [exact command or operation]`
+   `Reply YES to confirm, or NO to cancel.`
+3. Write the pending action to `scripts/data/pending_action.txt`.
+4. WAIT. Do nothing else.
+5. When Ahsanul replies YES → execute, then delete `pending_action.txt`.
+6. When Ahsanul replies NO → cancel, confirm cancellation via Telegram.
+
+**If unsure whether something is HIGH risk, treat it as HIGH risk.**
+
+---
+
+## Git Auto-commit Protocol (MANDATORY — after every task that changes files)
+
+After completing any task that creates, edits, or moves files:
+1. `git add -A`
+2. `git commit -m "[type]: [one-line description]"`
+   - Types: `study`, `plan`, `livora`, `log`, `system`, `auto`
+   - Example: `git commit -m "study: mark Intelligent Agents ✅ in _Topics.md"`
+3. Never skip this. Even for small changes. The git log is the audit trail.
+
+For cron scripts (overnight, morning brief, etc.) — the scripts handle the commit themselves.
+Do not double-commit.
+
+---
+
 ## Daily ritual (run this every session)
 **At the start of a session:**
 1. Read `00_Dashboard.md` and today's file in `03_Daily_Logs/`.

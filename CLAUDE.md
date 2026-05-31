@@ -69,6 +69,88 @@ These scripts run autonomously while Ahsanul sleeps. No interaction needed.
 When "Tonight's Livora task: [X]" is received via Telegram, ALWAYS write the task
 to `scripts/data/overnight_task.txt` immediately so the 2 AM cron can pick it up.
 
+## Check-in Response Protocol (MANDATORY — runs when user replies to a check-in)
+
+A check-in is pending whenever `scripts/data/pending_checkin.json` is non-empty.
+
+**Detect a check-in reply when:**
+- `pending_checkin.json` exists and is non-empty
+- AND the user's message is a short reply: a number (0–100), "yes", "no", "skip", or "done"
+
+**When a study check-in reply arrives (is_study = true):**
+
+The reply is a completion percentage (e.g. "70", "40%", "100").
+
+Step 1 — Record completion:
+- Parse the percentage (e.g. "70" → 70%)
+- Read `completion_history.json`
+- Append entry: `{date, event_title, type: "study", pct_complete, energy: null, timestamp}`
+- Save `completion_history.json`
+
+Step 2 — Handle incomplete work (pct < 100):
+- Read the event description from `pending_checkin.json`
+- Identify which topics were likely NOT covered based on the % (e.g. 60% done → last 40% of the session topics are incomplete)
+- Read `scripts/data/carry_forward.json`
+- Add incomplete topics to `carry_forward.json`:
+  ```json
+  {"topic": "[topic name]", "remaining_pct": [estimated %], "source_date": "[today]", "source_event": "[event title]"}
+  ```
+- Save `carry_forward.json`
+
+Step 3 — Adjust tomorrow's schedule if significantly behind:
+If total carry_forward topics > 2 OR if this is 3rd day in a row with pct < 70%:
+- Read tomorrow's daily log (`03_Daily_Logs/[TOMORROW].md`)
+- Reduce one non-study block by 30 min (priority to reduce: break > phone time > girlfriend chat part 4 > exercise)
+- Add carry-forward topics to the earliest available study block
+- Note the adjustment in the log: "⚠️ Schedule adjusted: reduced [block] by 30 min to accommodate carry-forward"
+
+Step 4 — Send confirmation:
+```
+📊 *Logged: [event_title]*
+Completion: [pct]%
+[If < 100%]: Carrying forward: [topic list]
+[If adjustment made]: ⚡ Tomorrow's schedule adjusted — reduced [block] by 30 min
+[If 100%]: 🎯 Full session complete. 
+```
+
+Step 5 — Clear pending check-in:
+Write `{}` to `scripts/data/pending_checkin.json`
+
+Step 6 — Git commit:
+`git commit -m "log: checkin [event_title] — [pct]% complete"`
+
+---
+
+**When a non-study check-in reply arrives (is_study = false):**
+
+Reply is "yes", "no", or "skip".
+
+- Record in `completion_history.json`: `{date, event_title, type, completed: true/false, timestamp}`
+- If "no": ask "Want to reschedule this? Reply with a time or say 'drop it'."
+- Clear `pending_checkin.json`
+- No git commit needed for non-study items.
+
+---
+
+**Pattern detection (runs automatically in overnight rollover on Sundays):**
+
+Read `completion_history.json`. Detect:
+1. Blocks with average pct < 70% (consistently incomplete)
+2. Time-of-day pattern (morning vs evening performance)
+3. 3-day streak of missing the same block type
+4. Improving or declining trend
+
+Send Telegram pattern report:
+```
+📈 *Weekly pattern report*
+Best block: [time] — avg [X]%
+Weakest block: [time] — avg [X]%
+[Any patterns found]
+Recommendation: [one concrete change]
+```
+
+---
+
 ## Progress Log Protocol (MANDATORY — runs whenever Ahsanul logs his day)
 
 Triggered by any message like:

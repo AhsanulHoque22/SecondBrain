@@ -1,12 +1,13 @@
 #!/bin/bash
 # Overnight Plan Rollover — runs at 11:30 PM via cron
-# Claude checks if today's log was filled, rolls plan forward, writes tomorrow's log.
+# Claude checks today's log, spaced rep, pattern analysis, rolls plan forward.
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 VAULT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 TODAY=$(date '+%Y-%m-%d')
 TOMORROW=$(date -d 'tomorrow' '+%Y-%m-%d')
 TOMORROW_WEEKDAY=$(date -d 'tomorrow' '+%A')
+DAY_OF_WEEK=$(date '+%A')
 
 export HOME=/home/ahsanul-hoque
 export PATH="/home/ahsanul-hoque/.local/bin:/usr/local/bin:/usr/bin:/bin"
@@ -46,23 +47,34 @@ b) Update 00_Dashboard.md status board (topics mapped, high-yield done, confiden
 c) Read 01_Master_Plan.md to find what comes next.
 d) Read 03_Daily_Logs/_Template.md for the log format.
 
-Step 3 — Build tomorrow's log (03_Daily_Logs/$TOMORROW.md):
-Create the file using the template. Fill in:
-- 'Planned blocks' section: carry forward any INCOMPLETE tasks from today first (highest priority), then add next topics from master plan
-- '🔁 Recall due today' section: paste the due topics from the spaced rep data above
-- Leave 'End-of-day log' blank (Ahsanul fills this tomorrow night)
-- Make the plan realistic — do not schedule more than 7 blocks
+Step 3 — Read carry-forward topics:
+Read scripts/data/carry_forward.json.
+Any topics there must go into tomorrow's Block 1 and Block 2 BEFORE any new topics.
 
-Step 4 — Report summary:
+Step 4 — Build tomorrow's log (03_Daily_Logs/$TOMORROW.md):
+Create the file using the template. Fill in:
+- 'Planned blocks': carry-forward topics first, then recall due topics, then new master plan topics
+- '🔁 Recall due today': paste from spaced rep data above
+- If carry_forward has items: reduce one non-study block by 30 min to fit them
+  (reduce priority: break > phone time > girlfriend chat part 4 > exercise — never below minimums)
+- Note any reductions: '⚠️ Reduced [block] by 30 min to accommodate carry-forward'
+- Leave 'End-of-day log' blank
+- Max 7 study blocks
+
+Step 5 — Clear today's checkin state:
+Write empty state to scripts/data/checkin_state.json: {"date": "$TOMORROW", "briefed": [], "checked": [], "responded": []}
+
+Step 6 — Report summary:
 Format as a Telegram message starting with:
 🌙 *Overnight rollover — $TODAY*
 
 Include:
 - Topics marked ✅ today (if any)
-- Recall topics scheduled for tomorrow
-- Tomorrow's Block 1 topic (the most important thing)
+- Carry-forward topics (if any)
+- Recall topics for tomorrow
+- Tomorrow's Block 1 topic
 
-Keep under 10 lines." 2>> "$LOG")
+Keep under 12 lines." 2>> "$LOG")
 
 if [ -n "$RESULT" ]; then
   bash "$SCRIPT_DIR/tg_send.sh" "$RESULT"
@@ -70,6 +82,33 @@ if [ -n "$RESULT" ]; then
 else
   bash "$SCRIPT_DIR/tg_send.sh" "⚠️ Overnight rollover failed — check /tmp/secondbrain_rollover_$(date '+%Y%m%d').log"
   echo "[$(date)] ERROR: Claude returned empty output" >> "$LOG"
+fi
+
+# Sunday pattern analysis
+if [ "$DAY_OF_WEEK" = "Sunday" ]; then
+  echo "[$(date)] Running weekly pattern analysis" >> "$LOG"
+  PATTERN=$(cd "$VAULT_DIR" && claude -p --dangerously-skip-permissions \
+    --allowedTools "Read,Bash" \
+    --no-session-persistence \
+    "Today is $TODAY (Sunday). Read scripts/data/completion_history.json.
+Analyse the last 7 days of check-in data. Look for:
+1. Which study blocks have average completion < 70%
+2. Best and worst time-of-day performance
+3. Any 3-day streak of missing the same block type
+4. Overall trend (improving/declining)
+
+Send a concise Telegram report:
+📈 *Weekly pattern report — $TODAY*
+Best block: [time] — avg [X]%
+Weakest block: [time] — avg [X]%
+Trend: [improving/stable/declining]
+Recommendation: [one concrete actionable change]
+
+Under 8 lines." 2>> "$LOG")
+  if [ -n "$PATTERN" ]; then
+    bash "$SCRIPT_DIR/tg_send.sh" "$PATTERN"
+    echo "[$(date)] Pattern report sent" >> "$LOG"
+  fi
 fi
 
 # Git commit — capture everything done overnight

@@ -182,6 +182,7 @@
   },
   "active": "3c4b25164d05238d",
   "lastOpenFiles": [
+    "scripts/schedule_watchdog.py.tmp.21889.f7ee96b15480",
     "scripts/schedule_watchdog.py.tmp.21889.4177a7a88230",
     "scripts/data/bot.db-shm",
     "scripts/data/bot.db-wal",
@@ -192,7 +193,6 @@
     "scripts/overnight_rollover.sh.tmp.21889.33e5c2835dd6",
     "CLAUDE.md.tmp.21889.2f3528f3c1c4",
     "scripts/data/checkin_state.json",
-    "scripts/data/completion_history.json",
     "scripts/data/recall_due.md",
     "02_Courses/CSE715_Graphics/NotebookLM_Sources.md",
     "02_Courses/CSE713_AI/_TopicQuestionMap.md",

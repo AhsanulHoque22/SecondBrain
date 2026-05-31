@@ -66,9 +66,67 @@ def is_study(event: dict) -> bool:
     )
 
 
+# ── past paper analysis ──────────────────────────────────────────────────────
+
+def analyze_past_papers(event: dict) -> None:
+    """
+    Reads the past-paper PDF for topics in this session.
+    Updates _TopicQuestionMap.md with exact question wording.
+    Runs BEFORE the briefing so the briefing can show real questions.
+    """
+    prompt = f"""You are preparing Ahsanul's past-paper analysis before his study session.
+
+SESSION: {event['title']}
+TOPICS IN THIS SESSION: {event.get('description', '')[:400]}
+
+YOUR TASK — do these steps in order:
+
+Step 1 — Find which course folder this session belongs to.
+Run: find 02_Courses -name "_TopicQuestionMap.md"
+Read the matching _TopicQuestionMap.md file.
+
+Step 2 — Identify which topics from the session appear in the map.
+For each matching topic:
+  a. Note the question numbers and PDF page numbers listed in the map.
+  b. Read those exact pages of the past-paper PDF (use the Read tool with the pages parameter).
+     The PDF is in the same 02_Courses subfolder (filename contains "Previous Year" or "past" or "question").
+  c. Extract the EXACT question text as it appears in the PDF — word for word.
+     Include all sub-parts (i), (ii), (iii) etc.
+
+Step 3 — Update _TopicQuestionMap.md.
+For each topic's table, update the Notes column with the exact question wording you found.
+Format: "Q: [exact question text truncated to 120 chars]"
+Only update rows where the Notes are currently vague (e.g. just "PAGE model, environment classification").
+Do NOT overwrite rows that already have exact question text.
+Use Edit tool to make targeted updates — do not rewrite the whole file.
+
+Step 4 — Output a compact summary for use in the briefing:
+Format exactly like this (this will be inserted into the Telegram briefing):
+
+PAST_PAPER_ANALYSIS_START
+Topic: [Topic Name]
+| Year | Q# | Exact question |
+|------|-----|----------------|
+| 2024 | A-Q1 | [exact wording, max 100 chars] |
+| 2023 | A-Q1 | [exact wording, max 100 chars] |
+| 2022 | A-Q1 | [exact wording, max 100 chars] |
+🔁 Pattern: [one sentence — what aspect of this topic repeats every year]
+PAST_PAPER_ANALYSIS_END
+
+Repeat the block for each topic in the session.
+If a topic has no past paper questions, write: "No direct questions found for [topic]."
+
+Important: Read the actual PDF pages — do not guess or fabricate question text."""
+
+    run_claude(prompt, tools="Read,Edit,Bash,LS")
+
+
 # ── session briefing ─────────────────────────────────────────────────────────
 
 def send_briefing(event: dict):
+    # Step 1: analyze past papers and update the question map first
+    analyze_past_papers(event)
+
     carry_data = load(CARRY, {"topics": []})
     carry_topics = carry_data.get("topics", [])
 
@@ -95,12 +153,12 @@ Description: {event.get('description', '')[:600]}
 
 Instructions:
 1. Read scripts/data/carry_forward.json for any additional carry-forward topics.
-2. List the files inside 02_Courses/ (use LS or Bash: find 02_Courses -type f) to see all available source materials.
-3. For each topic in this session, identify which source file(s) from 02_Courses/ are relevant (PDFs, notes, etc.). Match by filename keywords — e.g. "Ch01-02.pdf" for Agents, "Chapter 3.pdf" for Search, "Rule-Based Systems.pdf" for FC/BC.
-4. Combine carry-forward topics with topics from the session description.
-5. Distribute ALL topics across the {duration}-minute session with realistic timestamps starting at {start_str}.
-6. Put carry-forward topics first.
-7. Reserve last 10 minutes for active recall.
+2. Run: find 02_Courses -type f   to list all available source materials.
+3. Read the _TopicQuestionMap.md for this course — it has just been updated with exact past paper questions.
+4. For each topic, identify which source file(s) from 02_Courses/ are relevant.
+5. Combine carry-forward topics with topics from the session description.
+6. Distribute ALL topics across the {duration}-minute session with realistic timestamps starting at {start_str}.
+7. Put carry-forward topics first. Reserve last 10 minutes for active recall.
 
 Output a Telegram message in this EXACT format (use Markdown):
 📚 *{event['title']}*
@@ -111,16 +169,22 @@ Output a Telegram message in this EXACT format (use Markdown):
 `HH:MM` Topic 2 — X min
 `HH:MM` Active recall — 10 min
 
-*Sources for this session:*
-📄 Topic 1 → `filename.pdf` (pages/sections if known)
+*Sources:*
+📄 Topic 1 → `filename.pdf`
 📄 Topic 2 → `filename.pdf`
+
+*Past paper questions for today's topics:*
+📝 [Topic Name] — appears [N]/5 years
+  • 2024 A-Q1: [exact question, max 80 chars]
+  • 2023 A-Q1: [exact question, max 80 chars]
+  • 🔁 Pattern: [what repeats every year — one line]
 
 *Carry-forward:* [list or "None"]
 *Goal:* [one sentence — what does success look like?]
 
 Rules:
 - Only list source files that actually exist in 02_Courses/. Do not invent filenames.
-- If a topic has no matching source file, write "→ lecture notes / memory" for it.
+- Use the exact question text from the updated _TopicQuestionMap.md.
 - Be realistic. Never schedule more content than fits in {duration} minutes."""
 
     result = run_claude(prompt, tools="Read,LS,Bash")

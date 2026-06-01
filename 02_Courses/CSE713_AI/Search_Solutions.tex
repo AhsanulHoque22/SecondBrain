@@ -635,7 +635,491 @@ IDDFS  & A → B → E → G & 16 & 4 (final iter.)    & No (non-uniform costs) 
 \end{description}
 
 %=====================================================================
-% ---- 2023 WILL BE ADDED HERE IN NEXT SESSION ----
+\newpage
+\section{Examination 2023 — Q2 \ (9 Marks)}
 %=====================================================================
+
+\subsection{Problem Data}
+
+\begin{minipage}[t]{0.46\textwidth}
+\centering
+{\small\textbf{Table 1: State Transitions and Step Costs}}\\[0.4em]
+\begin{tabular}{ccc}
+\toprule
+\textbf{State} & \textbf{Next} & \textbf{Cost} \\
+\midrule
+A & B & 4 \\
+A & C & 1 \\
+B & D & 3 \\
+B & E & 8 \\
+C & C & 0 \\
+C & D & 2 \\
+C & F & 6 \\
+D & C & 2 \\
+D & E & 4 \\
+E & G & 2 \\
+F & G & 8 \\
+\bottomrule
+\end{tabular}
+\end{minipage}
+\hfill
+\begin{minipage}[t]{0.46\textwidth}
+\centering
+{\small\textbf{Table 2: Heuristic Estimates $h(n)$}}\\[0.4em]
+\begin{tabular}{cc}
+\toprule
+\textbf{Node} & \textbf{h(n)} \\
+\midrule
+A & 8 \\
+B & 8 \\
+C & 6 \\
+D & 5 \\
+E & 1 \\
+F & 4 \\
+G & 0 \\
+\bottomrule
+\end{tabular}
+\end{minipage}
+
+\vspace{0.6em}
+\begin{notesbox}
+\textbf{Important:} This is a \textbf{directed} graph — edges go one way only (State $\to$ Next). Note the self-loop C$\to$C with cost 0 — this is a degenerate edge and should be ignored during search (it does not change the state or advance toward the goal). Also note the edge D$\to$C(2): returning from D to C is allowed since the graph is directed — C is reachable from both A and D. No reverse edges from B$\to$A, C$\to$A, D$\to$B, etc.\ exist unless listed in the table above.
+\end{notesbox}
+
+%----------------------------------------------------------------------
+\subsection{Part a — Problem Formulations \ [2 marks]}
+%----------------------------------------------------------------------
+
+\begin{solutionbox}
+\textbf{Question:} Give the initial state, goal test, operators, and path cost for each problem.
+\end{solutionbox}
+
+\subsubsection*{(i) Travelling Salesman Problem (TSP)}
+
+\begin{description}[leftmargin=3.6cm, labelwidth=3.4cm, labelsep=0.2cm]
+  \item[\textbf{State:}]
+    A pair $(\,\ell,\; V\,)$ where $\ell$ is the current city and $V \subseteq \{\text{all } N \text{ cities}\}$ is the set of \emph{unvisited} cities.
+    \emph{Example midway:} $(\text{Dhaka},\; \{\text{Chittagong, Sylhet}\})$ means we are in Dhaka and still need to visit Chittagong and Sylhet.
+
+  \item[\textbf{Initial state:}]
+    $(\text{start city},\; \{\text{all } N{-}1 \text{ other cities}\})$.
+
+  \item[\textbf{Goal test:}]
+    $\ell = \text{start city}$ \textbf{and} $V = \emptyset$ \quad (returned to start after visiting all cities exactly once).
+
+  \item[\textbf{Operators:}]
+    $\text{Travel}(\text{city}_i \to \text{city}_j)$ where city$_j \notin V$ or ($V{=}\emptyset$ and city$_j{=}$start). Each move removes city$_j$ from $V$.
+
+  \item[\textbf{Path cost:}]
+    Sum of distances (or costs) of all travelled roads. Goal: find the tour with \textbf{minimum total cost}.
+
+  \item[\textbf{Complexity note:}]
+    With $N$ cities there are $(N{-}1)!/2$ distinct tours — factorial growth. TSP is NP-hard, so exhaustive search is infeasible for $N>20$. Heuristic search (A*) with an admissible heuristic (e.g.\ minimum spanning tree of remaining cities) can find optimal or near-optimal tours for moderate $N$.
+\end{description}
+
+\subsubsection*{(ii) Missionaries \& Cannibals}
+
+\begin{description}[leftmargin=3.6cm, labelwidth=3.4cm, labelsep=0.2cm]
+  \item[\textbf{State:}]
+    A triple $(\,M_L,\; C_L,\; B\,)$ where $M_L$ = missionaries on left bank ($0$–$3$), $C_L$ = cannibals on left bank ($0$–$3$), $B \in \{L,R\}$ = boat position.
+    The right bank has $3{-}M_L$ missionaries and $3{-}C_L$ cannibals.
+
+  \item[\textbf{Initial state:}]
+    $(3,\; 3,\; L)$ — all six people and the boat on the left bank.
+
+  \item[\textbf{Goal test:}]
+    $(0,\; 0,\; R)$ — all six people and the boat on the right bank.
+
+  \item[\textbf{Operators:}]
+    Move $k$ missionaries and $j$ cannibals across the river \textbf{by boat}, where $1 \leq k{+}j \leq 2$ (boat capacity 2), and the resulting state must be \textbf{legal}: on both banks, $M \geq C$ \emph{or} $M=0$ (missionaries never outnumbered by cannibals on either side).
+
+    \emph{Possible boat loads:} (1M,0C), (2M,0C), (0M,1C), (0M,2C), (1M,1C).
+
+  \item[\textbf{Path cost:}]
+    Number of boat trips (1 per crossing). Goal: find a sequence with \textbf{minimum trips}.
+
+  \item[\textbf{State space size:}]
+    Without constraints: $4 \times 4 \times 2 = 32$ states. After legality filtering, only about 16–20 are valid. The problem has a known shortest solution of \textbf{11 crossings}.
+\end{description}
+
+%----------------------------------------------------------------------
+\subsection{Part b(i) — State-Space Diagram \ [0.5 mark]}
+%----------------------------------------------------------------------
+
+\begin{center}
+\begin{tikzpicture}[
+  every node/.style={draw, circle, minimum size=0.85cm, inner sep=0pt,
+                     font=\small\bfseries, thick},
+  startnode/.style={fill=startblue},
+  goalnode/.style={fill=goalgreen},
+  lbl/.style={draw=none, fill=white, font=\footnotesize\bfseries,
+               inner sep=1.5pt, outer sep=0pt},
+  edge/.style={thick, -{Stealth[length=6pt, width=5pt]}}
+]
+
+%--- Node positions ---
+\node[startnode] (A) at (0, 5)   {A};
+\node            (B) at (-3, 3)  {B};
+\node            (C) at (0, 3)   {C};
+\node            (D) at (0, 1.5) {D};
+\node            (E) at (-1.5, 0) {E};
+\node            (F) at (2, 3)   {F};
+\node[goalnode]  (G) at (0, -1.5) {G};
+
+%--- Directed edges ---
+\draw[edge]              (A) -- node[lbl, pos=0.5] {4} (B);
+\draw[edge, bend left=10] (A) -- node[lbl, pos=0.5] {1} (C);
+\draw[edge]              (B) -- node[lbl, pos=0.5] {3} (D);
+\draw[edge, bend right=20] (B) -- node[lbl, pos=0.3] {8} (E);
+\draw[edge, loop right]  (C) -- node[lbl, pos=0.5] {0} (C);
+\draw[edge]              (C) -- node[lbl, pos=0.5] {2} (D);
+\draw[edge, bend left=20] (C) -- node[lbl, pos=0.5] {6} (F);
+\draw[edge, bend right=15] (D) -- node[lbl, pos=0.5] {2} (C);
+\draw[edge]              (D) -- node[lbl, pos=0.5] {4} (E);
+\draw[edge]              (E) -- node[lbl, pos=0.5] {2} (G);
+\draw[edge]              (F) -- node[lbl, pos=0.5] {8} (G);
+
+%--- Legend ---
+\begin{scope}[shift={(-0.5,-2.8)}]
+  \node[startnode, minimum size=0.55cm, font=\tiny] (ls) at (-1.8,0) {};
+  \node[draw=none, font=\small] at (-0.1, 0) {= Start (A)};
+  \node[goalnode, minimum size=0.55cm, font=\tiny] (lg) at (3,0)  {};
+  \node[draw=none, font=\small] at (4.8, 0) {= Goal (G)};
+\end{scope}
+
+\end{tikzpicture}
+\end{center}
+
+\begin{notesbox}
+\textbf{Notes on the graph structure:}
+\begin{itemize}[noitemsep,topsep=2pt]
+  \item C$\to$C(0) is a zero-cost self-loop — degenerate; ignored in search.
+  \item D$\to$C(2) creates a directed 2-cycle C $\rightleftharpoons$ D (C$\to$D costs 2, D$\to$C costs 2).
+  \item B has two outgoing edges: B$\to$D(3) and B$\to$E(8). B$\to$E is an expensive direct path.
+  \item The cheap route to the goal passes through D$\to$E(4)$\to$G(2).
+  \item From A, the best first step is C (cost 1), not B (cost 4).
+\end{itemize}
+\end{notesbox}
+
+%----------------------------------------------------------------------
+\subsection{Part b(ii) — Search Algorithm Traces \ [4.5 marks]}
+%----------------------------------------------------------------------
+
+\begin{solutionbox}
+\textbf{Question:} Trace UCS, Greedy search, and A* from A (initial) to G (goal).
+At each step: show the node being expanded and the fringe contents.
+Ties broken alphabetically.
+\end{solutionbox}
+
+\vspace{0.7em}
+
+%----------------------------------------------------------------
+\subsubsection*{Algorithm 1 — Uniform-Cost Search (UCS)}
+%----------------------------------------------------------------
+
+\textbf{Key idea:} Expand the node with the \textbf{lowest path cost} $g(n)$. Fringe is a min-priority queue sorted by $g(n)$.
+Once a node is expanded (closed), it is never re-expanded. If a cheaper path to a fringe node is found, update its cost.
+
+\textbf{Fringe notation:} Node$[g]$ sorted ascending by $g$.
+\textbf{Closed set:} $\{\text{nodes already expanded}\}$.
+
+\vspace{0.4em}
+\begin{center}
+\renewcommand{\arraystretch}{1.3}
+\small
+\begin{tabular}{c|l|c|p{9cm}}
+\toprule
+\textbf{Step} & \textbf{Node} & \textbf{g} &
+\textbf{Fringe after expansion \ (sorted by g)} \\
+\midrule
+1 & \textbf{A} & 0
+  & C[\textbf{1}],\; B[\textbf{4}] \\
+  & & & \footnotesize $A{\to}C$: $g{=}1$. $A{\to}B$: $g{=}4$. Both new. \\
+\midrule
+2 & \textbf{C} & 1
+  & D[\textbf{3}],\; B[\textbf{4}],\; F[\textbf{7}] \\
+  & & & \footnotesize $C{\to}C$: self-loop, ignore. $C{\to}D$: $g{=}3$ new. $C{\to}F$: $g{=}7$ new. \\
+\midrule
+3 & \textbf{D} & 3
+  & B[\textbf{4}],\; E[\textbf{7}],\; F[\textbf{7}] \\
+  & & & \footnotesize $D{\to}C$: $g{=}5$, C already closed $\Rightarrow$ skip. $D{\to}E$: $g{=}7$ new. \\
+\midrule
+4 & \textbf{B} & 4
+  & E[\textbf{7}],\; F[\textbf{7}] \\
+  & & & \footnotesize $B{\to}D$: $g{=}7$, D already closed $\Rightarrow$ skip. $B{\to}E$: $g{=}12 > \text{E[7]}$ in fringe $\Rightarrow$ keep E[7]. \\
+\midrule
+5 & \textbf{E} & 7
+  & F[\textbf{7}],\; G[\textbf{9}] \\
+  & & & \footnotesize Tie E[7], F[7]: \textbf{E before F} (alphabetical). $E{\to}G$: $g{=}9$ new. \\
+\midrule
+6 & \textbf{F} & 7
+  & G[\textbf{9}] \\
+  & & & \footnotesize $F{\to}G$: $g{=}15 > \text{G[9]}$ in fringe $\Rightarrow$ keep G[9]. \\
+\midrule
+7 & \textbf{G} & 9
+  & \goal \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{answerbox}
+\textbf{UCS Solution:} $A \;\xrightarrow{1}\; C \;\xrightarrow{2}\; D \;\xrightarrow{4}\; E \;\xrightarrow{2}\; G$
+\hfill \textbf{Total cost: $1+2+4+2 = \mathbf{9}$}
+
+Nodes expanded (in order): A, C, D, B, E, F, G \quad(7 nodes total)
+
+UCS guarantees the optimal path because it explores in order of increasing $g(n)$ and step costs are non-negative.
+\end{answerbox}
+
+\vspace{1em}
+
+%----------------------------------------------------------------
+\subsubsection*{Algorithm 2 — Greedy Best-First Search}
+%----------------------------------------------------------------
+
+\textbf{Key idea:} Expand the node with the \textbf{lowest heuristic} $h(n)$. Fringe sorted by $h$ ascending.
+Path cost $g(n)$ is \emph{completely ignored}. This is fast but not guaranteed optimal.
+
+\textbf{Fringe notation:} Node$[h]$ sorted ascending by $h$.
+
+\vspace{0.4em}
+\begin{center}
+\renewcommand{\arraystretch}{1.3}
+\small
+\begin{tabular}{c|l|c|p{9cm}}
+\toprule
+\textbf{Step} & \textbf{Node} & \textbf{h} &
+\textbf{Fringe after expansion \ (sorted by h)} \\
+\midrule
+1 & \textbf{A} & 8
+  & C[\textbf{6}],\; B[\textbf{8}] \\
+  & & & \footnotesize $A{\to}C$: $h{=}6$. $A{\to}B$: $h{=}8$. \\
+\midrule
+2 & \textbf{C} & 6
+  & F[\textbf{4}],\; D[\textbf{5}],\; B[\textbf{8}] \\
+  & & & \footnotesize $C{\to}F$: $h{=}4$. $C{\to}D$: $h{=}5$. $C{\to}C$ ignored. \\
+\midrule
+3 & \textbf{F} & 4
+  & G[\textbf{0}],\; D[\textbf{5}],\; B[\textbf{8}] \\
+  & & & \footnotesize $F{\to}G$: $h{=}0$. Goal in fringe with lowest $h$. \\
+\midrule
+4 & \textbf{G} & 0
+  & \goal \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{answerbox}
+\textbf{Greedy Solution:} $A \;\xrightarrow{1}\; C \;\xrightarrow{6}\; F \;\xrightarrow{8}\; G$
+\hfill \textbf{Total cost: $1+6+8 = \mathbf{15}$} (suboptimal!)
+
+Nodes expanded: A, C, F, G \quad(only 4 nodes — extremely fast)
+
+Greedy blindly chased the heuristic: from C, F has $h{=}4$ (lowest), so it went C$\to$F, but F$\to$G costs 8 — the most expensive path to the goal. It completely missed the cheap C$\to$D$\to$E$\to$G route (cost 9) because D's $h{=}5$ looked slightly worse than F's $h{=}4$.
+\end{answerbox}
+
+\vspace{1em}
+
+%----------------------------------------------------------------
+\subsubsection*{Algorithm 3 — A* Search}
+%----------------------------------------------------------------
+
+\textbf{Key idea:} Expand the node with the \textbf{lowest $f(n) = g(n) + h(n)$}. Fringe sorted by $f$ ascending.
+Ties in $f$ broken alphabetically. Closed set prevents re-expansion.
+
+\textbf{Fringe notation:} Node$[g,\; h,\; f]$ sorted ascending by $f$.
+
+\vspace{0.4em}
+\begin{center}
+\renewcommand{\arraystretch}{1.35}
+\scriptsize
+\begin{tabular}{c|l|c|c|c|p{7.5cm}}
+\toprule
+\textbf{Step} & \textbf{Node} & \textbf{g} & \textbf{h} & \textbf{f} &
+\textbf{Fringe after expansion (sorted by f)} \\
+\midrule
+1 & \textbf{A} & 0 & 8 & 8
+  & C[1,6,\textbf{7}],\; B[4,8,\textbf{12}] \\
+  & & & & & \footnotesize $A{\to}C$: $f{=}1{+}6{=}7$. $A{\to}B$: $f{=}4{+}8{=}12$. \\
+\midrule
+2 & \textbf{C} & 1 & 6 & 7
+  & D[3,5,\textbf{8}],\; F[7,4,\textbf{11}],\; B[4,8,\textbf{12}] \\
+  & & & & & \footnotesize $C{\to}D$: $g{=}3,f{=}8$. $C{\to}F$: $g{=}7,f{=}11$. C$\to$C ignored. \\
+\midrule
+3 & \textbf{D} & 3 & 5 & 8
+  & E[7,1,\textbf{8}],\; F[7,4,\textbf{11}],\; B[4,8,\textbf{12}] \\
+  & & & & & \footnotesize $D{\to}C$: C closed $\Rightarrow$ skip. $D{\to}E$: $g{=}7,f{=}8$. \\
+  & & & & & \footnotesize Tie D($f{=}8$) and E($f{=}8$): D already expanded, E is in fringe. \\
+\midrule
+4 & \textbf{E} & 7 & 1 & 8
+  & G[9,0,\textbf{9}],\; F[7,4,\textbf{11}],\; B[4,8,\textbf{12}] \\
+  & & & & & \footnotesize $E{\to}G$: $g{=}9,f{=}9$. \\
+\midrule
+5 & \textbf{G} & 9 & 0 & 9
+  & \goal \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{answerbox}
+\textbf{A* Solution:} $A \;\xrightarrow{1}\; C \;\xrightarrow{2}\; D \;\xrightarrow{4}\; E \;\xrightarrow{2}\; G$
+\hfill \textbf{Total cost: $1+2+4+2 = \mathbf{9}$} (optimal!)
+
+Nodes expanded: A, C, D, E, G \quad(only 5 nodes — fewer than UCS's 7)
+
+A* found the optimal path and expanded \textbf{only 5 nodes} compared to UCS's 7, because the heuristic $h(n)$ guided it away from the expensive B and F branches. Note that \textbf{B was never expanded} — its $f{=}12$ was always worse than the alternatives ahead of it in the fringe.
+\end{answerbox}
+
+\vspace{0.8em}
+
+\noindent\textbf{Algorithm Comparison for 2023 Graph:}
+\begin{center}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{l|l|c|c|c}
+\toprule
+\textbf{Algorithm} & \textbf{Path Found} & \textbf{Cost} & \textbf{Nodes Expanded} & \textbf{Optimal?} \\
+\midrule
+UCS    & A $\to$ C $\to$ D $\to$ E $\to$ G & \textbf{9} & 7 & \textbf{Yes} \\
+Greedy & A $\to$ C $\to$ F $\to$ G          & 15 & 4 & No \\
+A*     & A $\to$ C $\to$ D $\to$ E $\to$ G & \textbf{9} & 5 & \textbf{Yes} \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{notesbox}
+\textbf{Why does A* outperform UCS here?} The heuristic $h(n)$ provides a useful lower bound. After expanding A and C, A* sees that D has $f{=}8$ (promising — $h(D){=}5$ is close to the true remaining cost of 6) while B has $f{=}12$ (unpromising — $h(B){=}8$ overestimates its potential). A* expands D next and finds the optimal path without ever touching B. UCS, lacking a heuristic, expands B unnecessarily at step 4 before reaching the goal.
+
+\textbf{Admissibility check:} Is $h(n)$ admissible? Let's verify:
+\begin{itemize}[noitemsep,topsep=3pt]
+  \item $h(A){=}8 \leq h^*(A){=}9$ \checkmark
+  \item $h(C){=}6 \leq h^*(C){=}8$ \checkmark
+  \item $h(D){=}5 \leq h^*(D){=}6$ \checkmark
+  \item $h(E){=}1 \leq h^*(E){=}2$ \checkmark
+  \item $h(B){=}8 \leq h^*(B){=}5$? \textbf{No!} $h^*(B) = \min(3{+}4{+}2,\; 8{+}2) = 9$. Wait — $B{\to}D{\to}E{\to}G = 3{+}4{+}2=9$, so $h(B){=}8 < 9$ \checkmark. And $B{\to}E{\to}G = 8{+}2=10$. So $h^*(B){=}9$, $h(B){=}8$ is admissible.
+  \item $h(F){=}4 \leq h^*(F){=}8$ \checkmark
+\end{itemize}
+\textbf{Yes, the heuristic is admissible} — $h(n) \leq h^*(n)$ for all nodes. This is why A* found the optimal solution.
+\end{notesbox}
+
+%----------------------------------------------------------------------
+\subsection{Part c — IDDFS: Synthesising Benefits of BFS and DFS \ [2 marks]}
+%----------------------------------------------------------------------
+
+\begin{solutionbox}
+\textbf{Question:} Illustrate with an appropriate example how IDDFS synthesises the benefits of both BFS and DFS — achieving optimality, completeness, and linear space complexity. Nevertheless, time complexity deteriorates in comparison to both BFS and DFS.
+\end{solutionbox}
+
+\vspace{0.6em}
+
+\subsubsection*{The Core Idea}
+
+IDDFS (Iterative Deepening Depth-First Search) runs DFS repeatedly with an increasing depth cutoff: first $L{=}0$, then $L{=}1$, $L{=}2$, \ldots, until the goal is found. At each iteration, the search is a standard depth-limited DFS from the root.
+
+\subsubsection*{Illustrative Example}
+
+Consider the following binary tree where G (shaded) is the shallowest goal at depth 3:
+
+\begin{center}
+\begin{tikzpicture}[
+  level 1/.style={sibling distance=4.2cm, level distance=1.3cm},
+  level 2/.style={sibling distance=2.1cm, level distance=1.3cm},
+  level 3/.style={sibling distance=1.0cm, level distance=1.2cm},
+  every node/.style={draw, circle, minimum size=0.6cm, inner sep=0pt, font=\footnotesize\bfseries},
+  goalnode/.style={fill=goalgreen},
+  edgelbl/.style={draw=none, font=\footnotesize, inner sep=1pt}
+]
+\node {A}
+  child { node {B}
+    child { node {D}
+      child { node[goalnode] {G} }
+      child { node {H} }
+    }
+    child { node {E} }
+  }
+  child { node {C}
+    child { node {F} }
+    child { node {I} }
+  };
+\end{tikzpicture}
+\end{center}
+
+\vspace{0.4em}
+
+\noindent\textbf{IDDFS Execution:}
+
+\begin{center}
+\renewcommand{\arraystretch}{1.2}
+\small
+\begin{tabular}{c|l|p{9cm}}
+\toprule
+\textbf{L} & \textbf{Nodes visited (DFS order)} & \textbf{Outcome} \\
+\midrule
+0 & A & A $\neq$ G. No solution at depth 0. \\
+1 & A, B, C & Neither B nor C is G. No solution at depth 1. \\
+2 & A, B, D, E, C, F, I & No goal at depth 2. \\
+3 & A, B, D, \textbf{G} $\leftarrow$ \goal & \textbf{Found!} Shallowest goal at depth 3. \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsubsection*{How IDDFS Inherits Each Algorithm's Strengths}
+
+\begin{center}
+\renewcommand{\arraystretch}{1.4}
+\begin{tabular}{l|p{5cm}|p{5cm}|p{5cm}}
+\toprule
+\textbf{Property} & \textbf{BFS} & \textbf{DFS} & \textbf{IDDFS} \\
+\midrule
+\textbf{Completeness} &
+  \checkmark\ Complete (finds solution if one exists) &
+  \texttimes\ Incomplete (may loop forever on infinite branches) &
+  \checkmark\ \textbf{Complete} — like BFS. Depth-limited DFS avoids infinite loops because it backtracks at the cutoff. \\
+\midrule
+\textbf{Optimality} &
+  \checkmark\ Optimal for uniform step costs (finds shallowest solution) &
+  \texttimes\ Not optimal (may find a deep solution first) &
+  \checkmark\ \textbf{Optimal for uniform costs} — like BFS. Because it explores all nodes at depth $d{-}1$ before any at depth $d$, the first solution found is the shallowest. \\
+\midrule
+\textbf{Space} &
+  \texttimes\ $O(b^d)$ — stores entire frontier. For $b{=}10,d{=}10$, that's 10 billion nodes. &
+  \checkmark\ $O(bm)$ — stores only one path + siblings. &
+  \checkmark\ \textbf{$O(bd)$} — like DFS. Only the current path (depth $d$) plus $b{-}1$ siblings per level are in memory. For $b{=}10,d{=}10$: $\approx$ 100 nodes. \\
+\midrule
+\textbf{Time} &
+  $O(b^d)$ — visits each node once &
+  $O(b^m)$ — may go very deep, but each node visited once &
+  \texttimes\ $O(b^d)$ — \textbf{worse constant factor.} Nodes near the root are revisited $d$ times. Overhead factor: $\frac{b}{b-1}$ (e.g.\ for $b{=}10$, about $1.11\times$ BFS). \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsubsection*{Why Time Complexity Deteriorates}
+
+The key weakness of IDDFS is \textbf{repeated work}. Consider the root node A: it is expanded in \emph{every} iteration ($L{=}0,1,2,3$) — 4 times. Node B is expanded at $L{=}2$ and $L{=}3$ — twice. Only the deepest nodes (depth $L$) are expanded just once.
+
+However, in a tree with branching factor $b$, the \textbf{number of nodes at the deepest level dominates}:
+\[
+\text{Total expansions} = (d{+}1) \cdot 1 + d \cdot b + (d{-}1) \cdot b^2 + \cdots + 1 \cdot b^d
+\]
+\[
+= b^d \left(1 + \frac{1}{b} + \frac{1}{b^2} + \cdots\right)
+\approx b^d \cdot \frac{b}{b-1}
+\]
+
+For $b=10$, the overhead is only $\frac{10}{9} \approx 1.11\times$ — a small price for the enormous space savings ($O(bd)$ vs $O(b^d)$). This is why IDDFS is the \textbf{preferred uninformed search strategy} when the state space is large and step costs are uniform.
+
+\subsubsection*{When IDDFS Is NOT Optimal}
+
+IDDFS finds the \textbf{shallowest} goal (fewest edges), not the lowest-cost goal. With non-uniform step costs, a deeper path with lower total cost may exist. In such cases, UCS or A* is required. For the 2024 exam graph, IDDFS found A$\to$B$\to$E$\to$G (cost 16, 3 hops) while UCS found A$\to$C$\to$H$\to$G (cost 13, 3 hops) — both at the same depth, but UCS found the cheaper one because it considers edge costs, not just depth.
+
+\begin{notesbox}
+\textbf{Exam summary — IDDFS:}
+\begin{itemize}[noitemsep,topsep=2pt]
+  \item \textbf{Completeness:} Inherited from BFS — guaranteed to find a solution if one exists.
+  \item \textbf{Optimality:} Inherited from BFS — optimal for \emph{uniform} step costs (finds shallowest solution).
+  \item \textbf{Space:} Inherited from DFS — $O(bd)$ linear space, practical for large search spaces.
+  \item \textbf{Time:} Worse than both BFS and DFS individually — nodes near the root are re-expanded each iteration. However, the overhead is only a constant factor ($\approx \frac{b}{b-1}$), acceptable given the space savings.
+\end{itemize}
+\end{notesbox}
 
 \end{document}

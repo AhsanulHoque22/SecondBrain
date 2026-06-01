@@ -1,0 +1,15 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//SecondBrain//Calendar//EN
+BEGIN:VEVENT
+DTSTART;TZID=Asia/Dhaka:20260602T100000
+DTEND;TZID=Asia/Dhaka:20260602T130000
+SUMMARY:Meeting with Dr. Shakera Ahmed — AI in Medical Research & Documentation Management
+DESCRIPTION:Research meeting about how AI can help in medical research and documentation management.\nNotes: 04_Livora/Requirements_Gathering/2026-06-02_Dr_Shakera_Ahmed.md
+BEGIN:VALARM
+TRIGGER:-PT0M
+ACTION:DISPLAY
+DESCRIPTION:Meeting with Dr. Shakera Ahmed at 10am
+END:VALARM
+END:VEVENT
+END:VCALENDAR

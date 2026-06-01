@@ -9,3 +9,6 @@
 \contentsline {subsection}{\numberline {2.3}Part b(i) — State-Space Diagram \ [0.5 mark]}{11}{}%
 \contentsline {subsection}{\numberline {2.4}Part b(ii) — Search Algorithm Traces \ [4.5 marks]}{12}{}%
 \contentsline {subsection}{\numberline {2.5}Part c — IDDFS: Synthesising Benefits of BFS and DFS \ [2 marks]}{15}{}%
+\contentsline {section}{\numberline {3}Examination 2022}{18}{}%
+\contentsline {subsection}{\numberline {3.1}Section A — Q.A-4(a): DFS vs BFS \ [2 marks]}{18}{}%
+\contentsline {subsection}{\numberline {3.2}Section B — Q.B-4(b): Graph Trace \ [3 marks]}{21}{}%

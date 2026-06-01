@@ -1122,4 +1122,132 @@ IDDFS finds the \textbf{shallowest} goal (fewest edges), not the lowest-cost goa
 \end{itemize}
 \end{notesbox}
 
+%=====================================================================
+\newpage
+\section{Examination 2022}
+%=====================================================================
+
+\textbf{Note:} Search questions in 2022 are \textbf{scattered across two sections}:
+\begin{itemize}[noitemsep]
+  \item \textbf{Section A, Q.A-4(a):} DFS vs BFS theory (2 marks)
+  \item \textbf{Section B, Q.B-4(b):} Graph trace — UCS, Greedy, A* (3 marks) — \emph{identical search space to 2023}
+\end{itemize}
+
+%----------------------------------------------------------------------
+\subsection{Section A — Q.A-4(a): DFS vs BFS \ [2 marks]}
+%----------------------------------------------------------------------
+
+\begin{solutionbox}
+\textbf{Question:} What is an AI Technique? Write down the advantages and disadvantages of Depth-First Search and Breadth-First Search.
+\end{solutionbox}
+
+\subsubsection*{AI Technique}
+
+An \textbf{AI Technique} is a method that exploits knowledge, represented in a form that:
+\begin{enumerate}[noitemsep]
+  \item \textbf{Captures generalisations} — groups situations sharing important properties together, avoiding separate representations for every individual case.
+  \item \textbf{Can be understood} by the people providing it — knowledge must be inspectable and modifiable.
+  \item \textbf{Can be easily modified} to correct errors and reflect new information.
+  \item \textbf{Can be used in many situations} even if not perfectly complete or accurate.
+  \item \textbf{Reduces the search space} by narrowing the range of possibilities that must be considered.
+\end{enumerate}
+
+\noindent In short: an AI technique is a \textbf{knowledge-driven method for controlling search} so that solutions are found efficiently without exhaustive enumeration of all possibilities. DFS and BFS are two fundamental \emph{uninformed} (blind) search techniques — they use no domain-specific knowledge, only the structure of the search tree.
+
+\subsubsection*{Depth-First Search (DFS)}
+
+\begin{center}
+\renewcommand{\arraystretch}{1.4}
+\begin{tabular}{p{5.5cm}|p{5.5cm}}
+\toprule
+\multicolumn{1}{c|}{\textbf{Advantages}} & \multicolumn{1}{c}{\textbf{Disadvantages}} \\
+\midrule
+\textbf{1. Low memory:} Stores only the current path ($b$ siblings per level), giving $O(bm)$ space. For deep trees, this is the decisive advantage. &
+\textbf{1. Not complete:} Fails on infinite-depth trees. DFS may follow an infinite branch forever and never find a solution elsewhere. \\
+\midrule
+\textbf{2. Simple implementation:} Easy to code recursively or with a stack (LIFO). &
+\textbf{2. Not optimal:} The first solution found may be very deep in the tree. DFS has no mechanism to prefer shorter paths. \\
+\midrule
+\textbf{3. Fast to a solution if lucky:} If the goal is deep and branching is low, DFS may find it with very few node expansions. &
+\textbf{3. Susceptible to loops:} Without a closed/visited set, DFS can cycle infinitely. \\
+\midrule
+\textbf{4. Backtracking-friendly:} Natural fit for constraint satisfaction and puzzle-solving where partial solutions are built and abandoned. &
+\textbf{4. May miss shallow goals:} DFS goes deep first — a goal at depth 2 may be found only after exhausting paths to depth 50. \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsubsection*{Breadth-First Search (BFS)}
+
+\begin{center}
+\renewcommand{\arraystretch}{1.4}
+\begin{tabular}{p{5.5cm}|p{5.5cm}}
+\toprule
+\multicolumn{1}{c|}{\textbf{Advantages}} & \multicolumn{1}{c}{\textbf{Disadvantages}} \\
+\midrule
+\textbf{1. Complete:} Guaranteed to find a solution if one exists (provided $b$ is finite). & \textbf{1. Exponential memory:} Must store the entire frontier — $O(b^d)$ space. For $b{=}10$, $d{=}12$: 1 trillion nodes in memory. This makes BFS \textbf{infeasible} for most real problems. \\
+\midrule
+\textbf{2. Optimal (uniform cost):} Finds the shallowest solution. If step costs are all equal, this is the optimal cost. &
+\textbf{2. Exponential time:} $O(b^d)$ — same as the space requirement. Practical only for shallow trees. \\
+\midrule
+\textbf{3. Systematic:} Processes the entire tree level by level — no path is ever skipped or overlooked. &
+\textbf{3. Slow to find deep goals:} Must explore all nodes at depth $d{-}1$ before checking any at depth $d$. If the goal is at depth 10, all 9 shallow levels must be fully expanded first. \\
+\midrule
+\textbf{4. Good for shallow goals:} If the goal is near the root, BFS finds it quickly. &
+\textbf{4. Queue implementation overhead:} Maintaining the frontier as a FIFO queue with $O(1)$ enqueue/dequeue while also tracking visited states adds complexity. \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsubsection*{When to Use Which}
+
+\begin{center}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{l|l|l}
+\toprule
+\textbf{Criterion} & \textbf{Use DFS} & \textbf{Use BFS} \\
+\midrule
+Memory is limited & \textbf{Yes} — $O(bm)$ space & No — $O(b^d)$ space \\
+Goal is known to be deep & \textbf{Yes} — goes deep fast & No — explores all shallow levels first \\
+Goal is known to be shallow & No — may waste time deep & \textbf{Yes} — finds it early \\
+Need shortest path & No — not optimal & \textbf{Yes} (uniform costs) \\
+Infinite / very deep tree & No — may not terminate & \textbf{Yes} — complete \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{notesbox}
+\textbf{The IDDFS resolution:} Iterative Deepening DFS combines the space advantage of DFS ($O(bd)$ memory) with the completeness and optimality of BFS. For most practical uninformed search problems where memory is the bottleneck, \textbf{IDDFS is the preferred choice}. It was tested in 2024 Q2, 2023 Q2(c), 2021 Q3(b), and 2020 Q3(b) — a core exam pattern.
+\end{notesbox}
+
+%----------------------------------------------------------------------
+\subsection{Section B — Q.B-4(b): Graph Trace \ [3 marks]}
+%----------------------------------------------------------------------
+
+\begin{solutionbox}
+\textbf{Question:} Suppose you have the following search space (State, Next, Cost as given in Table 1, $h(n)$ as given in Table 2). Assume initial state A and goal state G. Show how each of the following search strategies would create a search tree to find a path from A to G: \textbf{Uniform cost, Greedy search, and A*.} At each step show which node is being expanded and the content of fringe.
+\end{solutionbox}
+
+\vspace{0.6em}
+
+\noindent\textbf{The 2022 search space is identical to the 2023 search space} (same states, same edges, same $h(n)$ values). The full step-by-step traces for UCS, Greedy, and A* on this graph are given in \textbf{Section 2.3} (Examination 2023, Part b(ii)). Below is the summary.
+
+\vspace{0.4em}
+\begin{center}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{l|l|c|c}
+\toprule
+\textbf{Algorithm} & \textbf{Path} & \textbf{Cost} & \textbf{Nodes Expanded} \\
+\midrule
+UCS    & A $\to$ C $\to$ D $\to$ E $\to$ G & \textbf{9} & 7 (A, C, D, B, E, F, G) \\
+Greedy & A $\to$ C $\to$ F $\to$ G          & 15 & 4 (A, C, F, G) \\
+A*     & A $\to$ C $\to$ D $\to$ E $\to$ G & \textbf{9} & 5 (A, C, D, E, G) \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{notesbox}
+\textbf{Key observation — same graph appears 3 times:} The identical search space (A$\to$B(4), A$\to$C(1), B$\to$D(3), B$\to$E(8), C$\to$D(2), C$\to$F(6), D$\to$C(2), D$\to$E(4), E$\to$G(2), F$\to$G(8)) with the same $h(n)$ values is tested in \textbf{2020 Q2, 2022 B-4(b), and 2023 Q2}. Mastering the traces on this one graph gives you answers for 3 separate exam years. The cheapest path is always A$\to$C$\to$D$\to$E$\to$G costing 9.
+\end{notesbox}
+
 \end{document}

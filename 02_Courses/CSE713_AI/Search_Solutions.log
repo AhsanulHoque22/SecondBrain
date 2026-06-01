@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex 2025.9.21)  1 JUN 2026 14:32
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex 2025.9.21)  1 JUN 2026 14:35
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -998,7 +998,57 @@ Overfull \hbox (101.62639pt too wide) in paragraph at lines 1069--1094
  [] 
  []
 
-[15] [16] [17] (./Search_Solutions.aux)
+[15] [16] [17]
+Underfull \hbox (badness 1107) in paragraph at lines 1168--1168
+\OT1/cmr/m/n/12 Easy to code re-cur-sively or
+ []
+
+
+Underfull \hbox (badness 6016) in paragraph at lines 1174--1174
+\OT1/cmr/m/n/12 is-fac-tion and puzzle-solving
+ []
+
+
+Underfull \hbox (badness 3895) in paragraph at lines 1174--1174
+\OT1/cmr/m/n/12 where par-tial so-lu-tions are
+ []
+
+[18]
+Underfull \hbox (badness 2103) in paragraph at lines 1194--1195
+[]|\OT1/cmr/bx/n/12 3. Slow to find deep
+ []
+
+
+Underfull \hbox (badness 1019) in paragraph at lines 1197--1198
+\OT1/cmr/bx/n/12 over-head: \OT1/cmr/m/n/12 Main-tain-ing the
+ []
+
+
+Underfull \hbox (badness 1132) in paragraph at lines 1197--1198
+\OML/cmm/m/it/12 O\OT1/cmr/m/n/12 (1)$ en-queue/dequeue while
+ []
+
+
+Underfull \hbox (badness 4013) in paragraph at lines 1197--1198
+\OT1/cmr/m/n/12 also track-ing vis-ited states
+ []
+
+[19]
+Overfull \hbox (58.28154pt too wide) in paragraph at lines 1206--1217
+ [] 
+ []
+
+[20]
+Overfull \hbox (16.08879pt too wide) in paragraph at lines 1250--1251
+\OT1/cmr/m/n/12 (A$\OMS/cmsy/m/n/12 !$\OT1/cmr/m/n/12 B(4), A$\OMS/cmsy/m/n/12 
+!$\OT1/cmr/m/n/12 C(1), B$\OMS/cmsy/m/n/12 !$\OT1/cmr/m/n/12 D(3), B$\OMS/cmsy/
+m/n/12 !$\OT1/cmr/m/n/12 E(8), C$\OMS/cmsy/m/n/12 !$\OT1/cmr/m/n/12 D(2), C$\OM
+S/cmsy/m/n/12 !$\OT1/cmr/m/n/12 F(6), D$\OMS/cmsy/m/n/12 !$\OT1/cmr/m/n/12 C(2)
+, D$\OMS/cmsy/m/n/12 !$\OT1/cmr/m/n/12 E(4), E$\OMS/cmsy/m/n/12 !$\OT1/cmr/m/n/
+12 G(2),
+ []
+
+[21] (./Search_Solutions.aux)
  ***********
 LaTeX2e <2023-11-01> patch level 1
 L3 programming layer <2024-01-22>
@@ -1007,7 +1057,7 @@ L3 programming layer <2024-01-22>
 Here is how much of TeX's memory you used:
  17862 strings out of 476182
  355113 string characters out of 5795595
- 1951975 words of memory out of 5000000
+ 1950975 words of memory out of 5000000
  39520 multiletter control sequences out of 15000+600000
  570019 words of font info for 81 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
@@ -1026,10 +1076,10 @@ sy10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pf
 b></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmti12.pfb></us
 r/share/texlive/texmf-dist/fonts/type1/public/amsfonts/symbols/msam10.pfb></usr
 /share/texmf/fonts/type1/public/cm-super/sfrm1200.pfb>
-Output written on Search_Solutions.pdf (17 pages, 260413 bytes).
+Output written on Search_Solutions.pdf (21 pages, 270817 bytes).
 PDF statistics:
- 138 PDF objects out of 1000 (max. 8388607)
- 88 compressed objects within 1 object stream
+ 151 PDF objects out of 1000 (max. 8388607)
+ 97 compressed objects within 1 object stream
  0 named destinations out of 1000 (max. 500000)
  13 words of extra memory for PDF output out of 10000 (max. 10000000)
 

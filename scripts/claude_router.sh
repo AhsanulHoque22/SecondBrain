@@ -14,7 +14,7 @@
 #   echo "deepseek" > scripts/data/model_override.txt
 # ──────────────────────────────────────────────────────────────────────────
 
-REAL_CLAUDE="/home/ahsanul-hoque/.local/bin/claude"
+REAL_CLAUDE="/home/ahsanul-hoque/.local/bin/claude-real"
 VAULT="/home/ahsanul-hoque/Desktop/SecondBrain"
 OVERRIDE_FILE="$VAULT/scripts/data/model_override.txt"
 STATUS_FILE="$VAULT/scripts/data/claude_status.txt"

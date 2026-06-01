@@ -1,0 +1,18 @@
+{
+  "CSE713_AI": {
+    "Intelligent Agents + Environments (PAGE)": {
+      "confidence": 4,
+      "first_done": "2026-06-01",
+      "last_reviewed": "2026-06-01",
+      "next_recall": "2026-06-03",
+      "recall_count": 0
+    },
+    "Search: UCS, Greedy, A, IDDFS \u2014 trace on graph": {
+      "confidence": 4,
+      "first_done": "2026-06-01",
+      "last_reviewed": "2026-06-01",
+      "next_recall": "2026-06-03",
+      "recall_count": 0
+    }
+  }
+}

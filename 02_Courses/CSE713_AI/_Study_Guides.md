@@ -5,6 +5,30 @@ Generated per block. Each guide maps slides → exam relevance. Saved for revisi
 
 ---
 
+## Block 1 — Minimax + Alpha-Beta Pruning (Chapter 5.pdf)
+**Date:** 2026-06-02 | **Time:** 5:10–7:20
+
+| Slide | Content | Why study it |
+|-------|---------|-------------|
+| 4 | Typical Case — 2-person, zero-sum, perfect info | Definition question: "What is a game in AI?" |
+| 6-7 | Game Trees — MAX/MIN alternating levels, evaluator function | Foundation — draw before tracing |
+| 8 | Evaluation function — f(n)>0 good for MAX | Needed to understand leaf values |
+| 12-14 | Minimax definition, rule (MAX=max of children, MIN=min), procedure | Core rule, must know cold |
+| 15 | Minimax Search trace — leaves 2,7,1,8 → root=2 | Practice tracing from memory |
+| 16 | Minimax limitations — O(b^d) exponential, must explore all nodes | 2024 Q3: "2 limitations" |
+| 17 | Minimax Tree — A1/A2/A3, leaves 3,12,8,2,4,6,14,5,2 → root=3 | Practice tracing |
+| 20 | α/β definitions — α=max found at MAX (starts -∞), β=min found at MIN (starts +∞) | Highest yield — know cold |
+| 21 | Cutoff rules — alpha cutoff: prune at MAX if α≥β; beta cutoff: prune at MIN if β≤α | What the exam tests |
+| 22 | Alpha-Beta algorithm pseudocode | Scan once, don't memorise |
+| 23-25 | Full Alpha-Beta trace — leaves 0,5,-3,3 / 3,-3,0,2,-2,3. Final pruned tree | This IS the exam — trace slowly |
+| 26 | Effectiveness — worst O(b^d), best O(b^(d/2)) | 2024 Q3iii: "how AB addresses Minimax limitations" |
+
+**SKIP:** 1-3 (intro), 5 (how to play), 9-11 (evaluation examples, chess positions), 27-35 (assignment + optional/Games of Chance)
+
+**Past paper links:** 2024 A-Q3, 2023 A-Q3b, 2022 A-Q3d, 2021 A-Q3d, 2020 A-Q3a — ALL ask same thing: trace Alpha-Beta, show α/β at every node, identify pruned branches, state final value
+
+---
+
 ## Block 1 — Intelligent Agents + Environments (Ch01-02.pdf)
 **Date:** 2026-06-01 | **Time:** 5:10–6:40
 

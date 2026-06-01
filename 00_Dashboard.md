@@ -6,7 +6,7 @@
 - **Active exam:** CSE 713 — Artificial Intelligence — **Wed 10 Jun 2026, 10:30 AM**
 - **Days left:** 9
 - **Phase:** AI core learning — Day 1
-- **Single most important thing today:** ✅ Block 1 done (Agents). Now: Search Algorithms (BFS, DFS, UCS, IDDFS) — Block 2 at 7:30 AM.
+- **Single most important thing today:** ✅ Block 1-2 done (Agents + Uninformed Search). Now: Greedy Best-First + A* — Block 3 at 9:49 AM.
 - **⚠️ Rule:** Google Calendar is the ONLY source of truth for daily plans. Never use the overnight rollover log for scheduling.
 - **🔴 Session protocols:** Read and execute `scripts/data/session_protocols.md` at EVERY session start. No exceptions.
 
@@ -37,7 +37,7 @@ Prayers structure the day — each gap is a study block:
 ## Status board (Claude updates)
 | Course | Topics mapped | High-yield done | Past paper attempts | Confidence /5 |
 |--------|:-:|:-:|:-:|:-:|
-| [[02_Courses/CSE713_AI/_Topics\|AI (713)]] | ✅ mapped (11 topics) | ✅ Intelligent Agents done, 🔲 Block 2 (Search) | 0 | – |
+| [[02_Courses/CSE713_AI/_Topics\|AI (713)]] | ✅ mapped (11 topics) | ✅ Agents done, 📖 BFS/DFS/UCS/IDDFS done, 🔲 Greedy/A* in progress | 0 | – |
 | [[02_Courses/CSE717_InfoSec/README\|InfoSec (717)]] | – | – | – | – |
 | [[02_Courses/CSE711_Compiler/README\|Compiler (711)]] | – | – | – | – |
 | [[02_Courses/CSE719_Distributed/README\|Distributed (719)]] | – | – | – | – |

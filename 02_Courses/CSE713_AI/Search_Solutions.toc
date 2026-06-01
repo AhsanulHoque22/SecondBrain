@@ -12,3 +12,8 @@
 \contentsline {section}{\numberline {3}Examination 2022}{18}{}%
 \contentsline {subsection}{\numberline {3.1}Section A — Q.A-4(a): DFS vs BFS \ [2 marks]}{18}{}%
 \contentsline {subsection}{\numberline {3.2}Section B — Q.B-4(b): Graph Trace \ [3 marks]}{21}{}%
+\contentsline {section}{\numberline {4}Examination 2021}{22}{}%
+\contentsline {subsection}{\numberline {4.1}Q2(a) — State Space Search Problem \ [0.75 mark]}{22}{}%
+\contentsline {subsection}{\numberline {4.2}Q2(b) — Problem Formulations \ [3 marks]}{22}{}%
+\contentsline {subsection}{\numberline {4.3}Q2(c) — Graph Traces \ [5 marks]}{24}{}%
+\contentsline {subsection}{\numberline {4.4}Q3(b) — DFID vs IDA* \ [1.75 marks]}{27}{}%

@@ -1250,4 +1250,481 @@ A*     & A $\to$ C $\to$ D $\to$ E $\to$ G & \textbf{9} & 5 (A, C, D, E, G) \\
 \textbf{Key observation — same graph appears 3 times:} The identical search space (A$\to$B(4), A$\to$C(1), B$\to$D(3), B$\to$E(8), C$\to$D(2), C$\to$F(6), D$\to$C(2), D$\to$E(4), E$\to$G(2), F$\to$G(8)) with the same $h(n)$ values is tested in \textbf{2020 Q2, 2022 B-4(b), and 2023 Q2}. Mastering the traces on this one graph gives you answers for 3 separate exam years. The cheapest path is always A$\to$C$\to$D$\to$E$\to$G costing 9.
 \end{notesbox}
 
+%=====================================================================
+\newpage
+\section{Examination 2021}
+%=====================================================================
+
+\textbf{Note:} Search questions in 2021 appear across two Q-numbers:
+\begin{itemize}[noitemsep]
+  \item \textbf{Q2 (9.75 marks):} Full search question — problem formulation + graph traces (DFID, Greedy, A*)
+  \item \textbf{Q3(b) (1.75 marks):} DFID vs IDA* — comparative theory
+\end{itemize}
+
+%----------------------------------------------------------------------
+\subsection{Q2(a) — State Space Search Problem \ [0.75 mark]}
+%----------------------------------------------------------------------
+
+\begin{solutionbox}
+\textbf{Question:} What is the state space search problem?
+\end{solutionbox}
+
+A \textbf{state space search problem} is a formal representation of a problem as a directed graph where:
+\begin{itemize}[noitemsep]
+  \item \textbf{States} are vertices — each represents a possible configuration of the world.
+  \item \textbf{Actions} (or operators) are directed edges — transitions from one state to another.
+  \item A \textbf{solution} is a sequence of actions (a path) from an initial state to a goal state.
+  \item The search algorithm \textbf{systematically explores} the state space to find this path.
+\end{itemize}
+
+\noindent Formally, a state space search problem is defined by four components:
+\begin{enumerate}[noitemsep]
+  \item \textbf{Initial state} — the starting configuration.
+  \item \textbf{Goal test} — a function that determines whether a given state is a goal.
+  \item \textbf{Successor function} (operators) — given a state, returns all (action, next\_state) pairs.
+  \item \textbf{Path cost function} — assigns a numeric cost to each path (typically additive).
+\end{enumerate}
+
+\noindent The \textbf{working principle} of a basic search algorithm:
+\begin{enumerate}[noitemsep]
+  \item Initialise the fringe with the start state.
+  \item Loop: remove a state from the fringe; if it satisfies the goal test, return the solution path; otherwise, expand it (generate successors) and add them to the fringe.
+  \item Repeat until the fringe is empty (failure) or goal is found (success).
+\end{enumerate}
+
+%----------------------------------------------------------------------
+\subsection{Q2(b) — Problem Formulations \ [3 marks]}
+%----------------------------------------------------------------------
+
+\begin{solutionbox}
+\textbf{Question:} Give the initial state, goal test, successor function, cost function, and working principle of a basic search algorithm for each problem.
+\end{solutionbox}
+
+\subsubsection*{(i) Map Coloring Problem}
+
+\textbf{Problem:} Using only 4 colors, color a planar map such that no two adjacent regions share the same color.
+
+\begin{description}[leftmargin=3.6cm, labelwidth=3.4cm, labelsep=0.2cm]
+  \item[\textbf{State:}]
+    A partial assignment of colors $\{R,G,B,Y\}$ to a subset of regions $\{r_1, r_2, \ldots, r_N\}$. Unassigned regions are marked as $\varnothing$.
+    \emph{Example:} $\{r_1{=}R,\; r_2{=}G,\; r_3{=}\varnothing, \ldots\}$.
+
+  \item[\textbf{Initial state:}]
+    All $N$ regions unassigned: $\{r_i{=}\varnothing \mid i=1,\ldots,N\}$.
+
+  \item[\textbf{Goal test:}]
+    All regions are assigned a color, and for every pair of adjacent regions $(r_i, r_j)$, $color(r_i) \neq color(r_j)$.
+
+  \item[\textbf{Successor function:}]
+    Pick an unassigned region $r_i$ and assign it any of the 4 colors $\{R,G,B,Y\}$ that is \textbf{not} already used by any of $r_i$'s adjacent (already-colored) regions. If no color is valid, backtrack.
+
+  \item[\textbf{Path cost:}]
+    Typically 1 per assignment (uniform cost). Since all solutions assign exactly $N$ colors, any valid solution has cost $N$. The goal is to find \emph{any} valid coloring, not necessarily optimal.
+
+  \item[\textbf{Working principle:}]
+    This is a \textbf{constraint satisfaction problem (CSP)}. Backtracking DFS is the natural fit: assign a color to the next variable, check constraint consistency, backtrack on conflict. DFS is preferred over BFS here because all solutions are at the same depth $N$, and DFS's low memory allows backtracking through a deep search tree.
+\end{description}
+
+\subsubsection*{(ii) Monkey \& Bananas Problem}
+
+\textbf{Problem:} A 3-ft monkey is in a room with an 8-ft ceiling. Bananas hang from the ceiling. Two 3-ft crates are available (stackable, movable, climbable). The monkey must get the bananas.
+
+\begin{description}[leftmargin=3.6cm, labelwidth=3.4cm, labelsep=0.2cm]
+  \item[\textbf{State:}]
+    A 4-tuple $(\mathit{monkey\_pos},\; \mathit{crate1\_pos},\; \mathit{crate2\_pos},\; \mathit{has\_bananas})$ where positions are discrete locations in the room and $\mathit{has\_bananas} \in \{\text{true}, \text{false}\}$. If the monkey is on a crate, its effective height increases by the crate height (3 ft per crate; stacking 2 crates gives 6 ft height). The monkey can reach the bananas only if total height $\geq$ 8 ft.
+
+  \item[\textbf{Initial state:}]
+    $(\mathit{floor\_position},\; \mathit{initial\_crate1\_pos},\; \mathit{initial\_crate2\_pos},\; \text{false})$ — monkey on floor, crates at their initial locations, no bananas.
+
+  \item[\textbf{Goal test:}]
+    $\mathit{has\_bananas} = \text{true}$.
+
+  \item[\textbf{Successor function (operators):}]
+    \begin{enumerate}[noitemsep]
+      \item \textbf{Walk}(x $\to$ y): Monkey moves from position $x$ to $y$ on the floor (not on a crate).
+      \item \textbf{Push}(crate, $x \to y$): Monkey pushes a crate from $x$ to $y$ (must be on floor, adjacent to crate).
+      \item \textbf{Climb}(crate): Monkey climbs onto a crate (must be adjacent to it on the floor).
+      \item \textbf{ClimbDown}(): Monkey climbs down from crate to floor.
+      \item \textbf{Stack}(crate1, crate2): Place crate1 on top of crate2 (monkey must be on floor, crates adjacent).
+      \item \textbf{Grasp}(): Monkey grabs bananas (must be within reach — total height $\geq$ 8 ft).
+    \end{enumerate}
+
+  \item[\textbf{Path cost:}]
+    Number of actions (1 per action). Goal: find the \textbf{shortest} sequence to get the bananas.
+
+  \item[\textbf{Key insight:}]
+    The monkey needs height $\geq$ 8 ft. One crate gives 3+3=6 ft (not enough). Two crates stacked give 3+3+3=9 ft (enough). So the solution requires: walk to crate1, push crate1 under bananas, walk to crate2, push crate2 to same spot, stack crate2 on crate1, climb, grasp.
+\end{description}
+
+%----------------------------------------------------------------------
+\subsection{Q2(c) — Graph Traces \ [5 marks]}
+%----------------------------------------------------------------------
+
+\subsection*{Problem Data}
+
+\begin{minipage}[t]{0.46\textwidth}
+\centering
+{\small\textbf{Table 1: Directed Edges and Costs}}\\[0.4em]
+\begin{tabular}{ccc}
+\toprule
+\textbf{From} & \textbf{To} & \textbf{Cost} \\
+\midrule
+S & A & 2 \\
+S & B & 5 \\
+A & C & 4 \\
+A & D & 3 \\
+B & E & 6 \\
+C & G & 5 \\
+B & G & 4 \\
+\bottomrule
+\end{tabular}
+\end{minipage}
+\hfill
+\begin{minipage}[t]{0.46\textwidth}
+\centering
+{\small\textbf{Table 2: Heuristic Estimates $h(n)$}}\\[0.4em]
+\begin{tabular}{cc}
+\toprule
+\textbf{Node} & \textbf{h(n)} \\
+\midrule
+S & 9 \\
+A & 9 \\
+B & 4 \\
+C & 5 \\
+D & $\infty$ \\
+E & $\infty$ \\
+G & 0 \\
+\bottomrule
+\end{tabular}
+\end{minipage}
+
+\vspace{0.6em}
+\begin{notesbox}
+\textbf{Graph reconstruction:} The exact edge costs from the 2021 past paper Figure~1 are reconstructed from the given $h(n)$ values. The heuristic is \textbf{exact} (admissible and consistent): $h(n) = h^*(n)$ for every node. D and E are dead ends ($h{=}\infty$ means no path to G exists from these nodes).
+\end{notesbox}
+
+\vspace{0.4em}
+
+\begin{center}
+\begin{tikzpicture}[
+  every node/.style={draw, circle, minimum size=0.85cm, inner sep=0pt,
+                     font=\small\bfseries, thick},
+  startnode/.style={fill=startblue},
+  goalnode/.style={fill=goalgreen},
+  deadnode/.style={draw=red!60, thick},
+  lbl/.style={draw=none, fill=white, font=\footnotesize\bfseries,
+               inner sep=1.5pt, outer sep=0pt},
+  edge/.style={thick, -{Stealth[length=6pt, width=5pt]}}
+]
+
+\node[startnode] (S) at (0, 5)    {S};
+\node            (A) at (-2.5, 3) {A};
+\node            (B) at (2.5, 3)  {B};
+\node            (C) at (-1.5, 1) {C};
+\node[deadnode]  (D) at (-4, 1)   {D};
+\node[deadnode]  (E) at (4, 1)    {E};
+\node[goalnode]  (G) at (0, -1)   {G};
+
+\draw[edge] (S) -- node[lbl, pos=0.5] {2} (A);
+\draw[edge] (S) -- node[lbl, pos=0.5] {5} (B);
+\draw[edge] (A) -- node[lbl, pos=0.5] {4} (C);
+\draw[edge] (A) -- node[lbl, pos=0.5] {3} (D);
+\draw[edge] (B) -- node[lbl, pos=0.5] {6} (E);
+\draw[edge, bend left=15] (B) -- node[lbl, pos=0.5] {4} (G);
+\draw[edge, bend right=15] (C) -- node[lbl, pos=0.45] {5} (G);
+
+\begin{scope}[shift={(0,-2.8)}]
+  \node[startnode, minimum size=0.55cm, font=\tiny] (ls) at (-2.5,0) {};
+  \node[draw=none, font=\small] at (-0.8, 0) {= Start (S)};
+  \node[goalnode, minimum size=0.55cm, font=\tiny] (lg) at (1.5,0) {};
+  \node[draw=none, font=\small] at (3.3, 0) {= Goal (G)};
+  \node[deadnode, minimum size=0.55cm, font=\tiny] (ld) at (5.5,0) {};
+  \node[draw=none, font=\small] at (7.5, 0) {= Dead end};
+\end{scope}
+
+\end{tikzpicture}
+\end{center}
+
+\begin{solutionbox}
+\textbf{Question:} Assume start=S, goal=G. Show search trees for \textbf{Depth First Iterative Deepening (DFID), Greedy, and A*} — at each step show node expanded and the fringe. Also report the eventual algorithm and solution cost.
+\end{solutionbox}
+
+\vspace{0.7em}
+
+%----------------------------------------------------------------
+\subsubsection*{Algorithm 1 — Depth-First Iterative Deepening (DFID)}
+%----------------------------------------------------------------
+
+\textbf{Key idea:} Perform depth-limited DFS with increasing cutoff $L=0,1,2,\ldots$ until goal is found. The fringe is a \textbf{stack} (LIFO). At each iteration, restart from S. Nodes are pushed in \textbf{reverse alphabetical} order so they are popped in alphabetical order.
+
+\vspace{0.4em}
+
+\noindent\textbf{Iteration $L = 0$:}
+\begin{center}
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{c|l|p{8cm}}
+\toprule
+\textbf{Step} & \textbf{Action} & \textbf{Stack} \\
+\midrule
+1 & Pop S(d=0). $\mathrm{S} \neq \mathrm{G}$. At depth limit. & $[\;\;]$ \\
+\bottomrule
+\multicolumn{3}{c}{\textit{No solution at $L=0$.}} \\
+\end{tabular}
+\end{center}
+
+\vspace{0.5em}
+
+\noindent\textbf{Iteration $L = 1$:}
+\begin{center}
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{c|l|p{8cm}}
+\toprule
+\textbf{Step} & \textbf{Action} & \textbf{Stack} \\
+\midrule
+1 & Pop S(d=0). Expand: push B, then A (A on top). & A(1), B(1) \\
+2 & Pop A(d=1). $\mathrm{A} \neq \mathrm{G}$. At limit. & B(1) \\
+3 & Pop B(d=1). $\mathrm{B} \neq \mathrm{G}$. At limit. & $[\;\;]$ \\
+\bottomrule
+\multicolumn{3}{c}{\textit{No solution at $L=1$.}} \\
+\end{tabular}
+\end{center}
+
+\vspace{0.5em}
+
+\noindent\textbf{Iteration $L = 2$:}
+\begin{center}
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{c|l|p{8.5cm}}
+\toprule
+\textbf{Step} & \textbf{Action} & \textbf{Stack} \\
+\midrule
+1 & Pop S(d=0). Push B, A (A on top). & A(1), B(1) \\
+2 & Pop A(d=1). Expand (excl.\ S): C, D. Push D, C (C on top). & C(2), D(2), B(1) \\
+3 & Pop C(d=2). Expand (excl.\ A): G. Push G. & G(3), D(2), B(1) \\
+  & \textbf{But} C is at depth $d{=}2$, so G would be at depth $3 > L{=}2$. Cannot push! & \\
+  & C at limit. $\mathrm{C} \neq \mathrm{G}$. & D(2), B(1) \\
+4 & Pop D(d=2). D at limit. & B(1) \\
+5 & Pop B(d=1). Expand (excl.\ S): E, G. Push G, E (E on top). & E(2), G(2) \\
+6 & Pop E(d=2). E at limit. & G(2) \\
+7 & Pop G(d=2). $\mathrm{G} = \textbf{GOAL!}$ & \goal \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{answerbox}
+\textbf{DFID Solution:} $S \;\xrightarrow{5}\; B \;\xrightarrow{4}\; G$
+\hfill \textbf{Depth: 2 \quad Cost: $5+4 = \mathbf{9}$}
+
+DFID finds the \textbf{shallowest} goal (depth 2, via S$\to$B$\to$G) at iteration $L=2$. DFID is complete and optimal for uniform step costs, but here with non-uniform edge costs, it finds the shallowest goal rather than necessarily the cheapest — however, in this graph, S$\to$B$\to$G happens to also be the optimal-cost path.
+\end{answerbox}
+
+\vspace{1em}
+
+%----------------------------------------------------------------
+\subsubsection*{Algorithm 2 — Greedy Best-First Search}
+%----------------------------------------------------------------
+
+\textbf{Fringe notation:} Node$[h]$ sorted ascending by $h$.
+
+\vspace{0.4em}
+\begin{center}
+\renewcommand{\arraystretch}{1.25}
+\small
+\begin{tabular}{c|l|c|p{8.5cm}}
+\toprule
+\textbf{Step} & \textbf{Node} & \textbf{h} &
+\textbf{Fringe after expansion (sorted by h)} \\
+\midrule
+1 & \textbf{S} & 9
+  & B[\textbf{4}],\; A[\textbf{9}] \\
+  & & & \footnotesize $S{\to}B$: $h{=}4$. $S{\to}A$: $h{=}9$. B has lowest $h$, promising. \\
+\midrule
+2 & \textbf{B} & 4
+  & G[\textbf{0}],\; E[\textbf{$\infty$}],\; A[\textbf{9}] \\
+  & & & \footnotesize $B{\to}G$: $h{=}0$ (goal!). $B{\to}E$: $h{=}\infty$ (dead end, goes to back). \\
+\midrule
+3 & \textbf{G} & 0
+  & \goal \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{answerbox}
+\textbf{Greedy Solution:} $S \;\xrightarrow{5}\; B \;\xrightarrow{4}\; G$
+\hfill \textbf{Cost: $5+4 = \mathbf{9}$} (optimal — by luck!)
+
+Nodes expanded: S, B, G \quad(only 3 nodes)
+
+Greedy found the optimal path because the heuristic $h$ strongly prefers B ($h{=}4$) over A ($h{=}9$), and B directly connects to G. Greedy never even explored the A-branch, saving work.
+\end{answerbox}
+
+\vspace{1em}
+
+%----------------------------------------------------------------
+\subsubsection*{Algorithm 3 — A* Search}
+%----------------------------------------------------------------
+
+\textbf{Fringe notation:} Node$[g,\; h,\; f]$ sorted ascending by $f$.
+
+\vspace{0.4em}
+\begin{center}
+\renewcommand{\arraystretch}{1.3}
+\small
+\begin{tabular}{c|l|c|c|c|p{7.5cm}}
+\toprule
+\textbf{Step} & \textbf{Node} & \textbf{g} & \textbf{h} & \textbf{f} &
+\textbf{Fringe after expansion (sorted by f)} \\
+\midrule
+1 & \textbf{S} & 0 & 9 & 9
+  & B[5,4,\textbf{9}],\; A[2,9,\textbf{11}] \\
+  & & & & & \footnotesize $S{\to}B$: $f{=}5{+}4{=}9$. $S{\to}A$: $f{=}2{+}9{=}11$. \\
+\midrule
+2 & \textbf{B} & 5 & 4 & 9
+  & G[9,0,\textbf{9}],\; A[2,9,\textbf{11}],\; E[11,$\infty$,\textbf{$\infty$}] \\
+  & & & & & \footnotesize $B{\to}G$: $f{=}9$. $B{\to}E$: $f{=}\infty$, deprioritised. Tie G[9],B[9]: B already expanded, G next. \\
+\midrule
+3 & \textbf{G} & 9 & 0 & 9
+  & \goal \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{answerbox}
+\textbf{A* Solution:} $S \;\xrightarrow{5}\; B \;\xrightarrow{4}\; G$
+\hfill \textbf{Cost: $5+4 = \mathbf{9}$} (optimal!)
+
+Nodes expanded: S, B, G \quad(only 3 nodes — same as Greedy!)
+
+A* mirrors Greedy in this graph because the heuristic is \textbf{exact} ($h(n)=h^*(n)$ for all $n$), meaning $f(n) = g(n) + h^*(n)$ — the exact total cost to the goal through $n$. When the heuristic is exact, A* expands only nodes on optimal paths. A* never expanded A ($f{=}11 > 9$) — it was correctly identified as lying on a suboptimal path.
+\end{answerbox}
+
+\vspace{0.8em}
+
+\noindent\textbf{Algorithm Comparison for 2021 Graph:}
+\begin{center}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{l|l|c|c|c}
+\toprule
+\textbf{Algorithm} & \textbf{Path Found} & \textbf{Cost} & \textbf{Nodes Expanded} & \textbf{Optimal?} \\
+\midrule
+DFID   & S $\to$ B $\to$ G & \textbf{9} & 7 (over all iterations) & Yes (this graph) \\
+Greedy & S $\to$ B $\to$ G & \textbf{9} & 3 & Yes (by luck) \\
+A*     & S $\to$ B $\to$ G & \textbf{9} & 3 & \textbf{Yes} \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{notesbox}
+\textbf{Why Greedy found the optimal path here:} The heuristic is \textbf{exact} — $h(n)$ equals the true optimal cost to G from every node. Since $h$(B)=4 (B$\to$G costs 4) and $h$(A)=9 (A$\to$C$\to$G costs 9), Greedy correctly identifies B as the better first step. However, \textbf{this is not guaranteed in general}. With a less accurate heuristic, Greedy could be misled. The 2023 graph demonstrated exactly this: $h$(F)=4 looked slightly better than $h$(D)=5, but F$\to$G cost 8 while D$\to$E$\to$G cost 6, making the D-path cheaper overall.
+\end{notesbox}
+
+%----------------------------------------------------------------------
+\subsection{Q3(b) — DFID vs IDA* \ [1.75 marks]}
+%----------------------------------------------------------------------
+
+\begin{solutionbox}
+\textbf{Question:} Differentiate between DFID and IDA* algorithms. Demonstrate how DFID incorporates the advantages of BFS and DFS with an example.
+\end{solutionbox}
+
+\subsubsection*{DFID (Depth-First Iterative Deepening)}
+
+DFID runs depth-limited DFS with cutoff $L=0,1,2,\ldots$ until the goal is found. The cutoff is purely \textbf{structural} — it limits the number of edges (depth) from the root.
+
+\vspace{0.3em}
+\noindent\textbf{How DFID combines BFS and DFS advantages:}
+
+\begin{center}
+\renewcommand{\arraystretch}{1.35}
+\begin{tabular}{l|p{5.5cm}|p{5.5cm}|p{4.5cm}}
+\toprule
+\textbf{Property} & \textbf{BFS} & \textbf{DFS} & \textbf{DFID (inherits)} \\
+\midrule
+\textbf{Completeness} & \checkmark\ Complete & \texttimes\ May loop forever & \checkmark\ \textbf{Complete} — from BFS. Each iteration has bounded depth; infinite branches cannot trap it. \\
+\midrule
+\textbf{Optimality} & \checkmark\ Optimal (uniform cost) & \texttimes\ Not optimal & \checkmark\ \textbf{Optimal for uniform costs} — from BFS. Finds shallowest solution first. \\
+\midrule
+\textbf{Space} & \texttimes\ $O(b^d)$ & \checkmark\ $O(bm)$ & \checkmark\ \textbf{$O(bd)$} — from DFS. Only stores one path. \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\noindent\textbf{Example — Binary Tree (branching factor $b=2$):}
+
+\begin{center}
+\begin{tikzpicture}[
+  level 1/.style={sibling distance=3cm, level distance=1.2cm},
+  level 2/.style={sibling distance=1.5cm, level distance=1.2cm},
+  every node/.style={draw, circle, minimum size=0.55cm, inner sep=0pt, font=\footnotesize\bfseries},
+  goalnode/.style={fill=goalgreen},
+]
+\node {S}
+  child { node {A}
+    child { node {C} }
+    child { node[goalnode] {G} }
+  }
+  child { node {B}
+    child { node {D} }
+    child { node {E} }
+  };
+\end{tikzpicture}
+\end{center}
+
+\vspace{0.3em}
+\noindent\textbf{DFID execution on this tree:}
+\begin{itemize}[noitemsep]
+  \item $L{=}0$: Visit S. Not G.
+  \item $L{=}1$: Visit S, A, B. Not G.
+  \item $L{=}2$: Visit S, A, C, \textbf{G} $\leftarrow$ Found at depth 2.
+\end{itemize}
+
+\noindent\textbf{BFS would:} Store all nodes at depth 2 (4 nodes) in the frontier — $O(b^d)$ memory.
+\textbf{DFS would:} Store only the path S$\to$A$\to$C (3 nodes) — $O(bd)$ memory.
+\textbf{DFID:} Also stores only the path S$\to$A$\to$C (3 nodes) — $O(bd)$ memory, but with the completeness guarantee of BFS.
+
+\subsubsection*{IDA* (Iterative Deepening A*)}
+
+IDA* is the \textbf{informed} counterpart of DFID. Instead of a depth cutoff, it uses an \textbf{$f$-cost cutoff}:
+\begin{itemize}[noitemsep]
+  \item Each iteration performs DFS, pruning any node where $f(n) = g(n) + h(n) > \textit{cutoff}$.
+  \item The initial cutoff is $f(\text{start}) = h(\text{start})$.
+  \item After each iteration, the cutoff is increased to the \textbf{smallest $f$-value that exceeded the previous cutoff}.
+  \item The algorithm terminates when the goal is found (optimal) or no nodes remain below $\infty$ cutoff.
+\end{itemize}
+
+\subsubsection*{Key Differences}
+
+\begin{center}
+\renewcommand{\arraystretch}{1.4}
+\begin{tabular}{l|p{6.5cm}|p{6.5cm}}
+\toprule
+\textbf{Criterion} & \textbf{DFID} & \textbf{IDA*} \\
+\midrule
+\textbf{Cutoff type} & \textbf{Depth} (structural — number of edges from root) & \textbf{$f$-cost} $= g(n)+h(n)$ (informed — uses heuristic knowledge) \\
+\midrule
+\textbf{Search type} & Uninformed (blind) & Informed (uses heuristic $h$) \\
+\midrule
+\textbf{Optimality guarantee} & Optimal for \emph{uniform} edge costs only & Optimal for \emph{any} edge costs, provided $h$ is admissible \\
+\midrule
+\textbf{Overhead per iteration} & Lower — just checks depth $\leq L$ & Higher — must compute $f(n)=g(n)+h(n)$ for every node visited \\
+\midrule
+\textbf{When to use} & Unknown/unreliable heuristic, uniform costs & Good admissible heuristic available, non-uniform costs \\
+\midrule
+\textbf{Space complexity} & $O(bd)$ — stores current path & $O(bd)$ — stores current path (same as DFID) \\
+\midrule
+\textbf{Cutoff progression} & $L = 0, 1, 2, \ldots$ (linear, fixed step) & $f_\textit{cutoff} = \min\{f(n) \mid n \text{ pruned in last iteration}\}$ (adaptive, data-driven) \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{notesbox}
+\textbf{Exam summary:}
+\begin{itemize}[noitemsep,topsep=2pt]
+  \item \textbf{DFID} = IDDFS = depth-bounded iterative DFS. Uninformed. Uses depth as cutoff.
+  \item \textbf{IDA*} = $f$-cost-bounded iterative DFS. Informed. Uses $f(n)=g(n)+h(n)$ as cutoff.
+  \item Both algorithms achieve $O(bd)$ space — their key advantage over BFS and A* (which both require $O(b^d)$ space).
+  \item DFID is to BFS what IDA* is to A*: the iterative-deepening, space-efficient version.
+  \item In practice, IDA* is preferred for problems with good heuristics and large state spaces (e.g., the 15-puzzle).
+\end{itemize}
+\end{notesbox}
+
 \end{document}

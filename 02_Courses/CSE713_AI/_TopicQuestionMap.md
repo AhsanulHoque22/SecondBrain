@@ -83,7 +83,15 @@ Every year Q1 has THREE parts:
   - ii) Characterize environment: accessible/inaccessible, deterministic/non-deterministic, episodic/non-episodic, static/dynamic, discrete/continuous
 - e) What agent architecture is best for the **automated taxi driving** agent? Justify. (1.25)
 
-**2020 — Q1** *(details from TopicQuestionMap notes — AI + agents, Mars Rover scenario)*
+**2020 — Q1 (Group-A) (9 marks)**
+- a) What is Artificial Intelligence? Explain the four approaches to AI with examples: (i) Thinking Humanly, (ii) Thinking Rationally, (iii) Acting Humanly, (iv) Acting Rationally. (2)
+- b) What is an intelligent agent? Describe the structure of a learning agent with a diagram — identify its four main components (performance element, critic, learning element, problem generator) and explain how they interact. (3)
+- c) Consider a **Mars Rover** exploring the Martian surface autonomously: (4)
+  - i) What percepts (sensory inputs) does this rover receive?
+  - ii) Characterize the operating environment using standard AI environment properties (observability, determinism, episodic/sequential, static/dynamic, discrete/continuous, single/multi-agent).
+  - iii) What actions are available to the rover?
+  - iv) How can the rover's performance be evaluated?
+  - v) Which agent architecture (Simple Reflex, Model-Based, Goal-Based, Utility-Based, or Learning) is most appropriate for this rover? Justify your choice.
 
 #### 🎯 What to master for this topic:
 - **5 agent architectures**: Simple Reflex, Model-Based, Goal-Based, Utility-Based, Learning — when each is appropriate + justify

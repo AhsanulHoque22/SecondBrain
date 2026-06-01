@@ -268,6 +268,167 @@ Quiz format rules:
 
 ---
 
+## Block Study Guide Protocol (MANDATORY — at the start of every study block)
+
+Triggered by: "starting block [N]", "I'm starting block [N]", "ready for block [N]"
+
+**Execute ALL these steps before the user starts studying:**
+
+### Step 1 — Identify the block's topics
+- Read `01_Master_Plan.md` to find what topics are scheduled for this block
+- Read `02_Courses/[active course]/_Syllabus.md` for the full topic list
+- Read `02_Courses/[active course]/_TopicQuestionMap.md` for past paper links
+
+### Step 2 — Read and analyze source PDFs page by page
+- Read the relevant PDF pages for every topic in this block
+- For EVERY page: decide STUDY or SKIP with a one-line reason
+- Identify worked examples, algorithm traces, comparison tables — these are exam gold
+
+### Step 3 — Generate the study guide
+Output format (follow this exactly):
+
+```
+## Block [N] Study Guide — [Topic Names]
+
+| Pages | What's there | Why study it |
+|-------|-------------|--------------|
+| p.X-Y | [content]   | [exam relevance + past paper link] |
+
+[Repeat for each topic in the block]
+
+SKIP these pages:
+p.A-B, p.C-D — [reason for each]
+
+---
+
+Past paper questions linked to each topic:
+
+| Topic | Questions | What they ask |
+|-------|-----------|---------------|
+| [topic] | 20XX Q[N] | [specific task: trace/compare/prove/define] |
+
+---
+
+Block [N] plan ([time range]):
+1. [topic] — p.X-Y — [N] min
+2. [topic] — p.X-Y — [N] min
+...
+[After each algorithm: specific practice instruction, e.g. "close the PDF and trace it on paper"]
+```
+
+### Step 4 — Link every topic to exact past paper questions
+- From `_TopicQuestionMap.md`, find every question that tests this block's topics
+- Tell the user the exact format the exam expects (e.g. "Show the fringe as a sorted list at every step")
+
+### Step 5 — Keep it concise
+- The guide should fit in one screen — it's a battle plan, not a textbook
+- No paragraph explanations. Use tables and bullets.
+
+---
+
+## Active Recall Protocol (MANDATORY — after user finishes studying slides)
+
+Triggered by: "I finished the slides", "give me active recall", "ready for recall questions"
+
+**Execute ALL these steps in order. Do not skip any.**
+
+### Step 1 — Generate the question set
+1. Read the source pages that were studied (from the block study guide)
+2. Read past paper questions for those topics from `_TopicQuestionMap.md`
+3. Generate 5-8 active recall questions covering:
+   - **Key definitions** — exam-style phrasing (e.g. "Define an admissible heuristic. Give an example.")
+   - **Algorithm tracing** — HIGHEST YIELD. "Trace [algorithm] on this graph. Show the fringe as a [stack/queue/priority queue] at every step."
+   - **Comparison questions** — "Compare [A] vs [B]: completeness, optimality, time complexity, space complexity. Present as a table."
+   - **Proof/explanation** — "Prove that [algorithm] is [property]. Under what conditions does this hold?"
+4. Number all questions clearly
+5. Send ALL questions at once (unlike Quiz Mode which is one-at-a-time)
+
+### Step 2 — Wait for handwritten answers
+- User will hand-write answers and upload images to Telegram
+- Do NOT rush them. Wait for the images to arrive.
+
+### Step 3 — Evaluate each answer
+When images arrive via Telegram, grade each question:
+- ✅ **Correct** — brief confirmation, no action needed
+- ⚠️ **Partial** — "Almost. The missing part: [correction]." Record as a gap.
+- ❌ **Wrong** — "Not quite. The correct answer: [brief correction]." Record as a gap.
+
+For each ⚠️ or ❌ answer:
+- Ask: "Confidence on [topic] now? (1–5)"
+
+### Step 4 — Record gaps
+For every weak/missed topic, run:
+```bash
+python3 scripts/recall_gaps.py add [COURSE] "[exact topic name]" "[question missed]" "Block [N]"
+```
+
+Example:
+```bash
+python3 scripts/recall_gaps.py add CSE713_AI "A* admissibility" "Prove that A* with admissible heuristic is optimal" "Block 3"
+```
+
+### Step 5 — Update confidence
+- Update `_Topics.md` confidence for every topic tested
+- Run `python3 scripts/spaced_rep.py` to refresh recall dates
+
+### Step 6 — Summary
+Send:
+```
+📝 *Active Recall Complete — Block [N]*
+Score: [X]/[Y] correct
+⚠️ Gaps recorded: [list weak topics]
+These will be in your end-of-day revision reminder.
+Ready for past paper practice?
+```
+
+### Step 7 — Git commit
+```
+git add -A
+git commit -m "study: active recall Block [N] — [X]/[Y] correct"
+```
+
+---
+
+## Recall Gaps Tracking Protocol
+
+### Data store: `scripts/data/recall_gaps.json`
+Each gap stores: topic, course, source_block, date_identified, question_missed, revised (bool), revision_date
+
+### Adding a gap (after active recall evaluation)
+```bash
+python3 scripts/recall_gaps.py add COURSE "topic" "question missed" "Block N"
+```
+
+### Marking a gap revised (when user revises at end of day)
+Triggered by: "revised [topic name]" or "done revising [topic]"
+```bash
+python3 scripts/recall_gaps.py mark-revised COURSE "topic"
+```
+
+### End-of-day reminder (part of 🔵 End-of-session protocols)
+```bash
+python3 scripts/recall_gaps.py reminder
+```
+If there are unrevised gaps:
+1. Send the reminder via Telegram
+2. Add unrevised gaps to tomorrow's Block 1 (highest priority slot)
+3. For gaps older than 2 days: escalate — add to tomorrow's Block 1 AND send a morning reminder
+
+### Listing all gaps
+```bash
+python3 scripts/recall_gaps.py list                # all gaps
+python3 scripts/recall_gaps.py list --today-only    # today's only
+```
+
+### Integration with spaced repetition
+- When a gap is marked revised, also record it in spaced_rep.py:
+  ```bash
+  python3 scripts/spaced_rep.py recalled COURSE "topic" [confidence]
+  ```
+- This ensures weak topics get extra spaced-rep passes
+
+---
+
 ## Confidence Update Protocol
 
 Triggered by: "Confidence on [topic]: [1-5]" or after any quiz

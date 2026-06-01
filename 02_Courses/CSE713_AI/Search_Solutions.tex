@@ -1727,4 +1727,482 @@ IDA* is the \textbf{informed} counterpart of DFID. Instead of a depth cutoff, it
 \end{itemize}
 \end{notesbox}
 
+%=====================================================================
+\newpage
+\section{Examination 2020}
+%=====================================================================
+
+\textbf{Note:} 2020 has the broadest coverage of search questions — spanning Q2, Q3(b), Q3(c) in Section~A and Q7(b) in Section~B.
+
+\begin{itemize}[noitemsep]
+  \item \textbf{Q2 (8.75 marks):} Problem formulation + search space formulation + graph trace (UCS, Greedy, A*)
+  \item \textbf{Q3(b) (2 marks):} IDDFS — how it combines BFS + DFS benefits
+  \item \textbf{Q3(c) (1.75 marks):} BFS admissibility
+  \item \textbf{Q7(b) (2 marks):} A* heuristic — consequences of under/overestimation
+\end{itemize}
+
+%----------------------------------------------------------------------
+\subsection{Q2(a) — Formulating a Search Problem \ [1.75 marks]}
+%----------------------------------------------------------------------
+
+\begin{solutionbox}
+\textbf{Question:} How can you formulate a search problem? Give examples of data structures that can be used to represent a state-space both in explicit and implicit ways.
+\end{solutionbox}
+
+\subsubsection*{Formulating a Search Problem}
+
+A search problem is formulated by defining \textbf{four components}:
+
+\begin{enumerate}[noitemsep]
+  \item \textbf{Initial state} — the state in which the agent starts. \emph{Example:} In a route-finding problem, the starting city.
+  \item \textbf{Goal test} — a function $\text{isGoal}(s) \to \{\text{true}, \text{false}\}$ that determines whether a given state $s$ satisfies the goal condition. Can be an explicit set of goal states or an abstract condition.
+  \item \textbf{Successor function} $\text{Succ}(s) \to \{(a, s')\}$ — given a state $s$, returns all (action, resulting-state) pairs reachable by legal actions.
+  \item \textbf{Path cost function} $g(p)$ — assigns a numeric cost to a path $p$ (typically the sum of step costs along the path).
+\end{enumerate}
+
+\noindent Together, these four components define the \textbf{search space} — a directed graph where vertices are states and edges are actions. A \textbf{solution} is a path from the initial state to any state satisfying the goal test. An \textbf{optimal solution} has the lowest path cost among all solutions.
+
+\subsubsection*{Representing State-Spaces}
+
+\noindent\textbf{1. Explicit Representation (State-Space Graph):}
+
+The entire state-space graph is stored in memory before search begins. Each state and its connections are enumerated.
+
+\textbf{Data structures used:}
+\begin{itemize}[noitemsep]
+  \item \textbf{Adjacency list:} For each state, store a list of (neighbor, cost) pairs. Memory: $O(|V| + |E|)$.
+  \item \textbf{Adjacency matrix:} A $|V| \times |V|$ matrix where entry $[i][j]$ holds the cost of the edge from state $i$ to state $j$ (or $\infty$ if no edge). Memory: $O(|V|^2)$.
+  \item \textbf{Edge list:} Store all edges as triples (from\_state, to\_state, cost). Memory: $O(|E|)$.
+\end{itemize}
+
+\noindent\textbf{Limitation:} Only practical for \textbf{small} state spaces (e.g., the Romania map with 20 cities). For problems like the 8-puzzle ($9!/2 = 181{,}440$ states) or chess ($\sim 10^{47}$ states), explicit storage is infeasible.
+
+\vspace{0.4em}
+
+\noindent\textbf{2. Implicit Representation (Successor Function):}
+
+The state space is \textbf{generated on demand} during search. Only the current state and the successor function are stored; the full graph is never materialised.
+
+\textbf{Data structures used:}
+\begin{itemize}[noitemsep]
+  \item \textbf{State representation:} A compact data structure encoding the current configuration. \emph{Examples:} a tuple $(x,y)$ for grid positions; a 2D array for the 8-puzzle board; a set of boolean variables for satisfiability problems.
+  \item \textbf{Successor function (as code):} A function that, given a state, \textbf{computes} legal next states algorithmically — no lookup table needed. \emph{Example:} For the Water Jug problem, successors of $(x,y)$ are computed by the 6 pouring/filling rules applied to the current values of $x$ and $y$.
+  \item \textbf{Fringe (frontier):} A queue (FIFO for BFS), stack (LIFO for DFS), or priority queue (for UCS/A*) holding states discovered but not yet expanded. Memory depends on the algorithm, not the state-space size.
+  \item \textbf{Closed/explored set:} A hash table or set storing states already expanded, preventing redundant work. Uses $O(|V_{\text{expanded}}|)$ memory.
+\end{itemize}
+
+\noindent\textbf{Advantage:} Scales to \textbf{enormous} state spaces. The 8-puzzle with $10^5$ states is searched without ever storing the full graph. Chess engines use implicit representation — they generate moves on the fly and search to depth 20+ without enumerating all $10^{47}$ positions.
+
+%----------------------------------------------------------------------
+\subsection{Q2(b) — Problem Formulations \ [2 marks]}
+%----------------------------------------------------------------------
+
+\begin{solutionbox}
+\textbf{Question:} Give the initial state, goal test, successor function, and cost function for each problem.
+\end{solutionbox}
+
+\subsubsection*{(i) Travelling Salesman Problem (TSP)}
+
+\begin{description}[leftmargin=3.6cm, labelwidth=3.4cm, labelsep=0.2cm]
+  \item[\textbf{State:}]
+    $(\ell,\; V)$ where $\ell$ is the current city and $V$ is the set of unvisited cities.
+
+  \item[\textbf{Initial state:}]
+    $(\text{start\_city},\; \{\text{all other } N{-}1 \text{ cities}\})$.
+
+  \item[\textbf{Goal test:}]
+    $\ell = \text{start\_city}$ \textbf{and} $V = \emptyset$.
+
+  \item[\textbf{Successor function:}]
+    $\text{Travel}(c_i \to c_j)$ for any $c_j \in V$ (or $c_j = \text{start\_city}$ if $V = \emptyset$). Removes $c_j$ from $V$.
+
+  \item[\textbf{Path cost:}]
+    Sum of road distances travelled. Goal: find the \textbf{minimum-cost} Hamiltonian cycle.
+
+  \item[\textbf{Complexity:}] $(N{-}1)!/2$ distinct tours — exponential. This is the canonical NP-hard problem.
+\end{description}
+
+\subsubsection*{(ii) Missionaries \& Cannibals}
+
+\begin{description}[leftmargin=3.6cm, labelwidth=3.4cm, labelsep=0.2cm]
+  \item[\textbf{State:}]
+    $(M_L, C_L, B)$ where $M_L, C_L \in \{0,1,2,3\}$ are missionaries and cannibals on the left bank, and $B \in \{L,R\}$ is the boat position.
+
+  \item[\textbf{Initial state:}]
+    $(3, 3, L)$.
+
+  \item[\textbf{Goal test:}]
+    $(0, 0, R)$.
+
+  \item[\textbf{Successor function:}]
+    Move 1 or 2 people across the river by boat. Valid combinations: $(1M,0C)$, $(2M,0C)$, $(0M,1C)$, $(0M,2C)$, $(1M,1C)$. After each move, verify the \textbf{safety constraint}: on both banks, $M \geq C$ or $M = 0$.
+
+  \item[\textbf{Path cost:}]
+    1 per boat crossing. Goal: \textbf{minimum crossings} (known to be 11).
+\end{description}
+
+%----------------------------------------------------------------------
+\subsection{Q2(c) — Graph Traces \ [5 marks]}
+%----------------------------------------------------------------------
+
+\begin{solutionbox}
+\textbf{Question:} Using the search space given (see Table), draw the state-space, then trace UCS, Greedy, and A* from A to G. At each step show which node is being expanded and the content of the fringe.
+\end{solutionbox}
+
+\vspace{0.6em}
+
+\noindent\textbf{The 2020 search space is identical to the 2022 and 2023 search space} (same 6 nodes A-F plus goal G, same directed edges, same $h(n)$ values). The complete step-by-step traces for all three algorithms on this graph are given in \textbf{Section~2.3} (Examination 2023, Part~b(ii)). Below is the summary and the state-space diagram.
+
+\vspace{0.6em}
+
+\begin{minipage}[t]{0.48\textwidth}
+\centering
+{\small\textbf{Edge Table}}\\[0.3em]
+\begin{tabular}{ccc}
+\toprule
+\textbf{State} & \textbf{Next} & \textbf{Cost} \\
+\midrule
+A & B & 4 \\
+A & C & 1 \\
+B & D & 3 \\
+B & E & 8 \\
+C & C & 0 \\
+C & D & 2 \\
+C & F & 6 \\
+D & C & 2 \\
+D & E & 4 \\
+E & G & 2 \\
+F & G & 8 \\
+\bottomrule
+\end{tabular}
+\end{minipage}
+\hfill
+\begin{minipage}[t]{0.48\textwidth}
+\centering
+{\small\textbf{Heuristic $h(n)$}}\\[0.3em]
+\begin{tabular}{cc}
+\toprule
+\textbf{Node} & \textbf{h(n)} \\
+\midrule
+A & 8 \\
+B & 8 \\
+C & 6 \\
+D & 5 \\
+E & 1 \\
+F & 4 \\
+G & 0 \\
+\bottomrule
+\end{tabular}
+\end{minipage}
+
+\vspace{0.6em}
+
+\begin{center}
+\begin{tikzpicture}[
+  every node/.style={draw, circle, minimum size=0.8cm, inner sep=0pt,
+                     font=\small\bfseries, thick},
+  startnode/.style={fill=startblue},
+  goalnode/.style={fill=goalgreen},
+  lbl/.style={draw=none, fill=white, font=\footnotesize\bfseries,
+               inner sep=1.2pt, outer sep=0pt},
+  edge/.style={thick, -{Stealth[length=5pt, width=4pt]}}
+]
+
+\node[startnode] (A) at (0, 5)   {A};
+\node            (B) at (-2.5, 3){B};
+\node            (C) at (0, 3)   {C};
+\node            (D) at (0, 1.5) {D};
+\node            (E) at (-1.5, 0){E};
+\node            (F) at (2, 3)   {F};
+\node[goalnode]  (G) at (0, -1.5){G};
+
+\draw[edge]              (A) -- node[lbl, pos=0.5] {4} (B);
+\draw[edge, bend left=10] (A) -- node[lbl, pos=0.5] {1} (C);
+\draw[edge]              (B) -- node[lbl, pos=0.5] {3} (D);
+\draw[edge, bend right=20] (B) -- node[lbl, pos=0.3] {8} (E);
+\draw[edge, loop right]  (C) -- node[lbl, pos=0.5] {0} (C);
+\draw[edge]              (C) -- node[lbl, pos=0.5] {2} (D);
+\draw[edge, bend left=20] (C) -- node[lbl, pos=0.5] {6} (F);
+\draw[edge, bend right=15] (D) -- node[lbl, pos=0.5] {2} (C);
+\draw[edge]              (D) -- node[lbl, pos=0.5] {4} (E);
+\draw[edge]              (E) -- node[lbl, pos=0.5] {2} (G);
+\draw[edge]              (F) -- node[lbl, pos=0.5] {8} (G);
+
+\begin{scope}[shift={(0,-2.5)}]
+  \node[startnode, minimum size=0.5cm, font=\tiny] (ls) at (-1.5,0) {};
+  \node[draw=none, font=\small] at (0, 0) {= Start (A)};
+  \node[goalnode, minimum size=0.5cm, font=\tiny] (lg) at (2.5,0) {};
+  \node[draw=none, font=\small] at (4.2, 0) {= Goal (G)};
+\end{scope}
+
+\end{tikzpicture}
+\end{center}
+
+\vspace{0.4em}
+
+\noindent\textbf{Algorithm Results Summary:}
+\begin{center}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{l|l|c|c|c}
+\toprule
+\textbf{Algorithm} & \textbf{Path} & \textbf{Cost} & \textbf{Expansions} & \textbf{Optimal?} \\
+\midrule
+UCS    & A $\to$ C $\to$ D $\to$ E $\to$ G & \textbf{9} & 7 & \textbf{Yes} \\
+Greedy & A $\to$ C $\to$ F $\to$ G          & 15 & 4 & No \\
+A*     & A $\to$ C $\to$ D $\to$ E $\to$ G & \textbf{9} & 5 & \textbf{Yes} \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\noindent\textbf{For the full step-by-step traces} (node expanded, fringe contents at each step, discussion of why Greedy fails and A* succeeds), see \textbf{Section~2.3} (Examination 2023). The traces on this graph are among the most important in the syllabus — the same search space appears in 3 exam years (2020, 2022, 2023).
+
+%----------------------------------------------------------------------
+\subsection{Q3(b) — IDDFS Combines BFS + DFS \ [2 marks]}
+%----------------------------------------------------------------------
+
+\begin{solutionbox}
+\textbf{Question:} Iterative-deepening (ID) is a type of search algorithm said to combine the benefits of breadth-first and depth-first search. Explain, using a diagram or otherwise, how ID achieves these benefits.
+\end{solutionbox}
+
+\vspace{0.5em}
+
+\noindent\textbf{The Problem:} BFS guarantees the shortest path but needs $O(b^d)$ memory — infeasible for large search spaces. DFS uses only $O(bm)$ memory but may never terminate on infinite branches and finds suboptimal deep solutions.
+
+\noindent\textbf{The IDDFS Solution:} Run depth-limited DFS repeatedly with cutoff $L = 0, 1, 2, \ldots$ until the goal is found.
+
+\begin{center}
+\begin{tikzpicture}[
+  level 1/.style={sibling distance=4.5cm, level distance=1.3cm},
+  level 2/.style={sibling distance=2.2cm, level distance=1.3cm},
+  level 3/.style={sibling distance=1.1cm, level distance=1.2cm},
+  every node/.style={draw, circle, minimum size=0.6cm, inner sep=0pt, font=\footnotesize\bfseries},
+  goalnode/.style={fill=goalgreen},
+]
+
+\begin{scope}[local bounding box=tree]
+\node {A}
+  child { node {B}
+    child { node {D}
+      child { node[goalnode] {G} }
+      child { node {H} }
+    }
+    child { node {E} }
+  }
+  child { node {C}
+    child { node {F} }
+    child { node {I} }
+  };
+\end{scope}
+\end{tikzpicture}
+\end{center}
+
+\vspace{0.4em}
+\begin{center}
+\renewcommand{\arraystretch}{1.2}
+\small
+\begin{tabular}{c|l|l}
+\toprule
+\textbf{$L$} & \textbf{Nodes visited (DFS order)} & \textbf{Space used} \\
+\midrule
+0 & A & 1 node (just A) \\
+1 & A, B, C & 2 nodes (A$\to$B, then A$\to$C) \\
+2 & A, B, D, E, C, F, I & 3 nodes (A$\to$B$\to$D at deepest) \\
+3 & A, B, D, \textbf{G} $\leftarrow$ \textbf{found!} & 3 nodes \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\vspace{0.4em}
+
+\noindent\textbf{How IDDFS inherits from each:}
+
+\begin{center}
+\renewcommand{\arraystretch}{1.4}
+\begin{tabular}{p{4cm}|p{6.5cm}|p{6.5cm}}
+\toprule
+\textbf{Property} & \textbf{Inherited from BFS} & \textbf{Inherited from DFS} \\
+\midrule
+\textbf{Completeness} &
+  \checkmark\ BFS explores level by level, never trapped by infinite branches. IDDFS does the same — depth limits prevent infinite descent. &
+  — \\
+\midrule
+\textbf{Optimality} &
+  \checkmark\ BFS finds the shallowest goal. IDDFS does the same — because it exhausts depth $d{-}1$ before checking depth $d$, the first goal found is shallowest. &
+  — \\
+\midrule
+\textbf{Space} &
+  — &
+  \checkmark\ DFS uses $O(bm)$ memory — only the current path. IDDFS replicates this: at any moment, only $O(bL)$ nodes are stored (the current path plus siblings). For $b{=}10, L{=}10$: $\sim$100 nodes vs BFS's 10 billion. \\
+\midrule
+\textbf{Simple implementation} &
+  — &
+  \checkmark\ Like DFS, IDDFS uses a simple stack or recursion. The outer loop adds minimal complexity. \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\vspace{0.4em}
+
+\noindent\textbf{Cost of the compromise — Time Overhead:}
+IDDFS re-expands nodes near the root: node A is expanded $d{+}1$ times, depth-1 nodes are expanded $d$ times, etc. However, the deepest level dominates the node count. The overhead factor is $\frac{b}{b-1}$:
+
+\[
+\text{Total work} = b^d \!\left(1 + \frac{1}{b} + \frac{1}{b^2} + \cdots\right)
+\approx b^d \cdot \frac{b}{b-1}
+\]
+
+For $b=10$, the overhead is only $\frac{10}{9} \approx 1.11\times$ — an acceptable price for reducing memory from $O(b^d)$ to $O(bd)$.
+
+\vspace{0.4em}
+
+\begin{answerbox}
+\textbf{IDDFS} = BFS completeness $+$ BFS optimality $+$ DFS space efficiency.
+The only trade-off is a modest constant-factor increase in time ($\approx$11\% for $b{=}10$),
+making it the \textbf{preferred uninformed search strategy} for large state spaces with uniform costs.
+\end{answerbox}
+
+%----------------------------------------------------------------------
+\subsection{Q3(c) — BFS Admissibility \ [1.75 marks]}
+%----------------------------------------------------------------------
+
+\begin{solutionbox}
+\textbf{Question:} When is breadth-first search an admissible search strategy? Briefly explain.
+\end{solutionbox}
+
+\subsubsection*{What ``Admissible'' Means}
+
+In search, an algorithm is \textbf{admissible} if it \textbf{always finds the optimal (lowest-cost) solution} when one exists. The term is most commonly applied to heuristics ($h(n) \leq h^*(n)$), but it can also describe complete search algorithms.
+
+\subsubsection*{When BFS is Admissible}
+
+BFS is admissible \textbf{when all step costs are equal (uniform)}. Under this condition:
+
+\begin{enumerate}[noitemsep]
+  \item BFS explores the state space \textbf{level by level}: all nodes at depth 0, then depth 1, then depth 2, \ldots
+  \item Since every step costs the same amount (say, 1), the \textbf{depth of a node equals its path cost}: $g(n) = \text{depth}(n)$.
+  \item Therefore, the \textbf{first goal node encountered} is at the shallowest depth, which corresponds to the \textbf{minimum path cost}.
+  \item BFS returns this shallowest goal — which is optimal.
+\end{enumerate}
+
+\subsubsection*{When BFS is NOT Admissible}
+
+BFS is \textbf{not admissible when step costs are non-uniform}. Consider:
+
+\begin{center}
+\begin{tikzpicture}[
+  every node/.style={draw, circle, minimum size=0.7cm, inner sep=0pt, font=\small\bfseries},
+  startnode/.style={fill=startblue},
+  goalnode/.style={fill=goalgreen},
+  lbl/.style={draw=none, fill=white, font=\footnotesize, inner sep=1pt},
+  edge/.style={thick, -{Stealth[length=4pt, width=3pt]}}
+]
+\node[startnode] (S) at (0,0) {S};
+\node            (A) at (-2,-1.5) {A};
+\node[goalnode]  (G1) at (2,-1.5) {G$_1$};
+\node[goalnode]  (G2) at (-2,-3) {G$_2$};
+
+\draw[edge] (S) -- node[lbl, above] {1} (A);
+\draw[edge] (S) -- node[lbl, above] {100} (G1);
+\draw[edge] (A) -- node[lbl, left] {1} (G2);
+\end{tikzpicture}
+\end{center}
+
+\noindent BFS would find G$_1$ first (depth 1, cost 100) and return it as the solution. But the optimal path is S $\to$ A $\to$ G$_2$ (depth 2, cost $1+1=2$). BFS returns the \textbf{shallowest} goal, not the \textbf{cheapest}. The solution is suboptimal, so BFS is not admissible when edge costs differ.
+
+\subsubsection*{Formal Statement}
+
+\begin{answerbox}
+\textbf{BFS is admissible iff all step costs are equal.}
+
+When costs are uniform, depth $\propto$ cost, and the shallowest goal is the cheapest.
+When costs vary, BFS returns the shallowest goal regardless of cost — this may be suboptimal.
+For non-uniform costs, use \textbf{UCS} (Uniform-Cost Search) instead — it expands by $g(n)$ rather than depth, guaranteeing optimality for any non-negative edge costs.
+\end{answerbox}
+
+%----------------------------------------------------------------------
+\subsection{Q7(b) — A* Heuristic: Underestimate vs Overestimate \ [2 marks]}
+%----------------------------------------------------------------------
+
+\begin{solutionbox}
+\textbf{Question:} What will happen if $h'$ underestimates $h$ in the A* algorithm? What will happen if $h'$ overestimates $h$?
+\end{solutionbox}
+
+\vspace{0.4em}
+
+\noindent\textbf{Notation clarification:} In standard A* notation, $h(n)$ is the heuristic estimate of the cost from $n$ to the goal, and $h^*(n)$ is the \emph{true} optimal cost. The question uses $h'$ for the heuristic and $h$ for the true cost. We adopt the standard convention below.
+
+\subsubsection*{Case 1: Heuristic UNDERESTIMATES ($h(n) \leq h^*(n)$ — Admissible)}
+
+When the heuristic never overestimates the true cost to the goal (it is \textbf{admissible}):
+
+\begin{center}
+\renewcommand{\arraystretch}{1.4}
+\begin{tabular}{p{7cm}|p{9cm}}
+\toprule
+\multicolumn{1}{c|}{\textbf{Consequence}} & \multicolumn{1}{c}{\textbf{Explanation}} \\
+\midrule
+\textbf{A* is optimal} — it will find the lowest-cost solution. &
+The proof: A* expands nodes in order of $f(n)=g(n)+h(n)$. Since $h(n) \leq h^*(n)$, we have $f(n) \leq g(n)+h^*(n) = \text{true total cost through } n$. The first time A* expands a goal node G, $f(G) = g(G) + 0 = g(G)$. For any unexpanded node $n$ on a cheaper path to a different goal, $f(n) \leq \text{true cost of that cheaper path} < g(G)$. So A* would have expanded $n$ before G — contradiction. Therefore the first expanded goal must be optimal. \\
+\midrule
+\textbf{May expand more nodes} than with a perfect heuristic. &
+A severe underestimate (e.g., $h(n)=0$ for all $n$, which reduces A* to UCS) leads to more node expansions. The closer $h$ is to $h^*$, the fewer nodes A* expands. \\
+\midrule
+\textbf{Still complete} — will find a solution if one exists. &
+Admissibility does not affect completeness. A* with any heuristic eventually explores the entire (finite) search space if needed. \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\vspace{0.4em}
+
+\noindent\textbf{Example — admissible (underestimate):} $h(\text{Arad}) = 366 \leq h^*(\text{Arad}) = 418$. A* finds the optimal path Arad $\to$ Sibiu $\to$ Rimnicu $\to$ Pitesti $\to$ Bucharest (cost 418).
+
+\subsubsection*{Case 2: Heuristic OVERESTIMATES ($h(n) > h^*(n)$ for some $n$)}
+
+When the heuristic \textbf{overestimates} the true cost for at least one node (it is \textbf{not admissible}):
+
+\begin{center}
+\renewcommand{\arraystretch}{1.4}
+\begin{tabular}{p{7cm}|p{9cm}}
+\toprule
+\multicolumn{1}{c|}{\textbf{Consequence}} & \multicolumn{1}{c}{\textbf{Explanation}} \\
+\midrule
+\textbf{A* may NOT be optimal} — it can return a suboptimal solution. &
+If $h(n)$ overestimates the remaining cost through node $n$, then $f(n)$ is inflated. A* may postpone expanding $n$ in favor of nodes whose $f$-values are lower but lie on suboptimal paths. A suboptimal goal may be expanded and returned before the optimal path is discovered. \\
+\midrule
+\textbf{The optimal path may be ``hidden.''} &
+A* considers nodes in order of $f$-value. An overestimating heuristic makes good nodes look worse than they are (artificially high $f$), so they sit deeper in the fringe while A* explores suboptimal-looking nodes with deceptively low $f$. \\
+\midrule
+\textbf{Still complete} — overestimation does not affect completeness. &
+A* will still find \emph{a} solution (the search is still systematic). It just may not be the \emph{best} one. \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\vspace{0.4em}
+
+\noindent\textbf{Example — inadmissible (overestimate):} Suppose $h(\text{Fagaras}) = 200$, but the true cost from Fagaras to Bucharest is $h^*(\text{Fagaras}) = 99$. Then $f(\text{Fagaras}) = 239 + 200 = 439$, while the path through Pitesti has $f(\text{Pitesti}) = 317 + 101 = 418$. The Fagaras path looks worse and is explored later. If Sibiu$\to$Fagaras$\to$Bucharest (cost $239+99=338$) were actually optimal but $h$ made it look worse, A* might return the Pitesti route (cost 418) — suboptimal.
+
+\subsubsection*{Summary}
+
+\begin{center}
+\renewcommand{\arraystretch}{1.5}
+\begin{tabular}{l|l|l}
+\toprule
+\textbf{Property} & \textbf{$h$ underestimates (admissible)} & \textbf{$h$ overestimates (inadmissible)} \\
+\midrule
+Optimality & \textbf{Guaranteed} $\checkmark$ & \textbf{Not guaranteed} $\times$ \\
+Node expansions & More than with exact $h$ & Unpredictable — may expand fewer nodes (but miss optimal) \\
+Completeness & Guaranteed $\checkmark$ & Guaranteed $\checkmark$ \\
+Example & $h(n)=0$ (UCS — slow but optimal) & $h(n) > h^*(n)$ (fast but potentially wrong) \\
+\midrule
+\textbf{Design rule} & \textbf{Always make $h$ admissible} & \textbf{Never intentionally overestimate} \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{notesbox}
+\textbf{Exam key point:} The \textbf{admissibility condition} $h(n) \leq h^*(n)$ for all $n$ is the \textbf{single most important property} of a heuristic in A*. It is the necessary and sufficient condition for A* optimality (on tree-search; on graph-search, consistency/monotonicity is also required for optimality without reopening nodes). An admissible heuristic guarantees you won't miss the best path; a well-chosen admissible heuristic (close to $h^*$) makes the search efficient.
+\end{notesbox}
+
 \end{document}

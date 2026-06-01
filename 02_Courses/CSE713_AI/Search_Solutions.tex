@@ -95,6 +95,431 @@
 \newpage
 
 %=====================================================================
+\section{Heuristic Search — Theoretical Foundations}
+%=====================================================================
+
+This section covers the \textbf{theory} that underpins every search-algorithm question in the exam.
+The year-by-year traces in later sections apply these concepts to specific graphs.
+
+%----------------------------------------------------------------------
+\subsection{BFS (Uninformed) vs.\ Best-First Search (Informed)}
+%----------------------------------------------------------------------
+
+\noindent The fundamental divide in search algorithms is between those that use \textbf{no domain knowledge} and those that use \textbf{heuristic guidance}.
+
+\begin{center}
+\renewcommand{\arraystretch}{1.5}
+\begin{tabular}{p{4cm}|p{6cm}|p{6cm}}
+\toprule
+\textbf{Criterion} & \textbf{BFS (Uninformed / Blind)} & \textbf{Best-First Search (Informed / Heuristic)} \\
+\midrule
+\textbf{What guides expansion?} &
+  \textbf{Structural position} — depth from the root. BFS expands level by level, regardless of where the goal is. &
+  \textbf{Evaluation function} $f(n)$ — incorporates domain knowledge (estimates of cost to the goal). Expands the ``most promising'' node first. \\
+\midrule
+\textbf{Fringe data structure} &
+  \textbf{FIFO queue} — first-in, first-out. Nodes are processed in the order they are discovered. &
+  \textbf{Priority queue} — nodes are dequeued in order of $f(n)$ (lowest first). The queue is dynamically reordered as new nodes are discovered. \\
+\midrule
+\textbf{Knowledge used} &
+  \textbf{None} — only the problem definition (initial state, goal test, successor function, step costs). &
+  \textbf{Heuristic function} $h(n)$ — estimated cheapest cost from $n$ to the goal. Domain-specific (e.g., straight-line distance, Manhattan distance). \\
+\midrule
+\textbf{Efficiency} &
+  \textbf{Expensive} for large state spaces — $O(b^d)$ time and space. Must explore all nodes at depth $d{-}1$ before checking depth $d$. &
+  \textbf{Potentially much faster} — a good heuristic dramatically prunes the search space. But with a poor heuristic, can be as bad as uninformed search. \\
+\midrule
+\textbf{Completeness} &
+  \textbf{Complete} — guaranteed to find a solution if one exists (finite branching factor). &
+  \textbf{Depends on the variant} — Greedy BFS is incomplete (can loop). A* is complete. \\
+\midrule
+\textbf{Optimality} &
+  \textbf{Optimal} only for uniform step costs. &
+  \textbf{Depends on the variant} — Greedy BFS is not optimal. A* is optimal if $h$ is admissible. \\
+\midrule
+\textbf{Examples} &
+  BFS, UCS (expand by $g(n)$), DFS, IDDFS &
+  Greedy Best-First (expand by $h(n)$), A* (expand by $f(n)=g(n)+h(n)$), IDA*, SMA* \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{notesbox}
+\textbf{Key insight:} ``Uninformed'' does \emph{not} mean ``stupid'' — it means the algorithm works for \textbf{any} problem without modification. ``Informed'' means the algorithm exploits \textbf{domain-specific} knowledge to work more efficiently, but the heuristic must be designed for each problem. An uninformed algorithm needs no setup; an informed algorithm needs a clever heuristic.
+\end{notesbox}
+
+%----------------------------------------------------------------------
+\subsection{Heuristic Search — Introduction \& the Best-First Family}
+%----------------------------------------------------------------------
+
+\subsubsection*{What Makes a Search ``Informed''?}
+
+\noindent An \textbf{informed} (or heuristic) search algorithm uses \textbf{problem-specific knowledge} beyond the problem definition to guide the search toward the goal more efficiently. This knowledge is encoded in a \textbf{heuristic function} $h(n)$.
+
+\vspace{0.4em}
+\noindent\textbf{Generic Best-First Search Algorithm:}
+
+\begin{enumerate}[leftmargin=1.5cm, itemsep=4pt]
+  \item Initialise the fringe (priority queue) with the start node.
+  \item \textbf{Loop:} Remove the node with the \textbf{lowest evaluation function} $f(n)$ from the fringe.
+  \item If that node is the goal, return the solution path.
+  \item Expand the node — generate all successors.
+  \item For each successor: compute $f(\text{successor})$, insert into the fringe (priority queue).
+  \item Repeat until the fringe is empty (failure).
+\end{enumerate}
+
+\noindent\textbf{The Best-First Search Family:} The ``family'' is unified by the priority-queue fringe — the difference is \textbf{what} $f(n)$ measures:
+
+\begin{center}
+\renewcommand{\arraystretch}{1.5}
+\begin{tabular}{l|l|l|l}
+\toprule
+\textbf{Algorithm} & \textbf{Evaluation $f(n)$} & \textbf{Type} & \textbf{Key property} \\
+\midrule
+\textbf{UCS} &
+  $f(n) = g(n)$ &
+  Uninformed &
+  Optimal for any non-negative costs. \\
+\textbf{Greedy BFS} &
+  $f(n) = h(n)$ &
+  Informed &
+  Fast but not optimal. Uses only heuristic. \\
+\textbf{A*} &
+  $f(n) = g(n) + h(n)$ &
+  Informed &
+  Optimal if $h$ is admissible. Best-known informed algorithm. \\
+\textbf{IDA*} &
+  $f(n) = g(n) + h(n)$ &
+  Informed &
+  Like A* but $O(bd)$ space. Uses iterative deepening with $f$-cutoff. \\
+\textbf{RBFS} &
+  $f(n) = g(n) + h(n)$ &
+  Informed &
+  Recursive Best-First — linear space, slightly more overhead than IDA*. \\
+\textbf{SMA*} &
+  $f(n) = g(n) + h(n)$ &
+  Informed &
+  Simplified Memory-Bounded A* — uses all available memory, drops worst nodes when full. \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{notesbox}
+\textbf{Exam relevance:} The CUET exam tests UCS, Greedy BFS, A*, and IDA*/IDDFS — these are the four you must be able to trace step-by-step on a given graph. RBFS and SMA* are mentioned in Russell \& Norvig but have never appeared in a CUET past paper (2020--2024).
+\end{notesbox}
+
+%----------------------------------------------------------------------
+\subsection{The Heuristic Function $h(n)$}
+%----------------------------------------------------------------------
+
+\subsubsection*{Definition}
+
+\[
+\boxed{h(n) = \text{estimated cheapest cost from node } n \text{ to a goal node}}
+\]
+
+\vspace{0.4em}
+\noindent\textbf{Key properties:}
+\begin{itemize}[leftmargin=1.5cm, itemsep=2pt, topsep=3pt]
+  \item $h(n)$ is \textbf{problem-specific} — you design it using domain knowledge. The same generic search code works for any problem, but $h(n)$ encodes what you know about \emph{this} problem.
+  \item $h(n) \geq 0$ for all $n$, and $h(G) = 0$ for any goal node $G$.
+  \item $h(n)$ is \textbf{not} the action cost — it is an \textbf{estimate} of the remaining cost.
+  \item A \textbf{perfect heuristic} satisfies $h(n) = h^*(n)$ for all $n$ (where $h^*(n)$ is the true optimal cost). With a perfect heuristic, A* expands only nodes on optimal paths — it does zero wasted work.
+\end{itemize}
+
+\subsubsection*{Example — Romania Map with Straight-Line Distance Heuristic}
+
+\noindent The classic illustration from Russell \& Norvig (Chapter~3). The problem: drive from \textbf{Arad} to \textbf{Bucharest} via the Romanian road network. The heuristic $h_{\text{SLD}}(n)$ is the \textbf{straight-line (as-the-crow-flies) distance} from city $n$ to Bucharest — the shortest possible distance, ignoring roads.
+
+\vspace{0.6em}
+
+\begin{center}
+\begin{tikzpicture}[
+  every node/.style={draw, circle, minimum size=0.65cm, inner sep=0pt, font=\footnotesize\bfseries},
+  goalnode/.style={fill=goalgreen},
+  edge/.style={thick},
+  lbl/.style={draw=none, fill=white, font=\footnotesize, inner sep=1pt, outer sep=0pt},
+  hlbl/.style={draw=none, font=\footnotesize\color{blue!60!black}, inner sep=1pt}
+]
+
+% Cities — approximate positions matching the Romania map
+\node           (Arad)       at (0, 8)     {A};
+\node           (Zerind)     at (-1.2, 9.5) {Z};
+\node           (Oradea)     at (-0.5, 10.8) {O};
+\node           (Sibiu)      at (0.8, 6.5)  {S};
+\node           (Fagaras)    at (3, 5.2)    {F};
+\node           (Rimnicu)    at (2.5, 7)    {R};
+\node           (Pitesti)    at (3.8, 4)    {P};
+\node[goalnode] (Bucharest)  at (5, 2.5)    {B};
+\node           (Craiova)    at (2, 2.5)    {C};
+\node           (Dobreta)    at (0, 1.5)    {D};
+\node           (Mehadia)    at (-1, 2.5)   {M};
+\node           (Lugoj)      at (-1.5, 4)   {L};
+\node           (Timisoara)  at (-1.5, 6.5) {T};
+
+% Edges (simplified subset — the relevant highways)
+\draw[edge] (Arad) -- node[lbl, above] {75} (Zerind);
+\draw[edge] (Zerind) -- node[lbl, left] {71} (Oradea);
+\draw[edge] (Oradea) -- node[lbl, right] {151} (Sibiu);
+\draw[edge] (Arad) -- node[lbl, left] {118} (Timisoara);
+\draw[edge] (Timisoara) -- node[lbl, left] {111} (Lugoj);
+\draw[edge] (Lugoj) -- node[lbl, below] {70} (Mehadia);
+\draw[edge] (Mehadia) -- node[lbl, right] {75} (Dobreta);
+\draw[edge] (Dobreta) -- node[lbl, right] {120} (Craiova);
+\draw[edge] (Craiova) -- node[lbl, above] {138} (Pitesti);
+\draw[edge] (Craiova) -- node[lbl, left] {146} (Rimnicu);
+\draw[edge] (Rimnicu) -- node[lbl, right] {80} (Pitesti);
+\draw[edge] (Pitesti) -- node[lbl, right] {101} (Bucharest);
+\draw[edge] (Rimnicu) -- node[lbl, right] {97} (Sibiu);
+\draw[edge] (Sibiu) -- node[lbl, above] {99} (Fagaras);
+\draw[edge] (Fagaras) -- node[lbl, right] {211} (Bucharest);
+\draw[edge] (Arad) -- node[lbl, above] {140} (Sibiu);
+
+% SLD heuristic values (blue, beside each node)
+\node[hlbl] at (-1.0, 7.5)  {$h{=}366$};
+\node[hlbl] at (-2.2, 6.2)  {$h{=}329$};
+\node[hlbl] at (-2.0, 4.2)  {$h{=}244$};
+\node[hlbl] at (-0.2, 2.7)  {$h{=}241$};
+\node[hlbl] at (0.8, 1.5)   {$h{=}242$};
+\node[hlbl] at (2.8, 2.0)   {$h{=}160$};
+\node[hlbl] at (4.2, 3.5)   {$h{=}100$};
+\node[hlbl] at (2.2, 6.0)   {$h{=}193$};
+\node[hlbl] at (3.8, 6.5)   {$h{=}176$};
+\node[hlbl] at (0.1, 6.0)   {$h{=}253$};
+\node[hlbl] at (0.7, 5.5)   {$h{=}366$};
+\node[hlbl] at (-0.3, 10)   {$h{=}380$};
+\node[hlbl] at (-2.2, 9)    {$h{=}374$};
+
+% Legend
+\node[goalnode, minimum size=0.5cm, font=\tiny] at (7.2, 8.5) {};
+\node[draw=none, font=\small] at (8.8, 8.5) {= Bucharest (Goal)};
+\node[draw=none, font=\small\color{blue!60!black}] at (8.8, 7.75) {Blue = $h_{\text{SLD}}(n)$};
+
+\end{tikzpicture}
+\end{center}
+
+\vspace{0.4em}
+
+\begin{center}
+\renewcommand{\arraystretch}{1.15}
+\small
+\begin{tabular}{l|c|c}
+\toprule
+\textbf{City $n$} & $h_{\text{SLD}}(n)$ (straight-line km) & True road distance $h^*(n)$ \\
+\midrule
+Arad      & 366 & 418 \\
+Bucharest & 0   & 0   \\
+Craiova   & 160 & 238 \\
+Dobreta   & 242 & 360 \\
+Fagaras   & 176 & 211 \\
+Lugoj     & 244 & 354 \\
+Mehadia   & 241 & 353 \\
+Oradea    & 380 & 531 \\
+Pitesti   & 100 & 101 \\
+Rimnicu   & 193 & 193 \\
+Sibiu     & 253 & 278 \\
+Timisoara & 329 & 469 \\
+Zerind    & 374 & 449 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\vspace{0.4em}
+
+\noindent\textbf{How $h_{\text{SLD}}$ works:}
+\begin{itemize}[leftmargin=1.5cm, itemsep=2pt, topsep=3pt]
+  \item For \textbf{any} two points on a map, the straight-line distance is a \textbf{lower bound} on the road distance — you cannot drive shorter than a straight line.
+  \item Therefore $h_{\text{SLD}}(n) \leq h^*(n)$ for every city — the heuristic is \textbf{admissible}.
+  \item \textbf{Check:} Arad: $366 \leq 418 \;\checkmark$. Pitesti: $100 \leq 101$ (nearly perfect!). Rimnicu: $193 = 193$ (perfect!). Fagaras: $176 \leq 211 \;\checkmark$.
+  \item \textbf{No city has $h > h^*$} — the heuristic never overestimates, guaranteeing A* optimality on this problem.
+  \item The heuristic is \textbf{not perfect} — Fagaras looks deceptively close (176) but the actual road is 211 (the Carpathian mountains force a winding route). This is exactly why Greedy fails on this problem.
+\end{itemize}
+
+%----------------------------------------------------------------------
+\subsection{Greedy Best-First Search — Algorithm, Example, Properties}
+%----------------------------------------------------------------------
+
+\subsubsection*{Algorithm}
+
+\noindent Greedy Best-First Search uses \textbf{only the heuristic} as its evaluation function:
+
+\[
+\boxed{f(n) = h(n)}
+\]
+
+\vspace{0.3em}
+\noindent At every step, expand the fringe node with the \textbf{lowest heuristic value} $h(n)$. The fringe is a \textbf{min-priority queue sorted by $h(n)$}. Path cost $g(n)$ is \textbf{completely ignored}.
+
+\subsubsection*{Romania Trace — How Greedy Finds a Suboptimal Path}
+
+\noindent Problem: drive from \textbf{Arad} to \textbf{Bucharest} using $h_{\text{SLD}}$.
+
+\begin{center}
+\renewcommand{\arraystretch}{1.3}
+\small
+\begin{tabular}{c|l|c|p{8.5cm}}
+\toprule
+\textbf{Step} & \textbf{Expanded} & $h(n)$ & \textbf{Fringe (sorted by $h$)} \\
+\midrule
+1 & \textbf{Arad} & 366
+  & S[253], T[329], Z[374] \\
+  & & & Neighbours: Sibiu(253), Timisoara(329), Zerind(374). Sibiu looks closest. \\
+\midrule
+2 & \textbf{Sibiu} & 253
+  & F[176], R[193], T[329], A[366], Z[374], O[380] \\
+  & & & Fagaras has $h{=}176$ — lowest! Greedy rushes toward it. \\
+\midrule
+3 & \textbf{Fagaras} & 176
+  & B[0], R[193], T[329], A[366], Z[374], O[380] \\
+  & & & Bucharest has $h{=}0$ — it is the goal! \\
+\midrule
+4 & \textbf{Bucharest} & 0 & \goal \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\vspace{0.4em}
+
+\noindent\textbf{Greedy path:} Arad $\xrightarrow{140}$ Sibiu $\xrightarrow{99}$ Fagaras $\xrightarrow{211}$ Bucharest
+$\quad\Rightarrow\quad \textbf{Cost = 450}$
+
+\noindent\textbf{Optimal path (A* finds this; Greedy misses it):} Arad $\xrightarrow{140}$ Sibiu $\xrightarrow{80}$ Rimnicu $\xrightarrow{97}$ Pitesti $\xrightarrow{101}$ Bucharest
+$\quad\Rightarrow\quad \textbf{Cost = 418}$
+
+\begin{answerbox}
+\textbf{Why Greedy failed — the root cause:}
+
+At Sibiu, Greedy compared two routes eastward:
+\begin{itemize}[noitemsep]
+  \item \textbf{Fagaras:} $h{=}176$ — looks just 176 km from Bucharest as the crow flies!
+  \item \textbf{Rimnicu:} $h{=}193$ — looks slightly further.
+\end{itemize}
+
+Greedy chose Fagaras because $176 < 193$, \textbf{completely ignoring} that:
+\begin{itemize}[noitemsep]
+  \item The road from Fagaras to Bucharest is 211 km (mountains force a winding route — $h$ underestimates by 35 km).
+  \item The Rimnicu $\to$ Pitesti $\to$ Bucharest route costs $80+101=181$ km total — $h$ for Rimnicu is only off by 0 (it's perfect!) and Pitesti is off by just 1.
+\end{itemize}
+
+\textbf{Moral:} A low $h(n)$ can be \textbf{deceptive}. A node that looks close to the goal may have a very expensive road ahead. Greedy's refusal to track how much it has already spent ($g(n)$) is its fatal flaw.
+\end{answerbox}
+
+\subsubsection*{Properties of Greedy Best-First Search}
+
+\begin{center}
+\renewcommand{\arraystretch}{1.5}
+\begin{tabular}{l|p{7.5cm}|p{7.5cm}}
+\toprule
+\textbf{Property} & \textbf{Status} & \textbf{Explanation} \\
+\midrule
+\textbf{Completeness} &
+  \texttimes\ \textbf{Not complete} &
+  Can get stuck in infinite loops — if the heuristic guides it into a cycle, it may never escape. A closed set fixes this but costs $O(b^d)$ memory. On finite graphs with a closed set, it is complete. \\
+\midrule
+\textbf{Optimality} &
+  \texttimes\ \textbf{Not optimal} &
+  Ignores $g(n)$ — will take a cheap-looking path even if the total cost is high. Romania: cost 450 vs.\ optimal 418. \\
+\midrule
+\textbf{Time} &
+  $O(b^m)$ worst case &
+  Can explore the entire tree with a poor heuristic. With a good heuristic, extremely fast — Romania: only 4 expansions. \\
+\midrule
+\textbf{Space} &
+  $O(b^m)$ &
+  Stores all generated nodes in the priority queue. Good heuristic $\Rightarrow$ fewer nodes generated. \\
+\midrule
+\textbf{Sensitivity} &
+  \textbf{Very high} — entirely dependent on $h$ quality. &
+  With perfect $h=h^*$: optimal in $O(d)$ expansions. With $h=0$ everywhere: degenerates to random selection from the fringe. \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+%----------------------------------------------------------------------
+\subsection{Greedy vs.\ A* — Direct Comparison}
+%----------------------------------------------------------------------
+
+\noindent Both are \textbf{informed search algorithms} using a priority queue. The critical difference is \textbf{what they optimise}:
+
+\[
+\text{Greedy: } f(n) = h(n) \qquad\qquad \text{A*: } f(n) = g(n) + h(n)
+\]
+
+\begin{center}
+\renewcommand{\arraystretch}{1.6}
+\begin{tabular}{l|p{6.5cm}|p{6.5cm}}
+\toprule
+\textbf{Criterion} & \textbf{Greedy Best-First} & \textbf{A* Search} \\
+\midrule
+\textbf{Priority} &
+  Lowest $h(n)$ only — ``Which node \emph{looks} closest to the goal?'' &
+  Lowest $g(n)+h(n)$ — ``Which node gives the cheapest estimated total path?'' \\
+\midrule
+\textbf{Completeness} &
+  \texttimes\ Not complete (can loop without closed set) &
+  \checkmark\ \textbf{Complete} on finite graphs \\
+\midrule
+\textbf{Optimality} &
+  \texttimes\ \textbf{Not optimal} — ignores past cost &
+  \checkmark\ \textbf{Optimal} if $h$ is admissible ($h \leq h^*$) \\
+\midrule
+\textbf{Time} &
+  $O(b^m)$ worst case; very fast with good $h$ &
+  $O(b^d)$ worst case; $O(d)$ with perfect $h$ \\
+\midrule
+\textbf{Space} &
+  $O(b^m)$ — stores fringe &
+  $O(b^d)$ — stores fringe (A*'s main practical weakness) \\
+\midrule
+\textbf{Heuristic req.} &
+  None (works with any $h$) &
+  \textbf{Must be admissible} for optimality; consistent for efficiency on graphs \\
+\midrule
+\textbf{Romania result} &
+  4 expansions, cost 450 (suboptimal) &
+  6 expansions, cost 418 (optimal) \\
+\midrule
+\textbf{Use when} &
+  Speed $>$ optimality; excellent heuristic; large state space &
+  Optimality required; admissible heuristic; state space fits in memory \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\vspace{0.4em}
+
+\noindent\textbf{The core intuition — a simple counterexample where Greedy loses:}
+
+\begin{center}
+\begin{tikzpicture}[
+  every node/.style={draw, circle, minimum size=0.7cm, inner sep=0pt, font=\small\bfseries},
+  startnode/.style={fill=startblue},
+  goalnode/.style={fill=goalgreen},
+  edge/.style={thick, -{Stealth[length=5pt, width=4pt]}},
+  lbl/.style={draw=none, fill=white, font=\footnotesize, inner sep=1pt},
+  hlbl/.style={draw=none, font=\footnotesize\color{blue!60!black}, inner sep=1pt}
+]
+\node[startnode] (S) at (0,3) {S};
+\node            (A) at (-2, 0.8) {A};
+\node[goalnode]  (G) at (2, 0.8) {G};
+
+\draw[edge] (S) -- node[lbl, left] {10} (A);
+\draw[edge] (S) -- node[lbl, right] {100} (G);
+\draw[edge] (A) -- node[lbl, below] {10} (G);
+
+\node[hlbl] at (-2, 2.2) {$h{=}5$};
+\node[hlbl] at (2, 2.2) {$h{=}0$};
+
+\node[draw=none, font=\footnotesize] at (0, -0.5) {G is the goal. S connects directly to G (cost 100). Or S→A→G (cost $10+10=20$).};
+\end{tikzpicture}
+\end{center}
+
+\noindent\textbf{Greedy:} At S: $h$(A)=5, $h$(G)=0. Greedy picks G (lowest $h$), finds path S$\to$G at cost \textbf{100}. Done.
+\textbf{A*:} At S: $f$(A)$=10+5=15$, $f$(G)$=100+0=100$. A* expands A first, then A$\to$G at cost \textbf{20}. \textbf{Optimal.}
+
+\noindent Greedy was fooled — G looks perfect ($h{=}0$, it \emph{is} the goal!), but reaching it directly costs 100. Path A looks slightly less perfect ($h{=}5$) but costs only 10 to reach and only 10 more to G. A* accounts for both $g$ and $h$; Greedy is blind to $g$.
+
+%=====================================================================
 \section{Examination 2024 — Q2 \ (9 Marks)}
 %=====================================================================
 

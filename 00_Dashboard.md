@@ -4,9 +4,9 @@
 
 ## Right now
 - **Active exam:** CSE 713 — Artificial Intelligence — **Wed 10 Jun 2026, 10:30 AM**
-- **Days left:** 9
-- **Phase:** AI core learning — Day 1
-- **Single most important thing today:** ✅ Blocks 1-3 done (Agents + Search). Next: Past Paper Practice + Deep A* trace.
+- **Days left:** 8
+- **Phase:** AI core learning — Day 4 (core block 5 + recall)
+- **Single most important thing today:** 🔄 Carry-forward: Search past paper revision pass (Block 1). Then Alpha-Beta Pruning + Minimax (core block 5).
 - **⚠️ Rule:** Google Calendar is the ONLY source of truth for daily plans. Never use the overnight rollover log for scheduling.
 - **🔴 Session protocols:** Read and execute `scripts/data/session_protocols.md` at EVERY session start. No exceptions.
 

@@ -1,0 +1,641 @@
+% CSE 713 — Artificial Intelligence
+% Search Algorithms: Complete Model Answers (2020–2024)
+% University of Chittagong, 7th Semester B.Sc. Engineering
+%
+% Compile with: pdflatex Search_Solutions.tex (run twice for TOC)
+
+\documentclass[12pt, a4paper]{article}
+
+\usepackage[left=2.5cm, right=2.5cm, top=2.8cm, bottom=2.8cm, headheight=15pt]{geometry}
+\usepackage{amsmath, amssymb}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta, positioning, shapes.geometric, calc, backgrounds}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{xcolor}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{mdframed}
+\usepackage{multicol}
+\usepackage{tabularx}
+\usepackage{multirow}
+\usepackage{graphicx}
+
+%----- Colours -------------------------------------------------------
+\definecolor{startblue}{RGB}{173,216,230}
+\definecolor{goalgreen}{RGB}{144,238,144}
+\definecolor{sectionblue}{RGB}{10,60,110}
+\definecolor{boxbg}{RGB}{242,247,255}
+\definecolor{answerbg}{RGB}{240,255,240}
+\definecolor{notesbg}{RGB}{255,250,230}
+\definecolor{stepcolor}{RGB}{220,235,255}
+
+%----- Box environments ----------------------------------------------
+\mdfdefinestyle{solutionframe}{
+  linecolor=sectionblue, backgroundcolor=boxbg,
+  roundcorner=4pt, linewidth=1.4pt,
+  innertopmargin=7pt, innerbottommargin=7pt,
+  innerleftmargin=9pt, innerrightmargin=9pt
+}
+\mdfdefinestyle{answerframe}{
+  linecolor=green!55!black, backgroundcolor=answerbg,
+  roundcorner=4pt, linewidth=1.4pt,
+  innertopmargin=7pt, innerbottommargin=7pt,
+  innerleftmargin=9pt, innerrightmargin=9pt
+}
+\mdfdefinestyle{notesframe}{
+  linecolor=orange!70!black, backgroundcolor=notesbg,
+  roundcorner=4pt, linewidth=1pt,
+  innertopmargin=5pt, innerbottommargin=5pt,
+  innerleftmargin=8pt, innerrightmargin=8pt
+}
+\newenvironment{solutionbox}{\begin{mdframed}[style=solutionframe]}{\end{mdframed}}
+\newenvironment{answerbox}{\begin{mdframed}[style=answerframe]}{\end{mdframed}}
+\newenvironment{notesbox}{\begin{mdframed}[style=notesframe]}{\end{mdframed}}
+
+%----- Page style ----------------------------------------------------
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{\small\color{sectionblue} CSE 713 — Artificial Intelligence}
+\rhead{\small\color{sectionblue} Search Algorithms: Model Solutions}
+\cfoot{\small\thepage}
+\renewcommand{\headrulewidth}{0.5pt}
+
+%----- Section formatting --------------------------------------------
+\titleformat{\section}{\large\bfseries\color{sectionblue}}{}{0em}{}[\vspace{-2pt}\color{sectionblue}\rule{\linewidth}{0.8pt}]
+\titleformat{\subsection}{\normalsize\bfseries\color{sectionblue!85!black}}{}{0em}{}
+\titleformat{\subsubsection}{\normalsize\bfseries\color{black}}{}{0em}{}
+
+%----- Useful macros -------------------------------------------------
+\newcommand{\node}[1]{\textbf{#1}}
+\newcommand{\gval}[1]{$g{=}#1$}
+\newcommand{\hval}[1]{$h{=}#1$}
+\newcommand{\fval}[1]{$f{=}#1$}
+\newcommand{\goal}{\textcolor{green!55!black}{\textbf{GOAL FOUND}}}
+
+%=====================================================================
+\begin{document}
+%=====================================================================
+
+%----- Title page ----------------------------------------------------
+\begin{center}
+  {\LARGE\bfseries\color{sectionblue} CSE 713: Artificial Intelligence}\\[0.6em]
+  {\large\bfseries Search Algorithms — Complete Model Answers}\\[0.3em]
+  {\normalsize University of Chittagong \quad|\quad 7\textsuperscript{th} Semester B.Sc.\ (Engg.) Examination}\\[0.2em]
+  {\small Covers Years: 2024, 2023, 2022, 2021, 2020 \quad|\quad
+         Topics: UCS, BFS, DFS, Greedy, A*, IDDFS, IDA*}
+\end{center}
+
+\vspace{0.3em}
+\noindent\rule{\linewidth}{1pt}
+\vspace{0.5em}
+
+\tableofcontents
+\newpage
+
+%=====================================================================
+\section{Examination 2024 — Q2 \ (9 Marks)}
+%=====================================================================
+
+\subsection{Problem Data}
+
+\noindent\textbf{States:} A (start), B, C, D, E, F, H, J, K, G (goal). All roads bidirectional.
+
+\vspace{0.6em}
+\begin{minipage}[t]{0.46\textwidth}
+\centering
+{\small\textbf{Table 1: Road Connections and Step Costs}}\\[0.4em]
+\begin{tabular}{ccc}
+\toprule
+\textbf{From} & \textbf{To} & \textbf{Cost} \\
+\midrule
+A & B & 3 \\
+A & C & 4 \\
+A & D & 7 \\
+B & E & 6 \\
+B & F & 5 \\
+C & F & 11 \\
+C & H & 4 \\
+D & H & 2 \\
+D & J & 10 \\
+E & G & 7 \\
+E & H & 3 \\
+F & G & 9 \\
+F & J & 4 \\
+H & G & 5 \\
+H & K & 6 \\
+J & K & 3 \\
+K & G & 4 \\
+\bottomrule
+\end{tabular}
+\end{minipage}
+\hfill
+\begin{minipage}[t]{0.46\textwidth}
+\centering
+{\small\textbf{Table 2: Heuristic Estimates $h(n)$ to Goal G}}\\[0.4em]
+\begin{tabular}{cc}
+\toprule
+\textbf{Node} & \textbf{h(n)} \\
+\midrule
+A & 11 \\
+B & 10 \\
+C & 7  \\
+D & 6  \\
+E & 6  \\
+F & 6  \\
+H & 4  \\
+J & 5  \\
+K & 3  \\
+G & 0  \\
+\bottomrule
+\end{tabular}
+\end{minipage}
+
+%----------------------------------------------------------------------
+\subsection{Part a(i) — State-Space Graph \ [1 mark]}
+%----------------------------------------------------------------------
+
+\begin{solutionbox}
+\textbf{Question:} Using Table 1, draw the state-space graph clearly labelling all nodes and edge costs.
+\end{solutionbox}
+
+\vspace{0.6em}
+
+\begin{center}
+\begin{tikzpicture}[
+  every node/.style={draw, circle, minimum size=0.85cm, inner sep=0pt,
+                     font=\small\bfseries, thick},
+  startnode/.style={fill=startblue},
+  goalnode/.style={fill=goalgreen},
+  lbl/.style={draw=none, fill=white, font=\footnotesize\bfseries,
+               inner sep=1.5pt, outer sep=0pt},
+  edge/.style={thick}
+]
+
+%--- Node positions ---
+\node[startnode] (A) at (0, 6)   {A};
+\node            (B) at (-4, 4)  {B};
+\node            (C) at (0, 4)   {C};
+\node            (D) at (4, 4)   {D};
+\node            (E) at (-5, 2)  {E};
+\node            (F) at (-2, 2)  {F};
+\node            (H) at (2, 2)   {H};
+\node            (J) at (5, 2)   {J};
+\node            (K) at (4, 0)   {K};
+\node[goalnode]  (G) at (0, 0)   {G};
+
+%--- Edges ---
+% Level A → B,C,D
+\draw[edge] (A) -- node[lbl, pos=0.5] {3} (B);
+\draw[edge] (A) -- node[lbl, pos=0.45] {4} (C);
+\draw[edge] (A) -- node[lbl, pos=0.5] {7} (D);
+
+% B → E, F
+\draw[edge] (B) -- node[lbl, pos=0.5] {6} (E);
+\draw[edge] (B) -- node[lbl, pos=0.5] {5} (F);
+
+% C → F, H
+\draw[edge] (C) -- node[lbl, pos=0.35] {11} (F);
+\draw[edge] (C) -- node[lbl, pos=0.5]  {4}  (H);
+
+% D → H, J
+\draw[edge] (D) -- node[lbl, pos=0.5] {2}  (H);
+\draw[edge] (D) -- node[lbl, pos=0.5] {10} (J);
+
+% E → G   (diagonal, no crossing issue)
+\draw[edge] (E) -- node[lbl, pos=0.5] {7} (G);
+
+% E → H   (long horizontal — bent upward to avoid visual overlap with F)
+\draw[edge, bend left=18] (E) -- node[lbl, pos=0.5] {3} (H);
+
+% F → G
+\draw[edge] (F) -- node[lbl, pos=0.5] {9} (G);
+
+% F → J   (long horizontal — bent downward to clear node H)
+\draw[edge, bend right=25] (F) -- node[lbl, pos=0.5] {4} (J);
+
+% H → G, K
+\draw[edge] (H) -- node[lbl, pos=0.5] {5} (G);
+\draw[edge] (H) -- node[lbl, pos=0.5] {6} (K);
+
+% J → K
+\draw[edge] (J) -- node[lbl, pos=0.5] {3} (K);
+
+% K → G
+\draw[edge] (K) -- node[lbl, pos=0.5] {4} (G);
+
+%--- Legend ---
+\begin{scope}[shift={(0,-1.3)}]
+  \node[startnode, minimum size=0.55cm, font=\tiny] (ls) at (-1.5,0) {};
+  \node[draw=none, font=\small] at (0, 0) {= Start (A)};
+  \node[goalnode, minimum size=0.55cm, font=\tiny] (lg) at (2.5,0)  {};
+  \node[draw=none, font=\small] at (4, 0) {= Goal (G)};
+\end{scope}
+
+\end{tikzpicture}
+\end{center}
+
+\begin{notesbox}
+\textbf{Note:} The edge E--H is curved upward and F--J is curved downward to avoid visual ambiguity where nodes share the same $y$-coordinate. All edges are \textbf{bidirectional} (undirected).
+\end{notesbox}
+
+%----------------------------------------------------------------------
+\subsection{Part a(ii) — Search Algorithm Traces \ [5 marks]}
+%----------------------------------------------------------------------
+
+\begin{solutionbox}
+\textbf{Question:} Show search trees for (1) UCS, (2) Greedy Best-First, (3) A*, (4) IDDFS from A to G.
+At every step: show node being expanded and fringe contents in order of selection.
+For IDDFS: show depth limit per iteration. Ties broken alphabetically.
+\end{solutionbox}
+
+\vspace{0.7em}
+
+%----------------------------------------------------------------
+\subsubsection*{Algorithm 1 — Uniform-Cost Search (UCS)}
+%----------------------------------------------------------------
+
+\textbf{Key idea:} Always expand the node with the \textbf{lowest path cost} $g(n)$ from the start.
+The fringe is a \textbf{min-priority queue sorted by} $g(n)$.
+A node is closed (never re-expanded) once popped.
+If a \emph{cheaper} path to a fringe node is found, its cost is updated (replaced).
+
+\textbf{Fringe notation:} Node$[g]$ sorted ascending by $g$.
+
+\vspace{0.4em}
+\begin{center}
+\renewcommand{\arraystretch}{1.25}
+\begin{tabular}{c|l|c|p{9.5cm}}
+\toprule
+\textbf{Step} & \textbf{Node Expanded} & \textbf{g(n)} &
+\textbf{Fringe after expansion \ (sorted by g)} \\
+\midrule
+1 & \textbf{A} & 0
+  & B[3], C[4], D[7] \\
+  & & & \footnotesize Neighbours of A: B($g{=}3$), C($g{=}4$), D($g{=}7$). \\
+\midrule
+2 & \textbf{B} & 3
+  & C[4], D[7], F[8], E[9] \\
+  & & & \footnotesize A already closed. $B{\to}F$: $g{=}8$; $B{\to}E$: $g{=}9$. Both new.\\
+\midrule
+3 & \textbf{C} & 4
+  & D[7], F[8], H[8], E[9] \\
+  & & & \footnotesize $C{\to}F$: $g{=}15 > 8$ already in fringe $\Rightarrow$ keep $F[8]$. \
+         $C{\to}H$: $g{=}8$ new. \\
+\midrule
+4 & \textbf{D} & 7
+  & F[8], H[8], E[9], J[17] \\
+  & & & \footnotesize $D{\to}H$: $g{=}9 > 8$ in fringe $\Rightarrow$ keep $H[8]$. \
+         $D{\to}J$: $g{=}17$ new.
+         Tie F,H: \textbf{F before H} (alphabetical). \\
+\midrule
+5 & \textbf{F} & 8
+  & H[8], E[9], J[12], G[17] \\
+  & & & \footnotesize $F{\to}G$: $g{=}17$ new. $F{\to}J$: $g{=}12 < 17$ in fringe
+         $\Rightarrow$ \textbf{update} $J[12]$. \\
+\midrule
+6 & \textbf{H} & 8
+  & E[9], J[12], G[13], K[14] \\
+  & & & \footnotesize $H{\to}E$: $g{=}11 > 9$ in fringe $\Rightarrow$ keep $E[9]$. \
+         $H{\to}G$: $g{=}13 < 17$ $\Rightarrow$ \textbf{update} $G[13]$. \
+         $H{\to}K$: $g{=}14$ new. \\
+\midrule
+7 & \textbf{E} & 9
+  & J[12], G[13], K[14] \\
+  & & & \footnotesize $E{\to}G$: $g{=}16 > 13$ in fringe $\Rightarrow$ keep $G[13]$.\\
+\midrule
+8 & \textbf{J} & 12
+  & G[13], K[14] \\
+  & & & \footnotesize $J{\to}K$: $g{=}15 > 14$ in fringe $\Rightarrow$ keep $K[14]$.\\
+\midrule
+9 & \textbf{G} & 13
+  & \goal \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{answerbox}
+\textbf{UCS Solution:} $A \;\xrightarrow{4}\; C \;\xrightarrow{4}\; H \;\xrightarrow{5}\; G$
+\hfill \textbf{Total cost: $4+4+5 = \mathbf{13}$}
+
+Nodes expanded (in order): A, B, C, D, F, H, E, J, G \quad(9 nodes total)
+
+UCS \textbf{guarantees the optimal path} because it always expands the cheapest unexplored node, never re-expands a closed node, and path costs are non-negative.
+\end{answerbox}
+
+\vspace{1em}
+
+%----------------------------------------------------------------
+\subsubsection*{Algorithm 2 — Greedy Best-First Search}
+%----------------------------------------------------------------
+
+\textbf{Key idea:} Always expand the node with the \textbf{lowest heuristic estimate} $h(n)$ to the goal.
+The fringe is sorted by $h(n)$ (ascending). Path cost $g(n)$ is \emph{completely ignored}.
+Greedy is fast but not guaranteed to find the optimal path.
+
+\textbf{Fringe notation:} Node$[h]$ sorted ascending by $h$.
+
+\vspace{0.4em}
+\begin{center}
+\renewcommand{\arraystretch}{1.25}
+\begin{tabular}{c|l|c|p{9cm}}
+\toprule
+\textbf{Step} & \textbf{Node Expanded} & \textbf{h(n)} &
+\textbf{Fringe after expansion \ (sorted by h)} \\
+\midrule
+1 & \textbf{A} & 11
+  & D[6], C[7], B[10] \\
+  & & & \footnotesize Neighbours B($h{=}10$), C($h{=}7$), D($h{=}6$). Sorted by $h$: D, C, B. \\
+\midrule
+2 & \textbf{D} & 6
+  & H[4], J[5], C[7], B[10] \\
+  & & & \footnotesize D's neighbours excl.\ A: H($h{=}4$), J($h{=}5$). \\
+\midrule
+3 & \textbf{H} & 4
+  & G[0], K[3], J[5], E[6], C[7], B[10] \\
+  & & & \footnotesize H's neighbours excl.\ D: C($h{=}7$, already in fringe—skip),
+         E($h{=}6$), G($h{=}0$), K($h{=}3$). \\
+\midrule
+4 & \textbf{G} & 0
+  & \goal \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{answerbox}
+\textbf{Greedy Solution:} $A \;\xrightarrow{7}\; D \;\xrightarrow{2}\; H \;\xrightarrow{5}\; G$
+\hfill \textbf{Total cost: $7+2+5 = \mathbf{14}$} (not optimal!)
+
+Nodes expanded: A, D, H, G \quad(only 4 nodes — very fast)
+
+Greedy expanded just 4 nodes versus UCS's 9, but found a \textbf{suboptimal path} (cost 14 vs optimal 13). It followed the heuristic blindly: D had the lowest $h$ from A, leading it down the D--H--G route instead of the cheaper A--C--H--G route.
+\end{answerbox}
+
+\vspace{1em}
+
+%----------------------------------------------------------------
+\subsubsection*{Algorithm 3 — A* Search}
+%----------------------------------------------------------------
+
+\textbf{Key idea:} Expand the node with the \textbf{lowest evaluation function}
+$f(n) = g(n) + h(n)$, where $g(n)$ = exact cost from start and $h(n)$ = heuristic estimate to goal.
+The fringe is sorted by $f(n)$ (ascending). Ties in $f$ broken alphabetically.
+If a cheaper path to a fringe node is found, update its entry.
+
+\textbf{Fringe notation:} Node$[g, h, f]$ sorted ascending by $f$.
+
+\vspace{0.4em}
+\begin{center}
+\renewcommand{\arraystretch}{1.3}
+\small
+\begin{tabular}{c|l|c|c|c|p{7.2cm}}
+\toprule
+\textbf{Step} & \textbf{Node} & \textbf{g} & \textbf{h} & \textbf{f} &
+\textbf{Fringe after expansion (sorted by f)} \\
+\midrule
+1 & \textbf{A} & 0 & 11 & 11
+  & C[4,7,\textbf{11}], B[3,10,\textbf{13}], D[7,6,\textbf{13}] \\
+  & & & & & \footnotesize Tie B,D at $f{=}13$: B first. \\
+\midrule
+2 & \textbf{C} & 4 & 7 & 11
+  & H[8,4,\textbf{12}], B[3,10,\textbf{13}], D[7,6,\textbf{13}], F[15,6,\textbf{21}] \\
+  & & & & & \footnotesize $C{\to}H$: $g{=}8,f{=}12$ new. $C{\to}F$: $g{=}15,f{=}21$ new. \\
+\midrule
+3 & \textbf{H} & 8 & 4 & 12
+  & B[3,10,\textbf{13}], D[7,6,\textbf{13}], G[13,0,\textbf{13}], E[11,6,\textbf{17}], K[14,3,\textbf{17}], F[15,6,\textbf{21}] \\
+  & & & & & \footnotesize $H{\to}D$: $f{=}16>13$, keep. $H{\to}G$: $f{=}13$ new. $H{\to}E$: $f{=}17$ new. $H{\to}K$: $f{=}17$ new. Tie B,D,G at $f{=}13$: \textbf{B first}. \\
+\midrule
+4 & \textbf{B} & 3 & 10 & 13
+  & D[7,6,\textbf{13}], G[13,0,\textbf{13}], F[8,6,\textbf{14}], E[9,6,\textbf{15}], K[14,3,\textbf{17}] \\
+  & & & & & \footnotesize $B{\to}F$: $g{=}8,f{=}14<21$ $\Rightarrow$ \textbf{update} F. $B{\to}E$: $g{=}9,f{=}15<17$ $\Rightarrow$ \textbf{update} E. Tie D,G at $f{=}13$: \textbf{D first}. \\
+\midrule
+5 & \textbf{D} & 7 & 6 & 13
+  & G[13,0,\textbf{13}], F[8,6,\textbf{14}], E[9,6,\textbf{15}], K[14,3,\textbf{17}], J[17,5,\textbf{22}] \\
+  & & & & & \footnotesize $D{\to}J$: $g{=}17,f{=}22$ new. \\
+\midrule
+6 & \textbf{G} & 13 & 0 & 13
+  & \goal \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{answerbox}
+\textbf{A* Solution:} $A \;\xrightarrow{4}\; C \;\xrightarrow{4}\; H \;\xrightarrow{5}\; G$
+\hfill \textbf{Total cost: $4+4+5 = \mathbf{13}$} (optimal!)
+
+Nodes expanded: A, C, H, B, D, G \quad(6 nodes — fewer than UCS's 9)
+
+A* is both \textbf{complete} and \textbf{optimal} when the heuristic is \emph{admissible} ($h(n) \leq h^*(n)$, i.e.\ it never overestimates). It is more efficient than UCS because $h(n)$ guides the search toward promising nodes, pruning unpromising directions early.
+\end{answerbox}
+
+\vspace{1em}
+
+%----------------------------------------------------------------
+\subsubsection*{Algorithm 4 — Iterative Deepening DFS (IDDFS)}
+%----------------------------------------------------------------
+
+\textbf{Key idea:} Perform DFS with a depth cutoff $L = 0, 1, 2, \ldots$, restarting from the root each time, until the goal is found. The ``fringe'' is a \textbf{stack} (LIFO). Children are pushed in \emph{reverse} alphabetical order so they are \emph{popped} (and expanded) in alphabetical order. Nodes on the \textbf{current path} (ancestors) are not revisited to avoid infinite loops.
+
+\textbf{Stack notation:} Leftmost entry = top of stack (next to be popped). Depth shown in parentheses.
+
+\vspace{0.5em}
+
+\noindent\textbf{Iteration $L = 0$:}
+\begin{center}
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{c|l|p{8cm}}
+\toprule
+\textbf{Step} & \textbf{Action} & \textbf{Stack (top $\leftarrow$ left)} \\
+\midrule
+1 & Pop \textbf{A}(d=0). $A \neq G$. At depth limit — cannot expand. & $[\;\;]$ \\
+\midrule
+\multicolumn{3}{c}{\textit{No solution at $L=0$.}} \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\vspace{0.6em}
+
+\noindent\textbf{Iteration $L = 1$:}
+\begin{center}
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{c|l|p{8cm}}
+\toprule
+\textbf{Step} & \textbf{Action} & \textbf{Stack} \\
+\midrule
+1 & Pop \textbf{A}(d=0). Expand: push D,C,B (B on top). & B(1), C(1), D(1) \\
+2 & Pop \textbf{B}(d=1). $B \neq G$. At depth limit. & C(1), D(1) \\
+3 & Pop \textbf{C}(d=1). $C \neq G$. At depth limit. & D(1) \\
+4 & Pop \textbf{D}(d=1). $D \neq G$. At depth limit. & $[\;\;]$ \\
+\midrule
+\multicolumn{3}{c}{\textit{No solution at $L=1$.}} \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\vspace{0.6em}
+
+\noindent\textbf{Iteration $L = 2$:}
+\begin{center}
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{c|l|p{8.5cm}}
+\toprule
+\textbf{Step} & \textbf{Action} & \textbf{Stack} \\
+\midrule
+1  & Pop \textbf{A}(d=0). Expand: B,C,D.
+   & B(1), C(1), D(1) \\
+2  & Pop \textbf{B}(d=1). Expand (excl.\ A): E,F. Push F,E.
+   & E(2), F(2), C(1), D(1) \\
+3  & Pop \textbf{E}(d=2). $E \neq G$. At limit.
+   & F(2), C(1), D(1) \\
+4  & Pop \textbf{F}(d=2). At limit.
+   & C(1), D(1) \\
+5  & Pop \textbf{C}(d=1). Expand (excl.\ A): F,H. Push H,F.
+   & F(2), H(2), D(1) \\
+6  & Pop \textbf{F}(d=2). At limit.
+   & H(2), D(1) \\
+7  & Pop \textbf{H}(d=2). At limit.
+   & D(1) \\
+8  & Pop \textbf{D}(d=1). Expand (excl.\ A): H,J. Push J,H.
+   & H(2), J(2) \\
+9  & Pop \textbf{H}(d=2). At limit.
+   & J(2) \\
+10 & Pop \textbf{J}(d=2). At limit.
+   & $[\;\;]$ \\
+\midrule
+\multicolumn{3}{c}{\textit{No solution at $L=2$.}} \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\vspace{0.6em}
+
+\noindent\textbf{Iteration $L = 3$:}
+\begin{center}
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{c|l|p{8.5cm}}
+\toprule
+\textbf{Step} & \textbf{Action} & \textbf{Stack} \\
+\midrule
+1 & Pop \textbf{A}(d=0). Expand: B,C,D.
+  & B(1), C(1), D(1) \\
+2 & Pop \textbf{B}(d=1). Expand (excl.\ A): E,F.
+  & E(2), F(2), C(1), D(1) \\
+3 & Pop \textbf{E}(d=2). Expand (excl.\ B): G,H. Push H first then G (G on top).
+  & G(3), H(3), F(2), C(1), D(1) \\
+4 & Pop \textbf{G}(d=3). $G = \mathrm{GOAL}$.
+  & \goal \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{answerbox}
+\textbf{IDDFS Solution:} $A \;\xrightarrow{3}\; B \;\xrightarrow{6}\; E \;\xrightarrow{7}\; G$
+\hfill \textbf{Depth: 3 \quad Cost: $3+6+7 = \mathbf{16}$}
+
+IDDFS found the solution at depth-limit $L=3$ in just 4 node expansions during the final iteration.
+
+\textbf{Important distinction:} IDDFS finds the \emph{shallowest} path (fewest hops), \textbf{not} the lowest-cost path. The optimal path A→C→H→G also has depth 3, but alphabetical DFS expansion reaches G via B→E→G first. For non-uniform step costs, IDDFS is \textbf{not optimal}. It is however \textbf{complete} — it will always find a solution if one exists.
+
+\textbf{Why IDDFS over BFS?} IDDFS uses only $O(bL)$ \emph{space} (a single stack), whereas BFS requires $O(b^L)$ space to store all frontier nodes. The repeated work is a constant factor overhead.
+\end{answerbox}
+
+\vspace{0.8em}
+
+\noindent\textbf{Algorithm Comparison Summary:}
+\begin{center}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{l|l|c|c|c}
+\toprule
+\textbf{Algorithm} & \textbf{Path Found} & \textbf{Cost} & \textbf{Nodes Expanded} & \textbf{Optimal?} \\
+\midrule
+UCS    & A → C → H → G & 13 & 9 (all iterations) & \textbf{Yes} \\
+Greedy & A → D → H → G & 14 & 4                  & No \\
+A*     & A → C → H → G & 13 & 6                  & \textbf{Yes} \\
+IDDFS  & A → B → E → G & 16 & 4 (final iter.)    & No (non-uniform costs) \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+%----------------------------------------------------------------------
+\subsection{Part b — Problem Formulations \ [3 marks]}
+%----------------------------------------------------------------------
+
+\begin{solutionbox}
+\textbf{Question:} Give the initial state, goal test, operators, and path cost function for each problem.
+\end{solutionbox}
+
+\subsubsection*{(i) Robot Vacuum Cleaning Problem (Indoor Environment)}
+
+\begin{description}[leftmargin=3.2cm, labelwidth=3cm, labelsep=0.2cm]
+  \item[\textbf{State:}]
+    A pair $(\,l,\; D\,)$ where $l$ is the robot's current room and $D \subseteq \{\text{all rooms}\}$ is the set of dirty rooms.
+    \emph{Example:} $(\text{Kitchen},\; \{\text{Bedroom, Lounge}\})$.
+
+  \item[\textbf{Initial state:}]
+    $(\text{start room},\; \{\text{all currently dirty rooms}\})$.
+
+  \item[\textbf{Goal test:}]
+    $D = \emptyset$ \quad (no dirty rooms remain).
+
+  \item[\textbf{Operators:}]
+    \begin{enumerate}[noitemsep]
+      \item $\mathrm{Move}(r_i \to r_j)$: Move from room $r_i$ to adjacent room $r_j$ (changes location; $D$ unchanged).
+      \item $\mathrm{Suck}()$: Vacuum the current room (removes current room from $D$ if dirty).
+    \end{enumerate}
+    Static obstacles (furniture) constrain which rooms are adjacent.
+
+  \item[\textbf{Path cost:}]
+    Total energy used: each $\mathrm{Move}$ costs $c_{\mathrm{move}}$ energy units; each $\mathrm{Suck}$ costs $c_{\mathrm{suck}}$ units. Goal: minimise total energy.
+
+  \item[\textbf{Informed vs.\ Uninformed:}]
+    \textbf{Informed search (A*) is more suitable.} A strong heuristic $h(n) = |D| \times \overline{d}$ (number of remaining dirty rooms multiplied by average travel cost between rooms) estimates remaining work without overestimating. With many rooms, uninformed BFS/UCS must explore exponentially many $(l, D)$ state combinations blindly. A* with a good heuristic dramatically prunes this search space.
+\end{description}
+
+\subsubsection*{(ii) Water Jug Problem (5L and 3L Jugs)}
+
+\begin{description}[leftmargin=3.2cm, labelwidth=3cm, labelsep=0.2cm]
+  \item[\textbf{State:}]
+    A pair $(\,x,\; y\,)$ where $x \in \{0,1,2,3,4,5\}$ is water (litres) in the 5L jug and $y \in \{0,1,2,3\}$ is water in the 3L jug.
+
+  \item[\textbf{Initial state:}]
+    $(0,\; 0)$ — both jugs empty.
+
+  \item[\textbf{Goal test:}]
+    $x = 4$ (exactly 4 litres in the 5L jug). The 3L jug cannot hold 4L, so only $x=4$ satisfies the goal.
+
+  \item[\textbf{Operators:}]
+    \begin{enumerate}[noitemsep]
+      \item \textbf{Fill 5L:} $(x,y) \to (5,\;y)$
+      \item \textbf{Fill 3L:} $(x,y) \to (x,\;3)$
+      \item \textbf{Empty 5L:} $(x,y) \to (0,\;y)$
+      \item \textbf{Empty 3L:} $(x,y) \to (x,\;0)$
+      \item \textbf{Pour 5L $\to$ 3L:} $(x,y) \to (x{-}d,\;y{+}d)$ where $d = \min(x,\; 3{-}y)$
+      \item \textbf{Pour 3L $\to$ 5L:} $(x,y) \to (x{+}d,\;y{-}d)$ where $d = \min(y,\; 5{-}x)$
+    \end{enumerate}
+
+  \item[\textbf{Path cost:}]
+    Number of actions performed (1 per action), minimised to find the shortest sequence.
+
+  \item[\textbf{State space:}]
+    \textbf{FINITE.} The 5L jug holds integer amounts $\{0,1,2,3,4,5\}$ (6 values) and the 3L jug holds $\{0,1,2,3\}$ (4 values), giving at most $6 \times 4 = 24$ states. Not all are reachable, but the space is strictly bounded.
+
+    \textit{One valid solution path (6 steps):}
+    \[
+    (0,0)
+    \xrightarrow{\mathrm{Fill\,5L}} (5,0)
+    \xrightarrow{\mathrm{Pour\,5\to3}} (2,3)
+    \xrightarrow{\mathrm{Empty\,3L}} (2,0)
+    \xrightarrow{\mathrm{Pour\,5\to3}} (0,2)
+    \xrightarrow{\mathrm{Fill\,5L}} (5,2)
+    \xrightarrow{\mathrm{Pour\,5\to3}} (4,3)
+    \quad \Rightarrow x=4 \;\checkmark
+    \]
+\end{description}
+
+%=====================================================================
+% ---- 2023 WILL BE ADDED HERE IN NEXT SESSION ----
+%=====================================================================
+
+\end{document}

@@ -6,8 +6,9 @@
 - **Active exam:** CSE 713 — Artificial Intelligence — **Wed 10 Jun 2026, 10:30 AM**
 - **Days left:** 9
 - **Phase:** AI core learning — Day 1
-- **Single most important thing today:** Intelligent Agents + Environments (PAGE model, 5 architectures, 6 env types) — Block 1 at 5:10 AM.
+- **Single most important thing today:** ✅ Block 1 done (Agents). Now: Search Algorithms (BFS, DFS, UCS, IDDFS) — Block 2 at 7:30 AM.
 - **⚠️ Rule:** Google Calendar is the ONLY source of truth for daily plans. Never use the overnight rollover log for scheduling.
+- **🔴 Session protocols:** Read and execute `scripts/data/session_protocols.md` at EVERY session start. No exceptions.
 
 ## Season map
 ```
@@ -36,7 +37,7 @@ Prayers structure the day — each gap is a study block:
 ## Status board (Claude updates)
 | Course | Topics mapped | High-yield done | Past paper attempts | Confidence /5 |
 |--------|:-:|:-:|:-:|:-:|
-| [[02_Courses/CSE713_AI/_Topics\|AI (713)]] | ✅ mapped (11 topics) | 🔲 Block 1 starting | 0 | – |
+| [[02_Courses/CSE713_AI/_Topics\|AI (713)]] | ✅ mapped (11 topics) | ✅ Intelligent Agents done, 🔲 Block 2 (Search) | 0 | – |
 | [[02_Courses/CSE717_InfoSec/README\|InfoSec (717)]] | – | – | – | – |
 | [[02_Courses/CSE711_Compiler/README\|Compiler (711)]] | – | – | – | – |
 | [[02_Courses/CSE719_Distributed/README\|Distributed (719)]] | – | – | – | – |
@@ -44,4 +45,4 @@ Prayers structure the day — each gap is a study block:
 | [[02_Courses/CSE700_Thesis/README\|Thesis (700)]] | – | – | – | – |
 
 ## Navigation
-[[01_Master_Plan]] · [[07_Daily_Routine/Template]] · [[04_Livora/README]] · [[05_Skills/Public_Speaking]]
+[[01_Master_Plan]] · [[07_Daily_Routine/Template]] · [[04_Livora/README]] · [[05_Skills/Public_Speaking]] · [[scripts/data/session_protocols|Session Protocols]]

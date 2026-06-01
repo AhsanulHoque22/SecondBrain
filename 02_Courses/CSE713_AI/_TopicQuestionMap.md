@@ -100,22 +100,25 @@ Every year Q1 has THREE parts:
 #### 🔁 PATTERN (memorise this):
 Every year has a **graph trace question** (4.5–5 marks) + **problem formulation** (2–3 marks):
 - Always given: cost table + h(n) table → draw graph → trace algorithms
-- Algorithms tested: **UCS + Greedy + A*** (every year) + **IDDFS** (2024, 2023)
+- Algorithms tested: **UCS + Greedy + A*** (every year) + **IDDFS** (2024, 2023, 2021)
 - At every step: show **which node is expanded** + **full fringe contents in sorted order**
 - IDDFS: show depth limit per iteration + order of expansion
+- **Scattered search questions also appear in Q3, Q7 of other papers** — see sub-section below
+
+---
 
 #### Detailed Questions by Year:
 
 **2024 — Q2 (9 marks)**
-- States: A, B, C, D, E, F, H, J, K, G (goal). All roads bidirectional.
-- Given Table 1 (road connections + step costs) and Table 2 (heuristic estimates h(n) to G)
-- Key graph: A→B(3), A→C(4), A→D(7), B→E(6), B→F(5), C→F(11), C→H(4), D→H(2), D→J(10), E→G(7), E→H(3), F→G(9), F→J(4), H→G(5), H→K(6), J→K(3), K→G(4)
-- h(n): A=11, B=10, C=7, D=6, E=6, F=6, H=4, J=5, K=3, G=0
+- a) States: A, B, C, D, E, F, H, J, K, G (goal). All roads bidirectional.
+  - Given Table 1 (road connections + step costs) and Table 2 (heuristic estimates h(n) to G)
+  - Graph: A→B(3), A→C(4), A→D(7), B→E(6), B→F(5), C→F(11), C→H(4), D→H(2), D→J(10), E→G(7), E→H(3), F→G(9), F→J(4), H→G(5), H→K(6), J→K(3), K→G(4)
+  - h(n): A=11, B=10, C=7, D=6, E=6, F=6, H=4, J=5, K=3, G=0
   - i) Draw state-space graph labelling all nodes and edge costs (1)
   - ii) Show search tree for: 1.UCS 2.Greedy Best-First h(n) 3.A* f(n)=g(n)+h(n) 4.IDDFS — at every step: node being expanded + fringe contents in order of selection. For IDDFS: depth limit per iteration. Ties broken alphabetically. (5)
 - b) Give initial state, goal test, operators, path cost function for: (3)
   - i) **Robot Vacuum Cleaning** (Indoor, multi-room, static obstacles, minimize energy) — also comment: uninformed (BFS/UCS) or informed (A*)?
-  - ii) **Water Jug Problem** (5L + 3L jugs, no markings, unlimited water, drain, goal: exactly 4L) — is state space finite or infinite?
+  - ii) **Water Jug Problem** (5L + 3L jugs, no markings, unlimited water, drain, goal: exactly 4L) — is state space finite or infinite? Justify.
 
 **2023 — Q2 (9 marks)**
 - a) Give initial state, goal test, operators, path cost for: (2)
@@ -126,37 +129,74 @@ Every year has a **graph trace question** (4.5–5 marks) + **problem formulatio
   - h(n): A=8, B=8, C=6, D=5, E=1, F=4, G=0
   - i) Draw state space (0.5)
   - ii) Trace UCS, Greedy search, A* showing node expanded + fringe at each step (4.5)
-- c) Illustrate with example how **IDDFS** synthesizes benefits of BFS + DFS — optimality, completeness, linear space. Time complexity deteriorates vs both BFS+DFS. (2)
+- c) Illustrate with an appropriate example how **IDDFS** synthesizes the benefits of both BFS and DFS — achieving optimality, completeness, and linear space complexity. Nevertheless, time complexity deteriorates in comparison to both BFS and DFS. (2)
+
+**2022 — A-4(a) (2 marks) ← Search question in Section A!**
+- What is an AI Technique? Write down the **advantages and disadvantages of Depth-First Search and Breadth-First Search**. (2)
 
 **2022 — B-4 (search appears in Section B here!)** (9 marks)
-- a) Steepest-Ascent Hill Climbing algorithm. Problems HC may reach. How to deal. (2)
-- b) Search space given as table + h(n): (3)
+- a) Steepest-Ascent Hill Climbing algorithm. Problems HC may reach. How to deal. (2) ← *see Topic 9*
+- b) Suppose you have the following search space: (3)
   - States: A→B(4), A→C(1), B→D(3), B→E(8), C→C(0), C→D(2), C→F(6), D→C(2), D→E(4), E→G(2), F→G(8)
   - h(n): A=8, B=8, C=6, D=5, E=1, F=4, G=0
-  - i) Draw state space
-  - ii) Trace **Uniform cost, Greedy search, A\*** (A→G)
-- c) Heuristic function? Block world problem (9-block stack) — show HC fails with local heuristic, works with global heuristic. (1)
-- d) CSP: Trace **SEND+MORE=MONEY** cryptarithmetic. (3)
+  - i) Draw the state space of this problem.
+  - ii) Assume initial state A, goal state G. Show how each of the following search strategies would create a search tree — **Uniform cost, Greedy search, A\*** — at each step: node expanded + fringe.
+- c) What is a heuristic function? Block world problem (9-block stack) — show HC fails with local heuristic, works with global heuristic. (1)
+- d) CSP: Trace SEND+MORE=MONEY cryptarithmetic. (3) ← *see Topic 10*
 
-**2021 — Q2 (9 marks)**
+**2021 — Q2 (9.75 marks)**
 - a) What is the state space search problem? (0.75)
 - b) Give initial state, goal test, successor function, cost function + working principle of basic search algorithm for: (3)
-  - i) **Map Coloring** (4 colors, no adjacent regions same color)
-  - ii) **Monkey & Bananas** (3-ft monkey, 8-ft ceiling, 3-ft crates, get bananas)
-- c) Search space (Figure 1 — S as start, G as goal, graph with arc costs and h* values): (3+2)
-  - i) Assume start=S, goal=G. Trace **Depth First Iterative Deepening, Greedy, A\*** — at each step show node expanded + fringe. Report eventual algorithm + solution cost.
+  - i) **Map Coloring** — using only 4 colors, color a planar map such that no two adjacent regions have the same color.
+  - ii) **Monkey & Bananas** — 3-ft monkey, 8-ft ceiling, 3-ft crates, get bananas hanging from ceiling. Room has two stackable, movable, climbable crates.
+- c) Suppose you have the search space in Figure 1 (S=start, G=goal, graph with arc costs and h* values): (3+2)
   - h(n): S=9, A=9, B=4, C=5, D=∞, E=∞, G=0
+  - i) Assume start=S, goal=G. Show search trees for **Depth First Iterative Deepening, Greedy search, A\*** — at each step show node expanded + fringe.
+  - ii) Also report the eventual algorithm used and the solution cost.
 
-**2020 — Q2** *(Search + Hill Climbing combined — see Topic 9)*
+**2020 — Q2 (Group-A) (8.75 marks)**
+- a) How can you formulate a search problem? Give examples of data structures that can be used to represent a state-space both in explicit and implicit ways. (1.75)
+- b) Give the initial state, goal test, successor function, and cost function for each of the following: (2)
+  - i) **Travelling Salesman Problem (TSP)** — N cities connected by roads. Find shortest tour starting from a city, visiting all exactly once, returning to start.
+  - ii) **Missionaries and Cannibals** — 3M + 3C on one side of river. 1 boat carries 2. M must never be outnumbered by C. Give a plan for all to cross.
+- c) Suppose you have the following search space: (1+3+1 = 5)
+  - States: A→B(4), A→C(1), B→D(3), B→E(8), C→C(0), C→D(2), C→F(6), D→C(2), D→E(4), E→G(2), F→G(8)
+  - h(n): A=8, B=8, C=6, D=5, E=1, F=4, G=0
+  - i) Draw the state-space of this problem. (1)
+  - ii) Assume initial state A, goal G. Show how each of the following search strategies would create a search tree — **Uniform cost, Greedy search, A\*** — show node expanded + fringe at each step. (3)
+  - iii) At each step of the search algorithm, show which node is being expanded and the content of fringe. (1) *(note: this overlaps with part ii — exam expects fringe shown at every step)*
+
+---
+
+#### Scattered Search Questions (Other Q numbers — DO NOT MISS these)
+
+**2021 — Q3(b) (1.75 marks)**
+- Differentiate between **DFID** and **IDA\*** algorithms. Demonstrate how DFID incorporates the advantages of the Breadth First Search algorithm and the Depth First Search algorithm with an example.
+
+**2020 — Q3(b) (Group-A) (2 marks)**
+- **Iterative-deepening (ID)** is a type of search algorithm said to combine the benefits of breadth-first and depth-first search. Explain, using a diagram or otherwise, how ID achieves these benefits.
+
+**2020 — Q3(c) (Group-A) (1.75 marks)**
+- When is **breadth-first search an admissible** search strategy? Briefly explain.
+
+**2020 — Q7(b) (Group-B) (2 marks)**
+- What will happen if h' **underestimates** h in the A\* algorithm? What will happen if h' **overestimates** h? *(admissibility consequences — A* loses optimality if h overestimates)*
+
+---
 
 #### 🎯 What to master for this topic:
 - **UCS**: expand lowest g(n). Fringe = priority queue ordered by path cost.
 - **Greedy**: expand lowest h(n). Fringe = priority queue ordered by h(n).
 - **A\***: expand lowest f(n)=g(n)+h(n). Fringe = priority queue ordered by f(n).
-- **IDDFS**: DFS with depth_limit=0,1,2,... until goal found. Show each iteration.
+- **IDDFS/DFID**: DFS with depth_limit=0,1,2,... until goal found. Show each iteration explicitly.
+- **IDA\***: like IDDFS but uses f(n) as cutoff instead of depth. More memory-efficient than A*.
+- **BFS admissibility**: BFS is admissible (optimal) only when all step costs are equal.
+- **A\* admissibility**: h(n) ≤ h*(n) — A* is optimal if heuristic is admissible. If h overestimates → may miss optimal path. If h underestimates → still optimal but may explore more nodes.
+- **DFS advantages**: space-efficient O(bm). **DFS disadvantages**: not complete (infinite branches), not optimal.
+- **BFS advantages**: complete, optimal (uniform cost). **BFS disadvantages**: O(b^d) space — exponential.
 - **Fringe format at every step** (exam marks): `[node(cost), node(cost), ...]` sorted
-- **Admissibility**: h(n) ≤ h*(n) — A* is optimal if heuristic is admissible
 - **Problem formulations** — know for: Water Jug, TSP, M&C, Robot Vacuum, Map Coloring, Monkey+Bananas
+- **Same search space table (A→B(4), A→C(1)… E→G(2), F→G(8)) appears in 2020, 2022, 2023** — practice traces on it cold
 
 ---
 
@@ -460,15 +500,19 @@ Goal:  ON(C,A), ON(B,D), ONTABLE(A), ONTABLE(D)
 | Topic | 2020 | 2021 | 2022 | 2023 | 2024 |
 |-------|------|------|------|------|------|
 | Intelligent Agents | A-Q1 | A-Q1 | A-1 | A-Q1 | A-Q1 |
-| Search Algorithms | A-Q2(pt) | A-Q2 | B-4 | A-Q2 | A-Q2 |
-| Alpha-Beta Pruning | A-Q3 | A-Q3d | A-4b | A-Q3b | A-Q3 |
-| FC/BC + Rule-Based | A-Q4 | B-Q6a | B-3c | B-Q6 | B-Q6 |
-| Hill Climbing + SA | A-Q2(pt) | A-Q3a | B-4a | A-Q3a | A-Q4b |
+| Search (graph trace) | A-Q2 | A-Q2c | B-4b | A-Q2b | A-Q2a |
+| Search (formulation) | A-Q2b | A-Q2b | — | A-Q2a | A-Q2b |
+| Search (IDDFS/ID theory) | A-Q3b | A-Q3b | A-4a(DFS/BFS) | A-Q2c | A-Q2a(ii) |
+| BFS admissibility | A-Q3c | — | — | — | — |
+| A* heuristic properties | B-Q7b | — | — | — | — |
+| Alpha-Beta Pruning | A-Q3d | A-Q3d | A-4b,c,d | A-Q3b | A-Q3a |
+| FC/BC + Rule-Based | A-Q5c/B-Q5 | B-Q6a | B-3b,c | B-Q6 | B-Q6 |
+| Hill Climbing + SA | A-Q3a | A-Q3a | B-4a | A-Q3a | A-Q4b |
 | CSP | — | A-Q3c | B-4d | A-Q3c | A-Q4(pt) |
 | Fuzzy Logic | B-Q8(pt) | combined | B-1d | — | B-Q8(pt) |
-| FOL + Resolution | B-Q5 | B-Q5 | A-2 | A-Q4 | A-Q4 |
+| FOL + Resolution | B-Q4 | B-Q4,5 | A-2 | A-Q4 | A-Q4 |
 | STRIPS + Planning | B-Q6 | B-Q6b | A-3 | B-Q5 | B-Q5 |
-| Bayes + BN | B-Q7 | B-Q7,8 | B-3d | B-Q7 | B-Q7 |
+| Bayes + BN | B-Q7,8 | B-Q7,8 | B-3d | B-Q7 | B-Q7 |
 | Neural Networks | B-Q8 | B-Q8 | B-1,2 | B-Q8 | B-Q8 |
 
 ---
@@ -477,8 +521,13 @@ Goal:  ON(C,A), ON(B,D), ONTABLE(A), ONTABLE(D)
 
 1. **Section A Q1 = Intelligent Agents** — guaranteed 9 marks, never skipped. Learn PAGE cold.
 2. **Section A Q2 = Search** — guaranteed 5 marks from graph trace. Practice the fringe format.
-3. **R1–R5 example appears verbatim every year** — memorize FC and BC traces.
-4. **Block World appears verbatim every year** — same start/goal state.
-5. **Bayesian Network topology repeats** — Fire/Earthquake/Alarm/Calls is the template.
-6. **IDDFS added in 2024/2023** — new pattern, will likely repeat.
-7. **2022 is structured differently** — FOL in Section A, Search in Section B. Know your topics not your section.
+3. **The same search space table (A→B(4), A→C(1), B→D(3)…) appears in 2020, 2022, 2023** — practice it until traces are automatic.
+4. **IDDFS / DFID appears in 2024, 2023, 2021, 2020** — it's a core exam pattern now, not new.
+5. **DFS vs BFS advantages/disadvantages asked in 2022 A-4(a)** — know both cold.
+6. **DFID vs IDA\* comparison asked in 2021 Q3(b)** — key difference: IDA* uses f-cost cutoff, DFID uses depth cutoff.
+7. **A\* heuristic under/overestimate asked in 2020 Group-B Q7(b)** — underestimate → still optimal; overestimate → may not be optimal.
+8. **BFS admissibility asked in 2020 Q3(c)** — BFS is admissible only when all step costs are equal.
+9. **R1–R5 example appears verbatim every year** — memorize FC and BC traces.
+10. **Block World appears verbatim every year** — same start/goal state.
+11. **Bayesian Network topology repeats** — Fire/Earthquake/Alarm/Calls is the template.
+12. **2022 is structured differently** — FOL in Section A, Search in Section B. Know your topics not your section.

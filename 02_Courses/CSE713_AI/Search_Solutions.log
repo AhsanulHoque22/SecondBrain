@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex 2025.9.21)  1 JUN 2026 17:13
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex 2025.9.21)  1 JUN 2026 17:22
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -893,92 +893,303 @@ Overfull \hbox (36.79994pt too wide) in paragraph at lines 112--145
  []
 
 [3] [4]
-Overfull \hbox (295.93616pt too wide) in paragraph at lines 175--205
+Underfull \hbox (badness 10000) in paragraph at lines 161--161
+[]|\OT1/cmr/bx/n/12 Uninformed (Blind)
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 161--162
+[]|\OT1/cmr/bx/n/12 Informed (Heuris-tic)
+ []
+
+
+Underfull \hbox (badness 1694) in paragraph at lines 165--166
+[]|\OT1/cmr/m/n/12 Uses a \OT1/cmr/bx/n/12 heuris-tic func-tion
+ []
+
+
+Underfull \hbox (badness 2111) in paragraph at lines 168--168
+[]|\OT1/cmr/m/n/12 By \OT1/cmr/bx/n/12 struc-tural cri-te-ria \OT1/cmr/m/n/12 |
+
+ []
+
+
+Underfull \hbox (badness 1460) in paragraph at lines 168--168
+\OT1/cmr/m/n/12 depth (BFS, DFS, ID-DFS),
+ []
+
+
+Underfull \hbox (badness 4001) in paragraph at lines 172--172
+[]|\OT1/cmr/bx/n/12 Exponential \OT1/cmr/m/n/12 in the worst
+ []
+
+
+Underfull \hbox (badness 1895) in paragraph at lines 173--174
+[]|\OT1/cmr/bx/n/12 Potentially far more ef-
+ []
+
+
+Underfull \hbox (badness 1383) in paragraph at lines 173--174
+\OT1/cmr/bx/n/12 fi-cient \OT1/cmr/m/n/12 | a good heuris-tic
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 177--178
+[]|\OT1/cmr/bx/n/12 Problem-specific \OT1/cmr/m/n/12 | the
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 180--180
+[]|\OT1/cmr/m/n/12 UCS guar-an-tees op-ti-mal-ity
+ []
+
+
+Underfull \hbox (badness 3354) in paragraph at lines 180--180
+\OT1/cmr/m/n/12 for any non-negative costs;
+ []
+
+
+Underfull \hbox (badness 2285) in paragraph at lines 184--184
+\OT1/cmr/m/n/12 good heuris-tic ex-ists; state
+ []
+
+
+Underfull \hbox (badness 2111) in paragraph at lines 185--186
+[]|\OT1/cmr/m/n/12 Domain knowl-edge is avail-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 189--190
+[]|\OT1/cmr/m/n/12 Greedy BFS, A*, IDA*,
+ []
+
+
+Overfull \hbox (22.57356pt too wide) in paragraph at lines 159--192
  [] 
  []
 
-[5] [6{/usr/share/texmf/fonts/enc/dvips/cm-super/cm-super-ts1.enc}]
-Underfull \hbox (badness 10000) in paragraph at lines 366--367
-[]|\OT1/cmr/m/n/10.95 Neighbours: Sibiu(253), Timisoara(329),
+[5{/usr/share/texmf/fonts/enc/dvips/cm-super/cm-super-ts1.enc}]
+Overfull \hbox (2.2902pt too wide) in paragraph at lines 242--243
+ [] 
+ []
+
+
+Underfull \hbox (badness 2261) in paragraph at lines 255--255
+[]|\OT1/cmr/m/n/12 DFS can de-scend
+ []
+
+
+Overfull \hbox (22.57356pt too wide) in paragraph at lines 251--260
+ [] 
+ []
+
+[6]
+Underfull \hbox (badness 1810) in paragraph at lines 273--273
+[]|\OT1/cmr/m/n/12 IDDFS runs DLS \OT1/cmr/bx/n/12 re-peat-edly
+ []
+
+
+Underfull \hbox (badness 1264) in paragraph at lines 274--275
+\OT1/cmr/m/n/12 (fewest steps), not the cheap-
+ []
+
+
+Overfull \hbox (22.57356pt too wide) in paragraph at lines 268--277
+ [] 
+ []
+
+
+Underfull \hbox (badness 4492) in paragraph at lines 289--289
+[]|\OT1/cmr/m/n/12 BFS and ID-DFS
+ []
+
+
+Underfull \hbox (badness 1715) in paragraph at lines 289--289
+\OT1/cmr/m/n/12 as-sume \OT1/cmr/bx/n/12 all steps
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 289--289
+\OT1/cmr/m/n/12 costs (moun-tain
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 289--289
+\OT1/cmr/m/n/12 roads cost more
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 289--289
+\OT1/cmr/m/n/12 than high-ways).
+ []
+
+
+Underfull \hbox (badness 2903) in paragraph at lines 289--289
+\OT1/cmr/m/n/12 find the cheap-est
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 289--289
+\OT1/cmr/m/n/12 path with non-
+ []
+
+
+Underfull \hbox (badness 1565) in paragraph at lines 291--292
+\OT1/cmr/m/n/12 spent but has \OT1/cmr/bx/n/12 no idea how
+ []
+
+
+Overfull \hbox (22.57356pt too wide) in paragraph at lines 285--294
+ [] 
  []
 
 [7]
-Overfull \hbox (89.22638pt too wide) in paragraph at lines 411--436
+Underfull \hbox (badness 10000) in paragraph at lines 306--306
+[]|\OT1/cmr/m/n/12 A single-direction
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 306--306
+\OT1/cmr/m/n/12 search ex-plores
+ []
+
+
+Underfull \hbox (badness 3323) in paragraph at lines 306--306
+\OT1/cmr/m/n/12 from the goal is
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 306--306
+\OT1/cmr/m/n/12 equally valid |
+ []
+
+
+Underfull \hbox (badness 3612) in paragraph at lines 306--306
+\OT1/cmr/m/n/12 and two searches
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 306--306
+\OT1/cmr/m/n/12 meet-ing in the
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 306--306
+\OT1/cmr/m/n/12 mid-dle each ex-
+ []
+
+
+Underfull \hbox (badness 4205) in paragraph at lines 306--306
+\OT1/cmr/m/n/12 nodes. This is
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 306--306
+\OT1/cmr/m/n/12 an \OT1/cmr/bx/n/12 ex-po-nen-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 306--306
+\OT1/cmr/bx/n/12 tial re-duc-tion\OT1/cmr/m/n/12 :
+ []
+
+
+Overfull \hbox (22.57356pt too wide) in paragraph at lines 302--311
  [] 
  []
 
-[8]
-Underfull \hbox (badness 2351) in paragraph at lines 476--477
+
+Overfull \hbox (194.68755pt too wide) in paragraph at lines 347--348
+ [] 
+ []
+
+[8] [9]
+Overfull \hbox (295.93616pt too wide) in paragraph at lines 394--424
+ [] 
+ []
+
+[10] [11]
+Underfull \hbox (badness 10000) in paragraph at lines 585--586
+[]|\OT1/cmr/m/n/10.95 Neighbours: Sibiu(253), Timisoara(329),
+ []
+
+[12]
+Overfull \hbox (89.22638pt too wide) in paragraph at lines 630--655
+ [] 
+ []
+
+[13]
+Underfull \hbox (badness 2351) in paragraph at lines 695--696
 []|\OT1/cmr/bx/n/12 Must be ad-mis-si-ble \OT1/cmr/m/n/12 for op-ti-
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 483--483
+Underfull \hbox (badness 10000) in paragraph at lines 702--702
 []|\OT1/cmr/m/n/12 Speed $\OML/cmm/m/it/12 >$ \OT1/cmr/m/n/12 op-ti-mal-ity; ex
 -cel-lent
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 484--485
+Underfull \hbox (badness 10000) in paragraph at lines 703--704
 []|\OT1/cmr/m/n/12 Optimality re-quired; ad-mis-si-ble
  []
 
 
-Overfull \hbox (41.88478pt too wide) in paragraph at lines 450--487
+Overfull \hbox (41.88478pt too wide) in paragraph at lines 669--706
  [] 
  []
 
-[9] [10] [11] [12]
-Package mdframed Info: Not enough space on this page on input line 666.
+[14] [15] [16] [17]
+Package mdframed Info: Not enough space on this page on input line 885.
 
-Overfull \hbox (9.96542pt too wide) in paragraph at lines 694--741
+Overfull \hbox (9.96542pt too wide) in paragraph at lines 913--960
  [] 
  []
 
-[13] [14]
-Underfull \hbox (badness 10000) in paragraph at lines 831--832
+[18] [19]
+Underfull \hbox (badness 10000) in paragraph at lines 1050--1051
 []|\OT1/cmr/m/n/10.95 B[3,10,\OT1/cmr/bx/n/10.95 13\OT1/cmr/m/n/10.95 ], D[7,6,
 \OT1/cmr/bx/n/10.95 13\OT1/cmr/m/n/10.95 ], G[13,0,\OT1/cmr/bx/n/10.95 13\OT1/c
 mr/m/n/10.95 ],
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 839--840
+Underfull \hbox (badness 10000) in paragraph at lines 1058--1059
 []|\OT1/cmr/m/n/10.95 G[13,0,\OT1/cmr/bx/n/10.95 13\OT1/cmr/m/n/10.95 ], F[8,6,
 \OT1/cmr/bx/n/10.95 14\OT1/cmr/m/n/10.95 ], E[9,6,\OT1/cmr/bx/n/10.95 15\OT1/cm
 r/m/n/10.95 ],
  []
 
-[15]
-Overfull \hbox (123.95726pt too wide) in paragraph at lines 872--881
+[20]
+Overfull \hbox (123.95726pt too wide) in paragraph at lines 1091--1100
  [] 
  []
 
-[16]
-Overfull \hbox (79.36583pt too wide) in paragraph at lines 888--900
- [] 
- []
-
-
-Overfull \hbox (98.03105pt too wide) in paragraph at lines 907--935
+[21]
+Overfull \hbox (79.36583pt too wide) in paragraph at lines 1107--1119
  [] 
  []
 
 
-Overfull \hbox (210.87434pt too wide) in paragraph at lines 942--956
+Overfull \hbox (98.03105pt too wide) in paragraph at lines 1126--1154
  [] 
  []
 
-Package mdframed Info: Not enough space on this page on input line 967.
-[17]
-Package mdframed Info: Not enough space on this page on input line 967.
 
-Overfull \hbox (8.14693pt too wide) in paragraph at lines 974--984
+Overfull \hbox (210.87434pt too wide) in paragraph at lines 1161--1175
  [] 
  []
 
-[18]
-Overfull \hbox (162.82637pt too wide) detected at line 1059
+Package mdframed Info: Not enough space on this page on input line 1186.
+[22]
+Package mdframed Info: Not enough space on this page on input line 1186.
+
+Overfull \hbox (8.14693pt too wide) in paragraph at lines 1193--1203
+ [] 
+ []
+
+[23]
+Overfull \hbox (162.82637pt too wide) detected at line 1278
 \OT1/cmr/m/n/12 (0\OML/cmm/m/it/12 ; \OT1/cmr/m/n/12 0) [] (5\OML/cmm/m/it/12 ;
  \OT1/cmr/m/n/12 0) [] (2\OML/cmm/m/it/12 ; \OT1/cmr/m/n/12 3) [] (2\OML/cmm/m/
 it/12 ; \OT1/cmr/m/n/12 0) [] (0\OML/cmm/m/it/12 ; \OT1/cmr/m/n/12 2) [] (5\OML
@@ -986,37 +1197,37 @@ it/12 ; \OT1/cmr/m/n/12 0) [] (0\OML/cmm/m/it/12 ; \OT1/cmr/m/n/12 2) [] (5\OML
 OMS/cmsy/m/n/12 ) \OML/cmm/m/it/12 x \OT1/cmr/m/n/12 = 4 []
  []
 
-[19]
-Overfull \hbox (12.76088pt too wide) in paragraph at lines 1126--1128
+[24]
+Overfull \hbox (12.76088pt too wide) in paragraph at lines 1345--1347
 \OT1/cmr/m/n/12 set of \OT1/cmr/m/it/12 un-vis-ited \OT1/cmr/m/n/12 cities. \OT
 1/cmr/m/it/12 Ex-am-ple mid-way: $\OT1/cmr/m/n/12 ([]\OML/cmm/m/it/12 ;  \OMS/c
 msy/m/n/12 f[]g\OT1/cmr/m/n/12 )$
  []
 
-[20]
+[25]
 
 Package pgf Warning: Returning node center instead of a point on node border. D
-id you specify a point identical to the center of node ``C''? on input line 119
-9.
+id you specify a point identical to the center of node ``C''? on input line 141
+8.
 
 
 Package pgf Warning: Returning node center instead of a point on node border. D
-id you specify a point identical to the center of node ``C''? on input line 119
-9.
+id you specify a point identical to the center of node ``C''? on input line 141
+8.
 
-[21]
-Package mdframed Info: Not enough space on this page on input line 1227.
+[26]
+Package mdframed Info: Not enough space on this page on input line 1446.
 
-Overfull \hbox (23.08559pt too wide) in paragraph at lines 1248--1250
+Overfull \hbox (23.08559pt too wide) in paragraph at lines 1467--1469
 []\OT1/cmr/bx/n/12 Fringe no-ta-tion: \OT1/cmr/m/n/12 Node$[\OML/cmm/m/it/12 g\
 OT1/cmr/m/n/12 ]$ sorted as-cend-ing by $\OML/cmm/m/it/12 g$\OT1/cmr/m/n/12 . \
 OT1/cmr/bx/n/12 Closed set: $\OMS/cmsy/m/n/12 f[]g$\OT1/cmr/m/n/12 . 
  []
 
-[22]
-Package mdframed Info: Not enough space on this page on input line 1297.
- [23]
-Overfull \hbox (28.67625pt too wide) in paragraph at lines 1423--1424
+[27]
+Package mdframed Info: Not enough space on this page on input line 1516.
+ [28]
+Overfull \hbox (28.67625pt too wide) in paragraph at lines 1642--1643
 []$\OML/cmm/m/it/12 h\OT1/cmr/m/n/12 (\OML/cmm/m/it/12 B\OT1/cmr/m/n/12 )[]8 \O
 MS/cmsy/m/n/12 ^^T \OML/cmm/m/it/12 h[]\OT1/cmr/m/n/12 (\OML/cmm/m/it/12 B\OT1/
 cmr/m/n/12 )[]5$? \OT1/cmr/bx/n/12 No! $\OML/cmm/m/it/12 h[]\OT1/cmr/m/n/12 (\O
@@ -1024,96 +1235,96 @@ ML/cmm/m/it/12 B\OT1/cmr/m/n/12 ) = [](3[]4[]2\OML/cmm/m/it/12 ;  \OT1/cmr/m/n/
 12 8[]2) = 9$. Wait | $\OML/cmm/m/it/12 B[]D[]E[]G \OT1/cmr/m/n/12 =
  []
 
-[24]
-Overfull \hbox (4.29823pt too wide) in paragraph at lines 1478--1488
+[29]
+Overfull \hbox (4.29823pt too wide) in paragraph at lines 1697--1707
  [] 
  []
 
 
-Underfull \hbox (badness 4378) in paragraph at lines 1501--1502
+Underfull \hbox (badness 4378) in paragraph at lines 1720--1721
 \OT1/cmr/m/n/12 in-fi-nite loops be-cause it
  []
 
 
-Underfull \hbox (badness 3375) in paragraph at lines 1506--1507
+Underfull \hbox (badness 3375) in paragraph at lines 1725--1726
 \OT1/cmr/bx/n/12 costs \OT1/cmr/m/n/12 | like BFS. Be-
  []
 
 
-Underfull \hbox (badness 1389) in paragraph at lines 1509--1509
+Underfull \hbox (badness 1389) in paragraph at lines 1728--1728
 []|\TS1/cmr/m/n/12 Ö $\OML/cmm/m/it/12 O\OT1/cmr/m/n/12 (\OML/cmm/m/it/12 b[]\O
 T1/cmr/m/n/12 )$ | stores en-tire
  []
 
 
-Underfull \hbox (badness 3861) in paragraph at lines 1511--1512
+Underfull \hbox (badness 3861) in paragraph at lines 1730--1731
 \OT1/cmr/m/n/12 the cur-rent path (depth
  []
 
 
-Underfull \hbox (badness 1694) in paragraph at lines 1511--1512
+Underfull \hbox (badness 1694) in paragraph at lines 1730--1731
 \OML/cmm/m/it/12 d$\OT1/cmr/m/n/12 ) plus $\OML/cmm/m/it/12 b[]\OT1/cmr/m/n/12 
 1$ sib-lings per
  []
 
 
-Underfull \hbox (badness 1199) in paragraph at lines 1516--1517
+Underfull \hbox (badness 1199) in paragraph at lines 1735--1736
 []|\TS1/cmr/m/n/12 Ö $\OML/cmm/m/it/12 O\OT1/cmr/m/n/12 (\OML/cmm/m/it/12 b[]\O
 T1/cmr/m/n/12 )$ | \OT1/cmr/bx/n/12 worse con-
  []
 
 
-Underfull \hbox (badness 2809) in paragraph at lines 1516--1517
+Underfull \hbox (badness 2809) in paragraph at lines 1735--1736
 \OT1/cmr/m/n/12 the root are re-vis-ited $\OML/cmm/m/it/12 d$
  []
 
 
-Overfull \hbox (101.62639pt too wide) in paragraph at lines 1494--1519
+Overfull \hbox (101.62639pt too wide) in paragraph at lines 1713--1738
  [] 
  []
 
-[25] [26] [27]
-Underfull \hbox (badness 1107) in paragraph at lines 1593--1593
+[30] [31] [32]
+Underfull \hbox (badness 1107) in paragraph at lines 1812--1812
 \OT1/cmr/m/n/12 Easy to code re-cur-sively or
  []
 
 
-Underfull \hbox (badness 6016) in paragraph at lines 1599--1599
+Underfull \hbox (badness 6016) in paragraph at lines 1818--1818
 \OT1/cmr/m/n/12 is-fac-tion and puzzle-solving
  []
 
 
-Underfull \hbox (badness 3895) in paragraph at lines 1599--1599
+Underfull \hbox (badness 3895) in paragraph at lines 1818--1818
 \OT1/cmr/m/n/12 where par-tial so-lu-tions are
  []
 
-[28]
-Underfull \hbox (badness 2103) in paragraph at lines 1619--1620
+[33]
+Underfull \hbox (badness 2103) in paragraph at lines 1838--1839
 []|\OT1/cmr/bx/n/12 3. Slow to find deep
  []
 
 
-Underfull \hbox (badness 1019) in paragraph at lines 1622--1623
+Underfull \hbox (badness 1019) in paragraph at lines 1841--1842
 \OT1/cmr/bx/n/12 over-head: \OT1/cmr/m/n/12 Main-tain-ing the
  []
 
 
-Underfull \hbox (badness 1132) in paragraph at lines 1622--1623
+Underfull \hbox (badness 1132) in paragraph at lines 1841--1842
 \OML/cmm/m/it/12 O\OT1/cmr/m/n/12 (1)$ en-queue/dequeue while
  []
 
 
-Underfull \hbox (badness 4013) in paragraph at lines 1622--1623
+Underfull \hbox (badness 4013) in paragraph at lines 1841--1842
 \OT1/cmr/m/n/12 also track-ing vis-ited states
  []
 
-[29]
-Overfull \hbox (58.28154pt too wide) in paragraph at lines 1631--1642
+[34]
+Overfull \hbox (58.28154pt too wide) in paragraph at lines 1850--1861
  [] 
  []
 
-[30]
-Overfull \hbox (16.08879pt too wide) in paragraph at lines 1675--1676
+[35]
+Overfull \hbox (16.08879pt too wide) in paragraph at lines 1894--1895
 \OT1/cmr/m/n/12 (A$\OMS/cmsy/m/n/12 !$\OT1/cmr/m/n/12 B(4), A$\OMS/cmsy/m/n/12 
 !$\OT1/cmr/m/n/12 C(1), B$\OMS/cmsy/m/n/12 !$\OT1/cmr/m/n/12 D(3), B$\OMS/cmsy/
 m/n/12 !$\OT1/cmr/m/n/12 E(8), C$\OMS/cmsy/m/n/12 !$\OT1/cmr/m/n/12 D(2), C$\OM
@@ -1122,135 +1333,135 @@ S/cmsy/m/n/12 !$\OT1/cmr/m/n/12 F(6), D$\OMS/cmsy/m/n/12 !$\OT1/cmr/m/n/12 C(2)
 12 G(2),
  []
 
-[31] [32]
-Overfull \hbox (27.86475pt too wide) in paragraph at lines 1759--1760
+[36] [37]
+Overfull \hbox (27.86475pt too wide) in paragraph at lines 1978--1979
 \OT1/cmr/m/n/12 po-si-tions are dis-crete lo-ca-tions in the room and $[] \OMS/
 cmsy/m/n/12 2 f[]\OML/cmm/m/it/12 ; []\OMS/cmsy/m/n/12 g$\OT1/cmr/m/n/12 .
  []
 
-[33]
-Package mdframed Info: Not enough space on this page on input line 1875.
- [34]
-Package mdframed Info: Not enough space on this page on input line 1875.
+[38]
+Package mdframed Info: Not enough space on this page on input line 2094.
+ [39]
+Package mdframed Info: Not enough space on this page on input line 2094.
 
-Overfull \hbox (22.98293pt too wide) in paragraph at lines 1890--1898
+Overfull \hbox (22.98293pt too wide) in paragraph at lines 2109--2117
  [] 
  []
 
 
-Overfull \hbox (94.95166pt too wide) in paragraph at lines 1905--1915
+Overfull \hbox (94.95166pt too wide) in paragraph at lines 2124--2134
  [] 
  []
 
 
-Overfull \hbox (224.159pt too wide) in paragraph at lines 1922--1937
+Overfull \hbox (224.159pt too wide) in paragraph at lines 2141--2156
  [] 
  []
 
-Package mdframed Info: Not enough space on this page on input line 1944.
-[35]
-Package mdframed Info: Not enough space on this page on input line 1944.
-Package mdframed Info: Not enough space on this page on input line 2024.
- [36]
-Package mdframed Info: Not enough space on this page on input line 2024.
+Package mdframed Info: Not enough space on this page on input line 2163.
+[40]
+Package mdframed Info: Not enough space on this page on input line 2163.
+Package mdframed Info: Not enough space on this page on input line 2243.
+ [41]
+Package mdframed Info: Not enough space on this page on input line 2243.
 
-Underfull \hbox (badness 1389) in paragraph at lines 2067--2068
+Underfull \hbox (badness 1389) in paragraph at lines 2286--2287
 []|[] \OT1/cmr/bx/n/12 Com-plete \OT1/cmr/m/n/12 | from
  []
 
 
-Underfull \hbox (badness 1910) in paragraph at lines 2069--2070
+Underfull \hbox (badness 1910) in paragraph at lines 2288--2289
 []|[] \OT1/cmr/bx/n/12 Op-ti-mal for uni-
  []
 
 
-Underfull \hbox (badness 5771) in paragraph at lines 2069--2070
+Underfull \hbox (badness 5771) in paragraph at lines 2288--2289
 \OT1/cmr/bx/n/12 form costs \OT1/cmr/m/n/12 | from
  []
 
 
-Underfull \hbox (badness 4660) in paragraph at lines 2069--2070
+Underfull \hbox (badness 4660) in paragraph at lines 2288--2289
 \OT1/cmr/m/n/12 BFS. Finds shal-low-est
  []
 
 
-Overfull \hbox (115.85274pt too wide) in paragraph at lines 2063--2074
+Overfull \hbox (115.85274pt too wide) in paragraph at lines 2282--2293
  [] 
  []
 
-[37]
-Underfull \hbox (badness 1127) in paragraph at lines 2127--2127
+[42]
+Underfull \hbox (badness 1127) in paragraph at lines 2346--2346
 []|\OT1/cmr/bx/n/12 Depth \OT1/cmr/m/n/12 (struc-tural | num-ber of
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 2139--2140
+Underfull \hbox (badness 10000) in paragraph at lines 2358--2359
 []|$\OML/cmm/m/it/12 f[] \OT1/cmr/m/n/12 = []\OMS/cmsy/m/n/12 f\OML/cmm/m/it/12
  f\OT1/cmr/m/n/12 (\OML/cmm/m/it/12 n\OT1/cmr/m/n/12 ) \OMS/cmsy/m/n/12 j
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 2139--2140
+Underfull \hbox (badness 10000) in paragraph at lines 2358--2359
 \OML/cmm/m/it/12 n[]\OMS/cmsy/m/n/12 g$ \OT1/cmr/m/n/12 (adap-
  []
 
 
-Overfull \hbox (86.76112pt too wide) in paragraph at lines 2123--2142
+Overfull \hbox (86.76112pt too wide) in paragraph at lines 2342--2361
  [] 
  []
 
-[38] [39] [40] [41]
-Overfull \hbox (2.02222pt too wide) in paragraph at lines 2283--2322
+[43] [44] [45] [46]
+Overfull \hbox (2.02222pt too wide) in paragraph at lines 2502--2541
 [][]  [] 
  []
 
 
 Package pgf Warning: Returning node center instead of a point on node border. D
-id you specify a point identical to the center of node ``C''? on input line 234
-8.
+id you specify a point identical to the center of node ``C''? on input line 256
+7.
 
 
 Package pgf Warning: Returning node center instead of a point on node border. D
-id you specify a point identical to the center of node ``C''? on input line 234
-8.
+id you specify a point identical to the center of node ``C''? on input line 256
+7.
 
-[42] [43]
-Underfull \hbox (badness 3815) in paragraph at lines 2462--2462
+[47] [48]
+Underfull \hbox (badness 3815) in paragraph at lines 2681--2681
 []|\OT1/cmr/bx/n/12 Simple im-ple-men-
  []
 
 
-Overfull \hbox (65.2527pt too wide) in paragraph at lines 2446--2467
+Overfull \hbox (65.2527pt too wide) in paragraph at lines 2665--2686
  [] 
  []
 
-[44] [45]
-Overfull \hbox (24.39996pt too wide) in paragraph at lines 2565--2579
+[49] [50]
+Overfull \hbox (24.39996pt too wide) in paragraph at lines 2784--2798
  [] 
  []
 
-[46]
-Overfull \hbox (24.39996pt too wide) in paragraph at lines 2591--2605
+[51]
+Overfull \hbox (24.39996pt too wide) in paragraph at lines 2810--2824
  [] 
  []
 
 
-Overfull \hbox (172.90114pt too wide) in paragraph at lines 2615--2627
+Overfull \hbox (172.90114pt too wide) in paragraph at lines 2834--2846
  [] 
  []
 
-[47] [48] (./Search_Solutions.aux)
+[52] [53] (./Search_Solutions.aux)
  ***********
 LaTeX2e <2023-11-01> patch level 1
 L3 programming layer <2024-01-22>
  ***********
  ) 
 Here is how much of TeX's memory you used:
- 18158 strings out of 476182
- 360786 string characters out of 5795595
- 1951975 words of memory out of 5000000
- 39812 multiletter control sequences out of 15000+600000
- 572445 words of font info for 88 fonts, out of 8000000 for 9000
+ 18245 strings out of 476182
+ 362189 string characters out of 5795595
+ 1950975 words of memory out of 5000000
+ 39898 multiletter control sequences out of 15000+600000
+ 572786 words of font info for 89 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
  102i,13n,107p,600b,1343s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></us
@@ -1259,21 +1470,23 @@ e/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx8.pfb></usr/share/texli
 ve/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></usr/share/texlive/tex
 mf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/share/texlive/texmf-dis
 t/fonts/type1/public/amsfonts/cm/cmmi12.pfb></usr/share/texlive/texmf-dist/font
-s/type1/public/amsfonts/cm/cmmi8.pfb></usr/share/texlive/texmf-dist/fonts/type1
-/public/amsfonts/cm/cmr10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public
-/amsfonts/cm/cmr12.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfon
-ts/cm/cmr8.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cm
-sy10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pf
-b></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmti12.pfb></us
-r/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmti8.pfb></usr/share
-/texlive/texmf-dist/fonts/type1/public/amsfonts/symbols/msam10.pfb></usr/share/
-texlive/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb></usr/share/t
-exmf/fonts/type1/public/cm-super/sfrm1000.pfb></usr/share/texmf/fonts/type1/pub
-lic/cm-super/sfrm1200.pfb>
-Output written on Search_Solutions.pdf (48 pages, 374651 bytes).
+s/type1/public/amsfonts/cm/cmmi7.pfb></usr/share/texlive/texmf-dist/fonts/type1
+/public/amsfonts/cm/cmmi8.pfb></usr/share/texlive/texmf-dist/fonts/type1/public
+/amsfonts/cm/cmr10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfon
+ts/cm/cmr12.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/c
+mr7.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb>
+</usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/
+share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/share/t
+exlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmti12.pfb></usr/share/texlive
+/texmf-dist/fonts/type1/public/amsfonts/cm/cmti8.pfb></usr/share/texlive/texmf-
+dist/fonts/type1/public/amsfonts/symbols/msam10.pfb></usr/share/texlive/texmf-d
+ist/fonts/type1/public/amsfonts/symbols/msbm10.pfb></usr/share/texmf/fonts/type
+1/public/cm-super/sfrm1000.pfb></usr/share/texmf/fonts/type1/public/cm-super/sf
+rm1095.pfb></usr/share/texmf/fonts/type1/public/cm-super/sfrm1200.pfb>
+Output written on Search_Solutions.pdf (53 pages, 414838 bytes).
 PDF statistics:
- 254 PDF objects out of 1000 (max. 8388607)
- 166 compressed objects within 2 object streams
+ 285 PDF objects out of 1000 (max. 8388607)
+ 186 compressed objects within 2 object streams
  0 named destinations out of 1000 (max. 500000)
  13 words of extra memory for PDF output out of 10000 (max. 10000000)
 

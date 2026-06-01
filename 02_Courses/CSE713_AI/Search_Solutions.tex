@@ -149,6 +149,225 @@ The year-by-year traces in later sections apply these concepts to specific graph
 \end{notesbox}
 
 %----------------------------------------------------------------------
+\subsection{Informed vs.\ Uninformed Search — The Fundamental Divide}
+%----------------------------------------------------------------------
+
+\noindent Every search algorithm belongs to one of two families, distinguished by a single question: \textbf{Does it use domain-specific knowledge beyond the problem definition?}
+
+\begin{center}
+\renewcommand{\arraystretch}{1.5}
+\begin{tabular}{p{4.5cm}|p{5.5cm}|p{5.5cm}}
+\toprule
+\textbf{Criterion} & \textbf{Uninformed (Blind) Search} & \textbf{Informed (Heuristic) Search} \\
+\midrule
+\textbf{Knowledge used} &
+  Only the problem definition: initial state, goal test, successor function, step costs. \textbf{No estimate} of how close a state is to the goal. &
+  Uses a \textbf{heuristic function} $h(n)$ — domain-specific knowledge estimating the cheapest cost from $n$ to the goal. \\
+\midrule
+\textbf{How nodes are chosen} &
+  By \textbf{structural criteria} — depth (BFS, DFS, IDDFS), path cost so far (UCS), or symmetry (Bidirectional). &
+  By an \textbf{evaluation function} $f(n)$ combining $g(n)$ and $h(n)$ — the algorithm steers toward promising-looking nodes. \\
+\midrule
+\textbf{Efficiency} &
+  \textbf{Exponential} in the worst case. Can explore vast portions of the state space with no guidance. &
+  \textbf{Potentially far more efficient} — a good heuristic prunes large unpromising regions. With a perfect heuristic, A* expands only nodes on the optimal path. \\
+\midrule
+\textbf{Generality} &
+  \textbf{Universal} — works for \emph{any} problem without modification. No domain knowledge needed. Zero setup cost. &
+  \textbf{Problem-specific} — the heuristic must be designed (or learned) for each problem. \\
+\midrule
+\textbf{Optimality guarantee} &
+  UCS guarantees optimality for any non-negative costs; BFS/IDDFS only for uniform costs. &
+  A* guarantees optimality if $h$ is admissible ($h \leq h^*$). Greedy BFS gives no optimality guarantee. \\
+\midrule
+\textbf{When to use} &
+  Problem is new/unknown; no good heuristic exists; state space is small; or as a fallback. &
+  Domain knowledge is available; an admissible heuristic can be defined; state space is large; optimality matters. \\
+\midrule
+\textbf{Examples} &
+  BFS, DFS, DLS, IDDFS, UCS, Bidirectional Search &
+  Greedy BFS, A*, IDA*, RBFS, SMA*, Beam Search \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\vspace{0.4em}
+
+\noindent\textbf{The continuum — not a hard binary:} Some algorithms blur the line.
+\begin{itemize}[leftmargin=1.5cm, itemsep=2pt, topsep=3pt]
+  \item \textbf{UCS} uses $g(n)$ — this is ``cost-aware'' but not ``goal-aware.'' It knows how much you've spent but has no idea how much remains. It is technically uninformed because $g(n)$ is derived from the problem definition (step costs), not from domain knowledge.
+  \item \textbf{Bidirectional Search} uses two simultaneous searches (forward from start, backward from goal). It is structurally informed — leveraging the fact that two smaller searches are cheaper than one large one — but uses no heuristic. It is formally uninformed.
+  \item \textbf{A*} sits at the intersection: $f(n) = g(n) + h(n)$. The $g(n)$ part is uninformed (known costs); the $h(n)$ part is informed (domain estimate). This is why A* subsumes UCS (when $h(n){=}0$) and Greedy (conceptually, when $g(n)$ is ignored).
+\end{itemize}
+
+%----------------------------------------------------------------------
+\subsection{Progression of Uninformed Search Algorithms}
+%----------------------------------------------------------------------
+
+\begin{solutionbox}
+\textbf{Question:} Discuss how uninformed search algorithms can be seen as an evolution of ideas, where each new algorithm is designed to address a limitation of an earlier one. Include the progression among: BFS, DFS, DLS, IDDFS, UCS, and Bidirectional Search.
+\end{solutionbox}
+
+\vspace{0.5em}
+
+\noindent Uninformed search algorithms did not emerge in isolation — they form a \textbf{logical progression}, each motivated by a specific weakness of its predecessor. Understanding this progression turns six seemingly disconnected algorithms into one coherent story.
+
+\subsubsection*{Act I — The Foundational Trade-off: BFS vs.\ DFS}
+
+\noindent The two simplest algorithms represent opposite ends of a fundamental trade-off.
+
+\begin{center}
+\begin{tikzpicture}[
+  box/.style={draw, rounded corners=4pt, minimum width=5cm, minimum height=2.8cm, align=left, fill=blue!4, font=\small},
+  arrow/.style={-{Stealth[length=6pt, width=5pt]}, thick}
+]
+\node[box, fill=green!6] (bfs) at (-4, 0) {
+  \textbf{BFS (Breadth-First)}\\[2pt]
+  \checkmark\ Complete — finds solution if one exists.\\
+  \checkmark\ Optimal for uniform costs.\\
+  \texttimes\ \textbf{$O(b^d)$ space} — must store entire frontier.\\
+  \hspace{4pt} For $b{=}10, d{=}10$: 10 billion nodes in memory.
+};
+
+\node[box, fill=red!6] (dfs) at (4, 0) {
+  \textbf{DFS (Depth-First)}\\[2pt]
+  \texttimes\ \textbf{Not complete} — infinite branches trap it.\\
+  \texttimes\ Not optimal — finds deep solutions first.\\
+  \checkmark\ \textbf{$O(bm)$ space} — stores only current path.\\
+  \hspace{4pt} For $b{=}10, d{=}10$: $\sim$100 nodes in memory.
+};
+
+\draw[arrow, bend left=20, color=orange!70!black] (bfs) to node[midway, above, font=\footnotesize\bfseries, text=orange!70!black] {swap for space} (dfs);
+\draw[arrow, bend left=20, color=orange!70!black] (dfs) to node[midway, below, font=\footnotesize\bfseries, text=orange!70!black] {swap for completeness} (bfs);
+\end{tikzpicture}
+\end{center}
+
+\noindent\textbf{The dilemma:} BFS guarantees the answer but needs impossible amounts of memory. DFS uses negligible memory but may never find the answer. The entire subsequent evolution is about \textbf{getting the best of both}.
+
+\subsubsection*{Act II — DFS's First Fix: Depth-Limited Search (DLS)}
+
+\begin{center}
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{p{3.5cm}|p{6cm}|p{6cm}}
+\toprule
+\textbf{Motivation} & \textbf{What DLS does} & \textbf{Remaining problem} \\
+\midrule
+DFS can descend \textbf{infinitely deep} on an infinite branch, never backtracking to find a shallow solution. &
+DLS adds a \textbf{depth cutoff} $L$: DFS stops at depth $L$ and backtracks. This \textbf{prevents infinite descent} — the search is now bounded. &
+\textbf{How to choose $L$?} If $L < d$ (solution depth), DLS returns \textbf{failure} even though a solution exists. If $L \gg d$, DLS wastes time. DLS is \textbf{not complete} unless you already know $d$. \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\noindent\textbf{The contribution:} DLS showed that adding a depth bound fixes DFS's completeness problem — but only if you know the right bound. The question becomes: \emph{how to find $d$ without knowing it in advance?}
+
+\subsubsection*{Act III — Finding the Right Depth: Iterative Deepening DFS (IDDFS)}
+
+\begin{center}
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{p{3.5cm}|p{6cm}|p{6cm}}
+\toprule
+\textbf{Motivation} & \textbf{What IDDFS does} & \textbf{Remaining problem} \\
+\midrule
+DLS fails if $L < d$ (misses solution) or wastes time if $L \gg d$. You don't know $d$ in advance. &
+IDDFS runs DLS \textbf{repeatedly} with $L = 0, 1, 2, \ldots$ until the goal is found. This guarantees finding the shallowest solution — \textbf{completeness restored}. &
+\textbf{Non-uniform costs ignored.} IDDFS finds the shallowest goal (fewest steps), not the cheapest. If edge costs vary, the shortest path in steps may be expensive. Nodes near the root are re-expanded — overhead factor $\frac{b}{b-1}$. \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\noindent\textbf{The contribution:} IDDFS solved the BFS-vs-DFS dilemma for uniform-cost problems: $O(bd)$ space (from DFS) $+$ completeness $+$ shallowest-solution optimality (from BFS). The repeated-work overhead is only $\sim$11\% for $b{=}10$ — an acceptable price. \textbf{This is the best uninformed algorithm for uniform-cost problems with large state spaces.}
+
+\subsubsection*{Act IV — Handling Non-Uniform Costs: Uniform-Cost Search (UCS)}
+
+\begin{center}
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{p{3.5cm}|p{6cm}|p{6cm}}
+\toprule
+\textbf{Motivation} & \textbf{What UCS does} & \textbf{Remaining problem} \\
+\midrule
+BFS and IDDFS assume \textbf{all steps cost the same}. In the real world, actions have different costs (mountain roads cost more than highways). Neither shallowest-path algorithm can find the cheapest path with non-uniform costs. &
+UCS expands nodes by \textbf{lowest path cost $g(n)$}, not depth. It is \textbf{optimal for any non-negative edge costs} — the first time it expands the goal, the cheapest path is found. &
+\textbf{No guidance toward the goal.} UCS expands equally in \emph{all} directions — it knows what you've spent but has \textbf{no idea how much remains}. In a large graph, UCS may explore enormous regions away from the goal. \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\noindent\textbf{The contribution:} UCS generalised optimality from ``shallowest'' to ``cheapest.'' But it exposed a new problem: without knowledge of where the goal is, the algorithm is undirected — it wastes effort exploring in wrong directions. This limitation \textbf{directly motivates informed search} — add a heuristic $h(n)$ to estimate remaining distance, and UCS becomes A*.
+
+\subsubsection*{Act V — Exploiting Symmetry: Bidirectional Search}
+
+\begin{center}
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{p{3.5cm}|p{6cm}|p{6cm}}
+\toprule
+\textbf{Motivation} & \textbf{What Bidirectional does} & \textbf{Remaining problem} \\
+\midrule
+A single-direction search explores $O(b^d)$ nodes. But a search backward from the goal is equally valid — and two searches meeting in the middle each explore only $O(b^{d/2})$ nodes. This is an \textbf{exponential reduction}: $b^d \to 2 \cdot b^{d/2}$. &
+Run two simultaneous searches — one forward from start, one backward from goal(s). The solution is found when the two frontiers intersect. Can use BFS, UCS, or even A* as the underlying search method. &
+\textbf{Requires a reversible successor function.} The backward search needs a predecessor function — ``what states lead \emph{to} the goal?'' This is not always easy to define. Also, checking frontier intersection at every step adds overhead. For some problems (theorem proving), the backward branching factor is much larger. \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\noindent\textbf{The contribution:} Bidirectional search exploits problem \textbf{symmetry} — the fact that searching from the goal backward is just as valid as from the start forward. It is still uninformed, but achieves an exponential speedup through structural cleverness alone. Combined with IDDFS (bidirectional IDDFS) or A* (bidirectional A*), it becomes even more powerful.
+
+\subsubsection*{The Complete Progression — Visual Summary}
+
+\begin{center}
+\begin{tikzpicture}[
+  box/.style={draw, rounded corners=3pt, minimum width=3.5cm, minimum height=0.85cm, align=center, fill=blue!5, font=\small\bfseries},
+  limbox/.style={draw, rounded corners=3pt, minimum width=4.2cm, minimum height=0.55cm, align=center, fill=red!8, font=\footnotesize, text=red!60!black},
+  arrow/.style={-{Stealth[length=6pt, width=5pt]}, thick, color=sectionblue},
+  lbl/.style={font=\footnotesize, text=sectionblue!80!black}
+]
+
+\node[box, fill=green!8] (bfs) at (-5.5, 5) {BFS: complete + optimal\\{\footnotesize but $O(b^d)$ space}};
+\node[box, fill=red!8]  (dfs) at (5.5, 5)  {DFS: $O(bm)$ space\\{\footnotesize but incomplete + suboptimal}};
+
+\node[box] (dls)  at (5.5, 2.5) {DLS: DFS + depth limit\\{\footnotesize prevents infinite descent}};
+\node[box, fill=green!8] (iddfs) at (3, 0.5) {IDDFS: $L=0,1,2,\ldots$\\{\footnotesize complete + $O(bd)$ space}};
+\node[box] (ucs)  at (-5.5, 0.5) {UCS: expand by $g(n)$\\{\footnotesize cheapest-path optimal}};
+\node[box, fill=green!8] (bidi) at (-0.5, -2)  {Bidirectional\\{\footnotesize $O(b^{d/2})$ nodes}};
+
+\node[limbox] at (8.8, 5)   {Limitation: goes infinitely deep};
+\node[limbox] at (8.8, 2.5) {Limitation: how to choose $L$?};
+\node[limbox] at (3.2, -0.8) {};
+\node[limbox] at (-8.8, 0.5) {Limitation: undirected — wastes};
+\node[limbox] at (-8.8, 0.0) {effort away from the goal};
+
+\draw[arrow] (dfs) -- node[lbl, right] {add depth bound} (dls);
+\draw[arrow] (dls) -- node[lbl, right] {iterate $L$} (iddfs);
+\draw[arrow] (bfs) -- node[lbl, above, sloped] {from depth to path cost} (ucs);
+\draw[arrow, dashed] (iddfs) -- node[lbl, right, pos=0.65] {combine with} (bidi);
+\draw[arrow, dashed] (ucs) -- node[lbl, left, pos=0.65] {search from} (bidi);
+\node[draw=none, font=\small] at (-0.5, -0.2) {both ends};
+
+\node[draw=none, font=\small\bfseries, color=sectionblue] at (0, -3.5) {$\uparrow$ Each arrow = a specific limitation being addressed};
+\end{tikzpicture}
+\end{center}
+
+\subsubsection*{The Evolutionary Narrative (Exam Summary)}
+
+\begin{enumerate}[leftmargin=1.5cm, itemsep=5pt, topsep=3pt]
+  \item \textbf{BFS} — Gives us completeness and optimality, but at the impossible price of $O(b^d)$ memory. \textbf{Starting point.}
+
+  \item \textbf{DFS} — Flips the trade-off: $O(bm)$ memory is practical, but the algorithm may never find a solution. \textbf{Motivated by BFS's memory explosion.}
+
+  \item \textbf{DLS} — Fixes DFS's infinite-descent problem with a depth cutoff. But now you must guess the cutoff — guess too low and it reports failure when a solution exists. \textbf{Motivated by DFS's incompleteness.}
+
+  \item \textbf{IDDFS} — Eliminates the guesswork: $L=0,1,2,\ldots$ until success. Restores completeness $+$ shallowest-solution optimality while keeping $O(bd)$ space — the best of BFS and DFS. \textbf{Motivated by DLS's dependence on unknown $L$.}
+
+  \item \textbf{UCS} — Abandons depth for path cost $g(n)$. Finds the cheapest path regardless of non-uniform edge costs. But expands blindly in all directions. \textbf{Motivated by IDDFS/BFS's uniform-cost assumption.}
+
+  \item \textbf{Bidirectional Search} — Attacks exponential complexity directly: two $d/2$-depth searches replace one $d$-depth search. Orthogonal improvement — can be layered on top of BFS, UCS, or A*. \textbf{Motivated by single-direction search's $O(b^d)$ cost.}
+\end{enumerate}
+
+\begin{notesbox}
+\textbf{The arc to informed search:} The progression above solves structural problems (memory, completeness, cost-sensitivity) but never addresses the \textbf{core inefficiency} — none of these algorithms knows where the goal is. The next evolutionary step — \textbf{informed search} (Greedy, A*, IDA*) — adds a heuristic $h(n)$ that \emph{estimates} remaining distance. UCS with $h(n)$ becomes A*; IDDFS with $h(n)$ becomes IDA*. The progression continues, now with domain knowledge.
+\end{notesbox}
+
+%----------------------------------------------------------------------
 \subsection{Heuristic Search — Introduction \& the Best-First Family}
 %----------------------------------------------------------------------
 

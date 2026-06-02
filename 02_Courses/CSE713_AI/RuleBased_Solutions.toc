@@ -1,0 +1,37 @@
+\contentsline {section}{\numberline {1}Introduction to Rule-Based Systems}{3}{section.1}%
+\contentsline {subsection}{\numberline {1.1}Knowledge Representation: Rules and Facts}{3}{subsection.1.1}%
+\contentsline {subsection}{\numberline {1.2}Structure of a Rule}{3}{subsection.1.2}%
+\contentsline {subsection}{\numberline {1.3}Triggered vs.\ Fired Rules}{3}{subsection.1.3}%
+\contentsline {section}{\numberline {2}Architecture of a Rule-Based System}{3}{section.2}%
+\contentsline {subsection}{\numberline {2.1}Five Major Components}{4}{subsection.2.1}%
+\contentsline {subsection}{\numberline {2.2}Architecture Diagram}{4}{subsection.2.2}%
+\contentsline {subsection}{\numberline {2.3}The Match--Resolve--Act Cycle}{4}{subsection.2.3}%
+\contentsline {section}{\numberline {3}Conflict Resolution}{5}{section.3}%
+\contentsline {subsection}{\numberline {3.1}Conflict Resolution Strategies}{6}{subsection.3.1}%
+\contentsline {section}{\numberline {4}Forward Chaining (Data-Driven Reasoning)}{6}{section.4}%
+\contentsline {subsection}{\numberline {4.1}Mechanism}{6}{subsection.4.1}%
+\contentsline {subsection}{\numberline {4.2}Backtracking in FC}{7}{subsection.4.2}%
+\contentsline {subsection}{\numberline {4.3}When to Use Forward Chaining}{7}{subsection.4.3}%
+\contentsline {section}{\numberline {5}Backward Chaining (Goal-Directed Reasoning)}{7}{section.5}%
+\contentsline {subsection}{\numberline {5.1}Mechanism}{7}{subsection.5.1}%
+\contentsline {subsection}{\numberline {5.2}When to Use Backward Chaining}{8}{subsection.5.2}%
+\contentsline {section}{\numberline {6}Forward Chaining vs.\ Backward Chaining}{8}{section.6}%
+\contentsline {subsection}{\numberline {6.1}Factors for Choosing FC vs.\ BC}{9}{subsection.6.1}%
+\contentsline {section}{\numberline {7}Canonical Exam Problem: Prove Goal G}{9}{section.7}%
+\contentsline {subsection}{\numberline {7.1}Part (a): Forward Chaining Solution}{10}{subsection.7.1}%
+\contentsline {subsubsection}{\numberline {7.1.1}Step-by-Step FC Trace}{10}{subsubsection.7.1.1}%
+\contentsline {subsubsection}{\numberline {7.1.2}Forward Chaining Tree (Truth Propagation Diagram)}{10}{subsubsection.7.1.2}%
+\contentsline {subsection}{\numberline {7.2}Part (b): Backward Chaining Solution}{11}{subsection.7.2}%
+\contentsline {subsubsection}{\numberline {7.2.1}Step-by-Step BC Trace}{11}{subsubsection.7.2.1}%
+\contentsline {subsubsection}{\numberline {7.2.2}Backward Chaining Search Tree}{12}{subsubsection.7.2.2}%
+\contentsline {section}{\numberline {8}Expert Systems}{13}{section.8}%
+\contentsline {subsection}{\numberline {8.1}Characteristics}{13}{subsection.8.1}%
+\contentsline {subsection}{\numberline {8.2}Two Essential Capabilities}{13}{subsection.8.2}%
+\contentsline {subsection}{\numberline {8.3}Notable Expert Systems}{14}{subsection.8.3}%
+\contentsline {section}{\numberline {9}Frames (Structured Knowledge Representation)}{14}{section.9}%
+\contentsline {subsection}{\numberline {9.1}Structure}{14}{subsection.9.1}%
+\contentsline {subsection}{\numberline {9.2}Slot Contents}{15}{subsection.9.2}%
+\contentsline {subsection}{\numberline {9.3}Inferencing with Frames}{15}{subsection.9.3}%
+\contentsline {section}{\numberline {10}Exam Strategy Summary}{15}{section.10}%
+\contentsline {subsection}{\numberline {10.1}Q6 Template (Appears Every Year)}{15}{subsection.10.1}%
+\contentsline {subsection}{\numberline {10.2}Past Paper Coverage (2020--2024)}{15}{subsection.10.2}%

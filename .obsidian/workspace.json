@@ -11,10 +11,14 @@
             "id": "3c4b25164d05238d",
             "type": "leaf",
             "state": {
-              "type": "graph",
-              "state": {},
-              "icon": "lucide-git-fork",
-              "title": "Graph view"
+              "type": "markdown",
+              "state": {
+                "file": "00_Dashboard.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "00_Dashboard"
             }
           }
         ]
@@ -178,18 +182,27 @@
   },
   "active": "3c4b25164d05238d",
   "lastOpenFiles": [
-    "CLAUDE.md.tmp.21889.b85b0e657cb8",
-    "03_Daily_Logs/_Template.md.tmp.21889.e76c93086ca8",
-    "03_Daily_Logs/2026-05-29.md.tmp.21889.73ed24d81d4f",
-    "02_Courses/CSE713_AI/_Syllabus.md.tmp.21889.658fe86dd226",
-    "02_Courses/CSE713_AI/_TopicQuestionMap.md.tmp.21889.d8aa972a0921",
-    "02_Courses/CSE713_AI/_Topics.md.tmp.21889.86804cceb9b1",
-    "01_Master_Plan.md.tmp.21889.b3c2a26b0368",
-    "01_Master_Plan.md.tmp.21889.799911a4a41c",
-    "00_Dashboard.md.tmp.21889.4b3f84cc028e",
+    "scripts/schedule_watchdog.py.tmp.73759.862ebb901439",
+    "CLAUDE.md.tmp.73759.3bb00aeb8976",
+    "scripts/data/protocols.md.tmp.73759.94b051c09754",
+    "scripts/data/protocols/obsidian_wikilinks.md",
+    "scripts/data/protocols/obsidian_wikilinks.md.tmp.73759.5b1185e93b3f",
+    "scripts/data/protocols/confidence_update.md",
+    "scripts/data/protocols/confidence_update.md.tmp.73759.5403ad8a7e9e",
+    "scripts/data/protocols/recall_gaps.md",
+    "scripts/data/protocols/recall_gaps.md.tmp.73759.530c7c680fe8",
+    "scripts/data/protocols/active_recall.md",
+    "scripts/data/protocols/active_recall.md.tmp.73759.0847dd9283e4",
+    "scripts/data/protocols/wiki_ingest.md",
+    "scripts/data/protocols/wiki_ingest.md.tmp.73759.1c0df9da18f4",
+    "scripts/data/protocols/block_study_guide.md",
+    "scripts/data/protocols/block_study_guide.md.tmp.73759.01ae46d27f8c",
+    "scripts/data/protocols/quiz_mode.md",
+    "scripts/data/protocols/quiz_mode.md.tmp.73759.f1edc3362019",
+    "scripts/data/protocols/progress_log.md",
+    "scripts/data/protocols/progress_log.md.tmp.73759.f196abbe87d6",
+    "scripts/data/protocols/check_in_response.md",
     "00_Dashboard.md",
-    "scripts/schedule_watchdog.py.tmp.21889.f7ee96b15480",
-    "scripts/schedule_watchdog.py.tmp.21889.4177a7a88230",
     "scripts/data/recall_due.md",
     "02_Courses/CSE715_Graphics/NotebookLM_Sources.md",
     "02_Courses/CSE713_AI/_TopicQuestionMap.md",
@@ -204,7 +217,6 @@
     "04_Livora/SaaS_Build_Log.md",
     "SYSTEM_BUILD_PLAN.md",
     "02_Courses/CSE713_AI/_PastPapers.md",
-    "02_Courses/CSE713_AI/_Syllabus.md",
-    "02_Courses/CSE713_AI/_Topics.md"
+    "02_Courses/CSE713_AI/_Syllabus.md"
   ]
 }

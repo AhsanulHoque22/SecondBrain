@@ -77,41 +77,43 @@ Common Telegram commands:
 ---
 
 ## Protocol triggers
-> **When a protocol is triggered, read `scripts/data/protocols.md` for the full steps.**
-> Do NOT load `protocols.md` at session start — only on trigger.
+> Each trigger loads ONE small file. Do NOT load protocols.md or multiple protocol files — load only what was triggered.
 
 ### Check-in Response
 **Trigger:** `pending_checkin.json` is non-empty AND user reply is a number, "yes", "no", "skip", or "done".
-→ Read `scripts/data/protocols.md` section "CHECK-IN RESPONSE PROTOCOL".
+→ Read `scripts/data/protocols/check_in_response.md`.
 
 ### Progress Log
 **Trigger:** "Update my log: did X" / "I finished [topic]" / "Log: topics done = X" / any end-of-day summary.
-→ Read `scripts/data/protocols.md` section "PROGRESS LOG PROTOCOL".
+→ Read `scripts/data/protocols/progress_log.md`.
 
 ### Quiz Mode
 **Trigger:** "Quiz me on [topic]" / "Test me on [topic]"
-→ Read `scripts/data/protocols.md` section "QUIZ MODE PROTOCOL".
+→ Read `scripts/data/protocols/quiz_mode.md`.
 
 ### Block Study Guide
 **Trigger:** "starting block [N]" / "I'm starting block [N]" / "ready for block [N]"
-→ Read `scripts/data/protocols.md` section "BLOCK STUDY GUIDE PROTOCOL".
-→ **Wiki-first:** check `02_Courses/[course]/wiki/[topic].md` before opening any PDF. If wiki page exists, use it. Read raw PDF only if the wiki page is missing (and then ingest it immediately after).
+→ Read `scripts/data/protocols/block_study_guide.md`.
+
+### Wiki Ingest
+**Trigger:** Block Study Guide started for a topic with no wiki page / topic first reaches ✅ or 📖.
+→ Read `scripts/data/protocols/wiki_ingest.md`.
 
 ### Active Recall
 **Trigger:** "I finished the slides" / "give me active recall" / "ready for recall questions"
-→ Read `scripts/data/protocols.md` section "ACTIVE RECALL PROTOCOL".
+→ Read `scripts/data/protocols/active_recall.md`.
 
 ### Recall Gaps
 **Trigger:** "revised [topic]" / "done revising [topic]" / end-of-session recall gap reminder
-→ Read `scripts/data/protocols.md` section "RECALL GAPS TRACKING PROTOCOL".
+→ Read `scripts/data/protocols/recall_gaps.md`.
 
 ### Confidence Update
 **Trigger:** "Confidence on [topic]: [1-5]" / after any quiz
-→ Read `scripts/data/protocols.md` section "CONFIDENCE UPDATE PROTOCOL".
+→ Read `scripts/data/protocols/confidence_update.md`.
 
 ### Wikilinks
 **Trigger:** Creating or editing any markdown file.
-→ Read `scripts/data/protocols.md` section "OBSIDIAN WIKILINK PROTOCOL".
+→ Read `scripts/data/protocols/obsidian_wikilinks.md`.
 
 ---
 

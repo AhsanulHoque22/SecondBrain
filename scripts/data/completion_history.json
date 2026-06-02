@@ -24,6 +24,13 @@
       "type": "non-study",
       "completed": true,
       "timestamp": "2026-06-02T20:00:00+06:00"
+    },
+    {
+      "date": "2026-06-02",
+      "event_title": "Days 1+2 EOD Review + Isha Prayer + Girlfriend + Sleep 21:45",
+      "type": "non-study",
+      "completed": false,
+      "timestamp": "2026-06-02T21:45:00+06:00"
     }
   ]
 }

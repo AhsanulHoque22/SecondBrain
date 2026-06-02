@@ -1,0 +1,491 @@
+% CSE 713 — Artificial Intelligence
+% Game Playing: Complete Model Answers (2020–2024)
+% University of Chittagong, 7th Semester B.Sc. Engineering
+%
+% Compile with: pdflatex Game_Playing_Solutions.tex (run twice for TOC)
+
+\documentclass[12pt, a4paper]{article}
+
+\usepackage[left=2.5cm, right=2.5cm, top=2.8cm, bottom=2.8cm, headheight=15pt]{geometry}
+\usepackage{amsmath, amssymb}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{xcolor}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{mdframed}
+\usepackage{tabularx}
+\usepackage{multirow}
+\usepackage{verbatim}
+
+%----- Colours -------------------------------------------------------
+\definecolor{sectionblue}{RGB}{10,60,110}
+\definecolor{boxbg}{RGB}{242,247,255}
+\definecolor{answerbg}{RGB}{240,255,240}
+\definecolor{notesbg}{RGB}{255,250,230}
+\definecolor{prunered}{RGB}{200,30,30}
+\definecolor{alphagreen}{RGB}{0,120,0}
+\definecolor{betablue}{RGB}{0,60,160}
+
+%----- Box environments ----------------------------------------------
+\mdfdefinestyle{solutionframe}{
+  linecolor=sectionblue, backgroundcolor=boxbg,
+  roundcorner=4pt, linewidth=1.4pt,
+  innertopmargin=7pt, innerbottommargin=7pt,
+  innerleftmargin=9pt, innerrightmargin=9pt,
+  skipabove=4pt, skipbelow=4pt}
+\mdfdefinestyle{answerframe}{
+  linecolor=green!55!black, backgroundcolor=answerbg,
+  roundcorner=4pt, linewidth=1.4pt,
+  innertopmargin=7pt, innerbottommargin=7pt,
+  innerleftmargin=9pt, innerrightmargin=9pt,
+  skipabove=4pt, skipbelow=4pt}
+\mdfdefinestyle{notesframe}{
+  linecolor=orange!70!black, backgroundcolor=notesbg,
+  roundcorner=4pt, linewidth=1pt,
+  innertopmargin=5pt, innerbottommargin=5pt,
+  innerleftmargin=8pt, innerrightmargin=8pt,
+  skipabove=4pt, skipbelow=4pt}
+\newenvironment{solutionbox}{\begin{mdframed}[style=solutionframe]}{\end{mdframed}}
+\newenvironment{answerbox}{\begin{mdframed}[style=answerframe]}{\end{mdframed}}
+\newenvironment{notesbox}{\begin{mdframed}[style=notesframe]}{\end{mdframed}}
+
+%----- Page style ----------------------------------------------------
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{\small\color{sectionblue} CSE 713 --- Artificial Intelligence}
+\rhead{\small\color{sectionblue} Game Playing: Model Solutions}
+\cfoot{\small\thepage}
+\renewcommand{\headrulewidth}{0.5pt}
+
+%----- Section formatting --------------------------------------------
+\titleformat{\section}{\large\bfseries\color{sectionblue}}{}{0em}{}[\vspace{-2pt}\color{sectionblue}\rule{\linewidth}{0.8pt}]
+\titleformat{\subsection}{\normalsize\bfseries\color{sectionblue!85!black}}{}{0em}{}
+\titleformat{\subsubsection}{\normalsize\bfseries\color{black}}{}{0em}{}
+
+%----- Macros --------------------------------------------------------
+\newcommand{\pruned}[1]{\textcolor{prunered}{\textbf{[#1 PRUNED]}}}
+\newcommand{\aval}[1]{\textcolor{alphagreen}{$\alpha{=}#1$}}
+\newcommand{\bval}[1]{\textcolor{betablue}{$\beta{=}#1$}}
+\newcommand{\maxnode}[1]{\textbf{#1}~[MAX]}
+\newcommand{\minnode}[1]{\textbf{#1}~[MIN]}
+
+%=====================================================================
+\begin{document}
+%=====================================================================
+
+\begin{center}
+  {\LARGE\bfseries\color{sectionblue} CSE 713 --- Artificial Intelligence}\\[4pt]
+  {\large\bfseries Game Playing: Model Answers (2020--2024)}\\[2pt]
+  {\normalsize University of Chittagong $\cdot$ 7th Semester B.Sc.\ Engineering}\\[2pt]
+  {\small Topics: Minimax Algorithm $\cdot$ Alpha-Beta Pruning $\cdot$ Cutoffs $\cdot$ Quiescence}
+\end{center}
+\vspace{6pt}
+\hrule
+\vspace{10pt}
+
+\tableofcontents
+\newpage
+
+%=====================================================================
+\section*{Quick Reference: All Chapter~5 Past-Paper Questions}
+\addcontentsline{toc}{section}{Quick Reference}
+%=====================================================================
+
+\begin{center}
+\begin{tabular}{cllcc}
+\toprule
+\textbf{Year} & \textbf{Q\#} & \textbf{Topic} & \textbf{Marks} & \textbf{Section}\\
+\midrule
+2024 & Q3a   & Alpha-Beta pruning (full: limitations + trace + analysis) & 5 & A\\
+2023 & Q3b   & Alpha-Beta pruning (same tree, illustrate time-complexity benefit) & 4 & A\\
+2022 & A-4b  & Describe minimax search procedure & 4 & A\\
+2022 & A-4c  & Explain $\alpha$-cutoff, $\beta$-cutoff, Futility-cutoff with figures & 2 & A\\
+2022 & A-4d  & What is ``Waiting for Quiescence''? & 1 & A\\
+2021 & Q3d   & Alpha-Beta pruning on given tree & 4 & A\\
+2020 & Q3d   & Describe Minimax algorithm for game trees & 2.5 & A\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{notesbox}
+\textbf{Pattern:} Chapter~5 questions appear \textit{every single year} in Section~A Q3.
+The 2023 and 2024 papers use the \textbf{identical game tree} --- memorise the trace cold.
+\textbf{Key result:} Root A $= \mathbf{9}$. Branches I and J (under C) are pruned.
+\end{notesbox}
+
+\vspace{8pt}
+
+%=====================================================================
+\section{Standard Tree Used in 2023 and 2024}
+%=====================================================================
+
+Both 2023~Q3b and 2024~Q3a use the same tree. Memorise this structure.
+
+\begin{solutionbox}
+\begin{verbatim}
+Level          Tree structure
+------         --------------------------------------------------
+               |          A [MAX]                              |
+               |      /   |    \                               |
+               |    B     C      D    [MIN nodes]              |
+               |   /|\   /|\     |                             |
+               |  E F G H I J    K   [MAX nodes]               |
+               | /\ /\ /\ /\ /\ /\  /\                        |
+               | LM NO PQ RS TU VW  XY  [leaves]              |
+               | 75 4(-5) 23 0(-2) 62 58  90                  |
+\end{verbatim}
+Leaf values: L=7, M=5, N=4, O=$-5$, P=2, Q=3, R=0, S=$-2$, T=6, U=2, V=5, W=8, X=9, Y=0
+\end{solutionbox}
+
+\textbf{Bottom-up Minimax values (no pruning):}
+\begin{align*}
+E &= \max(7,5) = 7 \qquad F = \max(4,-5) = 4 \qquad G = \max(2,3) = 3\\
+B &= \min(E,F,G) = \min(7,4,3) = \mathbf{3}\\[4pt]
+H &= \max(0,-2) = 0 \qquad I = \max(6,2) = 6 \qquad J = \max(5,8) = 8\\
+C &= \min(H,I,J) = \min(0,6,8) = \mathbf{0}\\[4pt]
+K &= \max(9,0) = 9 \qquad D = \min(K) = \mathbf{9}\\[4pt]
+A &= \max(B,C,D) = \max(3,0,9) = \mathbf{9}
+\end{align*}
+
+%=====================================================================
+\section{2020 --- Q3d \ \normalfont(2.5 marks): Minimax Algorithm}
+%=====================================================================
+
+\textbf{Question:} Describe the Minimax algorithm for searching game trees.
+
+\begin{answerbox}
+\textbf{Minimax Algorithm}
+
+Minimax determines the \textbf{optimal move} for the MAX player in a two-player, zero-sum game with perfect information, assuming the opponent (MIN) plays optimally.
+
+\textbf{Setup:}
+\begin{itemize}[noitemsep]
+  \item The game tree alternates between MAX nodes (your turn) and MIN nodes (opponent's turn).
+  \item The \textbf{root} is a MAX node. Each level alternates MAX/MIN down to a fixed depth (ply).
+  \item \textbf{Terminal nodes} are assigned values by the \textbf{static evaluation function} $f(n)$: $f > 0$ favours MAX; $f < 0$ favours MIN.
+\end{itemize}
+
+\textbf{Algorithm (depth-first, bottom-up):}
+\begin{enumerate}[noitemsep]
+  \item Create the root as a MAX node with the current board configuration.
+  \item Expand all nodes down to the search depth (ply) using depth-first search.
+  \item Apply the evaluation function $f(n)$ to every \textbf{leaf} node.
+  \item \textbf{Back up values} toward the root:
+    \begin{itemize}[noitemsep]
+      \item At a \textbf{MAX node}: backed-up value $=$ \textit{maximum} of its children's values.
+      \item At a \textbf{MIN node}: backed-up value $=$ \textit{minimum} of its children's values.
+    \end{itemize}
+  \item At the root (MAX node), \textbf{choose the child whose backed-up value equals the root's value}. That child's move is the optimal move.
+\end{enumerate}
+
+\textbf{Complexity:} Time $O(b^d)$; Space $O(bd)$ (linear, depth-first). Here $b$ = branching factor, $d$ = depth.
+
+\textbf{Key assumption:} MAX always assumes MIN will take the move that \textit{minimises} MAX's payoff (worst-case reasoning).
+\end{answerbox}
+
+%=====================================================================
+\section{2021 --- Q3d \ \normalfont(4 marks): Alpha-Beta on Small Tree}
+%=====================================================================
+
+\textbf{Question:} Explain how Alpha-Beta pruning improves game playing in the following example.
+
+\textbf{Tree structure:}
+\begin{solutionbox}
+\begin{verbatim}
+                    A [MAX]
+                  /         \
+              B [MIN]       C [MIN]
+             /    \         /    \
+          D[MAX]  E[MAX]  F[MAX]  G[MAX] <-- PRUNED
+          / \     / \      |      / \
+         0   5  -3   3     3    -2   3
+\end{verbatim}
+\end{solutionbox}
+
+\subsection*{Step 1: Minimax values (without pruning)}
+\[
+D{=}\max(0,5){=}5,\quad E{=}\max(-3,3){=}3,\quad B{=}\min(5,3){=}\mathbf{3}
+\]
+\[
+F{=}\max(3){=}3,\quad G{=}\max(-2,3){=}3,\quad C{=}\min(3,3){=}\mathbf{3}
+\]
+\[
+A{=}\max(B,C){=}\max(3,3){=}\mathbf{3}
+\]
+
+\subsection*{Step 2: Alpha-Beta trace}
+
+\begin{answerbox}
+\begin{tabular}{lllll}
+\toprule
+\textbf{Node} & \textbf{Type} & \textbf{$\alpha$ (init $\to$ final)} & \textbf{$\beta$ (init $\to$ final)} & \textbf{Returns}\\
+\midrule
+A & MAX & $-\infty \to 3$ & $+\infty$ & \textbf{3}\\
+B & MIN & $-\infty$ & $+\infty \to 5 \to 3$ & \textbf{3}\\
+\quad D & MAX & $-\infty \to 5$ & $+\infty$ & 5\\
+\quad E & MAX & $-\infty \to 3$ & 5 & 3\\
+C & MIN & $\alpha{=}3$ (from A) & $+\infty \to 3$ $\Rightarrow$ \textbf{PRUNE} & 3\\
+\quad F & MAX & $3$ & $+\infty$ & 3\\
+\quad G & MAX & \multicolumn{2}{l}{\pruned{G}} & ---\\
+\bottomrule
+\end{tabular}
+\end{answerbox}
+
+\subsection*{Step 3: Explanation of pruning}
+
+After A processes B, it has $\alpha_A = 3$ (MAX is guaranteed at least 3).\\
+When C processes F and gets value 3, C's $\beta = 3$.\\
+\textbf{Condition:} $\beta_C (= 3) \leq \alpha_A (= 3)$. Pruning occurs (beta-cutoff).\\
+G is pruned because: \textit{regardless of what G returns, MIN (C) can guarantee at most 3, which cannot improve on A's existing guarantee of 3}.
+
+\begin{notesbox}
+\textbf{How Alpha-Beta improves game playing:} It achieves the \textit{exact same result} as Minimax (root value = 3) while skipping node G and its subtree entirely. In the best case, Alpha-Beta reduces time from $O(b^d)$ to $O(b^{d/2})$, effectively doubling the search depth within the same time budget.
+\end{notesbox}
+
+%=====================================================================
+\section{2022 --- A-4b,c,d \ \normalfont(7 marks total)}
+%=====================================================================
+
+\subsection{A-4b (4 marks): Minimax Search Procedure}
+
+\textbf{Question:} Describe the minimax search procedure.
+
+\begin{answerbox}
+The Minimax search procedure finds the best move for MAX in a two-player zero-sum game.
+
+\textbf{Procedure:}
+\begin{enumerate}[noitemsep]
+  \item \textbf{Build the game tree} starting from the current board position (root = MAX node), expanding all legal moves to a specified depth (ply).
+  \item \textbf{Evaluate leaf nodes} using a static \textit{evaluation function} $f(n)$:
+        $f(n) \gg 0$ = win for MAX; $f(n) \ll 0$ = win for MIN; $f(n) \approx 0$ = neutral.
+  \item \textbf{Back up values} (depth-first, bottom-up):
+    \begin{itemize}[noitemsep]
+      \item \textbf{MAX node} $\leftarrow$ \textit{maximum} of children's backed-up values.
+      \item \textbf{MIN node} $\leftarrow$ \textit{minimum} of children's backed-up values.
+    \end{itemize}
+  \item \textbf{Select move}: at the root, choose the child with the value that equals the root's backed-up value.
+\end{enumerate}
+
+\textbf{Example (3-node tree, depth 2):}
+\begin{verbatim}
+        ROOT [MAX]
+        /    \
+    A [MIN]  B [MIN]
+    /  \       /  \
+   3   12    8    2
+
+   A = min(3,12) = 3
+   B = min(8,2)  = 2
+   ROOT = max(3,2) = 3  =>  choose branch A
+\end{verbatim}
+
+\textbf{Complexity:} Time $O(b^d)$; Space $O(bd)$.\\
+\textbf{Key difference from state-space search:} Minimax searches for \textit{one best move}, not a path to a goal. No arc costs --- only the evaluation function matters.
+\end{answerbox}
+
+%---------------------------------------------------------------------
+\subsection{A-4c (2 marks): $\alpha$-cutoff, $\beta$-cutoff, Futility-cutoff}
+%---------------------------------------------------------------------
+
+\textbf{Question:} Explain with figures: (i) $\alpha$-cutoff \ (ii) $\beta$-cutoff \ (iii) Futility-cutoff.
+
+\begin{answerbox}
+
+\textbf{(i) $\alpha$-cutoff} (prune at a MAX node)
+
+Occurs when a MAX node's $\alpha$ value $\geq$ its ancestor MIN node's $\beta$.
+
+\begin{verbatim}
+  MIN [beta=5]          The MAX node below found value 6.
+       |                6 >= beta(5), so MIN will NEVER choose
+    MAX [alpha=6]  <--- this subtree. No need to explore the
+     / \  \             remaining children of this MAX node.
+    2   6  ?            ? is pruned  (alpha-cutoff)
+\end{verbatim}
+\textbf{Rule:} At MAX node~$n$: if $\alpha(n) \geq \beta(n)$, prune remaining children.
+
+\vspace{6pt}
+\textbf{(ii) $\beta$-cutoff} (prune at a MIN node)
+
+Occurs when a MIN node's $\beta$ value $\leq$ its ancestor MAX node's $\alpha$.
+
+\begin{verbatim}
+  MAX [alpha=3]         After the MIN node found value 0,
+       |                beta(0) <= alpha(3). MAX will never
+    MIN [beta=0]   <--- choose this path. No need to explore
+     / \  \             remaining children of this MIN node.
+    5   0  ?            ? is pruned  (beta-cutoff)
+\end{verbatim}
+\textbf{Rule:} At MIN node~$n$: if $\beta(n) \leq \alpha(n)$, prune remaining children.
+
+\vspace{6pt}
+\textbf{(iii) Futility-cutoff}
+
+A \textit{forward pruning} technique. Even before evaluating children, if the static evaluation $f(n)$ of a node is already so far below the current $\alpha$ that even the maximum possible improvement (the ``futility margin'' $M$) cannot exceed $\alpha$, prune the entire subtree.
+
+\begin{verbatim}
+  If  f(n) + M <= alpha   =>  prune (futility cutoff)
+\end{verbatim}
+
+\begin{itemize}[noitemsep]
+  \item $M$ = maximum gain achievable from any single move (domain-specific constant).
+  \item Avoids wasting time on positions that are hopelessly bad.
+  \item \textbf{Not guaranteed safe} (may occasionally prune a good move) --- used near the leaf level.
+\end{itemize}
+\end{answerbox}
+
+%---------------------------------------------------------------------
+\subsection{A-4d (1 mark): Waiting for Quiescence}
+%---------------------------------------------------------------------
+
+\textbf{Question:} What do you mean by ``Waiting for Quiescence''?
+
+\begin{answerbox}
+\textbf{Quiescence search} addresses the \textit{horizon effect}: at the fixed search depth, applying the static evaluator to a ``noisy'' position (one with ongoing captures or checks) gives a misleading score.
+
+\textbf{Solution:} When the depth limit is reached, instead of immediately calling $f(n)$, \textit{continue searching} until the position becomes \textbf{quiescent} --- meaning no captures, checks, or other forcing moves remain. Only then apply the evaluator.
+
+\begin{itemize}[noitemsep]
+  \item Prevents the case where a piece about to be captured looks ``safe'' at the horizon.
+  \item Used in practice by nearly all strong game-playing programs (e.g., Deep Blue).
+  \item The quiescence search is typically much shallower than the main search.
+\end{itemize}
+\end{answerbox}
+
+%=====================================================================
+\section{2023 --- Q3b \ \normalfont(4 marks): Alpha-Beta on Standard Tree}
+%=====================================================================
+
+\textbf{Question:} By analysing the game tree (A$\to$B,C,D$\to$E--K$\to$14 leaves), illustrate how alpha-beta pruning minimises the time complexity of Min-Max by applying the concept of pruning.
+
+\textbf{Tree and minimax values:} See Section~1 (page~2). Root A $= 9$.
+
+\begin{answerbox}
+\textbf{Alpha-Beta trace (abbreviated for 4-mark answer):}
+
+\medskip
+\textbf{Processing B (MIN), $\alpha{=}{-}\infty$, $\beta{=}{+}\infty$:}
+\begin{itemize}[noitemsep]
+  \item E (MAX): sees L=7, M=5 $\Rightarrow$ $\alpha_E{=}7$, returns \textbf{7}. \ B: $\beta_B{=}7$.
+  \item F (MAX): sees N=4, O=$-5$ $\Rightarrow$ $\alpha_F{=}4$, returns \textbf{4}. \ B: $\beta_B{=}4$.
+  \item G (MAX): sees P=2, Q=3 $\Rightarrow$ $\alpha_G{=}3$, returns \textbf{3}. \ B: $\beta_B{=}3$.
+  \item B returns \textbf{3}. \ A: $\alpha_A{=}3$.
+\end{itemize}
+
+\medskip
+\textbf{Processing C (MIN), $\alpha{=}3$ (from A), $\beta{=}{+}\infty$:}
+\begin{itemize}[noitemsep]
+  \item H (MAX): sees R=0, S=$-2$ $\Rightarrow$ returns \textbf{0}. \ C: $\beta_C{=}0$.
+  \item \textbf{Check:} $\beta_C = 0 \leq \alpha_A = 3$ \quad $\Rightarrow$ \textbf{BETA-CUTOFF at C!}
+  \item \pruned{I (leaves T=6, U=2)} and \pruned{J (leaves V=5, W=8)}.
+\end{itemize}
+
+\medskip
+\textbf{Processing D (MIN), $\alpha{=}3$, $\beta{=}{+}\infty$:}
+\begin{itemize}[noitemsep]
+  \item K (MAX): sees X=9, Y=0 $\Rightarrow$ returns \textbf{9}. \ D: $\beta_D{=}9$. D returns \textbf{9}.
+  \item A: $\alpha_A{=}9$. \ \textbf{Root A = 9.}
+\end{itemize}
+
+\medskip
+\textbf{Result:} 4 leaf nodes (T, U, V, W) and 2 internal MAX nodes (I, J) were never visited.\\
+Without pruning: 14 leaves evaluated. With Alpha-Beta: only \textbf{8 leaves} evaluated.\\
+This demonstrates the $O(b^{d/2})$ best-case improvement over Minimax's $O(b^d)$.
+\end{answerbox}
+
+\begin{notesbox}
+\textbf{Why does pruning work here?} After seeing B=3, MAX (A) is guaranteed at least 3. When C's first child H returns~0, MIN (C) can achieve at most 0 from this subtree. Since 0~$<$~3, MAX will \textit{never} choose C's subtree regardless of what I and J return. Exploring them wastes time without changing the outcome.
+\end{notesbox}
+
+%=====================================================================
+\section{2024 --- Q3a \ \normalfont(5 marks): Full Alpha-Beta Question}
+%=====================================================================
+
+\textbf{Question:} Consider the game tree (A$\to$B,C,D$\to$E--K$\to$14~leaves with values 7,5,4,$-5$,2,3,0,$-2$,6,2,5,8,9,0). All static scores from first player's (MAX) point of view.
+
+\subsection*{Part (i): Two limitations of pure Minimax (1 mark)}
+
+\begin{answerbox}
+\begin{enumerate}[noitemsep]
+  \item \textbf{Exponential time complexity $O(b^d)$:} With branching factor $b$ and depth $d$, the number of nodes grows exponentially. Chess has $b \approx 35$ and $d \approx 100$, giving $35^{100}$ nodes --- computationally infeasible. Even for modest depth, the tree is too large to evaluate fully in real time.
+  \item \textbf{Evaluates irrelevant nodes:} Minimax explores branches that \textit{cannot possibly} influence the final decision. Once a better option is found, the remaining subtrees under a particular parent are irrelevant --- yet Minimax evaluates them anyway. This wastes computational resources that could be used for deeper search.
+\end{enumerate}
+\end{answerbox}
+
+\subsection*{Part (ii): Full Alpha-Beta trace (3 marks)}
+
+\textbf{Tree and minimax values:} See Section~1. Root A $= 9$.
+
+\begin{answerbox}
+\textbf{$\alpha$/$\beta$ at every node as updated:}
+
+\begin{center}
+\begin{tabular}{llcll}
+\toprule
+\textbf{Node} & \textbf{Type} & \textbf{Inherits} & \textbf{$\alpha$ updates} & \textbf{$\beta$ updates}\\
+\midrule
+A       & MAX & $-\infty,+\infty$ & $-\infty{\to}3{\to}9$   & $+\infty$           \\
+B       & MIN & $-\infty,+\infty$ & $-\infty$               & $+\infty{\to}7{\to}4{\to}3$ \\
+\quad E & MAX & $-\infty,+\infty$ & $-\infty{\to}7$         & $+\infty$ $\Rightarrow$ returns 7 \\
+\quad F & MAX & $-\infty,7$       & $-\infty{\to}4$         & $7$ $\Rightarrow$ returns 4   \\
+\quad G & MAX & $-\infty,4$       & $-\infty{\to}3$         & $4$ $\Rightarrow$ returns 3   \\
+\midrule
+C       & MIN & $3,+\infty$       & 3 unchanged             & $+\infty{\to}0$ \textbf{PRUNE}\\
+\quad H & MAX & $3,+\infty$       & 3 (0\,$<$\,$\alpha$, no update) & $+\infty \Rightarrow$ returns 0\\
+\quad \pruned{I} & MAX & \multicolumn{3}{c}{\textit{Never visited --- beta-cutoff at C}}\\
+\quad \pruned{J} & MAX & \multicolumn{3}{c}{\textit{Never visited --- beta-cutoff at C}}\\
+\midrule
+D       & MIN & $3,+\infty$       & 3 unchanged             & $+\infty{\to}9$ \\
+\quad K & MAX & $3,+\infty$       & $3{\to}9$               & $+\infty \Rightarrow$ returns 9\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\medskip
+\textbf{Branches pruned:} I (with leaves T=6, U=2) and J (with leaves V=5, W=8) under C.
+
+\textbf{Pruning reason:} After H returns 0, MIN node C has $\beta_C = 0$.
+Since $\beta_C (=0) \leq \alpha_A (=3)$: MAX already has a guaranteed value of~3 from B.
+C can deliver \textit{at most} 0 to A, so A will never choose the C subtree.
+Evaluating I and J cannot change A's final decision.
+
+\textbf{Final Minimax value returned to root: $A = \mathbf{9}$}
+\end{answerbox}
+
+\subsection*{Part (iii): How Alpha-Beta addresses Minimax limitations (1 mark)}
+
+\begin{answerbox}
+\begin{enumerate}[noitemsep]
+  \item \textbf{Time complexity:} Alpha-Beta reduces time from $O(b^d)$ to $O(b^{d/2})$ in the best case. This means with the same time budget, Alpha-Beta can search \textit{twice as deep} as Minimax --- or evaluate far fewer nodes at the same depth. In the above example, 6 nodes (I, J, T, U, V, W) were eliminated.
+
+  \item \textbf{Unnecessary node expansion:} Alpha-Beta proves certain branches are irrelevant \textit{before} expanding them. Once $\beta_C \leq \alpha_A$, the entire C$\to$I and C$\to$J subtrees are provably unable to change the root decision. They are skipped without loss of accuracy.
+
+  \item \textbf{Decision-making under resource limits:} Because Alpha-Beta effectively halves the required search depth, a system operating under time constraints can search deeper and \textit{consider more future consequences} within the same time window. This leads to stronger, more informed decisions in real game play.
+\end{enumerate}
+\end{answerbox}
+
+%=====================================================================
+\section*{Exam Cheat-Sheet: Key Numbers to Memorise}
+\addcontentsline{toc}{section}{Exam Cheat-Sheet}
+%=====================================================================
+
+\begin{notesbox}
+\begin{tabular}{ll}
+\textbf{Minimax complexity:} & $O(b^d)$ time, $O(bd)$ space (depth-first)\\
+\textbf{Alpha-Beta best case:} & $O(b^{d/2})$ --- search twice as deep\\
+\textbf{Alpha-Beta worst case:} & $O(b^d)$ --- no pruning (very poor move ordering)\\
+\textbf{2023/2024 tree result:} & \textbf{Root A = 9}. Pruned: I(6,2), J(5,8) under C.\\
+\textbf{2021 tree result:} & \textbf{Root A = 3}. Pruned: G(--2,3) under C.\\
+\textbf{Prune condition (both cutoffs):} & $\alpha \geq \beta$\\
+\textbf{$\alpha$ lives at:} & MAX nodes (starts $-\infty$, only increases)\\
+\textbf{$\beta$ lives at:} & MIN nodes (starts $+\infty$, only decreases)\\
+\textbf{Beta-cutoff:} & At MIN node, $\beta \leq \alpha_{\text{ancestor}}$ $\Rightarrow$ prune children\\
+\textbf{Alpha-cutoff:} & At MAX node, $\alpha \geq \beta_{\text{ancestor}}$ $\Rightarrow$ prune children\\
+\textbf{Futility-cutoff:} & $f(n) + \text{margin} \leq \alpha$ $\Rightarrow$ prune (forward pruning)\\
+\textbf{Quiescence:} & Continue search past depth until no captures/checks remain\\
+\end{tabular}
+\end{notesbox}
+
+\end{document}

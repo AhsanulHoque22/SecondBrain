@@ -234,15 +234,25 @@ Every year has a **graph trace question** (4.5–5 marks) + **problem formulatio
 - d) What is "Waiting for Quiescence"? (1)
 
 **2021 — Q3d (4 marks)**
-- Different game tree (3 levels, leaf values: 0,5,-3,3 and 3,-2,3)
+- Tree: A(MAX) → B,C(MIN) → D,E,F,G(MAX) → leaves 0,5 | -3,3 | 3 | -2,3
 - Explain how Alpha-Beta pruning improves game playing using this example.
+- Trace: D=5, E=3 → B=3; α_A=3. F=3 → β_C=3 ≤ α=3 → **PRUNE G**. Root A=3.
+
+**2020 — Q3d (Group-A) (2.5 marks)**
+- Describe the Minimax algorithm for searching game trees.
+- Cover: MAX/MIN alternation, backed-up values bottom-up, depth-first to ply, evaluation function at leaves, O(b^d) complexity, pick child with backed-up value at root.
 
 #### 🎯 What to master:
-- Minimax algorithm + why O(b^m) is a problem
-- Alpha-Beta pruning: α = best MAX seen on path to root, β = best MIN seen on path to root
-- Prune: at MIN node if value ≤ α; at MAX node if value ≥ β
+- Minimax algorithm + why O(b^d) is a problem (b=branching factor, d=depth)
+- **2 limitations of Minimax** (exam asks this directly 2024): (1) exponential time O(b^d) — infeasible for chess; (2) evaluates irrelevant nodes that can't affect the outcome
+- Alpha-Beta pruning: α = best MAX can guarantee (starts -∞, only increases), β = best MIN can guarantee (starts +∞, only decreases)
+- Prune at MIN node when β ≤ α (beta cutoff); prune at MAX node when α ≥ β (alpha cutoff)
 - Always track α/β at every node as they update left-to-right
-- 2024 tree is the HARDEST — practice it fully
+- **2023/2024 TREE RESULT** (memorise): B=3, C=0 [I+J PRUNED], D=9 → Root A=**9**. Pruned because β_C=0 ≤ α_A=3.
+- 2021 tree result: B=3, C=3 [G PRUNED] → Root A=**3**. G pruned because β_C=3 ≤ α_A=3 (equal).
+- Effectiveness: worst case O(b^d) [no pruning]; best case O(b^(d/2)) [perfect ordering] — can search twice as deep!
+- **Futility cutoff**: prune if f(n) + margin ≤ α — node cannot improve current best even in best case
+- **Waiting for Quiescence**: don't apply static evaluator until position is stable (no captures/checks); prevents horizon effect
 
 ---
 

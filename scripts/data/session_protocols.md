@@ -5,10 +5,9 @@
 
 ## 🔴 AT SESSION START (mandatory — do not skip)
 
-### 1. Read Dashboard + Today's Log
-- Read `00_Dashboard.md`
+### 1. Read Wiki State + Today's Log
+- Read `scripts/data/wiki_state.md` (compiled state — replaces Dashboard + Topics + carry_forward reads)
 - Read `03_Daily_Logs/[TODAY].md`
-- Read `scripts/data/carry_forward.json`
 
 ### 2. Compute Slippage
 - Compare yesterday's planned vs. done

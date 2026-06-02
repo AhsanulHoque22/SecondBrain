@@ -1,6 +1,5 @@
 #!/bin/bash
 # Morning Briefing — runs at 4:15 AM via cron
-# Claude reads the vault, generates a personalized brief, sends to Telegram.
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 VAULT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
@@ -11,46 +10,37 @@ export HOME=/home/ahsanul-hoque
 export PATH="/home/ahsanul-hoque/.local/bin:/usr/local/bin:/usr/bin:/bin"
 
 LOG="/tmp/secondbrain_morning_$(date '+%Y%m%d').log"
-
 echo "[$(date)] Morning brief starting" >> "$LOG"
 
 BRIEF=$(cd "$VAULT_DIR" && claude -p --dangerously-skip-permissions \
-  --allowedTools "Read,Bash" \
+  --allowedTools "Read" \
   --no-session-persistence \
-"Today is $WEEKDAY $TODAY. You are Ahsanul's study mentor.
+"Today is $WEEKDAY $TODAY. Read scripts/data/wiki_state.md and 03_Daily_Logs/$TODAY.md.
 
-Read these files:
-- 00_Dashboard.md
-- 03_Daily_Logs/$TODAY.md (if it exists)
-- 02_Courses/CSE713_AI/_Topics.md (or the active course _Topics.md)
-
-Then send him a morning briefing via Telegram in this EXACT format — no extra text, just this:
+Send this EXACT format — no extra text:
 
 🌅 *Good morning, Ahsanul — $WEEKDAY $TODAY*
 
-📍 *Where you stand:* [days to next exam, course name, current phase — 1 line]
+📍 *Where you stand:* [active exam, days left, phase — from wiki_state]
 
-🎯 *Most important thing right now:* [single most urgent action — 1 line]
+🎯 *Most important thing:* [highest-yield 🔲 topic or carry-forward item — 1 line]
 
-⏰ *First block (5:10 AM):* [exact topic + what to do in it — 1–2 lines]
+⏰ *First block (5:10 AM):* [Block 1 from today's log — 1 line]
 
-🔁 *Spaced recall today (10 min each):*
-[list only topics with 🔁 status from _Topics.md, or write 'None' if none]
+🔁 *Recall due today:* [from wiki_state recall section, or 'None']
 
-Keep the whole message under 15 lines. Be direct. No fluff." 2>> "$LOG")
+Under 10 lines. No fluff." 2>> "$LOG")
 
 if [ -n "$BRIEF" ]; then
   bash "$SCRIPT_DIR/tg_send.sh" "$BRIEF"
-  echo "[$(date)] Brief sent to Telegram" >> "$LOG"
+  echo "[$(date)] Brief sent" >> "$LOG"
 else
   bash "$SCRIPT_DIR/tg_send.sh" "⚠️ Morning brief failed — check /tmp/secondbrain_morning_$(date '+%Y%m%d').log"
-  echo "[$(date)] ERROR: Claude returned empty output" >> "$LOG"
+  echo "[$(date)] ERROR: empty output" >> "$LOG"
 fi
 
-# Git commit — if rollover wrote tomorrow's log, capture it
 cd "$VAULT_DIR"
 if ! git diff --quiet || ! git diff --cached --quiet || [ -n "$(git ls-files --others --exclude-standard)" ]; then
   git add -A
   git commit -m "auto: morning brief $TODAY" >> "$LOG" 2>&1
-  echo "[$(date)] Git commit done" >> "$LOG"
 fi

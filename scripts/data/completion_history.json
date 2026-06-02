@@ -10,6 +10,20 @@
         "Alpha-Beta Pruning + Minimax (Chapter 5.pdf — full tree trace, α/β definitions, cutoffs, complexity)"
       ],
       "timestamp": "2026-06-02T10:00:00+06:00"
+    },
+    {
+      "date": "2026-06-02",
+      "event_title": "Girlfriend Chat + Break + Asr Prayer",
+      "type": "non-study",
+      "completed": true,
+      "timestamp": "2026-06-02T17:45:00+06:00"
+    },
+    {
+      "date": "2026-06-02",
+      "event_title": "Maghrib Prayer + Girlfriend Chat + Dinner",
+      "type": "non-study",
+      "completed": true,
+      "timestamp": "2026-06-02T20:00:00+06:00"
     }
   ]
 }

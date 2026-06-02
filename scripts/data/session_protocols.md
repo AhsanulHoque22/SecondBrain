@@ -19,15 +19,15 @@
 - Single most important thing right now
 - First 90-minute block
 
-### 4. Question Analysis (for every topic being studied today)
-- Read `02_Courses/[active course]/_TopicQuestionMap.md`
-- For each topic in today's blocks: link to specific past paper questions
-- Tell the user exactly what the exam asks and what format the answer should take
+### 4. Question Analysis ⚠️ ON-DEMAND ONLY — do NOT run at session start
+- **Trigger:** User says "starting block [N]" or asks for past paper questions
+- Only THEN: read `_TopicQuestionMap.md` and link topics to past paper questions
+- Do NOT read this file automatically at session start — it is 30KB+
 
-### 5. Source PDF Study Guide (for each study block)
-- Read the relevant PDF pages
-- Give precise page numbers: what to STUDY, what to SKIP
-- Link each topic to its past paper questions
+### 5. Source PDF Study Guide ⚠️ ON-DEMAND ONLY — do NOT run at session start
+- **Trigger:** User says "starting block [N]"
+- Only THEN: read the relevant PDF pages for that block
+- Do NOT read any PDFs automatically at session start
 
 ---
 

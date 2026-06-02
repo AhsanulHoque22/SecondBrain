@@ -1,3 +1,15 @@
 {
-  "entries": []
+  "entries": [
+    {
+      "date": "2026-06-02",
+      "event_title": "AI Study — Alpha-Beta Pruning: Full Tree Trace",
+      "type": "study",
+      "pct_complete": 100,
+      "incomplete_topics": [],
+      "completed_topics": [
+        "Alpha-Beta Pruning + Minimax (Chapter 5.pdf — full tree trace, α/β definitions, cutoffs, complexity)"
+      ],
+      "timestamp": "2026-06-02T10:00:00+06:00"
+    }
+  ]
 }

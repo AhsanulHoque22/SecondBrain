@@ -2849,4 +2849,325 @@ Example & $h(n)=0$ (UCS — slow but optimal) & $h(n) > h^*(n)$ (fast but potent
 \textbf{Exam key point:} The \textbf{admissibility condition} $h(n) \leq h^*(n)$ for all $n$ is the \textbf{single most important property} of a heuristic in A*. It is the necessary and sufficient condition for A* optimality (on tree-search; on graph-search, consistency/monotonicity is also required for optimality without reopening nodes). An admissible heuristic guarantees you won't miss the best path; a well-chosen admissible heuristic (close to $h^*$) makes the search efficient.
 \end{notesbox}
 
+%=====================================================================
+\newpage
+\section{Hill Climbing \& Simulated Annealing (Topic 9) — All Years}
+%=====================================================================
+
+\noindent Chapter 4 (slides 61--75) covers local search. Questions appear in \textbf{2021~Q3a, 2022~B-4a, 2023~Q3a, and 2024~Q4b}. Core concepts tested: Steepest-Ascent HC algorithm, three failure modes + remedies, HC (deterministic) vs SA (non-deterministic), and SA's escape mechanism via probabilistic acceptance.
+
+%----------------------------------------------------------------------
+\subsection{Theory — Hill Climbing}
+%----------------------------------------------------------------------
+
+\noindent\textbf{What is Hill Climbing?}\\
+Hill Climbing (gradient ascent/descent) is a \textbf{local search} algorithm. It starts with an initial state and iteratively replaces the current state with its best successor. It keeps only \textbf{one state in memory} (OPEN = \{current node\}) and uses only the heuristic evaluation function $h(n)$ — no path cost, no backtracking.
+
+\vspace{0.4em}
+
+\noindent\textbf{Simple Hill Climbing (from slide 68):}
+\begin{enumerate}[noitemsep]
+  \item Evaluate initial state. If goal, return it; else make it current.
+  \item Loop: (a) select an operator not yet applied and apply it to get a new state; (b) if new state is goal → return it; if better than current → make it current; else continue loop.
+\end{enumerate}
+
+\vspace{0.4em}
+
+\begin{mdframed}[style=notesframe]
+\textbf{Steepest-Ascent Hill Climbing (slide 69) — the version the exam asks for:}\\[0.3em]
+\textbf{1.} Set \textit{current} := initial state.\\
+\textbf{2.} \textbf{Loop:}\\
+\hspace{1.5em}(a) Generate \textbf{all} successors of \textit{current}.\\
+\hspace{1.5em}(b) Let \textit{best} := successor with the \textbf{lowest} $h(n)$ (i.e.\ best evaluation).\\
+\hspace{1.5em}(c) If $h(\textit{best}) < h(\textit{current})$: set \textit{current} := \textit{best}; continue loop.\\
+\hspace{1.5em}(d) Else: no improvement found. \textbf{Return} \textit{current} (local optimum).
+\end{mdframed}
+
+\vspace{0.4em}
+
+\noindent\textbf{Simple HC vs Steepest-Ascent HC:}
+\begin{center}
+\renewcommand{\arraystretch}{1.4}
+\begin{tabular}{p{6cm}|p{6cm}}
+\toprule
+\textbf{Simple HC} & \textbf{Steepest-Ascent HC} \\
+\midrule
+Moves to the \textbf{first} successor that is better. Stops testing once any improvement found. & Evaluates \textbf{all} successors. Moves to the \textbf{best} one. \\
+Faster per step. & Follows the true gradient; less prone to premature stopping. \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+%----------------------------------------------------------------------
+\subsection{Three Drawbacks of Hill Climbing (Slide 65 — Memorise This)}
+%----------------------------------------------------------------------
+
+\begin{solutionbox}
+The exam asks this directly and repeatedly: ``Describe the problems HC may reach. How can each be dealt with?''
+\end{solutionbox}
+
+\vspace{0.5em}
+
+\subsubsection*{1. Local Maximum}
+
+\noindent\textbf{Definition (slide 65):} A state that is \textbf{better than all its neighbours} but is \textbf{not the global optimum}.\\[0.2em]
+\textbf{What happens:} HC halts at this peak because every adjacent state is worse. The algorithm incorrectly returns the local peak as the solution.\\[0.2em]
+\textbf{Example:} A drone route better than all routes reachable by a single waypoint change, yet many superior routes exist requiring 2+ simultaneous changes.\\[0.2em]
+\textbf{Remedies:}
+\begin{enumerate}[noitemsep]
+  \item \textbf{Backtrack} to a previously visited state and try a different direction.
+  \item \textbf{Random restart} — restart from a different (randomly chosen) initial state.
+  \item Use \textbf{Simulated Annealing} — probabilistically accept worse states to escape.
+\end{enumerate}
+
+\subsubsection*{2. Plateau}
+
+\noindent\textbf{Definition (slide 65):} A \textbf{flat area} of the search space where a set of neighbouring states all have the \textbf{same evaluation value}.\\[0.2em]
+\textbf{What happens:} HC cannot determine which direction to move. It may wander aimlessly or halt prematurely.\\[0.2em]
+\textbf{Example:} Multiple drone routes of identical total flight cost; HC has no information to guide its next modification.\\[0.2em]
+\textbf{Remedies:}
+\begin{enumerate}[noitemsep]
+  \item \textbf{Allow sideways moves} (accept equal-value successors) up to a maximum count before giving up.
+  \item \textbf{Random restart.}
+\end{enumerate}
+
+\subsubsection*{3. Ridge}
+
+\noindent\textbf{Definition (slide 65):} A \textbf{special kind of local maximum} — a region higher than surrounding areas that \textbf{itself has a slope} (which one would like to climb). The trouble is that the available operators cannot move along the ridge; each move off the ridge is downhill.\\[0.2em]
+\textbf{What happens:} HC reaches the foot of the ridge and cannot climb it because every available operator moves the agent sideways off the ridge and downhill.\\[0.2em]
+\textbf{Example:} A drone route corridor where the global optimum runs along a narrow geographical path — any single waypoint change moves the drone off the corridor and worsens the route.\\[0.2em]
+\textbf{Remedies:}
+\begin{enumerate}[noitemsep]
+  \item \textbf{Apply two operators simultaneously} to move diagonally along the ridge.
+  \item \textbf{Change the heuristic} — use a \textbf{global heuristic} (Knight's Book: reward correct support structure) rather than a local one that cannot see the ridge.
+  \item \textbf{Random restart.}
+\end{enumerate}
+
+\begin{answerbox}
+\textbf{HC problems cheat-sheet (3 lines):}\\
+\textbf{Local Max:} Better than all neighbours but not globally best. Remedy: backtrack or random restart.\\
+\textbf{Plateau:} All neighbours equal — no direction to move. Remedy: allow sideways moves or restart.\\
+\textbf{Ridge:} Sloped region higher than surroundings — operators can't traverse it. Remedy: apply 2 operators simultaneously or change heuristic.
+\end{answerbox}
+
+%----------------------------------------------------------------------
+\subsection{HC vs BFS Comparison (Slide 70)}
+%----------------------------------------------------------------------
+
+\begin{center}
+\renewcommand{\arraystretch}{1.4}
+\begin{tabular}{l|p{5.8cm}|p{5.8cm}}
+\toprule
+\textbf{Criterion} & \textbf{Hill Climbing} & \textbf{Best-First Search} \\
+\midrule
+\textbf{Memory} &
+  \textbf{O(1)} — only current state. All other successors are discarded and \textbf{never reconsidered}. &
+  $O(b^d)$ — entire frontier stored. Rejected nodes kept and can be revisited. \\
+\midrule
+\textbf{Backtracking} &
+  \textbf{None.} Once a move is made, discarded states are gone forever. &
+  \textbf{Full.} If selected path fails, BFS returns to the next-best frontier node. \\
+\midrule
+\textbf{Stuck behaviour} &
+  \textbf{Halts permanently} when no better successor exists. &
+  \textbf{Continues} — switches to next frontier node even if its value is lower than the just-explored state. \\
+\midrule
+\textbf{Determinism} &
+  \textbf{Deterministic} — same initial state always produces same path and same local optimum. Zero randomness. &
+  \textbf{Deterministic} — consistent tie-breaking makes A*/Greedy deterministic too. \\
+\midrule
+\textbf{Completeness} &
+  \textbf{Not complete} — terminates at local optima, plateaux, ridges. &
+  A*: \textbf{complete}. Greedy: incomplete on infinite graphs. \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+%----------------------------------------------------------------------
+\subsection{Simulated Annealing — Escape Mechanism}
+%----------------------------------------------------------------------
+
+\noindent\textbf{Motivation:} HC always gets stuck at the nearest local optimum. SA escapes by \textbf{occasionally accepting worse states}, inspired by the physical process of slowly cooling metal into a minimum-energy crystal.
+
+\vspace{0.4em}
+
+\begin{solutionbox}
+\textbf{SA core idea (slide 71):} Maintain a temperature $T$ (starts high, decreases to 0).\\
+At each step: randomly select a successor. Compute $\Delta E = \text{VALUE[next]} - \text{VALUE[current]}$.\\
+\textbf{If} $\Delta E > 0$ (improvement): \textbf{always accept.}\\
+\textbf{If} $\Delta E \leq 0$ (worse): accept with probability $e^{\Delta E / T}$.\\
+As $T \to 0$: worse moves become impossible. SA converges to hill climbing.
+\end{solutionbox}
+
+\vspace{0.4em}
+
+\begin{mdframed}[style=notesframe]
+\textbf{SA Algorithm (slides 72--73):}\\[0.3em]
+\textit{current} $\leftarrow$ INITIAL-STATE; \quad $T := T_0 \gg 0$\\
+\textbf{forever do:}\\
+\hspace{1.5em}\textbf{if} $T \leq T_{\text{end}}$ \textbf{then return} \textit{current}\\
+\hspace{1.5em}\textit{next} $\leftarrow$ randomly generated new state\\
+\hspace{1.5em}$\Delta E = f(\textit{next}) - f(\textit{current})$\\
+\hspace{1.5em}\textit{current} $:=$ \textit{next} with probability $\displaystyle p_{\Delta E} = \frac{1}{1 + e^{\Delta E/T}}$\\[0.3em]
+\textbf{Cooling schedules:} $T := T \times \alpha$ (geometric, $0 < \alpha < 1$) \quad or \quad $T_k := T_0 / \log(1+k)$
+\end{mdframed}
+
+\vspace{0.4em}
+
+\noindent\textbf{How SA addresses each HC failure mode:}
+\begin{center}
+\renewcommand{\arraystretch}{1.4}
+\small
+\begin{tabular}{l|p{5cm}|p{7cm}}
+\toprule
+\textbf{HC failure} & \textbf{HC behaviour} & \textbf{SA behaviour} \\
+\midrule
+Local maximum & Halts permanently & Accepts a worse neighbour with probability $e^{\Delta E/T}$ — escapes the local peak \\
+Plateau ($\Delta E{=}0$) & Wanders or halts & $e^{0/T} = 1$ → always accepts lateral moves; traverses the plateau \\
+Ridge & Cannot traverse & Temporarily accepts the downhill move off the ridge; can reach the other side \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{answerbox}
+\textbf{SA properties (slide 74):} SA is \textbf{complete and optimal} given a \textbf{slow enough cooling schedule} (in probability). With fast cooling: fast but suboptimal. With slow cooling: near-optimal.\\
+\textbf{SA is non-deterministic} — random successor selection + probabilistic acceptance → different runs may produce different solutions.
+\end{answerbox}
+
+%----------------------------------------------------------------------
+\subsection{2021 — Q3(a): Steepest-Ascent HC + Problems [4 marks]}
+%----------------------------------------------------------------------
+
+\begin{solutionbox}
+\textbf{Question:} Describe the Steepest-Ascent Hill Climbing algorithm. What problems can HC reach? Discuss how to deal with each.
+\end{solutionbox}
+
+\noindent\textbf{Algorithm:} (see Section~6.1 pseudocode above — generates all successors, selects best, halts if no improvement).
+
+\noindent\textbf{Three problems + remedies:}
+\begin{enumerate}[leftmargin=1.5cm, itemsep=6pt]
+  \item \textbf{Local Maximum.} Better than all neighbours but not globally optimal. HC halts, reporting a suboptimal answer.\\
+        \textit{Remedy:} Restart from a different initial state; backtrack and try a different branch.
+
+  \item \textbf{Plateau.} All neighbouring states have equal evaluation value. HC has no direction to move.\\
+        \textit{Remedy:} Allow sideways moves up to a fixed limit; random restart.
+
+  \item \textbf{Ridge.} Region higher than surroundings with a slope; operators cannot traverse it directly.\\
+        \textit{Remedy:} Apply two operators simultaneously; use a global heuristic.
+\end{enumerate}
+
+%----------------------------------------------------------------------
+\subsection{2022 — B-4(a): HC Algorithm + Problems [2 marks]}
+%----------------------------------------------------------------------
+
+\begin{solutionbox}
+\textbf{Question:} Write the Steepest-Ascent HC algorithm. What problems does HC reach? How can they be dealt with?
+\end{solutionbox}
+
+\noindent\textbf{Algorithm:} At each step, evaluate ALL successors. Move to the one with the best $h(n)$. Halt if no successor is better.
+
+\begin{center}
+\renewcommand{\arraystretch}{1.4}
+\small
+\begin{tabular}{l|p{5.5cm}|p{5.5cm}}
+\toprule
+\textbf{Problem} & \textbf{Definition} & \textbf{Remedy} \\
+\midrule
+Local Maximum & Better than all neighbours; not globally optimal & Random restart; backtrack \\
+Plateau & All neighbours equal; no direction & Allow sideways moves; restart \\
+Ridge & Higher than surroundings but has a slope operators can't follow & Apply 2 operators simultaneously; change heuristic \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+%----------------------------------------------------------------------
+\subsection{2023 — Q3(a): Deterministic/Non-deterministic + HC + SA [4 marks]}
+%----------------------------------------------------------------------
+
+\begin{solutionbox}
+\textbf{Question:} Differentiate between deterministic and non-deterministic search. Discuss HC limitations for drone route planning. How does SA address them?
+\end{solutionbox}
+
+\subsubsection*{Deterministic vs Non-Deterministic}
+
+\begin{center}
+\renewcommand{\arraystretch}{1.4}
+\small
+\begin{tabular}{l|p{6cm}|p{6cm}}
+\toprule
+\textbf{Criterion} & \textbf{Deterministic} & \textbf{Non-Deterministic} \\
+\midrule
+\textbf{Definition} & Same initial state + same inputs → always the \textbf{same sequence of states} and same result. & Incorporates \textbf{randomness} → different runs produce different paths and possibly different results. \\
+\midrule
+\textbf{Examples} & HC (Steepest-Ascent), A*, UCS, Greedy BFS & Simulated Annealing, Genetic Algorithms \\
+\midrule
+\textbf{Advantage} & Reproducible; easy to analyse. & Escapes local optima; explores more of the space. \\
+\midrule
+\textbf{Disadvantage} & Always stuck at the same local optimum for the same input. & Non-reproducible; harder to guarantee a specific solution. \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsubsection*{HC Limitations for Drone Route Planning}
+
+State = current route; evaluation = total flight cost; operators = change one waypoint.
+
+\begin{enumerate}[leftmargin=1.5cm, itemsep=5pt]
+  \item \textbf{Local Maximum.} HC finds a route better than all single-waypoint modifications. Globally better routes requiring multi-waypoint changes are unreachable. HC terminates prematurely.
+
+  \item \textbf{Plateau.} Multiple drone routes have identical total cost. HC cannot identify a direction to improve and stalls.
+
+  \item \textbf{Ridge.} The optimal route runs along a narrow cost corridor. Any single waypoint change pushes the drone off the corridor and increases cost. HC cannot traverse the ridge.
+\end{enumerate}
+
+\subsubsection*{How SA Addresses Each Limitation}
+
+\begin{enumerate}[leftmargin=1.5cm, itemsep=5pt]
+  \item \textbf{Local Maximum:} SA accepts a worse route with probability $e^{\Delta E/T}$, escaping the trap and exploring routes that HC would never visit.
+
+  \item \textbf{Plateau:} Since $\Delta E = 0$, the acceptance probability $e^{0/T} = 1$. SA freely traverses the plateau.
+
+  \item \textbf{Ridge:} SA temporarily accepts the off-ridge (downhill) move. From there, it may climb the other side of the ridge to reach the global optimum.
+\end{enumerate}
+
+\begin{answerbox}
+\textbf{Key exam distinction (2023):} HC is \textbf{deterministic} — same input → same stuck point. SA is \textbf{non-deterministic} — randomness enables escape. SA's temperature $T$: high $T$ = broad exploration; low $T$ = fine-grained refinement near optimum.
+\end{answerbox}
+
+%----------------------------------------------------------------------
+\subsection{2024 — Q4(b): HC det/non-det + 3 Limitations + SA [4 marks]}
+%----------------------------------------------------------------------
+
+\begin{solutionbox}
+\textbf{Question:} Is HC deterministic or non-deterministic? Identify 3 limitations of HC for autonomous drone route planning. Explain how SA addresses these limitations.
+\end{solutionbox}
+
+\subsubsection*{HC is Deterministic}
+
+\textbf{Hill Climbing is deterministic.} Given the same initial state and evaluation function, Steepest-Ascent HC always generates the same successors, always selects the same best one, and always terminates at the same local optimum. There is no random element.\\[0.3em]
+\textbf{SA is non-deterministic} — it randomly selects the next state and probabilistically decides whether to accept it with probability $e^{\Delta E/T}$.
+
+\subsubsection*{3 Limitations for Drone Route Planning + SA Solutions}
+
+\begin{enumerate}[leftmargin=1.5cm, itemsep=8pt]
+  \item \textbf{Local Maximum.}\\
+        HC finds a route better than all single-modification alternatives but misses globally superior routes needing multi-point changes. Drone follows a suboptimal path.\\
+        \textit{SA:} Accepts worse routes with probability $e^{\Delta E/T}$, escaping the local optimum to find better routes.
+
+  \item \textbf{Plateau.}\\
+        Multiple drone routes have equal total cost. HC has no gradient to follow and stalls indefinitely.\\
+        \textit{SA:} $e^{0/T} = 1$ → SA always accepts equal-cost moves; crosses the plateau freely.
+
+  \item \textbf{Ridge.}\\
+        Optimal route runs along a narrow corridor. Every individual waypoint change moves the drone off-corridor and worsens cost. HC cannot traverse the ridge.\\
+        \textit{SA:} Temporarily accepts the off-corridor worse route. From that position SA may locate and ascend the other slope, reaching the globally optimal corridor.
+\end{enumerate}
+
+\begin{answerbox}
+\textbf{2024 summary:}\\
+HC = \textbf{deterministic}. SA = \textbf{non-deterministic} (probabilistic acceptance $e^{\Delta E/T}$).\\
+HC's 3 drone failures: \textbf{local maximum} (suboptimal route), \textbf{plateau} (equal-cost routes, no direction), \textbf{ridge} (narrow corridor unreachable by single changes).\\
+SA temperature schedule: $T$ starts high (broad exploration) $\to$ decreases to 0 (no worse moves accepted) $\to$ converges to optimum.
+\end{answerbox}
+
 \end{document}

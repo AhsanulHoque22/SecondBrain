@@ -63,7 +63,7 @@ SecondBrain/
 
 ## Telegram Bot (mobile agent)
 Common Telegram commands:
-- "What's my plan today?" → read Dashboard + today's log
+- "What's my plan today?" → read `scripts/data/wiki_state.md` + today's log
 - "I finished [topic]. Mark it done." → update _Topics.md
 - "Tonight's Livora task: [X]" → write X to `scripts/data/overnight_task.txt`
 - "Update my log: did [X], energy [N], blocker [Y]" → Progress Log Protocol
@@ -150,7 +150,7 @@ Cron scripts commit themselves — don't double-commit.
 
 **Session start (mandatory):**
 1. Read `scripts/data/session_protocols.md` — execute 🔴 Steps 1–3 only.
-2. Read `00_Dashboard.md` + today's log.
+2. Read `scripts/data/wiki_state.md` + today's log.
 3. Check yesterday: planned vs done. If slipped → re-plan, cut lowest-yield item.
 4. Tell him: where he stands | single most important thing | first 90-min block.
 

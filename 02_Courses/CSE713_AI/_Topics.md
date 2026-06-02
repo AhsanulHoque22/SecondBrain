@@ -7,6 +7,7 @@ Status: 🔲 not started · 📖 learning · 🔁 needs recall · ✅ can explai
 |-------|:------:|:----:|:-------------:|:-----------:|:-----:|--------------------|
 | Intelligent Agents + Environments (PAGE) | ✅ | 4 | 2026-06-01 | 2026-06-03 | 5/5 · 4–9 marks | Past paper practice done (2024/2022/2020 Q1) |
 | Search: UCS, Greedy, A*, IDDFS — trace on graph | ✅ | 4 | 2026-06-01 | 2026-06-03 | 5/5 · 5–6 marks | BFS/DFS/UCS/IDDFS + Greedy/A* all done. Past paper practice pending. |
+| Search: Problem Formulation (initial state, goal test, operators, path cost) | 🔁 | 4 | 2026-06-01 | 2026-06-03 | 5/5 · 2–3 marks | TSP, M&C, Water Jug, Robot Vacuum, Map Coloring, Monkey & Bananas — apply 4-part template cold |
 | Alpha-Beta Pruning + Minimax | 📖 | — | 2026-06-02 | — | 5/5 · 4–5 marks | Slides done. Active recall pending — cannot mark ✅ until cold trace passes. |
 | Forward + Backward Chaining + Rule-Based System | 🔲 | — | — | — | 5/5 · 6–9 marks | R1–R5 example is verbatim every year — memorise it |
 | FOL + Resolution + Inference (Marcus/Pompeii) | 🔲 | — | — | — | 5/5 · 7–8 marks | Same facts set 2020–2022; 2023/2024 use FOL for robots/drones |

@@ -348,55 +348,93 @@ R5: IF F THEN G
 ---
 
 ### Topic 5 — FOL + Resolution + Inference
-**Source:** Propositional Logic.pdf · **Yield:** ⭐⭐⭐ 5/5 years · **Marks:** 7–9
+**Source:** Propositional Logic.pdf (104 slides, fully read) · **Yield:** ⭐⭐⭐ 5/5 years · **Marks:** 7–9
 
 #### 🔁 PATTERN:
-Two sub-types appear alternately:
+Three sub-types appear:
 - **Type A (Marcus/Pompeii)**: Translate facts to FOL → backward reasoning → clause form → resolution proof
 - **Type B (Self-driving car / Drone / Robot)**: Define actions/predicates in FOL → forward chaining
+- **Type C (Perfect Square)**: FOL translation → inference rules (UE/EE/MP/EI) → clause form → resolution
 
-**Marcus/Pompeii facts (memorize):**
+**Marcus/Pompeii facts (memorize — year changes each paper!):**
 ```
 F1: Marcus was a man.          F6: No mortal lives longer than 150 years.
-F2: Marcus was a Pompeian.     F7: It is now 2023.
+F2: Marcus was a Pompeian.     F7: It is now [YEAR] — 2021(2020), 2023(2022), 2014(2016,2017)
 F3: Marcus was born in 40 AD.  F8: Alive means not dead.
 F4: All men are mortal.        F9: If someone dies, he is dead at all later times.
 F5: All Pompeians died when    Goal: Prove Marcus is NOT alive now.
     volcano erupted in 79 AD.
 ```
 
+**Perfect Square sentences (memorize — identical in 2021, 2024, 2018):**
+```
+S1: If a perfect square is divisible by prime P → also divisible by P²
+S2: Every perfect square is divisible by some prime
+S3: 36 is a perfect square
+Goal: Does there exist prime q such that q² divides 36?
+```
+
 #### Detailed Questions by Year:
 
-**2024 — Q4a (5 marks) — FOL (Self-driving car)**
-- Define in FOL: i) car moves to reachable destination with no obstacles ii) proceeds through intersection if traffic light green + no pedestrians iii) stops if obstacle on road iv) reduces speed in school zone during active hours v) changes lanes only if adjacent lane clear + car moving
+**2020 — Group-A Q4 (approx. 9 marks) — Marcus/Pompeii (now=2021)**
+- a) Translate facts (i–ix) to WFFs in predicate logic (2 marks)
+- b) Answer "Is Marcus alive now?" using backward reasoning (2 marks)
+- c) Convert the formulas into clause form (2 marks)
+- d) Prove "Marcus is not alive now" using resolution (2.75 marks)
+> **Backward chain:** pompeian(Marcus)→F5→dies(Marcus,79)→F9+gt(2021,79)→dead(Marcus,2021)→F8→¬alive ✓
 
-**2024 — Q4b (4 marks) — FOL + Forward Chaining (Drone delivery)**
-- Drone at L0, R1:L0→L1, R2:L1→L2 (obstacle), R3:L2→Lp
-- Define predicates, knowledge base, rules in FOL, then use forward chaining to determine if drone reaches destination
+**2021 — Q4 (approx. 9.25 marks) — PL Reasoning (Wumpus + Satisfiability + KB Resolution)**
+- a) Wumpus World: agent generates new knowledge through perception + inference (3 marks)
+  - KB: R1:¬P1,1 R2:B1,1↔(P2,1∨P1,2) R4:¬B1,1 → infer ¬P2,1 ∧ ¬P1,2 (cells safe)
+- b) Differentiate proof vs theorem in one point (0.75 marks)
+- c) Determine if (P∨Q)∧(P∨¬Q)∨P is Satisfiable/Contradictory/Valid (2 marks)
+  > Simplifies to P. Answer: **Satisfiable** (true when P=T, false when P=F)
+- d) Given R1:¬P1,1 R2:B1,1↔(P2,1∨P1,2) R3:B2,1↔... R4:¬B1,1 R5:B2,1 — show P1,2 is false (3.5 marks)
+  > **2-step proof**: P1,2 + ¬P1,2∨B1,1 → B1,1. Then B1,1 + ¬B1,1 → □
 
-**2023 — Q4a (5 marks) — FOL (Self-driving car, same as 2024 Q4a)**
-**2023 — Q4b (4 marks) — FOL + Forward Chaining (Drone, same scenario)**
-
-**2022 — A-2 (FOL appears in Section A!)**
-- a) What is resolution? Write algorithm for conversion of wff in predicate logic to clause form. (2.5)
-- b) Marcus/Pompeii facts F1-F9:
-  - i) Translate to wff in predicate logic (1)
-  - ii) Answer "Is Marcus alive now?" using backward reasoning (1)
-  - iii) Convert formula to clause form (1)
-  - iv) Prove Marcus is not alive now using resolution (2)
-- c) Knowledge Representation and Mapping roles (1.5)
-
-**2021 — Q4d (3.5 marks) — KB Resolution**
-- Given KB: R1:~P1,1 / R2:B1,1↔(P2,1∨P1,2) / R3:B2,1↔(P1,1∨P2,2∨P3,1) / R4:~B1,1 / R5:B2,1
-- Show that P1,2 is false using resolution
+**2021 — Q5a (1 mark) — FOL as generalization of PL**
+- Briefly explain why FOL is considered the generalization of PL
+  > PL cannot express universally quantified statements without infinite ground atoms. FOL adds ∀, ∃, variables, predicates, functions.
 
 **2021 — Q5b (7.75 marks) — Perfect Squares FOL**
-- Same sentences as 2024 Q4c:
-  - i) Perfect square divisible by prime P → also divisible by P²
-  - ii) Every perfect square divisible by some prime
-  - iii) 36 is a perfect square
-  - iv) Does there exist prime q such that q² divides 36?
-- Translate to FOL → clause form → resolution proof
+- i) Translate S1–S3 + Goal into FOL sentences (1.75 marks)
+- ii) Convert to Clause Forms (2.5 marks): Skolemize S2 with g(x); negate goal → C4
+- iii) Apply resolution with unification to prove goal (3.5 marks)
+  > 7-step proof: C3+C2a→Prime(g(36)); C3+C2b→Divides(g(36),36); then contradict C4 → □
+
+**2022 — A-2 (FOL appears in Section A! 7 marks)**
+- a) What is resolution? Algorithm for wff→clause form (2.5 marks)
+  > 9-step CFC algorithm: elim ↔, elim →, move ¬ in, standardize, prenex, Skolemize, drop ∀, CNF, split clauses
+- b) Marcus/Pompeii facts F1-F9 (now=2023):
+  - i) Translate to wff in predicate logic (1 mark)
+  - ii) Answer "Is Marcus alive now?" using backward reasoning (1 mark)
+  - iii) Convert formula to clause form (1 mark)
+  - iv) Prove Marcus is not alive now using resolution (2 marks)
+- c) Knowledge Representation and Mapping — what it is + roles (1.5 marks)
+  > 5 roles: Surrogate, Ontological commitment, Inferential foundation, Medium of expression, Efficient computation
+
+**2023 — Q4 (9 marks) — FOL Translation**
+- a) Define self-driving car actions in FOL (5 marks):
+  - (i) Moves if reachable ∧ ¬Obstacle
+  - (ii) Proceeds through intersection if GreenLight ∧ ¬PedestrianCrossing
+  - (iii) Stops if ObstacleOnRoad
+  - (iv) Reduces speed in school zone if ActiveHours
+  - (v) Changes lane if AdjacentLaneClear ∧ Moving
+- b) Drone delivery: L0→R1→L1→R2(obstacle)→L2→R3→Lp (4 marks)
+  - Define predicates + KB + Movement rule in FOL
+  - Forward chaining: At(drone,L0)→At(drone,L1) [R1 clear]; blocked at L1→L2 [obstacle on R2]
+  - **Conclusion: Drone CANNOT reach Lp**
+
+**2024 — Q4 (9 marks) — ER + Perfect Square FOL**
+- a) In ER (Evidential Reasoning), how is high-level attribute assessed through lower-level? (1 mark)
+  > Dempster-Shafer combination: each lower-level provides mass assignment; combined via orthogonal sum
+- b) What is the combined degree of belief in the original ER approach? (1 mark)
+  > m₁⊕m₂(A) = [Σ_{B∩C=A} m₁(B)·m₂(C)] / (1−K); K = conflict factor
+- c) Perfect square sentences (i–iv) — same as 2021 Q5b (7 marks):
+  - A) Translate to FOL (2): same as 2021 — F1 with ∀x∀p, F2 with Skolem g(x), F3=PerfSq(36)
+  - B) Prove (iv) using UE, EE, MP, EI (1.5): 9-step inference chain using named rules
+  - C) Convert to Clausal Form using CF (1.5): C1,C2a,C2b,C3 from KB + C4 from negated goal
+  - D) Apply Resolution (2): same 7-step proof as 2021 Q5b-iii → □
 
 ---
 
@@ -528,7 +566,7 @@ Goal:  ON(C,A), ON(B,D), ONTABLE(A), ONTABLE(D)
 | Hill Climbing + SA | A-Q3a | A-Q3a | B-4a | A-Q3a | A-Q4b |
 | CSP | — | A-Q3c | B-4d | A-Q3c | A-Q4(pt) |
 | Fuzzy Logic | B-Q8(pt) | combined | B-1d | — | B-Q8(pt) |
-| FOL + Resolution | B-Q4 | B-Q4,5 | A-2 | A-Q4 | A-Q4 |
+| FOL + Resolution | A-Q4 | A-Q4,5 | A-2 | A-Q4 | A-Q4 |
 | STRIPS + Planning | B-Q6 | B-Q6b | A-3 | B-Q5 | B-Q5 |
 | Bayes + BN | B-Q7,8 | B-Q7,8 | B-3d | B-Q7 | B-Q7 |
 | Neural Networks | B-Q8 | B-Q8 | B-1,2 | B-Q8 | B-Q8 |

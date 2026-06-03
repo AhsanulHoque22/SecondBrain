@@ -115,6 +115,12 @@ Common Telegram commands:
 **Trigger:** Creating or editing any markdown file.
 → Read `scripts/data/protocols/obsidian_wikilinks.md`.
 
+### Question Analysis & Solution
+**Trigger:** `"[Topic Name] question analysis and solution"` (in terminal, Telegram, or chat).
+→ Read `scripts/data/protocols/question_analysis.md` and execute all 8 steps:
+  read slides → extract 2020–2024 questions → update _Topics.md → update _TopicQuestionMap.md → write LaTeX → compile PDF → wiki ingest → git commit.
+  **Zero questions omitted. 2020–2024 only.**
+
 ---
 
 ## Risk Assessment (MANDATORY — every session)

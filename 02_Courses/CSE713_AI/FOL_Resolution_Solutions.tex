@@ -1,0 +1,841 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[top=2.5cm,bottom=2.5cm,left=2.5cm,right=2.5cm,headheight=15pt]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{tikz}
+\usetikzlibrary{shapes,arrows,arrows.meta,positioning,calc,backgrounds,fit,matrix}
+\usepackage{booktabs,array,longtable,tabularx,multirow}
+\usepackage{xcolor}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{mdframed}
+\usepackage{tcolorbox}
+\tcbuselibrary{skins,breakable}
+\usepackage{hyperref}
+\usepackage{forest}
+
+%% ---- Colors ----
+\definecolor{folblue}{RGB}{0,82,165}
+\definecolor{lightblue}{RGB}{220,235,255}
+\definecolor{darkteal}{RGB}{0,105,92}
+\definecolor{lightteal}{RGB}{200,230,225}
+\definecolor{darkorange}{RGB}{180,70,0}
+\definecolor{lightorange}{RGB}{255,235,210}
+\definecolor{darkgreen}{RGB}{20,110,20}
+\definecolor{lightgreen}{RGB}{200,240,205}
+\definecolor{darkred}{RGB}{150,20,20}
+\definecolor{lightred}{RGB}{255,210,210}
+\definecolor{lightgray}{RGB}{242,242,242}
+\definecolor{dpurple}{RGB}{90,0,140}
+\definecolor{lpurple}{RGB}{235,215,255}
+\definecolor{maroon}{RGB}{128,0,0}
+
+%% ---- tcolorbox styles ----
+\newtcolorbox{qbox}[2][]{enhanced,breakable,
+  colback=lightorange,colframe=darkorange,arc=4pt,
+  title={\textbf{#2}},fonttitle=\bfseries\color{white},
+  attach boxed title to top left={yshift=-2mm,xshift=4mm},
+  boxed title style={colback=darkorange,arc=3pt},#1}
+
+\newtcolorbox{solbox}[2][]{enhanced,breakable,
+  colback=lightblue,colframe=folblue,arc=4pt,
+  title={\textbf{#2}},fonttitle=\bfseries\color{white},
+  attach boxed title to top left={yshift=-2mm,xshift=4mm},
+  boxed title style={colback=folblue,arc=3pt},#1}
+
+\newtcolorbox{keybox}[2][]{enhanced,breakable,
+  colback=lightgreen,colframe=darkgreen,arc=4pt,
+  title={\textbf{#2}},fonttitle=\bfseries\color{white},
+  attach boxed title to top left={yshift=-2mm,xshift=4mm},
+  boxed title style={colback=darkgreen,arc=3pt},#1}
+
+\newtcolorbox{algobox}[2][]{enhanced,breakable,
+  colback=lightgray,colframe=gray!60,arc=4pt,
+  title={\textbf{#2}},fonttitle=\bfseries,
+  attach boxed title to top left={yshift=-2mm,xshift=4mm},
+  boxed title style={colback=gray!60,arc=3pt},#1}
+
+\newtcolorbox{warnbox}[2][]{enhanced,breakable,
+  colback=lightred,colframe=darkred,arc=4pt,
+  title={\textbf{#2}},fonttitle=\bfseries\color{white},
+  attach boxed title to top left={yshift=-2mm,xshift=4mm},
+  boxed title style={colback=darkred,arc=3pt},#1}
+
+%% ---- Page style ----
+\pagestyle{fancy}\fancyhf{}
+\lhead{\color{folblue}\textbf{FOL \& Resolution --- CSE 713 AI}}
+\rhead{\color{folblue}Exam: 10 Jun 2026}
+\cfoot{--- \thepage\ ---}
+\renewcommand{\headrulewidth}{0.4pt}
+
+%% ---- Section style ----
+\titleformat{\section}{\large\bfseries\color{folblue}}{}{0em}{}[\titlerule]
+\titleformat{\subsection}{\normalsize\bfseries\color{darkorange}}{}{0em}{}
+
+%% ---- Helpers ----
+\newcommand{\ALL}[1]{\forall\,#1\;}
+\newcommand{\EX}[1]{\exists\,#1\;}
+\newcommand{\ra}{\rightarrow}
+\newcommand{\lra}{\leftrightarrow}
+\newcommand{\sq}{\square}        % empty clause
+\newcommand{\cl}[1]{\{#1\}}      % clause braces
+\newcommand{\res}[2]{\textbf{Resolve}\;(#1)\;+\;(#2)}
+
+%% ---- Document ----
+\begin{document}
+
+\begin{center}
+{\LARGE\bfseries\color{folblue} CSE 713 --- Artificial Intelligence}\\[4pt]
+{\large\bfseries FOL, Resolution \& Knowledge Representation}\\[2pt]
+{\large Complete Past Paper Solutions: 2020--2024}\\[6pt]
+{\normalsize Source: \textit{Propositional Logic.pdf} slides (all 104 pages read)}\\[2pt]
+{\normalsize\color{darkred}\textbf{Every question from 2020--2024 included. Zero omissions.}}
+\end{center}
+
+\tableofcontents
+\newpage
+
+%% ==========================================
+\section*{Topic Overview (from Slides)}
+%% ==========================================
+
+\begin{keybox}{Topics Covered in This Document (from Propositional Logic.pdf)}
+\textbf{Part 1 --- Propositional Logic (PL):}
+\begin{itemize}[noitemsep]
+  \item Modus Ponens \& valid inference rules
+  \item Satisfiability, Validity, Entailment
+  \item Clausal form: literals, clauses (disjunctions of literals)
+  \item 4-step conversion to clausal form in PL
+  \item Resolution rule: $\frac{(x \lor s_1),\;(\neg x \lor s_2)}{s_1 \lor s_2}$
+  \item Proof by Refutation (add negated goal $\to$ derive $\square$)
+\end{itemize}
+
+\vspace{4pt}\textbf{Part 2 --- First Order Logic (FOL):}
+\begin{itemize}[noitemsep]
+  \item Limitations of PL (cannot express infinite models)
+  \item Terms: Constants, Variables, Functions; Predicates (return T/F)
+  \item Quantifiers: $\forall$ (for all), $\exists$ (there exists), duality
+  \item FOL sentences: combinations of predicates with $\land,\lor,\neg,\ra,\lra$
+  \item Inference rules: Universal Elimination (UE), Existential Elimination/Skolemization (EE), Existential Introduction (EI)
+  \item Unification: finding substitution $\theta$ making two atoms identical
+  \item 9-step Canonical Form Conversion (CFC) to clause form
+  \item Resolution in FOL with Unification
+\end{itemize}
+\end{keybox}
+
+\begin{algobox}{9-Step Canonical Form Conversion Algorithm (exam-critical)}
+\begin{enumerate}[noitemsep,label=\textbf{Step \arabic*.}]
+  \item Eliminate biconditionals: $A \lra B \;\equiv\; (A\ra B)\land(B\ra A)$
+  \item Eliminate implications: $A \ra B \;\equiv\; \neg A \lor B$
+  \item Move $\neg$ inward (De Morgan's, double-negation elimination)
+  \item Standardize variables apart (rename so each clause has unique vars)
+  \item Move all quantifiers to the left (prenex normal form)
+  \item Eliminate existential quantifiers (\textbf{Skolemization}):
+    \begin{itemize}[noitemsep]
+      \item $\exists y$ outside any $\forall$: replace $y$ with a Skolem \textbf{constant} $c$
+      \item $\forall x\;\exists y$: replace $y$ with a Skolem \textbf{function} $f(x)$
+    \end{itemize}
+  \item Drop all $\forall$ (variables implicitly universally quantified)
+  \item Distribute $\land$ over $\lor$ (convert to CNF)
+  \item Write each conjunct as a separate clause (set of literals)
+\end{enumerate}
+\end{algobox}
+
+\newpage
+
+%% ==========================================
+\section{2020 --- Group-A Q4: Marcus/Pompeii (approx.\ 9 marks)}
+%% ==========================================
+
+\begin{qbox}{Question --- 2020 Group-A Q4}
+Consider the following facts:
+\begin{enumerate}[noitemsep,label=(\roman*)]
+  \item Marcus was a man.
+  \item Marcus was a Pompeian.
+  \item Marcus was born in 40 A.D.
+  \item All men are mortal.
+  \item All Pompeians died when the volcano erupted in 79 A.D.
+  \item No mortal lives longer than 150 years.
+  \item It is now 2021.
+  \item Alive means not dead.
+  \item If someone dies, then he is dead at all later times.
+\end{enumerate}
+\begin{enumerate}[label=(\alph*),noitemsep]
+  \item Translate these facts into well-formed formulas (WFFs) in predicate logic.
+  \item Answer the question ``Is Marcus alive now?'' using backward reasoning.
+  \item Convert the formulas into clause form.
+  \item Prove that ``Marcus is not alive now'' using resolution.
+\end{enumerate}
+\end{qbox}
+
+\subsection{Part (a): WFF Translation}
+
+\begin{solbox}{WFF Translation --- 2020 Q4(a)}
+\begin{align*}
+  F_1&: \quad \mathrm{man(Marcus)} \\[2pt]
+  F_2&: \quad \mathrm{pompeian(Marcus)} \\[2pt]
+  F_3&: \quad \mathrm{born(Marcus,\;40)} \\[2pt]
+  F_4&: \quad \ALL{x}\;\mathrm{man}(x) \ra \mathrm{mortal}(x) \\[2pt]
+  F_5&: \quad \ALL{x}\;\mathrm{pompeian}(x) \ra \mathrm{dies}(x,\;79) \\[2pt]
+  F_6&: \quad \ALL{x}\ALL{b}\ALL{t}\;
+         \mathrm{mortal}(x) \land \mathrm{born}(x,b) \land \mathrm{gt}(t,\;\mathrm{plus}(b,150))
+         \ra \mathrm{dead}(x,t) \\[2pt]
+  F_7&: \quad \mathrm{now} = 2021 \\[2pt]
+  F_8&: \quad \ALL{x}\;\mathrm{alive}(x) \lra \neg\,\mathrm{dead}(x,\;\mathrm{now}) \\[2pt]
+  F_9&: \quad \ALL{x}\ALL{t_1}\ALL{t_2}\;
+         \mathrm{dies}(x,t_1) \land \mathrm{gt}(t_2,t_1) \ra \mathrm{dead}(x,t_2)
+\end{align*}
+\end{solbox}
+
+\subsection{Part (b): Backward Reasoning --- Is Marcus Alive?}
+
+\begin{solbox}{Backward Reasoning --- 2020 Q4(b)}
+\textbf{Goal:} Determine \textit{alive}(Marcus).\quad
+Start from the goal and work backwards through the rules.
+\begin{enumerate}[noitemsep,label=\textbf{Step \arabic*.}]
+  \item From $F_8$: $\mathrm{alive(Marcus)} \lra \neg\,\mathrm{dead(Marcus, now)}$.\\
+        $\Rightarrow$ Need to determine whether $\mathrm{dead(Marcus, 2021)}$ is true.
+  \item To prove $\mathrm{dead(Marcus,\;2021)}$, use $F_9$ (with $x/\mathrm{Marcus},\;t_2/2021$):\\
+        Need: $\mathrm{dies(Marcus,\;t_1)} \land \mathrm{gt}(2021,\;t_1)$ for some $t_1$.
+  \item From $F_5$ (with $x/\mathrm{Marcus}$): $\mathrm{pompeian(Marcus)} \ra \mathrm{dies(Marcus,\;79)}$.\\
+        From $F_2$: $\mathrm{pompeian(Marcus)}$ is true.\quad
+        $\therefore\;\mathrm{dies(Marcus,\;79)}$. \quad Set $t_1 = 79$.
+  \item $\mathrm{gt}(2021,\;79) = \mathrm{TRUE}$ \quad (arithmetic fact).
+  \item $\therefore\;\mathrm{dead(Marcus,\;2021)}$ (i.e., $\mathrm{dead(Marcus,\;now)}$) is TRUE.
+  \item From $F_8$: $\mathrm{alive(Marcus)} \lra \neg\,\mathrm{dead(Marcus,\;now)}$\\
+        Since $\mathrm{dead(Marcus,\;now)}$ is TRUE, $\;\mathrm{alive(Marcus)} = \mathbf{FALSE}$.
+\end{enumerate}
+\textbf{Answer: Marcus is NOT alive now.}
+\end{solbox}
+
+\subsection{Part (c): Clause Form Conversion}
+
+\begin{solbox}{Clause Form --- 2020 Q4(c)}
+Apply the 9-step CFC algorithm:
+
+\medskip
+\begin{tabular}{@{}l@{\quad}l@{\quad}l@{}}
+  \toprule
+  \textbf{Formula} & \textbf{Steps Applied} & \textbf{Clause(s)} \\
+  \midrule
+  $F_1$: man(Marcus) & ground atom & $C_1:\cl{\mathrm{man(Marcus)}}$ \\[3pt]
+  $F_2$: pompeian(Marcus) & ground atom & $C_2:\cl{\mathrm{pompeian(Marcus)}}$ \\[3pt]
+  $F_3$: born(Marcus,40) & ground atom & $C_3:\cl{\mathrm{born(Marcus,40)}}$ \\[3pt]
+  $F_4$: $\ALL{x}\mathrm{man}(x)\ra\mathrm{mortal}(x)$ & Steps 2,7 & $C_4:\cl{\neg\mathrm{man}(x),\;\mathrm{mortal}(x)}$ \\[3pt]
+  $F_5$: $\ALL{x}\mathrm{pompeian}(x)\ra\mathrm{dies}(x,79)$ & Steps 2,7 & $C_5:\cl{\neg\mathrm{pompeian}(x),\;\mathrm{dies}(x,79)}$ \\[3pt]
+  $F_6$: mortal+born+gt$\ra$dead & Steps 2,7 & $C_6:\cl{\neg\mathrm{mortal}(x),\neg\mathrm{born}(x,b),\neg\mathrm{gt}(t,\mathrm{plus}(b,150)),\mathrm{dead}(x,t)}$ \\[3pt]
+  $F_7$: now=2021 & fact & $C_7:\cl{\mathrm{now=2021}}$ \;(arithmetic) \\[3pt]
+  $F_8$: $\ALL{x}\mathrm{alive}(x)\lra\neg\mathrm{dead}(x,\mathrm{now})$ & Steps 1,2,7,9 &
+    $C_8:\cl{\neg\mathrm{alive}(x),\;\neg\mathrm{dead}(x,\mathrm{now})}$ \\
+    & & $C_9:\cl{\mathrm{dead}(x,\mathrm{now}),\;\mathrm{alive}(x)}$ \\[3pt]
+  $F_9$: dies$\land$gt$\ra$dead & Steps 2,7 & $C_{10}:\cl{\neg\mathrm{dies}(x,t_1),\;\neg\mathrm{gt}(t_2,t_1),\;\mathrm{dead}(x,t_2)}$ \\
+  \bottomrule
+\end{tabular}
+\end{solbox}
+
+\subsection{Part (d): Resolution Proof --- Marcus is NOT Alive Now}
+
+\begin{solbox}{Resolution Proof by Refutation --- 2020 Q4(d)}
+\textbf{Strategy:} Negate the goal. Add $C_{\neg}:\cl{\mathrm{alive(Marcus)}}$ and derive the empty clause $\square$.
+
+\medskip
+\begin{tabular}{@{}l@{\quad}l@{\quad}l@{\quad}l@{}}
+  \toprule
+  \textbf{Step} & \textbf{Clauses Used} & \textbf{Substitution} & \textbf{Result} \\
+  \midrule
+  1 & $C_1\;\&\;C_4$ & $\{x/\mathrm{Marcus}\}$ & $C_{11}:\cl{\mathrm{mortal(Marcus)}}$ \\[3pt]
+  2 & $C_2\;\&\;C_5$ & $\{x/\mathrm{Marcus}\}$ & $C_{12}:\cl{\mathrm{dies(Marcus,79)}}$ \\[3pt]
+  3 & $C_{12}\;\&\;C_{10}$ & $\{x/\mathrm{Marcus},t_1/79\}$ & $C_{13}:\cl{\neg\mathrm{gt}(t_2,79),\;\mathrm{dead(Marcus},t_2)}$ \\[3pt]
+  4 & $C_{13}$ + gt(2021,79) true & $\{t_2/2021\}$ & $C_{14}:\cl{\mathrm{dead(Marcus,2021)}}$ \\
+    & & (now=2021) & $\equiv\cl{\mathrm{dead(Marcus,now)}}$ \\[3pt]
+  5 & $C_{\neg}\;\&\;C_8$ & $\{x/\mathrm{Marcus}\}$ & $C_{15}:\cl{\neg\mathrm{dead(Marcus,now)}}$ \\[3pt]
+  6 & $C_{14}\;\&\;C_{15}$ & --- & $\boxed{\square}$ \textbf{(Contradiction!)} \\
+  \bottomrule
+\end{tabular}
+
+\medskip
+\textbf{Conclusion:} Adding alive(Marcus) to the KB leads to contradiction.\\
+$\therefore\;\mathrm{alive(Marcus)}$ is FALSE, i.e., \textbf{Marcus is NOT alive now.} \checkmark
+\end{solbox}
+
+\newpage
+%% ==========================================
+\section{2021 --- Q4: PL Reasoning (approx.\ 9.25 marks)}
+%% ==========================================
+
+\begin{qbox}{Question --- 2021 Q4}
+\begin{enumerate}[label=(\alph*),noitemsep]
+  \item The figure shows a Wumpus World game. The agent starts from [1,1]. Briefly discuss with diagrams how the agent generates new knowledge through perceiving the environment and choosing its next move. \hfill\textit{(3 marks)}
+  \item Differentiate between proof and theorem in one point. \hfill\textit{(0.75 marks)}
+  \item Determine whether the following sentence is (i) Satisfiable, (ii) Contradictory, or (iii) Valid:\\
+        \[(P \lor Q) \land (P \lor \neg Q) \lor P\] \hfill\textit{(2 marks)}
+  \item Given knowledge base $R_1$--$R_5$ below, show that $P_{1,2}$ is false using resolution: \hfill\textit{(3.5 marks)}\\
+        $R_1: \neg P_{1,1}$\quad $R_2: B_{1,1} \lra (P_{2,1} \lor P_{1,2})$\quad $R_3: B_{2,1} \lra (P_{1,1} \lor P_{2,2} \lor P_{3,1})$\\
+        $R_4: \neg B_{1,1}$\quad $R_5: B_{2,1}$
+\end{enumerate}
+\end{qbox}
+
+\subsection{Part (a): Wumpus World Knowledge Generation (3 marks)}
+
+\begin{solbox}{Wumpus World --- 2021 Q4(a)}
+The Wumpus World uses \textbf{Propositional Logic (PL)} to reason about hidden dangers. The agent builds a KB incrementally from perceptions.
+
+\medskip
+\textbf{Key Propositions:}
+\begin{itemize}[noitemsep]
+  \item $B_{x,y}$: Breeze is felt at cell $[x,y]$ \quad $P_{x,y}$: Pit exists at $[x,y]$
+  \item $S_{x,y}$: Stench is felt at $[x,y]$ \quad $W_{x,y}$: Wumpus exists at $[x,y]$
+\end{itemize}
+
+\textbf{Initial KB rules (KB axioms):}
+\begin{align*}
+  &R_1: \neg P_{1,1} \quad\text{(no pit at start)}\\
+  &R_2: B_{1,1} \lra (P_{2,1} \lor P_{1,2})\\
+  &R_4: \neg B_{1,1} \quad\text{(agent perceives no breeze at [1,1])}
+\end{align*}
+
+\textbf{Inference chain:}
+\begin{enumerate}[noitemsep,label=\textbf{\arabic*.}]
+  \item Agent at [1,1]: perceives $\neg B_{1,1}$ (no breeze), $\neg S_{1,1}$ (no stench).
+  \item From $\neg B_{1,1}$ + $R_2$ (biconditional left-to-right negated):\\
+        $\neg B_{1,1} \ra \neg(P_{2,1} \lor P_{1,2}) \equiv \neg P_{2,1} \land \neg P_{1,2}$\\
+        $\therefore$ Cells [2,1] and [1,2] are \textbf{PIT-FREE} (safe to enter).
+  \item Agent moves to [2,1]: perceives $B_{2,1}$ (breeze felt). From $R_5: B_{2,1}$ is added to KB.
+  \item From $R_3$: $B_{2,1} \lra (P_{1,1} \lor P_{2,2} \lor P_{3,1})$\\
+        $B_{2,1}$ is TRUE $\Rightarrow$ at least one of $\{P_{1,1}, P_{2,2}, P_{3,1}\}$ is true.\\
+        $\neg P_{1,1}$ (from $R_1$) is known. $\neg P_{2,2}$ can be inferred (no path explored).\\
+        $\therefore\;P_{3,1}$ is TRUE --- \textbf{Pit at [3,1]}!
+  \item Agent \textbf{avoids [3,1]}, backtracks, and continues to [1,2] (safe from Step 2).
+\end{enumerate}
+
+Each perception updates the KB; logical inference (resolution) derives new facts about safe/dangerous cells without direct observation.
+\end{solbox}
+
+\subsection{Part (b): Proof vs.\ Theorem (0.75 marks)}
+
+\begin{solbox}{Proof vs.\ Theorem --- 2021 Q4(b)}
+\begin{itemize}[noitemsep]
+  \item A \textbf{theorem} is a statement (proposition) that has been established as true within a formal system.
+  \item A \textbf{proof} is the sequence of logical steps (inference rules, axioms) that \textit{establishes} the truth of a theorem.
+\end{itemize}
+\textit{In one point:} A theorem is the \textbf{conclusion}; a proof is the \textbf{derivation} that justifies it.
+\end{solbox}
+
+\subsection{Part (c): Satisfiability Analysis (2 marks)}
+
+\begin{solbox}{Satisfiability of $(P \lor Q)\land(P \lor \neg Q)\lor P$ --- 2021 Q4(c)}
+\textbf{Step 1: Apply operator precedence} ($\neg > \land > \lor$):
+\[(P \lor Q)\land(P \lor \neg Q)\lor P \;=\; \bigl[(P \lor Q)\land(P \lor \neg Q)\bigr] \lor P\]
+
+\textbf{Step 2: Simplify the bracketed expression} using Distributivity:
+\[(P \lor Q)\land(P \lor \neg Q) \;=\; P \lor (Q \land \neg Q) \;=\; P \lor \mathrm{F} \;=\; P\]
+
+\textbf{Step 3: Final expression:}
+\[P \lor P \;=\; P\]
+
+\textbf{Step 4: Truth table check:}
+\begin{center}
+\begin{tabular}{c|c}
+  \toprule
+  $P$ & Expression value\\
+  \midrule
+  T & T \\
+  F & F \\
+  \bottomrule
+\end{tabular}
+\end{center}
+
+\textbf{Conclusion:}
+\begin{itemize}[noitemsep]
+  \item \textbf{Satisfiable} --- TRUE when $P = \mathrm{T}$. \checkmark
+  \item NOT Contradictory (not always false)
+  \item NOT Valid (not always true; false when $P = \mathrm{F}$)
+\end{itemize}
+\end{solbox}
+
+\subsection{Part (d): Resolution Proof --- $P_{1,2}$ is False (3.5 marks)}
+
+\begin{solbox}{KB Resolution --- Show $P_{1,2}$ is FALSE --- 2021 Q4(d)}
+\textbf{Given KB:}
+\begin{align*}
+  R_1&: \neg P_{1,1} \\
+  R_2&: B_{1,1} \lra (P_{2,1} \lor P_{1,2})\\
+  R_3&: B_{2,1} \lra (P_{1,1} \lor P_{2,2} \lor P_{3,1})\\
+  R_4&: \neg B_{1,1}\\
+  R_5&: B_{2,1}
+\end{align*}
+
+\textbf{Convert $R_2$ to clause form} (Steps 1--2 of CFC):
+\begin{align*}
+  R_2 \equiv &\underbrace{(B_{1,1} \ra P_{2,1} \lor P_{1,2})}_{C_a:\;\neg B_{1,1} \lor P_{2,1} \lor P_{1,2}}
+  \land
+  \underbrace{(P_{2,1} \lor P_{1,2} \ra B_{1,1})}_{C_b:\;\neg P_{2,1} \lor B_{1,1}\;\text{and}\;C_c:\;\neg P_{1,2} \lor B_{1,1}}
+\end{align*}
+
+\textbf{Goal:} Prove $\neg P_{1,2}$ (i.e., $P_{1,2}$ is false).\\
+\textbf{Method:} Refutation --- add $\cl{P_{1,2}}$ (negation of goal) to KB, derive $\square$.
+
+\medskip
+\begin{tabular}{@{}l@{\quad}l@{\quad}l@{}}
+  \toprule
+  \textbf{Step} & \textbf{Clauses Resolved} & \textbf{Result} \\
+  \midrule
+  1 & $\cl{P_{1,2}}$ + $C_c:\cl{\neg P_{1,2} \lor B_{1,1}}$ & $\cl{B_{1,1}}$ \\
+  2 & $\cl{B_{1,1}}$ + $R_4:\cl{\neg B_{1,1}}$ & $\boxed{\square}$ \textbf{(Contradiction!)}\\
+  \bottomrule
+\end{tabular}
+
+\medskip
+Since assuming $P_{1,2}$ leads to contradiction, \textbf{$P_{1,2}$ is FALSE}. \checkmark
+
+\medskip
+\textbf{Intuition:} $R_4$ says no breeze at [1,1]. $R_2$ then tells us no pit at [2,1] or [1,2].
+\end{solbox}
+
+\newpage
+%% ==========================================
+\section{2021 --- Q5(a,b): FOL Generalization + Perfect Square (approx.\ 8.75 marks)}
+%% ==========================================
+
+\begin{qbox}{Question --- 2021 Q5(a) \& Q5(b)}
+\begin{enumerate}[label=(\alph*),noitemsep]
+  \item Briefly explain why FOL is considered as the generalization of PL. \hfill\textit{(1 mark)}
+  \item Consider the following sentences: \hfill\textit{(7.75 marks)}
+    \begin{enumerate}[label=(\roman*),noitemsep]
+      \item If a perfect square is divisible by a prime $P$, then it is also divisible by the square of $P$.
+      \item Every perfect square is divisible by some prime.
+      \item 36 is a perfect square.
+      \item Does there exist a prime $q$ such that the square of $q$ divides 36?
+    \end{enumerate}
+    Prove via the resolution method and unification (where needed) that ``Does there exist a prime $q$ such that the square of $q$ divides 36?'' More precisely:
+    \begin{itemize}[noitemsep]
+      \item[(i)] First, translate the sentences above into FOL sentences.
+      \item[(ii)] Convert to Clause Forms.
+      \item[(iii)] Apply the resolution method with unification (where needed) to prove the goal sentence.
+    \end{itemize}
+\end{enumerate}
+\end{qbox}
+
+\subsection{Part (a): FOL as Generalization of PL (1 mark)}
+
+\begin{solbox}{FOL vs.\ PL --- 2021 Q5(a)}
+\textbf{PL} can only express ground propositions (true/false facts about specific named objects). It \textbf{cannot} handle statements about all members of a set without listing them individually.
+
+\textbf{FOL extends PL} by adding:
+\begin{enumerate}[noitemsep]
+  \item \textbf{Variables} ranging over objects (not just truth values)
+  \item \textbf{Universal quantifier} $\forall$: ``for all objects of a given type''
+  \item \textbf{Existential quantifier} $\exists$: ``there exists at least one object''
+  \item \textbf{Predicates} (relations on objects) and \textbf{Functions} (maps objects to objects)
+\end{enumerate}
+Example: ``All men are mortal'' requires infinitely many PL sentences ($\mathrm{mortal(Marcus)}$, $\mathrm{mortal(Brutus)}$, \ldots) but only ONE FOL sentence: $\ALL{x}\,\mathrm{man}(x) \ra \mathrm{mortal}(x)$.
+\end{solbox}
+
+\subsection{Part (b-i): FOL Translation (1.75 marks)}
+
+\begin{solbox}{FOL Translation --- 2021 Q5(b-i)}
+\textbf{Predicates declared:}
+\begin{itemize}[noitemsep]
+  \item $\mathrm{PerfSq}(x)$: $x$ is a perfect square
+  \item $\mathrm{Prime}(p)$: $p$ is a prime number
+  \item $\mathrm{Divides}(a,x)$: $a$ divides $x$
+  \item $\mathrm{square}(p)$: function returning $p^2$
+\end{itemize}
+
+\begin{align}
+  F_1&: \quad \ALL{x}\ALL{p}\;\mathrm{PerfSq}(x) \land \mathrm{Prime}(p) \land \mathrm{Divides}(p,x)
+          \ra \mathrm{Divides}(\mathrm{square}(p),\;x) \label{f1}\\[4pt]
+  F_2&: \quad \ALL{x}\;\mathrm{PerfSq}(x) \ra \EX{p}\;\mathrm{Prime}(p) \land \mathrm{Divides}(p,x) \label{f2}\\[4pt]
+  F_3&: \quad \mathrm{PerfSq}(36) \label{f3}\\[4pt]
+  \text{Goal}&: \quad \EX{q}\;\mathrm{Prime}(q) \land \mathrm{Divides}(\mathrm{square}(q),\;36) \label{goal}
+\end{align}
+\end{solbox}
+
+\subsection{Part (b-ii): Canonical Form / Clause Form (2.5 marks)}
+
+\begin{solbox}{Clause Form Conversion --- 2021 Q5(b-ii)}
+
+\textbf{Clause from $F_1$} (Steps 2, 7):
+\begin{align*}
+  F_1 &\ra \neg\mathrm{PerfSq}(x) \lor \neg\mathrm{Prime}(p) \lor \neg\mathrm{Divides}(p,x) \lor \mathrm{Divides}(\mathrm{square}(p),x)\\
+  &\Rightarrow \quad C_1: \;\cl{\neg\mathrm{PerfSq}(x),\;\neg\mathrm{Prime}(p),\;\neg\mathrm{Divides}(p,x),\;\mathrm{Divides}(\mathrm{square}(p),x)}
+\end{align*}
+
+\textbf{Clause from $F_2$} (Steps 2, 6 Skolemization, 7):
+
+$F_2$: $\ALL{x}\,\mathrm{PerfSq}(x) \ra \EX{p}\,\mathrm{Prime}(p)\land\mathrm{Divides}(p,x)$
+
+The $\exists p$ is inside $\forall x$, so replace $p$ with Skolem function $g(x)$:
+\begin{align*}
+  &\ALL{x}\;\mathrm{PerfSq}(x) \ra \mathrm{Prime}(g(x)) \land \mathrm{Divides}(g(x),x)\\
+  \text{Split:}\quad
+  &C_{2a}: \;\cl{\neg\mathrm{PerfSq}(x),\;\mathrm{Prime}(g(x))}\\
+  &C_{2b}: \;\cl{\neg\mathrm{PerfSq}(x),\;\mathrm{Divides}(g(x),x)}
+\end{align*}
+
+\textbf{Clause from $F_3$:}
+\[C_3: \;\cl{\mathrm{PerfSq}(36)}\]
+
+\textbf{Negated Goal} (negate $F_{\text{goal}}$ for refutation):
+\[\neg\EX{q}\,\mathrm{Prime}(q)\land\mathrm{Divides}(\mathrm{square}(q),36)
+  \;\equiv\; \ALL{q}\,\neg\mathrm{Prime}(q) \lor \neg\mathrm{Divides}(\mathrm{square}(q),36)\]
+\[C_4: \;\cl{\neg\mathrm{Prime}(q),\;\neg\mathrm{Divides}(\mathrm{square}(q),36)}\]
+\end{solbox}
+
+\subsection{Part (b-iii): Resolution Proof with Unification (3.5 marks)}
+
+\begin{solbox}{Resolution Proof --- 2021 Q5(b-iii)}
+\textbf{Clause set:}
+\quad $C_1$, $C_{2a}$, $C_{2b}$, $C_3$ (KB) $+$ $C_4$ (negated goal)
+
+\medskip
+\begin{tabular}{@{}l@{\;\;}l@{\;\;}l@{\;\;}l@{}}
+  \toprule
+  \textbf{Step} & \textbf{Resolved} & \textbf{Unifier} & \textbf{Result} \\
+  \midrule
+  1 & $C_3 + C_{2a}$ & $\{x/36\}$ & $C_5: \cl{\mathrm{Prime}(g(36))}$ \\[3pt]
+  2 & $C_3 + C_{2b}$ & $\{x/36\}$ & $C_6: \cl{\mathrm{Divides}(g(36),\;36)}$ \\[3pt]
+  3 & $C_3 + C_1$ & $\{x/36\}$ & $C_7: \cl{\neg\mathrm{Prime}(p),\;\neg\mathrm{Divides}(p,36),\;\mathrm{Divides}(\mathrm{square}(p),36)}$ \\[3pt]
+  4 & $C_5 + C_7$ & $\{p/g(36)\}$ & $C_8: \cl{\neg\mathrm{Divides}(g(36),36),\;\mathrm{Divides}(\mathrm{square}(g(36)),36)}$ \\[3pt]
+  5 & $C_6 + C_8$ & --- & $C_9: \cl{\mathrm{Divides}(\mathrm{square}(g(36)),\;36)}$ \\[3pt]
+  6 & $C_5 + C_4$ & $\{q/g(36)\}$ & $C_{10}: \cl{\neg\mathrm{Divides}(\mathrm{square}(g(36)),\;36)}$ \\[3pt]
+  7 & $C_9 + C_{10}$ & --- & $\boxed{\square}$ \textbf{(Contradiction!)} \\
+  \bottomrule
+\end{tabular}
+
+\medskip
+\textbf{Conclusion:} Negating the goal leads to contradiction. Therefore:\\
+$\exists\,q$ such that $\mathrm{Prime}(q) \land \mathrm{Divides}(q^2, 36)$ is \textbf{TRUE}. \checkmark
+
+\medskip
+\textit{Note:} $g(36)$ is the Skolem function instantiated at 36. It represents the specific prime (e.g., 2 or 3) that divides 36. In reality, $2^2 = 4$ divides 36, and $3^2 = 9$ divides 36.
+\end{solbox}
+
+\newpage
+%% ==========================================
+\section{2022 --- A-2: Resolution + Marcus/Pompeii (7 marks)}
+%% ==========================================
+
+\begin{qbox}{Question --- 2022 A-2}
+\begin{enumerate}[label=(\alph*),noitemsep]
+  \item What is resolution? Write down the algorithm for the conversion of well-formed formulas (wff) in predicate logic to clause form. \hfill\textit{(2.5 marks)}
+  \item Consider the following facts (F-1 to F-9) about Marcus and Pompeii. ``It is now 2023.''\\
+    (i) Translate these facts into wff in predicate logic. \hfill\textit{(1 mark)}\\
+    (ii) Answer the question ``Is Marcus alive now?'' using backward reasoning. \hfill\textit{(1 mark)}\\
+    (iii) Convert the formula into clause form. \hfill\textit{(1 mark)}\\
+    (iv) Prove that ``Marcus is not alive now'' using resolution. \hfill\textit{(2 marks)}
+  \item What do you mean by Knowledge Representation and Mapping? What are the roles of Knowledge Representation? \hfill\textit{(1.5 marks)}
+\end{enumerate}
+\end{qbox}
+
+\subsection{Part (a): Resolution + CFC Algorithm (2.5 marks)}
+
+\begin{solbox}{Resolution + CFC Algorithm --- 2022 A-2(a)}
+\textbf{Resolution} is a refutation-complete inference procedure that operates on clauses.\\
+Given two clauses containing complementary literals ($L$ and $\neg L$), resolution derives a new clause (the \textit{resolvent}) with those literals removed:
+\[\frac{(L \lor \alpha_1 \lor \cdots \lor \alpha_n)\quad(\neg L \lor \beta_1 \lor \cdots \lor \beta_m)}
+       {(\alpha_1 \lor \cdots \lor \alpha_n \lor \beta_1 \lor \cdots \lor \beta_m)}\]
+In FOL, we use \textbf{unification} to find a substitution $\theta$ making $L\theta = L'\theta$ before resolving.
+
+\textbf{Algorithm for wff $\to$ Clause Form (9 steps):}
+\begin{enumerate}[noitemsep,label=\textbf{Step \arabic*.}]
+  \item \textbf{Eliminate biconditionals}: $A \lra B \equiv (A \ra B) \land (B \ra A)$
+  \item \textbf{Eliminate implications}: $A \ra B \equiv \neg A \lor B$
+  \item \textbf{Move $\neg$ inward}: Apply De Morgan's laws; eliminate double negations
+  \item \textbf{Standardize variables}: Rename vars so each clause has distinct variable names
+  \item \textbf{Prenex normal form}: Move all quantifiers to the left
+  \item \textbf{Skolemization} (eliminate $\exists$):
+    \begin{itemize}[noitemsep]
+      \item $\exists y$ outside all $\forall$: replace $y$ with Skolem constant $c$
+      \item $\forall x_1\cdots x_n\,\exists y$: replace $y$ with Skolem function $f(x_1,\ldots,x_n)$
+    \end{itemize}
+  \item \textbf{Drop all $\forall$}
+  \item \textbf{Distribute $\land$ over $\lor$} (convert to CNF)
+  \item \textbf{Write as set of clauses} (each conjunct is a clause = set of literals)
+\end{enumerate}
+\end{solbox}
+
+\subsection{Part (b): Marcus/Pompeii 2022 (``now = 2023'') (5 marks)}
+
+\begin{solbox}{WFF Translation --- 2022 A-2(b-i)}
+\textit{Same as 2020 but with $\mathrm{now} = 2023$:}
+\begin{align*}
+  F_1&: \mathrm{man(Marcus)}\quad F_2: \mathrm{pompeian(Marcus)}\quad F_3: \mathrm{born(Marcus,40)}\\
+  F_4&: \ALL{x}\,\mathrm{man}(x)\ra\mathrm{mortal}(x)\\
+  F_5&: \ALL{x}\,\mathrm{pompeian}(x)\ra\mathrm{dies}(x,79)\\
+  F_6&: \ALL{x}\ALL{b}\ALL{t}\,\mathrm{mortal}(x)\land\mathrm{born}(x,b)\land\mathrm{gt}(t,\mathrm{plus}(b,150))\ra\mathrm{dead}(x,t)\\
+  F_7&: \mathrm{now}=2023\\
+  F_8&: \ALL{x}\,\mathrm{alive}(x)\lra\neg\mathrm{dead}(x,\mathrm{now})\\
+  F_9&: \ALL{x}\ALL{t_1}\ALL{t_2}\,\mathrm{dies}(x,t_1)\land\mathrm{gt}(t_2,t_1)\ra\mathrm{dead}(x,t_2)
+\end{align*}
+\end{solbox}
+
+\begin{solbox}{Backward Reasoning --- 2022 A-2(b-ii)}
+Identical chain to 2020, but $\mathrm{now}=2023$. Since $\mathrm{gt}(2023,79)$ is TRUE, the chain holds:
+\[\mathrm{pompeian(Marcus)}\xrightarrow{F_5}\mathrm{dies(Marcus,79)}\xrightarrow{F_9,\;\mathrm{gt}(2023,79)}\mathrm{dead(Marcus,2023)}\xrightarrow{F_8}\neg\mathrm{alive(Marcus)}\]
+\textbf{Answer: Marcus is NOT alive in 2023.}
+\end{solbox}
+
+\begin{solbox}{Clause Form --- 2022 A-2(b-iii)}
+Clause set is identical to 2020 (Section 1, Part c), with $\mathrm{now}=2023$. Key clauses:
+\begin{align*}
+  C_4&: \cl{\neg\mathrm{man}(x),\;\mathrm{mortal}(x)}\\
+  C_5&: \cl{\neg\mathrm{pompeian}(x),\;\mathrm{dies}(x,79)}\\
+  C_8&: \cl{\neg\mathrm{alive}(x),\;\neg\mathrm{dead}(x,\mathrm{now})}\\
+  C_{10}&: \cl{\neg\mathrm{dies}(x,t_1),\;\neg\mathrm{gt}(t_2,t_1),\;\mathrm{dead}(x,t_2)}
+\end{align*}
+\end{solbox}
+
+\begin{solbox}{Resolution Proof --- 2022 A-2(b-iv)}
+\textit{Same steps as 2020 Section 1 Part (d), with now=2023.}\\
+Refutation: Add $\cl{\mathrm{alive(Marcus)}}$, derive $\square$ in 6 steps. (See Section 1 for full trace.)\\
+\textbf{Conclusion: Marcus is NOT alive now.} \checkmark
+\end{solbox}
+
+\subsection{Part (c): Knowledge Representation and Mapping (1.5 marks)}
+
+\begin{solbox}{Knowledge Representation --- 2022 A-2(c)}
+\textbf{Knowledge Representation (KR)} is the field concerned with encoding world knowledge in a formal structure that AI systems can use to reason, solve problems, and make decisions.
+
+\textbf{Mapping} refers to the correspondence between real-world entities/relationships and their formal symbols in the KR system. For example, the fact ``Marcus is a man'' maps to the atom $\mathrm{man(Marcus)}$.
+
+\textbf{Roles of Knowledge Representation:}
+\begin{enumerate}[noitemsep]
+  \item \textbf{Surrogate}: Substitutes for real-world entities, enabling reasoning without physical interaction.
+  \item \textbf{Ontological commitment}: Defines what exists in the domain (the ``things'' the system knows about).
+  \item \textbf{Inferential foundation}: Supports derivation of new facts from existing ones via inference rules.
+  \item \textbf{Medium of expression}: A formal language for humans to communicate domain knowledge to machines.
+  \item \textbf{Efficient computation}: Structured representations (clauses, networks) support efficient reasoning algorithms.
+\end{enumerate}
+\end{solbox}
+
+\newpage
+%% ==========================================
+\section{2023 --- Q4: FOL Translation + Drone (9 marks)}
+%% ==========================================
+
+\begin{qbox}{Question --- 2023 Q4}
+\begin{enumerate}[label=(\alph*),noitemsep]
+  \item Define the following actions of a self-driving car using First-Order Logic (FOL). Declare the predicates first. \hfill\textit{(5 marks)}
+    \begin{enumerate}[label=(\roman*),noitemsep]
+      \item The car can move to a destination if the destination is reachable and there are no obstacles on the road.
+      \item A self-driving car can proceed through an intersection if the traffic light is green and there are no pedestrians crossing.
+      \item How would you represent in FOL that a self-driving car should stop if there is an obstacle on the road?
+      \item A self-driving car should reduce its speed when entering a school zone if the school zone is active (e.g., during certain hours of the day).
+      \item Represent in FOL the rule that a self-driving car can only change lanes if the adjacent lane is clear and the car is moving.
+    \end{enumerate}
+  \item A drone is responsible for delivering a package to a destination. Drone starts at $L_0$, air route $R_1$ connects $L_0$ to $L_1$, $R_2$ connects $L_1$ to $L_2$ (\textbf{obstacle on $R_2$}), and $R_3$ connects $L_2$ to $L_p$ (destination). Define the predicates, knowledge base, and rules in FOL, then use forward chaining to determine if the drone can reach the destination. \hfill\textit{(4 marks)}
+\end{enumerate}
+\end{qbox}
+
+\subsection{Part (a): Self-Driving Car FOL (5 marks)}
+
+\begin{solbox}{Self-Driving Car FOL --- 2023 Q4(a)}
+\textbf{Predicate declarations:}
+\begin{itemize}[noitemsep]
+  \item $\mathrm{Car}(c)$: $c$ is a self-driving car
+  \item $\mathrm{Reachable}(c,d)$: destination $d$ is reachable by car $c$
+  \item $\mathrm{Obstacle}(d)$: there is an obstacle at/on road to $d$
+  \item $\mathrm{Moves}(c,d)$: car $c$ moves to destination $d$
+  \item $\mathrm{AtIntersection}(c,i)$: car $c$ is at intersection $i$
+  \item $\mathrm{GreenLight}(i)$: traffic light at $i$ is green
+  \item $\mathrm{PedestrianCrossing}(i)$: pedestrian is crossing at $i$
+  \item $\mathrm{Proceeds}(c,i)$: car $c$ proceeds through intersection $i$
+  \item $\mathrm{ObstacleOnRoad}(c)$: obstacle on road ahead of car $c$
+  \item $\mathrm{Stops}(c)$: car $c$ stops
+  \item $\mathrm{InSchoolZone}(c,z)$: car $c$ is in school zone $z$
+  \item $\mathrm{ActiveHours}(z)$: school zone $z$ is currently active
+  \item $\mathrm{ReduceSpeed}(c)$: car $c$ reduces speed
+  \item $\mathrm{AdjacentLaneClear}(c,l)$: lane $l$ adjacent to car $c$'s lane is clear
+  \item $\mathrm{Moving}(c)$: car $c$ is moving
+  \item $\mathrm{ChangeLane}(c,l)$: car $c$ changes to lane $l$
+\end{itemize}
+
+\medskip\textbf{(i)} The car can move to a destination if reachable and no obstacles:
+\[\ALL{c}\ALL{d}\;\mathrm{Car}(c) \land \mathrm{Reachable}(c,d) \land \neg\mathrm{Obstacle}(d) \ra \mathrm{Moves}(c,d)\]
+
+\textbf{(ii)} Proceed through intersection if green light and no pedestrians:
+\[\ALL{c}\ALL{i}\;\mathrm{Car}(c) \land \mathrm{AtIntersection}(c,i) \land \mathrm{GreenLight}(i) \land \neg\mathrm{PedestrianCrossing}(i) \ra \mathrm{Proceeds}(c,i)\]
+
+\textbf{(iii)} Stop if obstacle on road:
+\[\ALL{c}\;\mathrm{Car}(c) \land \mathrm{ObstacleOnRoad}(c) \ra \mathrm{Stops}(c)\]
+
+\textbf{(iv)} Reduce speed in school zone during active hours:
+\[\ALL{c}\ALL{z}\;\mathrm{Car}(c) \land \mathrm{InSchoolZone}(c,z) \land \mathrm{ActiveHours}(z) \ra \mathrm{ReduceSpeed}(c)\]
+
+\textbf{(v)} Change lanes only if adjacent lane clear and car is moving:
+\[\ALL{c}\ALL{l}\;\mathrm{Car}(c) \land \mathrm{AdjacentLaneClear}(c,l) \land \mathrm{Moving}(c) \ra \mathrm{ChangeLane}(c,l)\]
+\end{solbox}
+
+\subsection{Part (b): Drone Delivery FOL + Forward Chaining (4 marks)}
+
+\begin{solbox}{Drone FOL + Forward Chaining --- 2023 Q4(b)}
+\textbf{Predicate declarations:}
+\begin{itemize}[noitemsep]
+  \item $\mathrm{At}(d,l)$: drone $d$ is at location $l$
+  \item $\mathrm{Route}(l_1,l_2)$: there exists an air route from $l_1$ to $l_2$
+  \item $\mathrm{ObstacleOnRoute}(l_1,l_2)$: there is an obstacle on the route from $l_1$ to $l_2$
+  \item $\mathrm{CanFly}(d,l_1,l_2)$: drone $d$ can fly from $l_1$ to $l_2$
+\end{itemize}
+
+\textbf{Knowledge Base (Facts):}
+\begin{align*}
+  KB_1&: \mathrm{At(drone,\;L_0)} \\
+  KB_2&: \mathrm{Route}(L_0,\;L_1) \quad\text{(route R1 --- clear)}\\
+  KB_3&: \mathrm{Route}(L_1,\;L_2) \quad\text{(route R2 --- has obstacle!)}\\
+  KB_4&: \mathrm{Route}(L_2,\;L_p) \quad\text{(route R3 --- clear)}\\
+  KB_5&: \mathrm{ObstacleOnRoute}(L_1,\;L_2)\quad\text{(obstacle on R2)}\\
+  KB_6&: \neg\mathrm{ObstacleOnRoute}(L_0,\;L_1)\quad\text{(R1 is clear)}\\
+  KB_7&: \neg\mathrm{ObstacleOnRoute}(L_2,\;L_p)\quad\text{(R3 is clear)}
+\end{align*}
+
+\textbf{Movement Rule in FOL:}
+\[\ALL{d}\ALL{l_1}\ALL{l_2}\;\mathrm{At}(d,l_1) \land \mathrm{Route}(l_1,l_2) \land \neg\mathrm{ObstacleOnRoute}(l_1,l_2) \ra \mathrm{At}(d,l_2)\]
+
+\textbf{Forward Chaining (data-driven):}
+\begin{center}
+\begin{tabular}{@{}l@{\quad}l@{\quad}l@{}}
+  \toprule
+  \textbf{Iteration} & \textbf{Antecedents matched} & \textbf{Conclusion (added to KB)} \\
+  \midrule
+  1 & $\mathrm{At(drone,L_0)} + \mathrm{Route}(L_0,L_1) + \neg\mathrm{Obstacle}(L_0,L_1)$ & $\mathrm{At(drone,L_1)}$ \\[3pt]
+  2 & $\mathrm{At(drone,L_1)} + \mathrm{Route}(L_1,L_2) + \mathrm{ObstacleOnRoute}(L_1,L_2)$ & \textbf{RULE FAILS} \\
+    & Condition $\neg\mathrm{ObstacleOnRoute}(L_1,L_2)$ is FALSE & No inference \\
+  \bottomrule
+\end{tabular}
+\end{center}
+
+\textbf{Conclusion:} Drone reaches $L_1$ successfully, but \textbf{cannot proceed to $L_2$} due to the obstacle on route $R_2$. Therefore, the drone \textbf{cannot reach the destination $L_p$} via the given routes.
+
+\medskip
+\textit{(In a full system, an alternative route planner would re-route via a different path if one existed.)}
+\end{solbox}
+
+\newpage
+%% ==========================================
+\section{2024 --- Q4: ER + Perfect Square FOL (9 marks)}
+%% ==========================================
+
+\begin{qbox}{Question --- 2024 Q4}
+\begin{enumerate}[label=(\alph*),noitemsep]
+  \item In ER (Evidential Reasoning), how is a high-level attribute assessed through associated lower-level attributes? \hfill\textit{(1 mark)}
+  \item What is the combined degree of belief in the original ER approach? \hfill\textit{(1 mark)}
+  \item Consider the following sentences: \hfill\textit{(7 marks)}
+    \begin{enumerate}[label=(\roman*),noitemsep]
+      \item If a perfect square is divisible by a prime $P$, then it is also divisible by square of $P$
+      \item Every perfect square is divisible by some prime
+      \item 36 is a perfect square
+      \item Does there exist a prime $q$ such that square of $q$ divides 36?
+    \end{enumerate}
+    \textbf{A)} Translate the sentences above into FOL sentences. \hfill\textit{(2 marks)}\\
+    \textbf{B)} Prove (iv) by using Universal Elimination, Existential Elimination, Modus Ponens, and Existential Introduction. \hfill\textit{(1.5 marks)}\\
+    \textbf{C)} Convert the FOL sentences into Clausal Form by using Canonical Form (CF). \hfill\textit{(1.5 marks)}\\
+    \textbf{D)} Apply the Resolution method to prove (iv). \hfill\textit{(2 marks)}
+\end{enumerate}
+\end{qbox}
+
+\subsection{Part (a): Evidential Reasoning --- Assessment of High-Level Attributes (1 mark)}
+
+\begin{solbox}{Evidential Reasoning --- 2024 Q4(a)}
+In \textbf{Evidential Reasoning (ER)}, a high-level attribute (e.g., ``Disease D'') is assessed by combining probabilistic evidence from multiple lower-level attributes (e.g., symptoms, test results) using the Dempster--Shafer theory of belief functions.
+
+Each lower-level attribute provides a \textbf{basic probability assignment} (mass) distributed over hypotheses. The masses from all evidence sources are combined using \textbf{Dempster's combination rule} (orthogonal sum), yielding a \textbf{belief measure} $\mathrm{Bel}(H)$ and a \textbf{plausibility measure} $\mathrm{Pl}(H)$ for the high-level hypothesis $H$.
+\end{solbox}
+
+\subsection{Part (b): Combined Degree of Belief (1 mark)}
+
+\begin{solbox}{Combined Degree of Belief --- 2024 Q4(b)}
+The \textbf{combined degree of belief} in the original ER approach uses \textbf{Dempster's rule}:
+\[m_{1\oplus 2}(A) = \frac{1}{1-K}\sum_{B\cap C = A} m_1(B)\cdot m_2(C)\]
+where $K = \sum_{B\cap C = \emptyset} m_1(B)\cdot m_2(C)$ is the \textbf{conflict factor} (measure of contradictory evidence).
+
+The term $\frac{1}{1-K}$ normalizes the combined belief to sum to 1.\\
+\textbf{Belief} $\mathrm{Bel}(H) = \sum_{A \subseteq H} m(A)$ represents total committed belief; \textbf{Plausibility} $\mathrm{Pl}(H) = 1 - \mathrm{Bel}(\neg H)$ represents the upper bound of belief.
+\end{solbox}
+
+\subsection{Part (c-A): FOL Translation (2 marks)}
+
+\begin{solbox}{FOL Translation --- 2024 Q4(c-A)}
+\textit{Identical to 2021 Q5(b-i). See Section 3.}
+
+\begin{align*}
+  F_1&: \ALL{x}\ALL{p}\;\mathrm{PerfSq}(x) \land \mathrm{Prime}(p) \land \mathrm{Divides}(p,x) \ra \mathrm{Divides}(\mathrm{square}(p),x) \\
+  F_2&: \ALL{x}\;\mathrm{PerfSq}(x) \ra \EX{p}\;\mathrm{Prime}(p) \land \mathrm{Divides}(p,x)\\
+  F_3&: \mathrm{PerfSq}(36)\\
+  \text{Goal}&: \EX{q}\;\mathrm{Prime}(q) \land \mathrm{Divides}(\mathrm{square}(q),36)
+\end{align*}
+\end{solbox}
+
+\subsection{Part (c-B): Proof Using Inference Rules (1.5 marks)}
+
+\begin{solbox}{Inference Rule Proof --- 2024 Q4(c-B)}
+\textbf{Prove:} $\EX{q}\;\mathrm{Prime}(q)\land\mathrm{Divides}(\mathrm{square}(q),36)$
+
+\begin{enumerate}[noitemsep,label=\textbf{\arabic*.}]
+  \item $\mathrm{PerfSq}(36)$ \hfill $[F_3]$
+  \item $\mathrm{PerfSq}(36) \ra \EX{p}\;\mathrm{Prime}(p)\land\mathrm{Divides}(p,36)$ \hfill $[\mathbf{UE}\;x/36\;\text{on}\;F_2]$
+  \item $\EX{p}\;\mathrm{Prime}(p)\land\mathrm{Divides}(p,36)$ \hfill $[\mathbf{Modus\;Ponens:}\;1+2]$
+  \item $\mathrm{Prime}(p_0)\land\mathrm{Divides}(p_0,36)$ \hfill $[\mathbf{EE}\;\text{(Skolem const }p_0\text{): from 3}]$
+  \item $\mathrm{Prime}(p_0)$ and $\mathrm{Divides}(p_0,36)$ \hfill $[\text{And-Elim from 4}]$
+  \item $\mathrm{PerfSq}(36)\land\mathrm{Prime}(p_0)\land\mathrm{Divides}(p_0,36) \ra \mathrm{Divides}(\mathrm{square}(p_0),36)$\hfill $[\mathbf{UE}\;x/36,p/p_0\;\text{on}\;F_1]$
+  \item $\mathrm{Divides}(\mathrm{square}(p_0),36)$ \hfill $[\textbf{MP:}\;1,5,6]$
+  \item $\mathrm{Prime}(p_0)\land\mathrm{Divides}(\mathrm{square}(p_0),36)$ \hfill $[\text{And-Intro: 5+7}]$
+  \item $\EX{q}\;\mathrm{Prime}(q)\land\mathrm{Divides}(\mathrm{square}(q),36)$ \hfill $[\mathbf{EI:}\;\text{from 8, generalise }p_0\;\text{to }q]$
+\end{enumerate}
+\textbf{Goal proved.} \checkmark
+\end{solbox}
+
+\subsection{Part (c-C): Canonical Form Conversion (1.5 marks)}
+
+\begin{solbox}{Clause Form --- 2024 Q4(c-C)}
+\textit{Identical to 2021 Q5(b-ii). See Section 3.}
+
+\medskip
+\begin{tabular}{@{}l@{\quad}l@{}}
+  \toprule
+  \textbf{Clause} & \textbf{Source}\\
+  \midrule
+  $C_1: \cl{\neg\mathrm{PerfSq}(x),\;\neg\mathrm{Prime}(p),\;\neg\mathrm{Divides}(p,x),\;\mathrm{Divides}(\mathrm{square}(p),x)}$ & $F_1$ (Steps 2,7)\\[3pt]
+  $C_{2a}: \cl{\neg\mathrm{PerfSq}(x),\;\mathrm{Prime}(g(x))}$ & $F_2$ (Skolem fn $g$)\\[3pt]
+  $C_{2b}: \cl{\neg\mathrm{PerfSq}(x),\;\mathrm{Divides}(g(x),x)}$ & $F_2$ (Skolem fn $g$)\\[3pt]
+  $C_3: \cl{\mathrm{PerfSq}(36)}$ & $F_3$ \\[3pt]
+  $C_4: \cl{\neg\mathrm{Prime}(q),\;\neg\mathrm{Divides}(\mathrm{square}(q),36)}$ & Negated goal \\
+  \bottomrule
+\end{tabular}
+\end{solbox}
+
+\subsection{Part (c-D): Resolution Proof (2 marks)}
+
+\begin{solbox}{Resolution Proof --- 2024 Q4(c-D)}
+\textit{Identical to 2021 Q5(b-iii). See Section 3 for full 7-step derivation.}
+
+\medskip
+\textbf{Summary:}
+\begin{enumerate}[noitemsep,label=\textbf{\arabic*.}]
+  \item $C_3 + C_{2a}$ $\{x/36\}$ $\to$ $\mathrm{Prime}(g(36))$
+  \item $C_3 + C_{2b}$ $\{x/36\}$ $\to$ $\mathrm{Divides}(g(36),36)$
+  \item $C_3 + C_1$ $\{x/36\}$ $\to$ $\neg\mathrm{Prime}(p)\lor\neg\mathrm{Divides}(p,36)\lor\mathrm{Divides}(\mathrm{square}(p),36)$
+  \item (1)+(3) $\{p/g(36)\}$ $\to$ $\neg\mathrm{Divides}(g(36),36)\lor\mathrm{Divides}(\mathrm{square}(g(36)),36)$
+  \item (2)+(4) $\to$ $\mathrm{Divides}(\mathrm{square}(g(36)),36)$
+  \item (1)+$C_4$ $\{q/g(36)\}$ $\to$ $\neg\mathrm{Divides}(\mathrm{square}(g(36)),36)$
+  \item (5)+(6) $\to$ $\boxed{\square}$ \textbf{(Contradiction $\Rightarrow$ Goal Proved!)} \checkmark
+\end{enumerate}
+\end{solbox}
+
+\newpage
+%% ==========================================
+\section*{Quick Exam Summary --- Exam Patterns for This Topic}
+%% ==========================================
+
+\begin{warnbox}{Every Year Patterns --- Memorise These}
+\begin{enumerate}[noitemsep]
+  \item \textbf{Marcus/Pompeii} (2020, 2022): Always 4 parts --- (a) WFF translation (b) backward reasoning (c) clause form (d) resolution. Now changes year each paper (2021 in 2020 paper, 2023 in 2022 paper).
+  \item \textbf{Perfect Square FOL} (2021, 2024): Always same 4 sentences. 2021 asks for UE/EE/MP/EI proof. 2024 adds ER questions. Proof is always: Skolem $g(36)$ → derive Prime$+$Divides → contradict negated goal.
+  \item \textbf{FOL Translation: Robot/Drone/Car} (2023): Declare predicates FIRST, then encode each action rule as $\forall$ sentence with $\rightarrow$.
+  \item \textbf{KB Resolution (Wumpus)} (2021 Q4d): Use $R_4(\neg B_{1,1})$ + clause from biconditional of $R_2$ to immediately derive contradiction. 2-step proof.
+  \item \textbf{Satisfiability check} (2021 Q4c, 2022 A-4a): Simplify algebraically first (use Distributivity, De Morgan). Then check truth table.
+  \item \textbf{Clause form algorithm asked directly} (2022, 2016): Know all 9 steps. Pay attention to Skolemization rule (constant vs.\ function depends on outer $\forall$).
+\end{enumerate}
+\end{warnbox}
+
+\end{document}

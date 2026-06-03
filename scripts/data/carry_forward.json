@@ -1,4 +1,7 @@
 {
-  "topics": [],
-  "last_updated": "2026-06-02"
+  "topics": [
+    "Alpha-Beta Pruning + Minimax — still at 📖, needs cold trace to reach ✅",
+    "Forward + Backward Chaining + Rule-Based System — planned for 2026-06-03, completion unconfirmed (log blank)"
+  ],
+  "last_updated": "2026-06-03"
 }

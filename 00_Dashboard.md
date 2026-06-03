@@ -4,9 +4,9 @@
 
 ## Right now
 - **Active exam:** CSE 713 — Artificial Intelligence — **Wed 10 Jun 2026, 10:30 AM**
-- **Days left:** 7
-- **Phase:** AI core learning — Day 5 (remaining topics + first past-paper attempt)
-- **Single most important thing today:** Alpha-Beta Pruning cold trace (complete 📖) → Forward + Backward Chaining (6–9 marks, verbatim every year).
+- **Days left:** 6
+- **Phase:** AI Day 6 — repair weak areas (Alpha-Beta ✅ + FC/BC completion)
+- **Single most important thing today:** Complete Alpha-Beta cold trace to ✅, then lock in Forward + Backward Chaining (6–9 marks, verbatim every year).
 - **⚠️ Rule:** Google Calendar is the ONLY source of truth for daily plans. Never use the overnight rollover log for scheduling.
 - **🔴 Session protocols:** Read and execute `scripts/data/session_protocols.md` at EVERY session start. No exceptions.
 

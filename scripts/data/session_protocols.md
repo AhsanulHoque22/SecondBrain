@@ -147,6 +147,9 @@ git commit -m "log: [DATE] — [N] topics done, energy [X]/5"
 1. **Google Calendar is the ONLY source of truth for daily plans.**
    - Never use the overnight rollover script for scheduling.
    - Always read Google Calendar events for today before presenting any plan.
+   - **⛔ NEVER create, update, or delete Google Calendar events automatically.**
+   - Only interact with Google Calendar (create/edit/delete) when the user explicitly says "add to calendar", "create a calendar event", "schedule this on calendar", or equivalent direct instruction.
+   - All plans, logs, and schedules are written to `.md` files only (daily logs, Master Plan). Calendar is **read-only by default**.
 
 2. **Exam season constraints:**
    - Livora: 2 hours/day max

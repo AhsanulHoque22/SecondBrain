@@ -68,6 +68,9 @@ Common Telegram commands:
 - "Tonight's Livora task: [X]" → write X to `scripts/data/overnight_task.txt`
 - "Update my log: did [X], energy [N], blocker [Y]" → Progress Log Protocol
 
+**⛔ Calendar rule (Telegram + all sessions):**
+Never create, edit, or delete Google Calendar events unless the user explicitly says "add to calendar" or "create a calendar event". All plans and logs go into `.md` files only. Google Calendar is read-only by default.
+
 ## Overnight automation (cron jobs)
 - **4:15 AM** — `morning_brief_claude.sh`: morning briefing to Telegram
 - **9:10 PM** — `evening_reminder.sh`: nudge to fill the daily log

@@ -12,7 +12,9 @@ Date: 2026-06-10 (Wednesday) | Days left: 5 | Phase: Day 7 — Practice problems
 | Search: UCS, Greedy, A*, IDDFS — trace on graph | ✅ | 4 | 2026-06-05 |
 | Search: Problem Formulation | 🔁 | 4 | 2026-06-04 |
 | Alpha-Beta Pruning + Minimax | 📖 | — | pending (cold trace required) |
-| Forward + Backward Chaining + Rule-Based System | 🔲 | — | — |
+| Forward + Backward Chaining + Rule-Based System | ✅ | 5 | 2026-06-06 |
+| ↳ PL Basics: satisfiability, validity, Modus Ponens | ✅ | 5 | 2026-06-06 |
+| ↳ Resolution in PL: clause form (4-step), refutation | ✅ | 5 | 2026-06-06 |
 | FOL + Resolution + Inference | 🔲 | — | — |
 | STRIPS + Partial-Order Planning | 🔲 | — | — |
 | Bayes' Theorem + Bayesian Networks | 🔲 | — | — |
@@ -22,14 +24,18 @@ Date: 2026-06-10 (Wednesday) | Days left: 5 | Phase: Day 7 — Practice problems
 | Fuzzy Logic + Uncertainty | 🔲 | — | — |
 
 ## Carry-forward
-- Alpha-Beta Pruning + Minimax — still 📖, needs cold trace to reach ✅ (2nd day carry)
-- Forward + Backward Chaining + Rule-Based System — planned 2026-06-03/04, completion unconfirmed (log blank both days)
+- Alpha-Beta Pruning + Minimax — still 📖, needs cold trace to reach ✅ (scheduled Jun 5 Block 6)
 
 ## Recall due 2026-06-05
-- 🔁 Intelligent Agents + Environments (PAGE) — conf 4/5 ⚠️ 2d overdue
-- 🔁 Search: UCS, Greedy, A*, IDDFS — trace on graph — conf 4/5 ⚠️ 2d overdue
+- 🔁 Intelligent Agents + Environments (PAGE) — conf 4/5 ⚠️ overdue
+- 🔁 Search: UCS, Greedy, A*, IDDFS — conf 4/5 ⚠️ overdue
+- 🔁 Search: Problem Formulation — conf 4/5 ⚠️ overdue
+
+## Recall due 2026-06-06
+- 🔁 Forward + Backward Chaining + Rule-Based System — conf 5/5 (first recall)
+- 🔁 PL Basics + Resolution in PL — conf 5/5 (first recall)
 
 ## Recent pattern (last 3 days)
 - 2026-06-02: Alpha-Beta 📖 slides done — active recall pending
-- 2026-06-03: End-of-day log unfilled — no topics confirmed complete
-- 2026-06-04: End-of-day log unfilled — no topics confirmed complete; Alpha-Beta + FC/BC still carry-forward
+- 2026-06-03: End-of-day log unfilled
+- 2026-06-04: ✅ FC/BC (conf 5) + PL Basics (conf 5) + Resolution PL (conf 5) — slides + past papers done

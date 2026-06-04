@@ -37,7 +37,7 @@ Prayers structure the day — each gap is a study block:
 ## Status board (Claude updates)
 | Course | Topics mapped | High-yield done | Past paper attempts | Confidence /5 |
 |--------|:-:|:-:|:-:|:-:|
-| [[02_Courses/CSE713_AI/_Topics\|AI (713)]] | ✅ mapped (11 topics) | ✅ 2/11 done (Agents + Search), 🔲 9 remaining | 0 | 4.0 |
+| [[02_Courses/CSE713_AI/_Topics\|AI (713)]] | ✅ mapped (11 topics) | ✅ 5 done (Agents, Search, FC/BC, PL Basics, Resolution PL) · 📖 Alpha-Beta · 🔲 6 remaining | ✅ past papers done per topic | 4.6 |
 | [[02_Courses/CSE717_InfoSec/README\|InfoSec (717)]] | – | – | – | – |
 | [[02_Courses/CSE711_Compiler/README\|Compiler (711)]] | – | – | – | – |
 | [[02_Courses/CSE719_Distributed/README\|Distributed (719)]] | – | – | – | – |

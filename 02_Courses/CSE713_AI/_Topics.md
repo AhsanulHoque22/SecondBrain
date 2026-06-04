@@ -9,10 +9,10 @@ Status: 🔲 not started · 📖 learning · 🔁 needs recall · ✅ can explai
 | Search: UCS, Greedy, A*, IDDFS — trace on graph | ✅ | 4 | 2026-06-01 | 2026-06-05 | 5/5 · 5–6 marks | BFS/DFS/UCS/IDDFS + Greedy/A* all done. Past paper practice pending. |
 | Search: Problem Formulation (initial state, goal test, operators, path cost) | 🔁 | 4 | 2026-06-01 | 2026-06-04 | 5/5 · 2–3 marks | TSP, M&C, Water Jug, Robot Vacuum, Map Coloring, Monkey & Bananas — apply 4-part template cold |
 | Alpha-Beta Pruning + Minimax | 📖 | — | 2026-06-02 | — | 5/5 · 4–5 marks | Slides done. Active recall pending — cannot mark ✅ until cold trace passes. |
-| Forward + Backward Chaining + Rule-Based System | 🔲 | — | — | — | 5/5 · 6–9 marks | R1–R5 example is verbatim every year — memorise it |
+| Forward + Backward Chaining + Rule-Based System | ✅ | 5 | 2026-06-04 | 2026-06-06 | 5/5 · 6–9 marks | R1–R5 example is verbatim every year — memorise it |
 | FOL + Resolution + Inference (Marcus/Pompeii) | 🔲 | — | — | — | 5/5 · 7–8 marks | Same facts set 2020–2022; 2023/2024 use FOL for robots/drones |
-| ↳ PL Basics: satisfiability, validity, entailment, Modus Ponens | 🔲 | — | — | — | 4/5 · 2 marks | Sat/valid check 2021 Q4c; algorithm asked 2022 A-2a |
-| ↳ Resolution in PL: clause form (4-step), refutation proof | 🔲 | — | — | — | 5/5 · 2–3 marks | Wumpus KB 2021 Q4d; 9-step algo asked every year |
+| ↳ PL Basics: satisfiability, validity, entailment, Modus Ponens | ✅ | 5 | 2026-06-04 | 2026-06-06 | 4/5 · 2 marks | Sat/valid check 2021 Q4c; algorithm asked 2022 A-2a |
+| ↳ Resolution in PL: clause form (4-step), refutation proof | ✅ | 5 | 2026-06-04 | 2026-06-06 | 5/5 · 2–3 marks | Wumpus KB 2021 Q4d; 9-step algo asked every year |
 | ↳ FOL Syntax: Terms, Predicates, Functions, ∀, ∃, Sentences | 🔲 | — | — | — | 5/5 · 1–2 marks | "FOL generalization of PL" asked in 2021 Q5a, 2017, 2016 |
 | ↳ FOL Translation (car/drone/robot scenario) | 🔲 | — | — | — | 5/5 · 4–5 marks | 2023 Q4a (car), 2023 Q4b (drone) — declare predicates FIRST |
 | ↳ Canonical Form Conversion (9-step algorithm) | 🔲 | — | — | — | 5/5 · 1.5–2.5 marks | Required in every resolution proof; asked directly in 2022/2016 |

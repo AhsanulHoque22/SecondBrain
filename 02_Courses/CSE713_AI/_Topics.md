@@ -19,7 +19,7 @@ Status: 🔲 not started · 📖 learning · 🔁 needs recall · ✅ can explai
 | ↳ Resolution in FOL: Unification, Skolemization, refutation | 🔲 | — | — | — | 5/5 · 2–3 marks | Perfect Square 2021/2024; Marcus 2020/2022 — same proof each time |
 | ↳ Knowledge Representation and Mapping (roles) | 🔲 | — | — | — | 3/5 · 1.5 marks | 2022 A-2c; 2016 Q3a — 5 roles: surrogate/ontological/inferential/expressivity/efficiency |
 | ↳ Evidential Reasoning (ER): Dempster-Shafer, degree of belief | 🔲 | — | — | — | 3/5 · 2 marks | 2024 Q4a,b — Dempster's rule, Bel vs Pl, conflict factor K |
-| STRIPS + Partial-Order Planning (Block World) | 🔲 | — | — | — | 5/5 · 8–9 marks | Sussman Anomaly appears 2020/2021 |
+| STRIPS + Partial-Order Planning (Block World) | 📖 | — | 2026-06-04 | — | 5/5 · 8–9 marks | Slides read, wiki + solutions PDF done. Sussman + 4-block POP fully solved. |
 | Bayes' Theorem + Bayesian Networks | 🔲 | — | — | — | 5/5 · 4–9 marks | Numerical: compute P(E), posteriors, joint distribution |
 | Hill Climbing + Simulated Annealing | 🔲 | — | — | — | 5/5 · 4 marks | 3 limitations of HC; SA as escape mechanism |
 | Neural Networks + Learning | 🔲 | — | — | — | 5/5 · 7–9 marks | Section B; ANN vs biological; backprop |

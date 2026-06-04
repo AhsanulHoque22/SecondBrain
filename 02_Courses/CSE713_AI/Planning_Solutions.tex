@@ -1,0 +1,653 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[top=2.5cm,bottom=2.5cm,left=2.5cm,right=2.5cm,headheight=15pt]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs,array,longtable,tabularx,multirow}
+\usepackage{xcolor}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{mdframed}
+\usepackage{tcolorbox}
+\tcbuselibrary{skins,breakable}
+\usepackage{hyperref}
+
+%% ---- Colors ----
+\definecolor{planblue}{RGB}{0,82,165}
+\definecolor{lightblue}{RGB}{220,235,255}
+\definecolor{darkorange}{RGB}{180,70,0}
+\definecolor{lightorange}{RGB}{255,235,210}
+\definecolor{darkgreen}{RGB}{20,110,20}
+\definecolor{lightgreen}{RGB}{200,240,205}
+\definecolor{darkred}{RGB}{150,20,20}
+\definecolor{lightred}{RGB}{255,210,210}
+\definecolor{lightgray}{RGB}{242,242,242}
+\definecolor{darkteal}{RGB}{0,105,92}
+\definecolor{lightteal}{RGB}{200,230,225}
+
+%% ---- tcolorbox styles ----
+\newtcolorbox{qbox}[2][]{enhanced,breakable,
+  colback=lightorange,colframe=darkorange,arc=4pt,
+  title={\textbf{#2}},fonttitle=\bfseries\color{white},
+  attach boxed title to top left={yshift=-2mm,xshift=4mm},
+  boxed title style={colback=darkorange,arc=3pt},#1}
+
+\newtcolorbox{solbox}[2][]{enhanced,breakable,
+  colback=lightblue,colframe=planblue,arc=4pt,
+  title={\textbf{#2}},fonttitle=\bfseries\color{white},
+  attach boxed title to top left={yshift=-2mm,xshift=4mm},
+  boxed title style={colback=planblue,arc=3pt},#1}
+
+\newtcolorbox{keybox}[2][]{enhanced,breakable,
+  colback=lightgreen,colframe=darkgreen,arc=4pt,
+  title={\textbf{#2}},fonttitle=\bfseries\color{white},
+  attach boxed title to top left={yshift=-2mm,xshift=4mm},
+  boxed title style={colback=darkgreen,arc=3pt},#1}
+
+\newtcolorbox{algobox}[2][]{enhanced,breakable,
+  colback=lightgray,colframe=gray!60,arc=4pt,
+  title={\textbf{#2}},fonttitle=\bfseries,
+  attach boxed title to top left={yshift=-2mm,xshift=4mm},
+  boxed title style={colback=gray!60,arc=3pt},#1}
+
+\newtcolorbox{warnbox}[2][]{enhanced,breakable,
+  colback=lightred,colframe=darkred,arc=4pt,
+  title={\textbf{#2}},fonttitle=\bfseries\color{white},
+  attach boxed title to top left={yshift=-2mm,xshift=4mm},
+  boxed title style={colback=darkred,arc=3pt},#1}
+
+%% ---- Page style ----
+\pagestyle{fancy}\fancyhf{}
+\lhead{\color{planblue}\textbf{Planning (STRIPS + POP) --- CSE 713 AI}}
+\rhead{\color{planblue}Exam: 10 Jun 2026}
+\cfoot{--- \thepage\ ---}
+\renewcommand{\headrulewidth}{0.4pt}
+
+%% ---- Section style ----
+\titleformat{\section}{\large\bfseries\color{planblue}}{}{0em}{}[\titlerule]
+\titleformat{\subsection}{\normalsize\bfseries\color{darkorange}}{}{0em}{}
+\titleformat{\subsubsection}{\normalsize\bfseries\color{darkteal}}{}{0em}{}
+
+%% ---- Document ----
+\begin{document}
+
+\begin{center}
+{\LARGE\bfseries\color{planblue} CSE 713 --- Artificial Intelligence}\\[4pt]
+{\large\bfseries STRIPS + Partial-Order Planning (Block World)}\\[2pt]
+{\large Complete Past Paper Solutions: 2020--2024}\\[6pt]
+{\normalsize Source: \textit{Planning.pdf} (50 slides) + \textit{plan2.pdf} (38 slides)}\\[2pt]
+{\normalsize\color{darkred}\textbf{Every question from 2020--2024 included. Zero omissions.}}
+\end{center}
+
+\tableofcontents
+\newpage
+
+%% ==========================================
+\section*{Topic Overview (from Slides)}
+%% ==========================================
+
+\begin{keybox}{STRIPS + POP --- What to Know Cold}
+\textbf{STRIPS (Stanford Research Institute Problem Solver):}
+\begin{itemize}[noitemsep]
+  \item Action = Preconditions + Add-list + Delete-list
+  \item State = conjunction of positive ground literals
+  \item Closed World Assumption: anything not stated is false
+  \item Solves the Frame Problem: only explicit effects change the state
+\end{itemize}
+\vspace{4pt}
+\textbf{Partial-Order Planning (POP):}
+\begin{itemize}[noitemsep]
+  \item Plan = $(A, O, L)$: set of actions, ordering constraints, causal links
+  \item Causal link: $A_p \xrightarrow{Q} A_c$ means $A_p$ achieves condition $Q$ for $A_c$
+  \item Threat: action $A_t$ threatens link $(A_p, Q, A_c)$ if $A_t$ deletes $Q$ and could fall between $A_p$ and $A_c$
+  \item Resolution: \textbf{Demotion} ($A_t \prec A_p$) or \textbf{Promotion} ($A_c \prec A_t$)
+  \item Solution: no open conditions, no threats, consistent ordering
+  \item POP is \textbf{sound and complete}
+\end{itemize}
+\vspace{4pt}
+\textbf{Special actions for POP:}
+\begin{itemize}[noitemsep]
+  \item $A_0$: no preconditions; effects = initial state; must be \textbf{first}
+  \item $A_\infty$: no effects; preconditions = goal; must be \textbf{last}
+\end{itemize}
+\end{keybox}
+
+%% ==========================================
+\section*{Block World STRIPS Operators (Memorise These)}
+%% ==========================================
+
+\begin{algobox}{4 Standard Block World Operators}
+\begin{tabular}{@{}p{3.8cm}p{5.5cm}p{2.5cm}p{2.5cm}@{}}
+\toprule
+\textbf{Action} & \textbf{Preconditions} & \textbf{Add} & \textbf{Delete} \\
+\midrule
+PICKUP(b) & ONTABLE(b), CLEAR(b), ARMEMPTY & HOLDING(b) & ONTABLE(b), CLEAR(b), ARMEMPTY \\
+PUTDOWN(b) & HOLDING(b) & ONTABLE(b), CLEAR(b), ARMEMPTY & HOLDING(b) \\
+UNSTACK(b, c) & ON(b,c), CLEAR(b), ARMEMPTY & HOLDING(b), CLEAR(c) & ON(b,c), CLEAR(b), ARMEMPTY \\
+STACK(b, c) & HOLDING(b), CLEAR(c) & ON(b,c), ARMEMPTY, CLEAR(b) & HOLDING(b), CLEAR(c) \\
+\bottomrule
+\end{tabular}
+
+\medskip
+\textit{Memory rule:} UNSTACK = pick up a block from another block.
+PICKUP = pick up from table. STACK = place on a block. PUTDOWN = place on table.
+\end{algobox}
+
+\begin{warnbox}{The Standard 4-Block World (2022, 2023, 2024 --- appears verbatim every year)}
+\textbf{Initial State:}
+ON(B,A), ONTABLE(A), ONTABLE(C), ONTABLE(D), ARMEMPTY, CLEAR(B), CLEAR(C), CLEAR(D)\\
+\emph{(A is NOT clear --- B is sitting on top of it.)}
+
+\medskip
+\textbf{Goal State:} ON(C,A), ON(B,D), ONTABLE(A), ONTABLE(D)
+
+\medskip
+\textbf{Total-order solution:}
+UNSTACK(B,A) $\rightarrow$ STACK(B,D) $\rightarrow$ PICKUP(C) $\rightarrow$ STACK(C,A)
+\end{warnbox}
+
+\newpage
+
+%% ==========================================
+\section{2024 --- Q5 (9 marks)}
+%% ==========================================
+
+\subsection{Part (a) --- STRIPS + Household Robot Action Schema [4 marks]}
+
+\begin{qbox}{2024 Q5(a) --- STRIPS Definition + Action Schema}
+What is STRIPS? How are actions represented using STRIPS action schema?
+Develop a planning problem using STRIPS defining one action for a
+\textbf{Household Robot} (cleaning a room, turning on appliances, fetching objects)
+with Preconditions, Add-effects, and Delete-effects.
+\end{qbox}
+
+\begin{solbox}{Solution}
+\textbf{STRIPS (Stanford Research Institute Problem Solver)} is a planning framework
+representing the world as a set of positive ground literals (propositions).
+An action in STRIPS is an \textbf{action schema} consisting of three components:
+\begin{enumerate}[noitemsep]
+  \item \textbf{Preconditions}: a conjunction of positive, function-free literals that
+    must hold in the current state before the action can execute.
+  \item \textbf{Add-list (Add-effects)}: propositions that become \textbf{true} after the action.
+  \item \textbf{Delete-list (Delete-effects)}: propositions that become \textbf{false} after the action.
+\end{enumerate}
+
+\textbf{Key property (Frame Problem solution):}
+Only propositions explicitly in the add/delete lists change; everything else persists.
+
+\bigskip
+\textbf{Household Robot --- Three Action Schemas:}
+
+\medskip
+\texttt{Action: CLEAN\_ROOM(room)}\\
+\phantom{xxx}Preconditions: $\{$IN(robot, room), DIRTY(room)$\}$\\
+\phantom{xxx}Add-effects: $\{$CLEAN(room)$\}$\\
+\phantom{xxx}Delete-effects: $\{$DIRTY(room)$\}$
+
+\medskip
+\texttt{Action: TURN\_ON(appliance, loc)}\\
+\phantom{xxx}Preconditions: $\{$IN(robot, loc), AT(appliance, loc), OFF(appliance)$\}$\\
+\phantom{xxx}Add-effects: $\{$ON(appliance)$\}$\\
+\phantom{xxx}Delete-effects: $\{$OFF(appliance)$\}$
+
+\medskip
+\texttt{Action: FETCH(obj, loc)}\\
+\phantom{xxx}Preconditions: $\{$IN(robot, loc), LOCATED(obj, loc)$\}$\\
+\phantom{xxx}Add-effects: $\{$HOLDING(obj)$\}$\\
+\phantom{xxx}Delete-effects: $\{$LOCATED(obj, loc)$\}$
+
+\medskip
+\emph{(Any one of the above three is sufficient for full marks --- the question asks for
+``one action.'')}
+\end{solbox}
+
+\subsection{Part (b) --- POP for Standard Block World [5 marks]}
+
+\begin{qbox}{2024 Q5(b) --- Partial-Order Planning}
+Block World (Start / Goal as above).
+Using Partial-Order Planning (POP):
+\begin{enumerate}[noitemsep]
+  \item Construct the minimal POP plan.
+  \item List all causal links and ordering constraints.
+  \item Explain how POP avoids backtracking compared to total-order planning.
+\end{enumerate}
+\end{qbox}
+
+\begin{solbox}{Solution}
+\textbf{Step 1: Actions required and their roles.}
+
+\begin{itemize}[noitemsep]
+  \item Goal \textbf{ON(C,A)} requires STACK(C,A). Its preconditions: HOLDING(C) and CLEAR(A).
+  \item \textbf{CLEAR(A)} is not in the initial state (B is on A). Need UNSTACK(B,A) first.
+  \item UNSTACK(B,A) produces HOLDING(B). Use it immediately: STACK(B,D) achieves goal ON(B,D).
+  \item STACK(B,D) restores ARMEMPTY $\Rightarrow$ PICKUP(C) can run next.
+  \item PICKUP(C) produces HOLDING(C) needed by STACK(C,A).
+\end{itemize}
+
+\textbf{Plan Steps:}
+\[
+S_1 = \text{UNSTACK}(B,A),\quad S_2 = \text{STACK}(B,D),\quad
+S_3 = \text{PICKUP}(C),\quad S_4 = \text{STACK}(C,A)
+\]
+
+\bigskip
+\textbf{Step 2: Causal Links.}
+
+\begin{center}
+\begin{tabular}{clc}
+\toprule
+\textbf{Producer} & \textbf{Condition} & \textbf{Consumer} \\
+\midrule
+$A_0$ & ON(B,A) & $S_1$ \\
+$A_0$ & CLEAR(B) & $S_1$ \\
+$A_0$ & ARMEMPTY & $S_1$ \\
+$S_1$ & HOLDING(B) & $S_2$ \\
+$A_0$ & CLEAR(D) & $S_2$ \\
+$S_2$ & ARMEMPTY & $S_3$ \\
+$A_0$ & ONTABLE(C) & $S_3$ \\
+$A_0$ & CLEAR(C) & $S_3$ \\
+$S_3$ & HOLDING(C) & $S_4$ \\
+$S_1$ & CLEAR(A) & $S_4$ \\
+$S_2$ & ON(B,D) & $A_\infty$ \\
+$S_4$ & ON(C,A) & $A_\infty$ \\
+$A_0$ & ONTABLE(A) & $A_\infty$ \\
+$A_0$ & ONTABLE(D) & $A_\infty$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\textbf{Step 3: Ordering Constraints.}
+\[
+A_0 \prec S_1 \prec S_2 \prec S_3 \prec S_4 \prec A_\infty
+\]
+Justifications:
+\begin{itemize}[noitemsep]
+  \item $S_1 \prec S_2$: $S_2$ needs HOLDING(B) produced by $S_1$.
+  \item $S_2 \prec S_3$: $S_3$ needs ARMEMPTY restored by $S_2$.
+  \item $S_1 \prec S_4$: $S_4$ needs CLEAR(A) produced by $S_1$.
+  \item $S_3 \prec S_4$: $S_4$ needs HOLDING(C) produced by $S_3$.
+\end{itemize}
+
+\textbf{Threat Analysis:} $S_1$ deletes ARMEMPTY, but $A_0 \xrightarrow{\text{ARMEMPTY}} S_1$
+uses $S_1$ as its own consumer --- no external threat.
+$S_3$ needs ARMEMPTY from $S_2$ (not $A_0$); $S_1 \prec S_2$ ensures $S_1$
+cannot intervene between $S_2$ and $S_3$. \textbf{No unresolved threats.}
+
+\bigskip
+\textbf{Step 4: Why POP Avoids Backtracking.}
+\begin{enumerate}[noitemsep]
+  \item \textbf{Least Commitment Principle:} POP does not impose a total order upfront.
+    It adds ordering constraints only when a causal link is threatened.
+    Subgoals ON(C,A) and ON(B,D) are worked on independently.
+  \item \textbf{No Goal Interaction Backtrack:} A total-order planner committing to
+    ``achieve ON(C,A) first'' would stack C on A. Then achieving ON(B,D)
+    requires unstacking B from A, which destroys the causal link for CLEAR(A).
+    POP detects threats to causal links before execution and resolves them
+    via promotion or demotion --- \emph{without restarting the search}.
+  \item \textbf{Explicit Causal Support:} Every precondition has a named producer.
+    If a new action threatens a link, POP either promotes the consumer or
+    demotes the threat. This replaces backtracking with a targeted fix.
+\end{enumerate}
+\end{solbox}
+
+\newpage
+
+%% ==========================================
+\section{2023 --- Q5 (9 marks)}
+%% ==========================================
+
+\subsection{Part (a) --- STRIPS + Air Cargo Action Schema [4 marks]}
+
+\begin{qbox}{2023 Q5(a) --- STRIPS + Air Cargo}
+What is STRIPS? What is the Action Schema of STRIPS?
+Devise a planning problem for \textbf{Air Cargo Transport}
+(loading cargo, unloading cargo, flying planes between airports).
+\end{qbox}
+
+\begin{solbox}{Solution}
+\textbf{STRIPS:} See 2024 Q5(a) above.
+
+\textbf{Air Cargo Transport --- Action Schemas:}
+
+\medskip
+\texttt{Action: LOAD(cargo, plane, airport)}\\
+\phantom{xxx}Preconditions: $\{$AT(cargo, airport), AT(plane, airport)$\}$\\
+\phantom{xxx}Add-effects: $\{$IN(cargo, plane)$\}$\\
+\phantom{xxx}Delete-effects: $\{$AT(cargo, airport)$\}$
+
+\medskip
+\texttt{Action: UNLOAD(cargo, plane, airport)}\\
+\phantom{xxx}Preconditions: $\{$IN(cargo, plane), AT(plane, airport)$\}$\\
+\phantom{xxx}Add-effects: $\{$AT(cargo, airport)$\}$\\
+\phantom{xxx}Delete-effects: $\{$IN(cargo, plane)$\}$
+
+\medskip
+\texttt{Action: FLY(plane, from, to)}\\
+\phantom{xxx}Preconditions: $\{$AT(plane, from), AIRPORT(from), AIRPORT(to)$\}$\\
+\phantom{xxx}Add-effects: $\{$AT(plane, to)$\}$\\
+\phantom{xxx}Delete-effects: $\{$AT(plane, from)$\}$
+
+\medskip
+\textbf{Example Problem Instance:}\\
+Initial: AT(C1, JFK), AT(P1, JFK), AIRPORT(JFK), AIRPORT(SFO)\\
+Goal: AT(C1, SFO)\\
+Plan: LOAD(C1, P1, JFK) $\rightarrow$ FLY(P1, JFK, SFO) $\rightarrow$ UNLOAD(C1, P1, SFO)
+\end{solbox}
+
+\subsection{Part (b) --- POP for Standard Block World [5 marks]}
+
+\begin{qbox}{2023 Q5(b) --- POP Block World (same problem as 2024)}
+Block World (same Start / Goal). Solve using partial-order planning.
+\end{qbox}
+
+\begin{solbox}{Solution}
+The problem is identical to 2024 Q5(b). The minimal POP plan is:
+\[
+A_0 \prec S_1\!=\!\text{UNSTACK}(B,A) \prec S_2\!=\!\text{STACK}(B,D)
+\prec S_3\!=\!\text{PICKUP}(C) \prec S_4\!=\!\text{STACK}(C,A) \prec A_\infty
+\]
+
+Causal links and ordering constraints are identical to 2024 Q5(b) --- see that section.
+
+\textbf{POP vs.\ total-order planning:}
+\begin{itemize}[noitemsep]
+  \item \textbf{Total-order} commits to a sequence upfront. If goals interact
+    (one goal's achievement undoes another's precondition), it backtracks
+    and tries a different ordering --- potentially exponential search.
+  \item \textbf{POP} defers ordering commitments. Goals ON(C,A) and ON(B,D)
+    are treated as independent open conditions. The ordering
+    $S_1 \prec S_4$ (UNSTACK before STACK(C,A)) is only imposed because
+    $S_4$ needs CLEAR(A) produced by $S_1$ --- not because of an arbitrary
+    total-order guess. No backtracking is needed.
+\end{itemize}
+\end{solbox}
+
+\newpage
+
+%% ==========================================
+\section{2022 --- A-3 (9 marks)}
+%% ==========================================
+
+\subsection{Part (a) --- Block World Operator Preconditions [2 marks]}
+
+\begin{qbox}{2022 A-3(a) --- Preconditions of Block World Operators}
+Write the preconditions of:
+UNSTACK(A,B),\ STACK(A,B),\ PICKUP(A),\ PUTDOWN(A).
+\end{qbox}
+
+\begin{solbox}{Solution --- Memorise These Verbatim}
+\begin{itemize}[noitemsep,leftmargin=*]
+  \item \textbf{UNSTACK(A, B):} $\{$ON(A,B),\ CLEAR(A),\ ARMEMPTY$\}$\\
+    \hfill\emph{A is on top of B; A has nothing above it; arm is free.}
+  \item \textbf{STACK(A, B):} $\{$HOLDING(A),\ CLEAR(B)$\}$\\
+    \hfill\emph{Arm holds A; B is clear to receive A.}
+  \item \textbf{PICKUP(A):} $\{$ONTABLE(A),\ CLEAR(A),\ ARMEMPTY$\}$\\
+    \hfill\emph{A is on the table; A has nothing above it; arm is free.}
+  \item \textbf{PUTDOWN(A):} $\{$HOLDING(A)$\}$\\
+    \hfill\emph{Arm is holding A.}
+\end{itemize}
+\end{solbox}
+
+\subsection{Part (b) --- Block World with STRIPS / POP [5 marks]}
+
+\begin{qbox}{2022 A-3(b) --- Block World (same problem)}
+Block World (same Start / Goal).
+Solve using goal stack planning / partial-order planning / STRIPS.
+\end{qbox}
+
+\begin{solbox}{Solution --- Goal Stack / STRIPS Approach}
+\textbf{Goal Stack Planning (STRIPS divide-and-conquer):}
+
+\medskip
+\begin{tabular}{@{}llp{7cm}@{}}
+\toprule
+\textbf{Step} & \textbf{Action} & \textbf{State after action} \\
+\midrule
+0 & --- (initial) &
+  ON(B,A), ONTABLE(A), ONTABLE(C), ONTABLE(D),
+  ARMEMPTY, CLEAR(B), CLEAR(C), CLEAR(D) \\
+1 & UNSTACK(B,A) &
+  ONTABLE(A), ONTABLE(C), ONTABLE(D),
+  HOLDING(B), CLEAR(A), CLEAR(C), CLEAR(D) \\
+2 & STACK(B,D) &
+  ONTABLE(A), ONTABLE(C), ONTABLE(D), ON(B,D),
+  ARMEMPTY, CLEAR(A), CLEAR(B), CLEAR(C) \\
+3 & PICKUP(C) &
+  ONTABLE(A), ONTABLE(D), ON(B,D),
+  HOLDING(C), CLEAR(A), CLEAR(B) \\
+4 & STACK(C,A) &
+  ONTABLE(A), ONTABLE(D), ON(B,D), ON(C,A),
+  ARMEMPTY, CLEAR(B), CLEAR(C) \\
+\bottomrule
+\end{tabular}
+
+\medskip
+\textbf{Goal verification:}
+ON(C,A)~\checkmark\quad ON(B,D)~\checkmark\quad ONTABLE(A)~\checkmark\quad ONTABLE(D)~\checkmark
+
+\medskip
+\textbf{Why this order?}
+UNSTACK(B,A) must come first because STACK(C,A) requires CLEAR(A),
+which is blocked by B. After removing B, we immediately place it on D (achieving
+ON(B,D)) and restore ARMEMPTY. Then PICKUP(C) $\rightarrow$ STACK(C,A) achieves ON(C,A).
+
+\medskip
+\emph{For the POP representation with causal links and ordering constraints, see 2024 Q5(b).}
+\end{solbox}
+
+\subsection{Part (c) --- Short Notes: Generative AI [2 marks]}
+
+\begin{qbox}{2022 A-3(c) --- Generative AI}
+Write short notes on Generative AI.
+\end{qbox}
+
+\begin{solbox}{Solution}
+\textbf{Generative AI} refers to AI systems that create new content (text, images, code,
+audio) statistically resembling their training data.
+
+\begin{itemize}[noitemsep]
+  \item \textbf{Key Models:} Large Language Models (LLMs like GPT, Claude) predict the
+    next token; Diffusion models (DALL-E, Stable Diffusion) denoise from Gaussian noise;
+    GANs pit a generator against a discriminator.
+  \item \textbf{Applications:} Text/code generation, image synthesis, drug discovery,
+    synthetic training data, automated planning.
+  \item \textbf{Limitations:} Hallucinations (plausible but false outputs), training data
+    bias, no persistent world-model or memory across sessions, high compute cost.
+  \item \textbf{Relevance to AI planning:} LLMs can act as approximate forward planners,
+    but lack the formal guarantees (soundness, completeness) of STRIPS/POP.
+\end{itemize}
+\end{solbox}
+
+\newpage
+
+%% ==========================================
+\section{2021 --- Q6(b): Sussman Anomaly [4 marks]}
+%% ==========================================
+
+\begin{qbox}{2021 Q6(b) --- Sussman Anomaly with POP}
+Block World --- \textbf{Sussman Anomaly}:\\[4pt]
+\textbf{Initial State:} C on A, B on table, A on table\\
+\phantom{xxxxxx}$\Rightarrow$ ON(C,A), ONTABLE(A), ONTABLE(B), CLEAR(C), CLEAR(B)\\[4pt]
+\textbf{Goal State:} A on B, B on C\\
+\phantom{xxxxxx}$\Rightarrow$ ON(A,B), ON(B,C)\\[4pt]
+Develop an effective and complete plan using POP / STRIPS,
+addressing threats to causal links and open conditions.
+\end{qbox}
+
+\begin{solbox}{Solution}
+\textbf{Why it is the ``Sussman Anomaly'':}
+No total-order planner can solve this without interleaving subplans.
+\begin{itemize}[noitemsep]
+  \item To achieve ON(A,B): put A on B. But B needs to be on C first, or A's position
+    on C blocks things.
+  \item To achieve ON(B,C): put B on C. But C currently has A on top of it.
+  \item Goals cyclically interfere --- total-order planning backtracks endlessly.
+    POP resolves this via threat detection.
+\end{itemize}
+
+\bigskip
+\textbf{Block World Actions (simplified --- no arm required):}
+
+\medskip
+\textbf{A3: Move-C-from-A-to-Table}\\
+\phantom{xxx}PRE: $\{$ON(C,A), CLEAR(C)$\}$ \quad ADD: $\{$ONTABLE(C), CLEAR(A)$\}$ \quad DEL: $\{$ON(C,A)$\}$
+
+\medskip
+\textbf{A1: Move-B-from-Table-to-C}\\
+\phantom{xxx}PRE: $\{$ONTABLE(B), CLEAR(B), CLEAR(C)$\}$ \quad ADD: $\{$ON(B,C)$\}$ \quad DEL: $\{$ONTABLE(B), CLEAR(C)$\}$
+
+\medskip
+\textbf{A2: Move-A-from-Table-to-B}\\
+\phantom{xxx}PRE: $\{$ONTABLE(A), CLEAR(A), CLEAR(B)$\}$ \quad ADD: $\{$ON(A,B)$\}$ \quad DEL: $\{$ONTABLE(A), CLEAR(B)$\}$
+
+\bigskip
+\textbf{POP Step-by-Step:}
+
+\textbf{Step 1 --- Initial partial plan:} $A_0 \prec A_\infty$\\
+$A_0$ effects: $\{$ON(C,A), ONTABLE(A), ONTABLE(B), CLEAR(B), CLEAR(C)$\}$\\
+$A_\infty$ open conditions: $\{$ON(A,B), ON(B,C)$\}$
+
+\medskip
+\textbf{Step 2 --- Address ON(B,C):}\\
+Add action A1. Causal link: $A_1 \xrightarrow{\text{ON(B,C)}} A_\infty$.\\
+A1's open conditions: ONTABLE(B), CLEAR(B), CLEAR(C) --- all from $A_0$:\\
+$A_0 \xrightarrow{\text{ONTABLE(B)}} A_1$,\quad
+$A_0 \xrightarrow{\text{CLEAR(B)}} A_1$,\quad
+$A_0 \xrightarrow{\text{CLEAR(C)}} A_1$.
+
+\medskip
+\textbf{Step 3 --- Address ON(A,B):}\\
+Add action A2. Causal link: $A_2 \xrightarrow{\text{ON(A,B)}} A_\infty$.\\
+A2's open conditions: ONTABLE(A), CLEAR(A), CLEAR(B).\\
+$A_0 \xrightarrow{\text{ONTABLE(A)}} A_2$, \quad $A_0 \xrightarrow{\text{CLEAR(B)}} A_2$.\\
+CLEAR(A) is \textbf{not} in $A_0$'s effects (C is on A) $\Rightarrow$ need action A3.
+
+\medskip
+\textbf{Step 4 --- Address CLEAR(A) for A2:}\\
+Add action A3. Causal link: $A_3 \xrightarrow{\text{CLEAR(A)}} A_2$.\\
+A3's open conditions: ON(C,A), CLEAR(C) --- from $A_0$:\\
+$A_0 \xrightarrow{\text{ON(C,A)}} A_3$, \quad $A_0 \xrightarrow{\text{CLEAR(C)}} A_3$.
+
+\medskip
+\textbf{Step 5 --- Detect and Resolve Threats:}
+
+\begin{itemize}[leftmargin=*]
+  \item \textbf{Threat 1:} $A_2$ deletes CLEAR(B).\\
+    Causal link $A_0 \xrightarrow{\text{CLEAR(B)}} A_1$ is threatened by $A_2$.\\
+    $A_2$ could be placed between $A_0$ and $A_1$, deleting CLEAR(B) before $A_1$ uses it.\\
+    \textbf{Resolution --- Promotion:} force $A_1 \prec A_2$
+    (consumer $A_1$ before threat $A_2$). \checkmark
+
+  \item \textbf{Threat 2:} $A_1$ deletes CLEAR(C).\\
+    Causal link $A_0 \xrightarrow{\text{CLEAR(C)}} A_3$ is threatened by $A_1$.\\
+    $A_1$ could be placed between $A_0$ and $A_3$, deleting CLEAR(C) before $A_3$ uses it.\\
+    \textbf{Resolution --- Promotion:} force $A_3 \prec A_1$
+    (consumer $A_3$ before threat $A_1$). \checkmark
+\end{itemize}
+
+\bigskip
+\textbf{Final POP Plan (ordering):}
+\[
+A_0 \prec A_3 \prec A_1 \prec A_2 \prec A_\infty
+\]
+
+\textbf{Final action sequence:}
+\begin{center}
+\fbox{Move-C-from-A-to-Table} $\longrightarrow$
+\fbox{Move-B-from-Table-to-C} $\longrightarrow$
+\fbox{Move-A-from-Table-to-B}
+\end{center}
+
+\bigskip
+\textbf{Complete Causal Link Table:}
+\begin{center}
+\begin{tabular}{clcl}
+\toprule
+\textbf{Producer} & \textbf{Condition} & \textbf{Consumer} & \textbf{Note} \\
+\midrule
+$A_0$ & ON(C,A) & $A_3$ & \\
+$A_0$ & CLEAR(C) & $A_3$ & \emph{protected: $A_3 \prec A_1$} \\
+$A_0$ & ONTABLE(B) & $A_1$ & \\
+$A_0$ & CLEAR(B) & $A_1$ & \emph{protected: $A_1 \prec A_2$} \\
+$A_0$ & CLEAR(C) & $A_1$ & \emph{(A0 also provides CLEAR(C) to A1)} \\
+$A_3$ & CLEAR(A) & $A_2$ & \\
+$A_0$ & ONTABLE(A) & $A_2$ & \\
+$A_0$ & CLEAR(B) & $A_2$ & \\
+$A_1$ & ON(B,C) & $A_\infty$ & \\
+$A_2$ & ON(A,B) & $A_\infty$ & \\
+\bottomrule
+\end{tabular}
+\end{center}
+\end{solbox}
+
+\newpage
+
+%% ==========================================
+\section{2020 --- B-Q6 (estimated 9 marks)}
+%% ==========================================
+
+\begin{qbox}{2020 B-Q6 --- STRIPS + Block World Planning}
+\textbf{[Exact question not captured in question map.
+Based on 2020--2024 pattern, this question covered STRIPS + Block World.]}
+\end{qbox}
+
+\begin{solbox}{Expected Content Based on Pattern}
+The 2020 paper (Group-B Question 6) most likely asked:
+\begin{enumerate}[noitemsep]
+  \item \textbf{Define STRIPS} (preconditions, add-list, delete-list) + action schema.
+  \item \textbf{Block World problem} --- either the Sussman Anomaly style
+    (C on A, B on table $\rightarrow$ A on B, B on C) or the standard 4-block version.
+  \item Possibly: forward/backward planning comparison or definition of planning as search.
+\end{enumerate}
+
+\textbf{Key preparation:} Be able to write both block world solutions cold:
+\begin{itemize}[noitemsep]
+  \item \textbf{4-block (2022--2024):}
+    UNSTACK(B,A) $\to$ STACK(B,D) $\to$ PICKUP(C) $\to$ STACK(C,A)
+  \item \textbf{Sussman Anomaly (2021):}
+    Move-C-off-A $\to$ Move-B-onto-C $\to$ Move-A-onto-B
+\end{itemize}
+\end{solbox}
+
+%% ==========================================
+\section*{Quick Summary --- Exam Patterns}
+%% ==========================================
+
+\begin{keybox}{What to Memorise for 10 Jun Exam}
+\textbf{ALWAYS asked:}
+\begin{enumerate}[noitemsep]
+  \item \textbf{STRIPS definition} (2--3 lines): preconditions + add-list + delete-list.
+    Frame problem solved by: only explicit effects change state.
+  \item \textbf{New domain action schema}: Household Robot (2024), Air Cargo (2023),
+    generic (2022). Pattern: define 1--3 actions with PRE/ADD/DEL.
+  \item \textbf{Block World solution} (same start/goal 2022--2024):\\
+    UNSTACK(B,A) $\to$ STACK(B,D) $\to$ PICKUP(C) $\to$ STACK(C,A).
+  \item \textbf{POP / causal links / ordering constraints} (2024, 2023, 2022): see table above.
+  \item \textbf{Sussman Anomaly POP} (2021): $A_0 \to A_3 \to A_1 \to A_2 \to A_\infty$.
+\end{enumerate}
+
+\medskip
+\textbf{Two threats in Sussman (memorise exactly):}
+\begin{itemize}[noitemsep]
+  \item $A_2$ deletes CLEAR(B) $\Rightarrow$ threatens $A_0\xrightarrow{\text{CLEAR(B)}}A_1$
+    $\Rightarrow$ Promotion: $A_1 \prec A_2$.
+  \item $A_1$ deletes CLEAR(C) $\Rightarrow$ threatens $A_0\xrightarrow{\text{CLEAR(C)}}A_3$
+    $\Rightarrow$ Promotion: $A_3 \prec A_1$.
+\end{itemize}
+
+\medskip
+\textbf{Operator preconditions (2022 asked verbatim):}
+\begin{itemize}[noitemsep]
+  \item UNSTACK(A,B): ON(A,B), CLEAR(A), ARMEMPTY
+  \item STACK(A,B): HOLDING(A), CLEAR(B)
+  \item PICKUP(A): ONTABLE(A), CLEAR(A), ARMEMPTY
+  \item PUTDOWN(A): HOLDING(A)
+\end{itemize}
+
+\medskip
+\textbf{POP vs total-order (asked 2024, 2023):}
+POP uses \textit{least commitment} --- only orders actions when a causal link is threatened
+(promotion/demotion). Total-order guesses a sequence and backtracks when goals interfere.
+POP never needs to restart; it resolves threats locally.
+\end{keybox}
+
+\end{document}

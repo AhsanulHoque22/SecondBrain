@@ -11,31 +11,40 @@ Date: 2026-06-10 (Wednesday) | Days left: 5 | Phase: Day 7 — Practice problems
 | Intelligent Agents + Environments (PAGE) | ✅ | 4 | 2026-06-05 |
 | Search: UCS, Greedy, A*, IDDFS — trace on graph | ✅ | 4 | 2026-06-05 |
 | Search: Problem Formulation | 🔁 | 4 | 2026-06-04 |
-| Alpha-Beta Pruning + Minimax | 📖 | — | pending (cold trace required) |
+| Alpha-Beta Pruning + Minimax | ✅ | 5 | 2026-06-07 |
 | Forward + Backward Chaining + Rule-Based System | ✅ | 5 | 2026-06-06 |
 | ↳ PL Basics: satisfiability, validity, Modus Ponens | ✅ | 5 | 2026-06-06 |
 | ↳ Resolution in PL: clause form (4-step), refutation | ✅ | 5 | 2026-06-06 |
-| FOL + Resolution + Inference | 🔲 | — | — |
-| STRIPS + Partial-Order Planning | 🔲 | — | — |
+| FOL + Resolution + Inference | ✅ | 5 | 2026-06-07 |
+| ↳ FOL Syntax, Translation, 9-step CFC, Resolution in FOL | ✅ | 5 | 2026-06-07 |
+| ↳ KR & Mapping roles, Evidential Reasoning | ✅ | 5 | 2026-06-07 |
+| STRIPS + Partial-Order Planning | ✅ | 5 | 2026-06-07 |
 | Bayes' Theorem + Bayesian Networks | 🔲 | — | — |
-| Hill Climbing + Simulated Annealing | 🔲 | — | — |
+| Hill Climbing + Simulated Annealing | ✅ | 5 | 2026-06-07 |
 | Neural Networks + Learning | 🔲 | — | — |
 | CSP | 🔲 | — | — |
 | Fuzzy Logic + Uncertainty | 🔲 | — | — |
 
 ## Carry-forward
-- Alpha-Beta Pruning + Minimax — still 📖, needs cold trace to reach ✅ (scheduled Jun 5 Block 6)
-
-## Recall due 2026-06-05
-- 🔁 Intelligent Agents + Environments (PAGE) — conf 4/5 ⚠️ overdue
-- 🔁 Search: UCS, Greedy, A*, IDDFS — conf 4/5 ⚠️ overdue
-- 🔁 Search: Problem Formulation — conf 4/5 ⚠️ overdue
+- None
 
 ## Recall due 2026-06-06
-- 🔁 Forward + Backward Chaining + Rule-Based System — conf 5/5 (first recall)
-- 🔁 PL Basics + Resolution in PL — conf 5/5 (first recall)
+- 🔁 FC/BC + Rule-Based System — conf 5/5
+- 🔁 PL Basics + Resolution in PL — conf 5/5
+
+## Recall due 2026-06-07
+- 🔁 Alpha-Beta Pruning + Minimax — conf 5/5
+- 🔁 FOL + Resolution + Inference (all sub-topics) — conf 5/5
+- 🔁 STRIPS + Partial-Order Planning — conf 5/5
+- 🔁 Hill Climbing + Simulated Annealing — conf 5/5
+
+## Still needed (🔲)
+- Bayes' Theorem + Bayesian Networks — 5/5 yield, 4–9 marks
+- Neural Networks + Learning — 5/5 yield, 7–9 marks
+- CSP — low yield
+- Fuzzy Logic + Uncertainty — low yield
 
 ## Recent pattern (last 3 days)
-- 2026-06-02: Alpha-Beta 📖 slides done — active recall pending
 - 2026-06-03: End-of-day log unfilled
-- 2026-06-04: ✅ FC/BC (conf 5) + PL Basics (conf 5) + Resolution PL (conf 5) — slides + past papers done
+- 2026-06-04: ✅ FC/BC + PL Basics + Resolution PL (conf 5 each)
+- 2026-06-05: ✅ STRIPS+POP + FOL+Resolution (all sub-topics) + Alpha-Beta + HC+SA (conf 5 each)

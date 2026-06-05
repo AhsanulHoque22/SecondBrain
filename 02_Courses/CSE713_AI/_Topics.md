@@ -8,20 +8,20 @@ Status: 🔲 not started · 📖 learning · 🔁 needs recall · ✅ can explai
 | Intelligent Agents + Environments (PAGE) | ✅ | 4 | 2026-06-01 | 2026-06-05 | 5/5 · 4–9 marks | Past paper practice done (2024/2022/2020 Q1) |
 | Search: UCS, Greedy, A*, IDDFS — trace on graph | ✅ | 4 | 2026-06-01 | 2026-06-05 | 5/5 · 5–6 marks | BFS/DFS/UCS/IDDFS + Greedy/A* all done. Past paper practice pending. |
 | Search: Problem Formulation (initial state, goal test, operators, path cost) | 🔁 | 4 | 2026-06-01 | 2026-06-04 | 5/5 · 2–3 marks | TSP, M&C, Water Jug, Robot Vacuum, Map Coloring, Monkey & Bananas — apply 4-part template cold |
-| Alpha-Beta Pruning + Minimax | 📖 | — | 2026-06-02 | — | 5/5 · 4–5 marks | Slides done. Active recall pending — cannot mark ✅ until cold trace passes. |
+| Alpha-Beta Pruning + Minimax | ✅ | 5 | 2026-06-05 | 2026-06-07 | 5/5 · 4–5 marks | Cold trace done. Past papers done. |
 | Forward + Backward Chaining + Rule-Based System | ✅ | 5 | 2026-06-04 | 2026-06-06 | 5/5 · 6–9 marks | R1–R5 example is verbatim every year — memorise it |
-| FOL + Resolution + Inference (Marcus/Pompeii) | 🔲 | — | — | — | 5/5 · 7–8 marks | Same facts set 2020–2022; 2023/2024 use FOL for robots/drones |
+| FOL + Resolution + Inference (Marcus/Pompeii) | ✅ | 5 | 2026-06-05 | 2026-06-07 | 5/5 · 7–8 marks | Marcus/Pompeii + FOL translation + 9-step CFC + resolution done. Past papers done. |
 | ↳ PL Basics: satisfiability, validity, entailment, Modus Ponens | ✅ | 5 | 2026-06-04 | 2026-06-06 | 4/5 · 2 marks | Sat/valid check 2021 Q4c; algorithm asked 2022 A-2a |
 | ↳ Resolution in PL: clause form (4-step), refutation proof | ✅ | 5 | 2026-06-04 | 2026-06-06 | 5/5 · 2–3 marks | Wumpus KB 2021 Q4d; 9-step algo asked every year |
-| ↳ FOL Syntax: Terms, Predicates, Functions, ∀, ∃, Sentences | 🔲 | — | — | — | 5/5 · 1–2 marks | "FOL generalization of PL" asked in 2021 Q5a, 2017, 2016 |
-| ↳ FOL Translation (car/drone/robot scenario) | 🔲 | — | — | — | 5/5 · 4–5 marks | 2023 Q4a (car), 2023 Q4b (drone) — declare predicates FIRST |
-| ↳ Canonical Form Conversion (9-step algorithm) | 🔲 | — | — | — | 5/5 · 1.5–2.5 marks | Required in every resolution proof; asked directly in 2022/2016 |
-| ↳ Resolution in FOL: Unification, Skolemization, refutation | 🔲 | — | — | — | 5/5 · 2–3 marks | Perfect Square 2021/2024; Marcus 2020/2022 — same proof each time |
-| ↳ Knowledge Representation and Mapping (roles) | 🔲 | — | — | — | 3/5 · 1.5 marks | 2022 A-2c; 2016 Q3a — 5 roles: surrogate/ontological/inferential/expressivity/efficiency |
-| ↳ Evidential Reasoning (ER): Dempster-Shafer, degree of belief | 🔲 | — | — | — | 3/5 · 2 marks | 2024 Q4a,b — Dempster's rule, Bel vs Pl, conflict factor K |
+| ↳ FOL Syntax: Terms, Predicates, Functions, ∀, ∃, Sentences | ✅ | 5 | 2026-06-05 | 2026-06-07 | 5/5 · 1–2 marks | "FOL generalization of PL" asked in 2021 Q5a, 2017, 2016 |
+| ↳ FOL Translation (car/drone/robot scenario) | ✅ | 5 | 2026-06-05 | 2026-06-07 | 5/5 · 4–5 marks | 2023 Q4a (car), 2023 Q4b (drone) — declare predicates FIRST |
+| ↳ Canonical Form Conversion (9-step algorithm) | ✅ | 5 | 2026-06-05 | 2026-06-07 | 5/5 · 1.5–2.5 marks | Required in every resolution proof; asked directly in 2022/2016 |
+| ↳ Resolution in FOL: Unification, Skolemization, refutation | ✅ | 5 | 2026-06-05 | 2026-06-07 | 5/5 · 2–3 marks | Perfect Square 2021/2024; Marcus 2020/2022 — same proof each time |
+| ↳ Knowledge Representation and Mapping (roles) | ✅ | 5 | 2026-06-05 | 2026-06-07 | 3/5 · 1.5 marks | 2022 A-2c; 2016 Q3a — 5 roles: surrogate/ontological/inferential/expressivity/efficiency |
+| ↳ Evidential Reasoning (ER): Dempster-Shafer, degree of belief | ✅ | 5 | 2026-06-05 | 2026-06-07 | 3/5 · 2 marks | 2024 Q4a,b — Dempster's rule, Bel vs Pl, conflict factor K |
 | STRIPS + Partial-Order Planning (Block World) | ✅ | 5 | 2026-06-05 | 2026-06-07 | 5/5 · 8–9 marks | Slides read, wiki + solutions PDF done. Sussman + 4-block POP fully solved. Past papers done 2020–2024. |
 | Bayes' Theorem + Bayesian Networks | 🔲 | — | — | — | 5/5 · 4–9 marks | Numerical: compute P(E), posteriors, joint distribution |
-| Hill Climbing + Simulated Annealing | 🔲 | — | — | — | 5/5 · 4 marks | 3 limitations of HC; SA as escape mechanism |
+| Hill Climbing + Simulated Annealing | ✅ | 5 | 2026-06-05 | 2026-06-07 | 5/5 · 4 marks | 3 limitations of HC; SA as escape mechanism |
 | Neural Networks + Learning | 🔲 | — | — | — | 5/5 · 7–9 marks | Section B; ANN vs biological; backprop |
 | CSP (map coloring, cryptarithmetic) | 🔲 | — | — | — | 4/5 · 1–3 marks | Small marks; don't over-invest |
 | Fuzzy Logic + Uncertainty | 🔲 | — | — | — | 4/5 · 2–3 marks | Short notes only needed |

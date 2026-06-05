@@ -4,8 +4,8 @@
 
 ## Right now
 - **Active exam:** CSE 713 — Artificial Intelligence — **Wed 10 Jun 2026, 10:30 AM**
-- **Days left:** 5
-- **Phase:** AI Day 7 — 2 topics left (Bayes + Neural Networks), then pure revision
+- **Days left:** 4
+- **Phase:** AI Day 8 — Last learning day: Bayes + NN. Mon–Tue = pure revision sprint.
 - **Single most important thing today:** Bayes' Theorem + Bayesian Networks — 4–9 marks, appears every year.
 - **⚠️ Rule:** Google Calendar is the ONLY source of truth for daily plans. Never use the overnight rollover log for scheduling.
 - **🔴 Session protocols:** Read and execute `scripts/data/session_protocols.md` at EVERY session start. No exceptions.
@@ -37,7 +37,7 @@ Prayers structure the day — each gap is a study block:
 ## Status board (Claude updates)
 | Course | Topics mapped | High-yield done | Past paper attempts | Confidence /5 |
 |--------|:-:|:-:|:-:|:-:|
-| [[02_Courses/CSE713_AI/_Topics\|AI (713)]] | ✅ mapped (11 topics) | ✅ 11/11 done · 🔲 Bayes + NN remaining | ✅ past papers done per topic | 5.0 |
+| [[02_Courses/CSE713_AI/_Topics\|AI (713)]] | ✅ mapped (20 topics) | ✅ 15✅ · 1🔁 · 🔲 Bayes + NN remaining | ✅ past papers done per topic | 4.9 |
 | [[02_Courses/CSE717_InfoSec/README\|InfoSec (717)]] | – | – | – | – |
 | [[02_Courses/CSE711_Compiler/README\|Compiler (711)]] | – | – | – | – |
 | [[02_Courses/CSE719_Distributed/README\|Distributed (719)]] | – | – | – | – |

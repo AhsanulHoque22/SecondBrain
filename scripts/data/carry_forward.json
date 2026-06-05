@@ -1,7 +1,6 @@
 {
   "topics": [
-    "Alpha-Beta Pruning + Minimax — still at 📖, needs cold trace to reach ✅",
-    "Forward + Backward Chaining + Rule-Based System — planned for 2026-06-03/04, completion unconfirmed (log blank both days)"
+    "Search: Problem Formulation — 🔁 recall overdue since 2026-06-04 (Next Recall was 2026-06-04)"
   ],
-  "last_updated": "2026-06-04"
+  "last_updated": "2026-06-05"
 }

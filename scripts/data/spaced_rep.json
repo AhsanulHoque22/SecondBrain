@@ -1,5 +1,33 @@
 {
   "CSE713_AI": {
+    "Alpha-Beta Pruning + Minimax": {
+      "confidence": 5,
+      "first_done": "2026-06-05",
+      "last_reviewed": "2026-06-05",
+      "next_recall": "2026-06-07",
+      "recall_count": 0
+    },
+    "FOL + Resolution + Inference (Marcus/Pompeii)": {
+      "confidence": 5,
+      "first_done": "2026-06-05",
+      "last_reviewed": "2026-06-05",
+      "next_recall": "2026-06-07",
+      "recall_count": 0
+    },
+    "Forward + Backward Chaining + Rule-Based System": {
+      "confidence": 5,
+      "first_done": "2026-06-04",
+      "last_reviewed": "2026-06-04",
+      "next_recall": "2026-06-06",
+      "recall_count": 0
+    },
+    "Hill Climbing + Simulated Annealing": {
+      "confidence": 5,
+      "first_done": "2026-06-05",
+      "last_reviewed": "2026-06-05",
+      "next_recall": "2026-06-07",
+      "recall_count": 0
+    },
     "Intelligent Agents + Environments (PAGE)": {
       "confidence": 4,
       "first_done": "2026-06-01",
@@ -7,11 +35,74 @@
       "next_recall": "2026-06-03",
       "recall_count": 0
     },
+    "STRIPS + Partial-Order Planning (Block World)": {
+      "confidence": 5,
+      "first_done": "2026-06-05",
+      "last_reviewed": "2026-06-05",
+      "next_recall": "2026-06-07",
+      "recall_count": 0
+    },
     "Search: UCS, Greedy, A, IDDFS \u2014 trace on graph": {
       "confidence": 4,
       "first_done": "2026-06-01",
       "last_reviewed": "2026-06-01",
       "next_recall": "2026-06-03",
+      "recall_count": 0
+    },
+    "\u21b3 Canonical Form Conversion (9-step algorithm)": {
+      "confidence": 5,
+      "first_done": "2026-06-05",
+      "last_reviewed": "2026-06-05",
+      "next_recall": "2026-06-07",
+      "recall_count": 0
+    },
+    "\u21b3 Evidential Reasoning (ER): Dempster-Shafer, degree of belief": {
+      "confidence": 5,
+      "first_done": "2026-06-05",
+      "last_reviewed": "2026-06-05",
+      "next_recall": "2026-06-07",
+      "recall_count": 0
+    },
+    "\u21b3 FOL Syntax: Terms, Predicates, Functions, \u2200, \u2203, Sentences": {
+      "confidence": 5,
+      "first_done": "2026-06-05",
+      "last_reviewed": "2026-06-05",
+      "next_recall": "2026-06-07",
+      "recall_count": 0
+    },
+    "\u21b3 FOL Translation (car/drone/robot scenario)": {
+      "confidence": 5,
+      "first_done": "2026-06-05",
+      "last_reviewed": "2026-06-05",
+      "next_recall": "2026-06-07",
+      "recall_count": 0
+    },
+    "\u21b3 Knowledge Representation and Mapping (roles)": {
+      "confidence": 5,
+      "first_done": "2026-06-05",
+      "last_reviewed": "2026-06-05",
+      "next_recall": "2026-06-07",
+      "recall_count": 0
+    },
+    "\u21b3 PL Basics: satisfiability, validity, entailment, Modus Ponens": {
+      "confidence": 5,
+      "first_done": "2026-06-04",
+      "last_reviewed": "2026-06-04",
+      "next_recall": "2026-06-06",
+      "recall_count": 0
+    },
+    "\u21b3 Resolution in FOL: Unification, Skolemization, refutation": {
+      "confidence": 5,
+      "first_done": "2026-06-05",
+      "last_reviewed": "2026-06-05",
+      "next_recall": "2026-06-07",
+      "recall_count": 0
+    },
+    "\u21b3 Resolution in PL: clause form (4-step), refutation proof": {
+      "confidence": 5,
+      "first_done": "2026-06-04",
+      "last_reviewed": "2026-06-04",
+      "next_recall": "2026-06-06",
       "recall_count": 0
     }
   }

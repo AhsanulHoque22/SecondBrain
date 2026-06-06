@@ -1,0 +1,715 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[top=2.5cm,bottom=2.5cm,left=2.5cm,right=2.5cm,headheight=15pt]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs,array,longtable,tabularx,multirow}
+\usepackage{xcolor}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{mdframed}
+\usepackage{tcolorbox}
+\tcbuselibrary{skins,breakable}
+\usepackage{hyperref}
+
+%% ---- Colors ----
+\definecolor{planblue}{RGB}{0,82,165}
+\definecolor{lightblue}{RGB}{220,235,255}
+\definecolor{darkorange}{RGB}{180,70,0}
+\definecolor{lightorange}{RGB}{255,235,210}
+\definecolor{darkgreen}{RGB}{20,110,20}
+\definecolor{lightgreen}{RGB}{200,240,205}
+\definecolor{darkred}{RGB}{150,20,20}
+\definecolor{lightred}{RGB}{255,210,210}
+\definecolor{lightgray}{RGB}{242,242,242}
+
+%% ---- tcolorbox styles ----
+\newtcolorbox{qbox}[2][]{enhanced,breakable,
+  colback=lightorange,colframe=darkorange,arc=4pt,
+  title={\textbf{#2}},fonttitle=\bfseries\color{white},
+  attach boxed title to top left={yshift=-2mm,xshift=4mm},
+  boxed title style={colback=darkorange,arc=3pt},#1}
+
+\newtcolorbox{solbox}[2][]{enhanced,breakable,
+  colback=lightblue,colframe=planblue,arc=4pt,
+  title={\textbf{#2}},fonttitle=\bfseries\color{white},
+  attach boxed title to top left={yshift=-2mm,xshift=4mm},
+  boxed title style={colback=planblue,arc=3pt},#1}
+
+\newtcolorbox{keybox}[2][]{enhanced,breakable,
+  colback=lightgreen,colframe=darkgreen,arc=4pt,
+  title={\textbf{#2}},fonttitle=\bfseries\color{white},
+  attach boxed title to top left={yshift=-2mm,xshift=4mm},
+  boxed title style={colback=darkgreen,arc=3pt},#1}
+
+\newtcolorbox{warnbox}[2][]{enhanced,breakable,
+  colback=lightred,colframe=darkred,arc=4pt,
+  title={\textbf{#2}},fonttitle=\bfseries\color{white},
+  attach boxed title to top left={yshift=-2mm,xshift=4mm},
+  boxed title style={colback=darkred,arc=3pt},#1}
+
+%% ---- Page style ----
+\pagestyle{fancy}\fancyhf{}
+\lhead{\color{planblue}\textbf{Reasoning with Uncertainty --- CSE 713 AI}}
+\rhead{\color{darkorange}Past Papers 2020--2024}
+\cfoot{\thepage}
+
+%% ---- Section style ----
+\titleformat{\section}{\Large\bfseries\color{planblue}}{}{0em}{}[\titlerule]
+\titleformat{\subsection}{\large\bfseries\color{darkorange}}{}{0em}{}
+
+\hypersetup{colorlinks=true,linkcolor=planblue,urlcolor=planblue}
+
+%% ---- Title ----
+\title{\color{planblue}\Huge\bfseries Reasoning with Uncertainty\\[0.4em]
+  \Large Bayes' Theorem + Bayesian Networks\\[0.2em]
+  \normalsize Past Paper Questions \& Solutions (2020--2024)\\[0.2em]
+  \normalsize CSE 713 Artificial Intelligence}
+\author{Study Notes --- June 2026}
+\date{}
+
+\begin{document}
+\maketitle
+\tableofcontents
+\newpage
+
+%% ===================================================
+\section*{Exam Pattern Summary}
+\addcontentsline{toc}{section}{Exam Pattern Summary}
+%% ===================================================
+
+\begin{keybox}{Key Exam Facts}
+\begin{itemize}[noitemsep]
+  \item \textbf{Yield:} 5/5 years, 4--9 marks per year (Group B, Q7 or Q8)
+  \item \textbf{Pattern A --- Bayes' Theorem:} compute $P(E)$, posteriors $P(H_i|E)$, most likely cause
+  \item \textbf{Pattern B --- BN joint distribution:} express $P(B,E,A,J,M)$, compute specific scenario
+  \item \textbf{Recurring topology:} \{Fire/Burglary, Earthquake\} $\to$ Alarm $\to$ \{Caller1, Caller2\}
+  \item \textbf{Key formula:} $P(H_i|E) = \dfrac{P(E|H_i)\cdot P(H_i)}{\sum_{k=1}^{K} P(E|H_k)\cdot P(H_k)}$
+  \item \textbf{BN joint:} $P(X_1,\ldots,X_n) = \prod_i P(X_i|\text{Parents}(X_i))$
+\end{itemize}
+\end{keybox}
+
+\begin{warnbox}{2022 WARNING --- CPT values look wrong but are correct for that paper}
+2022 B-3d has P(A$|$F=T,E=T)=0.05 (alarm less likely when BOTH fire AND earthquake). This unusual CPT is verbatim from the exam paper. Use as given.\\
+2023 Q7b uses P(F)=0.4, P(E)=0.6 (NOT 0.004/0.003 --- those are 2022 values).
+\end{warnbox}
+
+\newpage
+%% ===================================================
+\section{2024 --- Q7 (9 marks total)}
+%% ===================================================
+
+\subsection{Q7a --- Robot Vacuum Bayesian Network (4 marks)}
+
+\begin{qbox}{2024 Q7a}
+A robot vacuum cleaner suddenly stops working (Evidence $E$). There are three possible hypotheses:
+\begin{itemize}[noitemsep]
+  \item $H_1$: Battery is low \quad $P(H_1)=0.5$, \quad $P(E|H_1)=0.7$
+  \item $H_2$: Dust bin is full \quad $P(H_2)=0.3$, \quad $P(E|H_2)=0.8$
+  \item $H_3$: Motor is overheated \quad $P(H_3)=0.2$, \quad $P(E|H_3)=0.9$
+\end{itemize}
+\begin{enumerate}
+  \item Compute $P(E)$, the total probability that the robot stops working.
+  \item Calculate the posterior probabilities $P(H_1|E)$, $P(H_2|E)$, $P(H_3|E)$.
+  \item Identify the most likely cause of stopping.
+  \item Justify your answer.
+\end{enumerate}
+\end{qbox}
+
+\begin{solbox}{Solution}
+\textbf{Step 1: Compute $P(E)$ using Total Probability:}
+\[
+P(E) = \sum_{i=1}^{3} P(E|H_i)\cdot P(H_i)
+     = (0.7)(0.5) + (0.8)(0.3) + (0.9)(0.2)
+     = 0.35 + 0.24 + 0.18 = \boxed{0.77}
+\]
+
+\textbf{Step 2: Compute posteriors using Extended Bayes' Theorem:}
+\[
+P(H_i|E) = \frac{P(E|H_i)\cdot P(H_i)}{P(E)}
+\]
+\begin{align*}
+P(H_1|E) &= \frac{0.7 \times 0.5}{0.77} = \frac{0.35}{0.77} \approx \boxed{0.4545}\\[4pt]
+P(H_2|E) &= \frac{0.8 \times 0.3}{0.77} = \frac{0.24}{0.77} \approx \boxed{0.3117}\\[4pt]
+P(H_3|E) &= \frac{0.9 \times 0.2}{0.77} = \frac{0.18}{0.77} \approx \boxed{0.2338}
+\end{align*}
+\textit{Sanity check:} $0.4545 + 0.3117 + 0.2338 = 1.000$ \checkmark
+
+\textbf{Step 3 \& 4: Most likely cause and justification:}\\
+$H_1$ (Battery is low) is the most likely cause with posterior probability $\approx 45.45\%$.\\
+Although $H_3$ has the highest likelihood $P(E|H_3)=0.9$, the strong prior $P(H_1)=0.5$ makes $H_1$ dominate after combining both prior and likelihood via Bayes' theorem.
+\end{solbox}
+
+\subsection{Q7b --- Challenges in Bayesian Decision Theory (2 marks)}
+
+\begin{qbox}{2024 Q7b}
+Identify and discuss the challenges in Bayesian decision theory.
+\end{qbox}
+
+\begin{solbox}{Solution}
+Bayesian decision theory faces several key challenges:
+\begin{enumerate}
+  \item \textbf{Prior elicitation:} Specifying accurate prior probability distributions is difficult. For $n$ binary variables, a complete joint distribution requires $2^n$ entries — exponential growth. Expert elicitation is subjective and error-prone.
+  \item \textbf{Computational intractability:} Exact inference in general Bayesian Networks is NP-hard. Inference scales poorly with network size, necessitating approximate methods (MCMC, variational inference).
+  \item \textbf{Sensitivity to priors:} Results can vary significantly with different prior specifications, especially with limited training data. This subjectivity undermines objectivity of decisions.
+  \item \textbf{Conditional independence assumptions:} The BN structure encodes strong independence assumptions that may not hold in real-world domains, leading to incorrect probability estimates.
+  \item \textbf{Data requirements:} Learning accurate CPTs requires large amounts of training data. With sparse data, parameter estimates are unreliable.
+\end{enumerate}
+\end{solbox}
+
+\subsection{Q7c --- Evolutionary Method (3 marks)}
+
+\begin{qbox}{2024 Q7c}
+Describe the evolutionary method with an appropriate example.
+\end{qbox}
+
+\begin{solbox}{Solution}
+\textbf{Evolutionary Algorithms (EAs)} are population-based metaheuristic search methods inspired by biological evolution (natural selection, genetics).
+
+\textbf{Key Components:}
+\begin{itemize}[noitemsep]
+  \item \textbf{Population:} A set of candidate solutions (individuals/chromosomes)
+  \item \textbf{Fitness function:} Evaluates the quality of each individual (higher = better solution)
+  \item \textbf{Selection:} Choose fitter individuals for reproduction (survival of the fittest)
+  \item \textbf{Crossover:} Combine two parent chromosomes to produce offspring (exploration)
+  \item \textbf{Mutation:} Random small changes to maintain diversity and avoid premature convergence
+\end{itemize}
+
+\textbf{Example --- Genetic Algorithm for Robot Path Planning:}
+\begin{itemize}[noitemsep]
+  \item \textit{Encoding:} Chromosome = sequence of waypoints, e.g.\ $[\text{A},\text{B},\text{D},\text{G}]$
+  \item \textit{Fitness:} Inverse of total path length (shorter path $\to$ higher fitness)
+  \item \textit{Selection:} Tournament selection --- compare 2 random individuals, keep the better
+  \item \textit{Crossover:} Single-point crossover of two path sequences to create new routes
+  \item \textit{Mutation:} Randomly swap two waypoints with small probability (e.g.\ 0.01)
+  \item \textit{Termination:} After $N$ generations, output chromosome with highest fitness
+\end{itemize}
+After many generations, the algorithm converges to a near-optimal path through the environment.
+\end{solbox}
+
+\newpage
+%% ===================================================
+\section{2023 --- Q7 (9 marks total)}
+%% ===================================================
+
+\subsection{Q7a --- Three Bayes' Theorem Problems (3 marks)}
+
+\begin{qbox}{2023 Q7a}
+Solve the following Bayes' Theorem problems:
+\begin{enumerate}[label=(\roman*)]
+  \item \textbf{Factory:} A factory has Machine A (produces 60\% of items, 3\% defect rate) and Machine B (produces 40\%, 5\% defect rate). A product is found defective. What is $P(\text{Machine A} \mid \text{defective})$?
+  \item \textbf{Medical Test:} A test is 98\% accurate. Disease prevalence is 1\%. A patient tests positive. What is $P(\text{disease} \mid \text{positive})$?
+  \item \textbf{Spam Filter:} Prior $P(\text{spam})=0.20$. $P(\text{``offer''} \mid \text{spam})=0.80$, $P(\text{``offer''} \mid \neg\text{spam})=0.10$. Find $P(\text{spam} \mid \text{contains ``offer''})$.
+\end{enumerate}
+\end{qbox}
+
+\begin{solbox}{Solution}
+
+\textbf{(i) Factory Problem:}\\
+Let $A$ = Machine A, $B$ = Machine B, $d$ = defective.
+\[
+P(d) = P(d|A)\cdot P(A) + P(d|B)\cdot P(B) = (0.03)(0.6) + (0.05)(0.4) = 0.018 + 0.020 = 0.038
+\]
+\[
+P(A \mid d) = \frac{P(d \mid A)\cdot P(A)}{P(d)} = \frac{0.018}{0.038} \approx \boxed{0.4737}
+\]
+Probability the defective item came from Machine A $\approx 47.37\%$.
+
+\medskip
+\textbf{(ii) Medical Test:}\\
+$P(D)=0.01$, $P(+|D)=0.98$, $P(+|\neg D)=1-0.98=0.02$ (false positive rate).
+\[
+P(+) = (0.98)(0.01) + (0.02)(0.99) = 0.0098 + 0.0198 = 0.0296
+\]
+\[
+P(D \mid +) = \frac{P(+|D)\cdot P(D)}{P(+)} = \frac{0.0098}{0.0296} \approx \boxed{0.3311}
+\]
+Only $\approx 33.1\%$ chance of actually having disease despite positive test --- base rate matters!
+
+\medskip
+\textbf{(iii) Spam Filter:}
+\[
+P(\text{``offer''}) = (0.80)(0.20) + (0.10)(0.80) = 0.16 + 0.08 = 0.24
+\]
+\[
+P(\text{spam} \mid \text{``offer''}) = \frac{(0.80)(0.20)}{0.24} = \frac{0.16}{0.24} = \frac{2}{3} \approx \boxed{0.6667}
+\]
+\end{solbox}
+
+\subsection{Q7b --- Alarm Bayesian Network (6 marks)}
+
+\begin{warnbox}{CORRECTED Values for 2023 Q7b}
+The 2023 paper uses P(F)=\textbf{0.4}, P(E)=\textbf{0.6}. The values 0.004/0.003 belong to the 2022 paper (Yakin/Samin network). Verified from original exam paper.
+\end{warnbox}
+
+\begin{qbox}{2023 Q7b}
+A Bayesian Network models a home alarm system. Nodes: Fire (F), Earthquake (E), Alarm (A), Mr.\ X calls (X), Mr.\ Y calls (Y). The network topology is: $F \to A \leftarrow E$, $A \to X$, $A \to Y$.\\[4pt]
+Given probabilities:
+\begin{itemize}[noitemsep]
+  \item $P(F)=0.4$, \quad $P(E)=0.6$
+  \item $P(A|F,E)$: $\{TT: 0.95,\ TF: 0.90,\ FT: 0.60,\ FF: 0.01\}$
+  \item $P(X|A)$: $\{T: 0.80,\ F: 0.10\}$, \quad $P(Y|A)$: $\{T: 0.70,\ F: 0.20\}$
+\end{itemize}
+\begin{enumerate}[label=(\roman*)]
+  \item Express the full joint distribution $P(F,E,A,X,Y)$.
+  \item Compute $P(A=T,\, F=F,\, E=F,\, X=T,\, Y=T)$.
+  \item Compute $P(A=T,\, F=T,\, E=F,\, X=T,\, Y=T)$.
+\end{enumerate}
+\end{qbox}
+
+\begin{solbox}{Solution}
+
+\textbf{(i) Joint Distribution (Chain Rule of BN):}
+\[
+P(F,E,A,X,Y) = P(F)\cdot P(E)\cdot P(A \mid F,E)\cdot P(X \mid A)\cdot P(Y \mid A)
+\]
+
+\textbf{(ii) Alarm sounds, no fire, no earthquake, both X and Y call:}
+\begin{align*}
+&P(A{=}T,\,F{=}F,\,E{=}F,\,X{=}T,\,Y{=}T)\\
+&= P(F{=}F)\cdot P(E{=}F)\cdot P(A{=}T|F{=}F,E{=}F)\cdot P(X{=}T|A{=}T)\cdot P(Y{=}T|A{=}T)\\
+&= (1-0.4)\cdot(1-0.6)\cdot 0.01 \cdot 0.80 \cdot 0.70\\
+&= 0.6 \times 0.4 \times 0.01 \times 0.80 \times 0.70\\
+&= 0.24 \times 0.01 \times 0.56 = \boxed{0.001344}
+\end{align*}
+
+\textbf{(iii) Alarm sounds, fire occurred, no earthquake, both X and Y call:}
+\begin{align*}
+&P(A{=}T,\,F{=}T,\,E{=}F,\,X{=}T,\,Y{=}T)\\
+&= P(F{=}T)\cdot P(E{=}F)\cdot P(A{=}T|F{=}T,E{=}F)\cdot P(X{=}T|A{=}T)\cdot P(Y{=}T|A{=}T)\\
+&= 0.4 \times 0.4 \times 0.90 \times 0.80 \times 0.70\\
+&= 0.16 \times 0.90 \times 0.56 = 0.16 \times 0.504 = \boxed{0.08064}
+\end{align*}
+\end{solbox}
+
+\newpage
+%% ===================================================
+\section{2022 --- B-3d (3 marks)}
+%% ===================================================
+
+\begin{qbox}{2022 B-3d --- Alarm Network (Yakin \& Samin)}
+A Bayesian Network: Fire(F), Earthquake(E), Alarm(A), Yakin calls(Y), Samin calls(S).\\
+Topology: $F \to A \leftarrow E$, $A \to Y$, $A \to S$.\\[4pt]
+Given:
+\begin{itemize}[noitemsep]
+  \item $P(F)=0.004$, \quad $P(E)=0.003$
+  \item $P(A|F,E)$: $\{TT: 0.05,\ TF: 0.94,\ FT: 0.29,\ FF: 0.001\}$
+  \item $P(Y|A)$: $\{T: 0.90,\ F: 0.05\}$, \quad $P(S|A)$: $\{T: 0.80,\ F: 0.01\}$
+\end{itemize}
+\begin{enumerate}[label=(\roman*)]
+  \item Express the joint probability distribution $P(F,E,A,Y,S)$.
+  \item Compute $P(A=T,\, F=F,\, E=F,\, Y=T,\, S=T)$.
+  \item Compute $P(A=T,\, F=T,\, E=F,\, Y=T,\, S=T)$.
+\end{enumerate}
+\end{qbox}
+
+\begin{solbox}{Solution}
+
+\textbf{(i) Joint Distribution:}
+\[
+P(F,E,A,Y,S) = P(F)\cdot P(E)\cdot P(A \mid F,E)\cdot P(Y \mid A)\cdot P(S \mid A)
+\]
+
+\textbf{(ii) Alarm sounds, no fire, no earthquake, both Y and S call:}
+\begin{align*}
+&P(A{=}T,\,F{=}F,\,E{=}F,\,Y{=}T,\,S{=}T)\\
+&= (1-0.004)\cdot(1-0.003)\cdot P(A{=}T|FF)\cdot P(Y{=}T|A{=}T)\cdot P(S{=}T|A{=}T)\\
+&= 0.996 \times 0.997 \times 0.001 \times 0.90 \times 0.80\\
+&= 0.993012 \times 0.001 \times 0.72 = 0.993012 \times 0.00072 \approx \boxed{7.15 \times 10^{-4}}
+\end{align*}
+
+\textbf{(iii) Alarm sounds, fire occurred, no earthquake, both Y and S call:}
+\begin{align*}
+&P(A{=}T,\,F{=}T,\,E{=}F,\,Y{=}T,\,S{=}T)\\
+&= 0.004 \times (1-0.003) \times P(A{=}T|TF) \times P(Y{=}T|A{=}T) \times P(S{=}T|A{=}T)\\
+&= 0.004 \times 0.997 \times 0.94 \times 0.90 \times 0.80\\
+&= 0.003988 \times 0.94 \times 0.72 = 0.003749 \times 0.72 \approx \boxed{2.70 \times 10^{-3}}
+\end{align*}
+\end{solbox}
+
+\newpage
+%% ===================================================
+\section{2021 --- Q7 (8.75 marks total)}
+%% ===================================================
+
+\subsection{Q7a --- Concept of Uncertainty (2.75 marks)}
+
+\begin{qbox}{2021 Q7a}
+Explain the concept of uncertainty using the doorbell-at-midnight example. The doorbell rang at 12 o'clock midnight.
+\begin{itemize}[noitemsep]
+  \item Was someone at the door?
+  \item Did Karim wake up?
+\end{itemize}
+Propositions: Prop1: $\text{AtDoor}(x) \to \text{Doorbell}$; \quad Prop2: $\text{Doorbell} \to \text{Wake(Karim)}$
+\end{qbox}
+
+\begin{solbox}{Solution}
+\textbf{Question 1 --- Was someone at the door?}\\
+This requires abductive reasoning: since Doorbell occurred, conclude $\text{AtDoor}(x)$ via Prop1.\\
+\textit{Problem:} Prop1 is \textbf{incomplete}. The doorbell might ring due to:
+\begin{itemize}[noitemsep,topsep=2pt]
+  \item Electrical malfunction, wind pressure, an animal, a faulty switch
+  \item The list of possible causes is effectively \textbf{infinite}
+\end{itemize}
+Conclusion: We \textbf{cannot} conclude with certainty that someone was at the door.
+
+\medskip
+\textbf{Question 2 --- Did Karim wake up?}\\
+This requires deductive reasoning: Doorbell $\to$ Wake(Karim) via Prop2.\\
+\textit{Problem:} Prop2 is \textbf{not a tautology}. Karim may not wake up if:
+\begin{itemize}[noitemsep,topsep=2pt]
+  \item He is in deep sleep, wearing earplugs, or is away from home
+\end{itemize}
+Conclusion: We \textbf{cannot} conclude with certainty that Karim woke up.
+
+\medskip
+\textbf{Sources of uncertainty demonstrated:}
+\begin{itemize}[noitemsep]
+  \item \textit{Incomplete propositions} (Prop1 has infinite possible antecedents)
+  \item \textit{Non-tautological implications} (Prop2 holds ``often'' but not always)
+  \item \textit{Uncertain conclusions} from both abductive and deductive reasoning
+\end{itemize}
+The solution: model uncertainty explicitly using probabilities (Bayesian approach).
+\end{solbox}
+
+\subsection{Q7b --- Why Deductive \& Abductive Reasoning Are Not Sound (2.5 marks)}
+
+\begin{qbox}{2021 Q7b}
+Explain why deductive and abductive (adductive) reasoning are not sound. What is the source of uncertainty in such reasoning?
+\end{qbox}
+
+\begin{solbox}{Solution}
+\textbf{Deductive reasoning is not always sound because:}\\
+The KB (knowledge base) is a \textit{restricted, simplified model} of the real world. Even if the deduction is formally valid within the model, it may be wrong in reality because:
+\begin{itemize}[noitemsep]
+  \item The model may be incomplete or incorrect
+  \item Propositions assumed universally true may have exceptions
+  \item Example: ``Doorbell $\to$ Wake(Karim)'' leads to a deductively valid conclusion, but the real-world proposition has exceptions (deep sleep, absent, etc.)
+\end{itemize}
+
+\textbf{Abductive reasoning is not sound because:}\\
+It commits the logical fallacy of \textbf{affirming the consequent}:
+\[P \to Q,\quad \text{observed } Q \quad \therefore P\]
+This is logically invalid because many different causes can produce the same observation.
+\begin{itemize}[noitemsep]
+  \item Example: Many things can cause the doorbell to ring, not only someone at the door
+\end{itemize}
+
+\textbf{Source of uncertainty:}
+\begin{enumerate}[noitemsep]
+  \item Implications may be weak (not universally true)
+  \item Propositions use imprecise language (``often'', ``usually'', ``rarely'')
+  \item Knowledge representation is a restricted model of reality
+  \item Inference process itself introduces uncertainty (deductive results may be formally correct but real-world-wrong; abductive results are not logically guaranteed)
+\end{enumerate}
+\end{solbox}
+
+\subsection{Q7c --- Meningitis: Bayes' Theorem (3.5 marks)}
+
+\begin{qbox}{2021 Q7c}
+A doctor knows that meningitis causes a patient to have a stiff neck 40\% of the time. The doctor also knows that:
+\[ P(\text{meningitis}) = \frac{1}{50000}, \qquad P(\text{stiff neck}) = \frac{1}{25} \]
+What is the probability that a patient with a stiff neck has meningitis?
+\end{qbox}
+
+\begin{solbox}{Solution}
+Let $M$ = meningitis, $S$ = stiff neck.\\
+\textbf{Given:} $P(S|M)=0.40$, $P(M)=\frac{1}{50000}$, $P(S)=\frac{1}{25}$
+
+\textbf{Applying Bayes' Theorem:}
+\[
+P(M \mid S) = \frac{P(S \mid M)\cdot P(M)}{P(S)}
+= \frac{0.40 \times \dfrac{1}{50000}}{\dfrac{1}{25}}
+= 0.40 \times \frac{25}{50000}
+= \frac{0.40}{2000}
+= \boxed{\frac{1}{5000} = 0.0002}
+\]
+
+\textbf{Interpretation:} Even though stiff neck is a notable symptom of meningitis (40\% chance if you have meningitis), the disease is so rare ($1$ in $50000$) that even given the symptom, the probability of actually having meningitis is only $\mathbf{0.02\%}$. This illustrates the critical importance of \textbf{base rate (prior) in Bayesian reasoning}.
+\end{solbox}
+
+\newpage
+%% ===================================================
+\section{2021 --- Q8a --- Burglary Alarm Network (3.5 marks)}
+%% ===================================================
+
+\begin{qbox}{2021 Q8a}
+Consider a Bayesian Network with nodes: Burglary (B), Earthquake (E), Alarm (A), JohnCalls (J), MaryCalls (M). Topology: $B \to A \leftarrow E$, $A \to J$, $A \to M$.\\[4pt]
+Given probabilities:
+\begin{itemize}[noitemsep]
+  \item $P(B)=0.001$, \quad $P(E)=0.002$
+  \item $P(A|B,E)$: $\{TT: 0.95,\ TF: 0.94,\ FT: 0.29,\ FF: 0.001\}$
+  \item $P(J|A)$: $\{T: 0.90,\ F: 0.05\}$, \quad $P(M|A)$: $\{T: 0.70,\ F: 0.01\}$
+\end{itemize}
+\begin{enumerate}[label=(\roman*)]
+  \item Express the joint probability distribution $P(B,E,A,J,M)$.
+  \item Compute $P(A=T,\, B=F,\, E=F,\, J=T,\, M=T)$.
+  \item Compute $P(A=T,\, B=T,\, E=F,\, J=T,\, M=T)$.
+\end{enumerate}
+\end{qbox}
+
+\begin{solbox}{Solution}
+
+\textbf{(i) Joint Distribution:}
+\[
+P(B,E,A,J,M) = P(B)\cdot P(E)\cdot P(A \mid B,E)\cdot P(J \mid A)\cdot P(M \mid A)
+\]
+
+\textbf{(ii) Alarm sounds, no burglary, no earthquake, both John and Mary call:}
+\begin{align*}
+&P(A{=}T,\,B{=}F,\,E{=}F,\,J{=}T,\,M{=}T)\\
+&= (1-0.001)\cdot(1-0.002)\cdot P(A{=}T|FF)\cdot P(J{=}T|A{=}T)\cdot P(M{=}T|A{=}T)\\
+&= 0.999 \times 0.998 \times 0.001 \times 0.90 \times 0.70\\
+&= 0.997002 \times 0.001 \times 0.63\\
+&= 0.000997002 \times 0.63 \approx \boxed{6.28 \times 10^{-4}}
+\end{align*}
+
+\textbf{(iii) Alarm sounds, burglary occurred, no earthquake, both John and Mary call:}
+\begin{align*}
+&P(A{=}T,\,B{=}T,\,E{=}F,\,J{=}T,\,M{=}T)\\
+&= 0.001 \times (1-0.002) \times P(A{=}T|TF) \times P(J{=}T|A{=}T) \times P(M{=}T|A{=}T)\\
+&= 0.001 \times 0.998 \times 0.94 \times 0.90 \times 0.70\\
+&= 0.000998 \times 0.94 \times 0.63\\
+&= 0.00093812 \times 0.63 \approx \boxed{5.91 \times 10^{-4}}
+\end{align*}
+\end{solbox}
+
+\newpage
+%% ===================================================
+\section{2020 --- Q7 (Group B)}
+%% ===================================================
+
+\subsection{Q7a --- Uncertainty Concept (Doorbell) ($\approx$1.5 marks)}
+
+\begin{qbox}{2020 Q7a}
+Explain the concept of uncertainty using an appropriate example. [Same doorbell scenario as 2021 Q7a]
+\end{qbox}
+
+\begin{solbox}{Solution}
+See 2021 Q7a solution above (identical concept). The doorbell-at-midnight example illustrates:
+\begin{itemize}[noitemsep]
+  \item Both abductive reasoning (someone at door?) and deductive reasoning (Karim woke?) fail under uncertainty
+  \item Propositions that are ``often true but not tautologies'' create uncertainty
+  \item Solution: model uncertainty using probability theory (Bayesian approach)
+\end{itemize}
+\end{solbox}
+
+\subsection{Q7d --- Extension of Bayes' Theorem (3 marks)}
+
+\begin{qbox}{2020 Q7d}
+Describe the extension of Bayes' theorem. Give the equations and explain the semantics of two extended theorems. Name the application areas.
+\end{qbox}
+
+\begin{solbox}{Solution}
+
+\textbf{Extended Bayes' Theorem --- Form 1 (Multiple Hypotheses):}
+\[
+\boxed{P(H_i \mid E) = \frac{P(E \mid H_i)\cdot P(H_i)}{\displaystyle\sum_{k=1}^{K} P(E \mid H_k)\cdot P(H_k)}}
+\]
+\textbf{Semantics of Form 1:}
+\begin{itemize}[noitemsep]
+  \item $P(H_i|E)$: \textit{posterior} --- probability hypothesis $H_i$ is true given evidence $E$
+  \item $P(E|H_i)$: \textit{likelihood} --- probability of observing $E$ if $H_i$ is true
+  \item $P(H_i)$: \textit{prior} --- a priori probability of $H_i$ without specific evidence
+  \item $K$: total number of mutually exclusive, exhaustive hypotheses
+  \item Denominator $= P(E)$ --- total probability of observing evidence $E$ across all hypotheses
+\end{itemize}
+
+\bigskip
+\textbf{Extended Bayes' Theorem --- Form 2 (Updating with New Evidence):}
+\[
+\boxed{P(H \mid E,\, e) = \frac{P(H \mid E)\cdot P(e \mid E,\, H)}{P(e \mid E)}}
+\]
+\textbf{Semantics of Form 2:}
+\begin{itemize}[noitemsep]
+  \item Updates belief in $H$ given existing evidence $E$ when \textit{new} evidence $e$ arrives
+  \item $P(H|E)$ plays the role of the new prior (posterior from previous update)
+  \item Allows \textbf{sequential/incremental Bayesian updating} --- each new piece of evidence refines the estimate
+  \item The size of joint probabilities needed grows as $2^n$ for $n$ propositions
+\end{itemize}
+
+\bigskip
+\textbf{Application Areas:}
+\begin{enumerate}[noitemsep]
+  \item \textbf{Medical diagnosis:} $P(\text{disease} \mid \text{symptoms})$ --- differential diagnosis
+  \item \textbf{Spam filtering:} $P(\text{spam} \mid \text{email features})$ --- Naive Bayes classifier
+  \item \textbf{Robot localization:} $P(\text{position} \mid \text{sensor readings})$ --- particle filters
+  \item \textbf{Weather forecasting:} Update rain probability as new atmospheric data arrives
+  \item \textbf{Fault diagnosis:} Industrial systems --- identify machine failure from sensor data
+\end{enumerate}
+\end{solbox}
+
+\newpage
+%% ===================================================
+\section{2020 --- Q8 (Group B)}
+%% ===================================================
+
+\subsection{Q8a --- Bayesian Network Syntax and Semantics (1.5 marks)}
+
+\begin{qbox}{2020 Q8a}
+Explain the syntax and semantics of a Bayesian Network.
+\end{qbox}
+
+\begin{solbox}{Solution}
+
+\textbf{Syntax --- Structure of a Bayesian Network:}\\
+A Bayesian Network $N = (X, G, P)$ consists of:
+\begin{itemize}[noitemsep]
+  \item A \textbf{DAG} $G = (V, E)$: directed acyclic graph with nodes $V=\{v_1,\ldots,v_n\}$ (random variables) and directed edges $E$ (causal influences)
+  \item A set of \textbf{random variables} $X$ represented by the nodes of $G$
+  \item A set of \textbf{Conditional Probability Tables (CPT)}: one distribution $P(X_v \mid X_{pa(v)})$ for each variable $X_v$, conditioned on its parents $pa(v)$
+  \item \textit{Root nodes} (no parents) carry \textbf{prior probability} tables; all others carry CPTs
+\end{itemize}
+
+\textbf{Semantics --- What a BN Represents:}\\
+A BN encodes a compact \textbf{factorization of the full joint probability distribution}:
+\[
+\boxed{P(X_1, X_2, \ldots, X_n) = \prod_{i=1}^{n} P(X_i \mid \text{Parents}(X_i))}
+\]
+\textbf{Markov Condition:} Each node is \textit{conditionally independent} of all its non-descendants given its parents. This is the independence assumption that makes BNs tractable.
+
+\textit{Example (5-node alarm network):}
+\[
+P(B,E,A,J,M) = P(B)\cdot P(E)\cdot P(A|B,E)\cdot P(J|A)\cdot P(M|A)
+\]
+\end{solbox}
+
+\subsection{Q8b --- Meningitis (same as 2021 Q7c) (1.5 marks)}
+
+\begin{qbox}{2020 Q8b}
+Using Bayes' theorem: $P(M)=\frac{1}{50000}$, $P(S|M)=0.40$, $P(S)=\frac{1}{25}$. Find $P(M|S)$.
+\end{qbox}
+
+\begin{solbox}{Solution}
+\[
+P(M \mid S) = \frac{P(S \mid M)\cdot P(M)}{P(S)} = \frac{0.40 \times \frac{1}{50000}}{\frac{1}{25}} = 0.40 \times \frac{25}{50000} = \frac{10}{50000} = \boxed{0.0002}
+\]
+Only $0.02\%$ --- very low due to the extremely small prior $P(M) = 1/50000$.
+\end{solbox}
+
+\subsection{Q8c --- Complex BN: Burglary, Earthquake, Reliable \& Unreliable Friend ($\approx$6.75 marks)}
+
+\begin{qbox}{2020 Q8c}
+A Bayesian Network models a burglar alarm system. Nodes: Burglary (B), Earthquake (E), Alarm (A), ReliableFriend (R), UnreliableFriend (C).\\[4pt]
+Topology: $B, E \to A$; $A \to R, C$.\\[4pt]
+Given:
+\begin{itemize}[noitemsep]
+  \item $P(B)=0.02$, $P(E)=0.001$
+  \item $P(A|\neg B,\neg E)=0.01$; $P(A|B,\neg E)=0.9$; $P(A|\neg B,E)=0.9$; $P(A|B,E)=0.99$
+  \item $P(R|A)=0.002$; $P(R|\neg A)=0.999$; \quad $P(C|A)=0.8$; $P(C|\neg A)=0.1$
+\end{itemize}
+\begin{enumerate}[label=(\roman*)]
+  \item Draw the Bayesian Network.
+  \item Compute prior $P(\text{alarm is sounding}) = P(A=T)$.
+  \item Compute the normalized likelihood $P(A \mid R=T, C=T)$.
+  \item Compute the posterior probability.
+  \item How would you modify the BN if an earthquake radio report is also available?
+\end{enumerate}
+\end{qbox}
+
+\begin{solbox}{Solution}
+
+\textbf{(i) Network Structure:}
+\[
+B \longrightarrow A \longleftarrow E \qquad A \longrightarrow R \qquad A \longrightarrow C
+\]
+(5-node DAG: B and E are roots; A has parents B and E; R and C are leaves)
+
+\medskip
+\textbf{(ii) Prior $P(A=T)$ using Total Probability:}
+\begin{align*}
+P(A) &= P(A|B,E)P(B)P(E) + P(A|B,\neg E)P(B)P(\neg E)\\
+     &\quad + P(A|\neg B,E)P(\neg B)P(E) + P(A|\neg B,\neg E)P(\neg B)P(\neg E)\\[4pt]
+     &= 0.99(0.02)(0.001) + 0.9(0.02)(0.999) + 0.9(0.98)(0.001) + 0.01(0.98)(0.999)\\
+     &= 0.0000198 + 0.017982 + 0.000882 + 0.0097902\\
+     &\approx \boxed{0.02867}
+\end{align*}
+
+\medskip
+\textbf{(iii) Normalized likelihood $P(A|R=T, C=T)$:}\\
+\textit{Note:} $P(R|A)=0.002$ is unusual (reliable friend rarely signals when alarm sounds in this model). Use as given.
+\begin{align*}
+P(A{=}T, R{=}T, C{=}T) &= P(A{=}T)\cdot P(R{=}T|A{=}T)\cdot P(C{=}T|A{=}T)\\
+  &= 0.02867 \times 0.002 \times 0.8 = 4.587 \times 10^{-5}\\[4pt]
+P(A{=}F, R{=}T, C{=}T) &= P(A{=}F)\cdot P(R{=}T|A{=}F)\cdot P(C{=}T|A{=}F)\\
+  &= 0.97133 \times 0.999 \times 0.1 \approx 0.09704\\[4pt]
+P(A{=}T|R{=}T,C{=}T) &= \frac{4.587\times10^{-5}}{4.587\times10^{-5} + 0.09704} \approx \boxed{0.000473}
+\end{align*}
+
+\medskip
+\textbf{(iv) Posterior $P(B=T \mid A=T)$:}
+\[
+P(A|B) = P(A|B,E)P(E) + P(A|B,\neg E)P(\neg E) = 0.99(0.001) + 0.9(0.999) = 0.00099 + 0.8991 = 0.90009
+\]
+\[
+P(B|A{=}T) = \frac{P(A{=}T|B)\cdot P(B)}{P(A{=}T)} = \frac{0.90009 \times 0.02}{0.02867} \approx \frac{0.018002}{0.02867} \approx \boxed{0.628}
+\]
+
+\medskip
+\textbf{(v) Modified BN for Earthquake Radio Report:}\\
+Add a new node \textbf{RadioReport} as an additional child of Earthquake:
+\begin{itemize}[noitemsep]
+  \item $E \to \text{RadioReport}$: $P(\text{Report}|E=T) \approx 0.9$; $P(\text{Report}|E=F) \approx 0.05$
+\end{itemize}
+The modified topology becomes: $B, E \to A \to R, C$; and also $E \to \text{RadioReport}$.\\
+When RadioReport is observed, it provides additional evidence for/against Earthquake, which then propagates to update $P(A)$.
+\end{solbox}
+
+\newpage
+%% ===================================================
+\section*{Quick Reference Summary}
+\addcontentsline{toc}{section}{Quick Reference Summary}
+%% ===================================================
+
+\begin{keybox}{Core Formulas to Memorise}
+\begin{tabular}{ll}
+\toprule
+\textbf{Formula} & \textbf{Description}\\
+\midrule
+$P(H_i|E) = \dfrac{P(E|H_i)P(H_i)}{\sum_k P(E|H_k)P(H_k)}$ & Extended Bayes (multiple hypotheses)\\[8pt]
+$P(H|E,e) = \dfrac{P(H|E)\cdot P(e|E,H)}{P(e|E)}$ & Sequential update form\\[8pt]
+$P(x_1,\ldots,x_n) = \prod_i P(x_i|\text{Pa}(x_i))$ & BN joint factorization (chain rule)\\[4pt]
+$P(E) = \sum_i P(E|H_i)\cdot P(H_i)$ & Total probability (marginalization)\\
+\bottomrule
+\end{tabular}
+\end{keybox}
+
+\begin{keybox}{Numeric Results to Memorise}
+\begin{tabular}{ll}
+\toprule
+\textbf{Problem} & \textbf{Key Result}\\
+\midrule
+2024 Q7a: Robot vacuum P(E) & $0.77$; Most likely $H_1$ (battery) $\approx 45.45\%$\\
+2023 Q7a(i): Factory defect & $P(\text{MachineA}|\text{defect}) \approx 0.4737$\\
+2023 Q7a(ii): Medical test & $P(\text{disease}|+) \approx 0.3311$ (only 33\%!)\\
+2023 Q7a(iii): Spam filter & $P(\text{spam}|\text{``offer''}) = 2/3 \approx 0.667$\\
+2023 Q7b(i): BN scenario & $P \approx 0.001344$\\
+2023 Q7b(ii): BN scenario & $P \approx 0.08064$\\
+2021 Q7c / 2020 Q8b: Meningitis & $P(M|S) = 0.0002 = 0.02\%$\\
+2021 Q8a(ii): BN no burglary & $\approx 6.28 \times 10^{-4}$\\
+2021 Q8a(iii): BN burglary & $\approx 5.91 \times 10^{-4}$\\
+2022 B-3d(ii): No fire/eq & $\approx 7.15 \times 10^{-4}$\\
+2022 B-3d(iii): Fire only & $\approx 2.70 \times 10^{-3}$\\
+\bottomrule
+\end{tabular}
+\end{keybox}
+
+\begin{keybox}{BN Inference Types (4 Patterns)}
+\begin{enumerate}[noitemsep]
+  \item \textbf{Diagnostic} (effects $\to$ causes): Given John calls, find $P(\text{Burglary})$
+  \item \textbf{Causal} (causes $\to$ effects): Given Burglary, find $P(\text{John calls})$
+  \item \textbf{Inter-causal} (between causes of common effect): Given Alarm, find $P(\text{Burglary}|\text{also Earthquake})$
+  \item \textbf{Mixed}: Given John calls and no Earthquake, find $P(\text{Alarm})$
+\end{enumerate}
+\end{keybox}
+
+\begin{warnbox}{Common Mistakes in Exams}
+\begin{itemize}[noitemsep]
+  \item \textbf{Wrong 2023 values:} 2023 Q7b uses P(F)=0.4, P(E)=0.6 (NOT 0.004/0.003). The 0.004/0.003 values are from 2022 B-3d.
+  \item \textbf{Forgetting to check:} $\sum_i P(H_i|E) = 1$ after computing all posteriors
+  \item \textbf{Joint distribution factorization:} Must multiply ALL factors --- prior nodes $\times$ CPT nodes $\times$ leaf nodes
+  \item \textbf{Meningitis base rate:} $P(M|S) = 0.0002$, NOT $0.40$ (the $40\%$ is $P(S|M)$, not the answer)
+  \item \textbf{BN chain rule:} The joint = product of $P(\text{node}|\text{parents})$ for EVERY node
+\end{itemize}
+\end{warnbox}
+
+\end{document}

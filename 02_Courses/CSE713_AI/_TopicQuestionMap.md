@@ -487,18 +487,29 @@ Goal:  ON(C,A), ON(B,D), ONTABLE(A), ONTABLE(D)
 - P(H1)=0.5, P(H2)=0.3, P(H3)=0.2
 - P(E|H1)=0.7, P(E|H2)=0.8, P(E|H3)=0.9
 - 1.Compute P(E) 2.Calculate P(H1|E), P(H2|E), P(H3|E) 3.Identify most likely cause 4.Justify
+- **Answer:** P(E)=0.77; P(H1|E)≈0.4545 (most likely), P(H2|E)≈0.3117, P(H3|E)≈0.2338
+
+**2024 — Q7b (2 marks) — Challenges in Bayesian Decision Theory**
+- Identify and discuss challenges in Bayesian decision theory
+- Key challenges: (1) prior elicitation — exponential joint distribution (2^n) (2) NP-hard exact inference (3) sensitivity to prior choice (4) conditional independence assumptions may not hold (5) data requirements for CPT learning
+
+**2024 — Q7c (3 marks) — Evolutionary Method**
+- Describe the evolutionary method with an appropriate example
+- Key components: population, fitness function, selection, crossover, mutation
+- Example: Genetic Algorithm for robot path planning — chromosome=waypoint sequence, fitness=inverse path length
 
 **2023 — Q7 (9 marks) — Multiple Bayes problems + Alarm Network**
 - a) Three Bayes problems: (3)
   - i) Factory: 60% Machine A, 40% Machine B. Defect: 3% A, 5% B. Product found defective — P(Machine A)?
   - ii) Medical test: 98% accurate, 1% population has disease. Test positive — P(has disease)?
   - iii) Spam filter: prior spam=20%. P(word "offer"|spam)=80%, P(word "offer"|not spam)=10%. Calculate P(spam|contains "offer").
-- b) Alarm Bayesian Network (Fire+Earthquake→Alarm→YakinCalls,SaminCalls): (6)
-  - P(F)=0.004, P(E)=0.003, P(A|F,E)={TT:0.05,TF:0.94,FT:0.29,FF:0.001}
-  - P(Y|A)={T:0.90,F:0.05}, P(S|A)={T:0.80,F:0.01}
-  - i) Express joint distribution P(F,E,A,Y,S)
-  - ii) P(alarm sounded, no fire, no earthquake, both Y and S call)
-  - iii) P(alarm sounded, fire occurred, no earthquake, both Y and S call)
+- b) Alarm Bayesian Network (Fire+Earthquake→Alarm→Mr.X calls, Mr.Y calls): (6)
+  - ⚠️ CORRECTED: P(F)=**0.4**, P(E)=**0.6** (NOT 0.004/0.003 — those are 2022 B-3d values)
+  - P(A|F,E)={TT:0.95, TF:0.90, FT:0.60, FF:0.01}
+  - P(X|A)={T:0.80,F:0.10}, P(Y|A)={T:0.70,F:0.20} (callers: Mr. X and Mr. Y)
+  - i) Express joint distribution P(F,E,A,X,Y)
+  - ii) P(alarm, ¬fire, ¬earthquake, X calls, Y calls) → **Answer: 0.001344**
+  - iii) P(alarm, fire, ¬earthquake, X calls, Y calls) → **Answer: 0.08064**
 
 **2022 — B-3d (3 marks) — Alarm Network (different values)**
 - B,E,A,Y,S = Burglary,Earthquake,Alarm,YakinCalls,SaminCalls
@@ -515,9 +526,46 @@ Goal:  ON(C,A), ON(B,D), ONTABLE(A), ONTABLE(D)
 - P(B)=0.001, P(E)=0.002
 - P(A|B,E)={TT:0.95,TF:0.94,FT:0.29,FF:0.001}
 - P(J|A)={T:0.90,F:0.05}, P(M|A)={T:0.70,F:0.01}
-- i) Express P(B,E,A,J,M) joint distribution
-- ii) P(alarm sounds, no burglary, no earthquake, both Mary and John call)
-- iii) P(alarm sounds, burglary, no earthquake, both Mary and John call)
+- i) Express P(B,E,A,J,M) joint distribution → P(B)·P(E)·P(A|B,E)·P(J|A)·P(M|A)
+- ii) P(alarm sounds, no burglary, no earthquake, both Mary and John call) → **≈6.28×10⁻⁴**
+- iii) P(alarm sounds, burglary, no earthquake, both Mary and John call) → **≈5.91×10⁻⁴**
+
+---
+
+**2020 — Q7 (Group-B)**
+
+**2020 — Q7a (~1.5 marks) — Uncertainty Concept**
+- Explain concept of uncertainty using the doorbell example (same as 2021 Q7a)
+- Prop1: AtDoor(x)→Doorbell (abductive reasoning fails — infinite causes)
+- Prop2: Doorbell→Wake(Karim) (deductive reasoning fails — not a tautology)
+
+**2020 — Q7d (3 marks) — Extension of Bayes' Theorem**
+- Give equations and explain semantics of two extended theorems; name application areas
+- Form 1: P(Hi|E) = P(E|Hi)·P(Hi) / Σk P(E|Hk)·P(Hk) — multiple hypotheses
+- Form 2: P(H|E,e) = P(H|E)·P(e|E,H)/P(e|E) — sequential update with new evidence
+- Applications: medical diagnosis, spam filtering, robot localization, weather forecasting, fault diagnosis
+
+**2020 — Q8 (Group-B)**
+
+**2020 — Q8a (1.5 marks) — BN Syntax and Semantics**
+- Syntax: N=(X,G,P); DAG G=(V,E); CPT P(Xv|Xpa(v)) for each node
+- Semantics: BN encodes joint via chain rule: P(X1,...,Xn) = Π P(Xi|Parents(Xi))
+- Markov condition: each node conditionally independent of non-descendants given parents
+
+**2020 — Q8b (1.5 marks) — Meningitis Bayes**
+- Same as 2021 Q7c: P(M)=1/50000, P(S|M)=0.40, P(S)=1/25 → **P(M|S)=0.0002**
+
+**2020 — Q8c (~6.75 marks) — Complex BN (B/E/A/R/C)**
+- Nodes: Burglary(B), Earthquake(E), Alarm(A), ReliableFriend(R), UnreliableFriend(C)
+- Topology: B,E → A → R, C
+- P(B)=0.02, P(E)=0.001
+- P(A|¬B,¬E)=0.01, P(A|B,¬E)=0.9, P(A|¬B,E)=0.9, P(A|B,E)=0.99
+- P(R|A)=0.002, P(R|¬A)=0.999; P(C|A)=0.8, P(C|¬A)=0.1
+- i) Draw the BN
+- ii) Compute prior P(alarm sounding) → **P(A)≈0.02867**
+- iii) Compute normalized likelihood P(A|R=T,C=T) → **≈0.000473**
+- iv) Compute posterior P(B|A=T) → **≈0.628**
+- v) Modify BN for earthquake radio report → add RadioReport as child of E
 
 ---
 

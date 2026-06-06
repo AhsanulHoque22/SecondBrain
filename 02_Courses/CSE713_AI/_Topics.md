@@ -20,7 +20,10 @@ Status: 🔲 not started · 📖 learning · 🔁 needs recall · ✅ can explai
 | ↳ Knowledge Representation and Mapping (roles) | ✅ | 5 | 2026-06-05 | 2026-06-07 | 3/5 · 1.5 marks | 2022 A-2c; 2016 Q3a — 5 roles: surrogate/ontological/inferential/expressivity/efficiency |
 | ↳ Evidential Reasoning (ER): Dempster-Shafer, degree of belief | ✅ | 5 | 2026-06-05 | 2026-06-07 | 3/5 · 2 marks | 2024 Q4a,b — Dempster's rule, Bel vs Pl, conflict factor K |
 | STRIPS + Partial-Order Planning (Block World) | ✅ | 5 | 2026-06-05 | 2026-06-07 | 5/5 · 8–9 marks | Slides read, wiki + solutions PDF done. Sussman + 4-block POP fully solved. Past papers done 2020–2024. |
-| Bayes' Theorem + Bayesian Networks | 🔲 | — | — | — | 5/5 · 4–9 marks | Numerical: compute P(E), posteriors, joint distribution |
+| Bayes' Theorem + Bayesian Networks | 📖 | — | 2026-06-06 | 2026-06-09 | 5/5 · 4–9 marks | Slides read. Extended Bayes, BN DAG+CPT+chain rule, 4 inference types, d-separation |
+| ↳ Uncertainty Concept (doorbell) | 📖 | — | 2026-06-06 | — | 4/5 · 2–3 marks | 2020 Q7a, 2021 Q7a — abductive/deductive both fail; Prop1 incomplete, Prop2 not tautology |
+| ↳ Extended Bayes' Theorem | 📖 | — | 2026-06-06 | — | 3/5 · 3 marks | 2020 Q7d — P(Hi\|E)=P(E\|Hi)P(Hi)/Σ P(E\|Hk)P(Hk); also sequential form; 5 application areas |
+| ↳ BN Syntax, Semantics & Construction | 📖 | — | 2026-06-06 | — | 3/5 · 1–2 marks | 2020 Q8a — N=(X,G,P), DAG, chain rule: P(x1..xn)=ΠP(xi\|parents), Markov condition |
 | Hill Climbing + Simulated Annealing | ✅ | 5 | 2026-06-05 | 2026-06-07 | 5/5 · 4 marks | 3 limitations of HC; SA as escape mechanism |
 | Neural Networks + Learning | 🔲 | — | — | — | 5/5 · 7–9 marks | Section B; ANN vs biological; backprop |
 | CSP (map coloring, cryptarithmetic) | 🔲 | — | — | — | 4/5 · 1–3 marks | Small marks; don't over-invest |

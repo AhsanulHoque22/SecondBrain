@@ -124,6 +124,11 @@ Never create, edit, or delete Google Calendar events unless the user explicitly 
   read slides → extract 2020–2024 questions → update _Topics.md → update _TopicQuestionMap.md → write LaTeX → compile PDF → wiki ingest → git commit.
   **Zero questions omitted. 2020–2024 only.**
 
+### videoTopicYear
+**Trigger:** User pastes a YouTube playlist URL and asks which videos to watch / "videoTopicYear" appears in the message.
+→ Read `scripts/data/protocols/video_topic_year.md` and execute all 8 steps:
+  fetch titles via yt-dlp → load wiki subtopics → load past paper questions → map each video → output Priority 1/2/Skip tables → output subtopic coverage map → state hard cap → git commit if any files changed.
+
 ---
 
 ## Risk Assessment (MANDATORY — every session)

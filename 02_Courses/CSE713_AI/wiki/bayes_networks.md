@@ -54,7 +54,8 @@ A **Bayesian Network** is a directed acyclic graph (DAG) representing causal rel
 | 2021 | Q7a | Uncertainty concept (doorbell) | Abductive/deductive both fail |
 | 2021 | Q7b | Why deductive/abductive not sound | Incomplete model; affirming consequent |
 | 2021 | Q7c | Meningitis Bayes | P(M\|S)=0.0002 (base rate matters!) |
-| 2021 | Q8a | Burglary BN (B+E→A→J,M) | Standard 5-node network |
+| 2021 | Q8a | CPT count (Burglary→Alarm1,Alarm2) | CPT=5 params vs joint table=7 params |
+| 2021 | Q8b | Burglary BN (B+E→A→J,M) | Standard 5-node network |
 | 2020 | Q7a | Uncertainty concept (doorbell) | Same as 2021 Q7a |
 | 2020 | Q7d | Extended Bayes — equations + semantics | Both forms; 5 application areas |
 | 2020 | Q8a | BN syntax and semantics | N=(X,G,P); Markov condition; chain rule |
@@ -76,8 +77,9 @@ A **Bayesian Network** is a directed acyclic graph (DAG) representing causal rel
 | 2023 Q7b(i) alarm ¬F¬E | 0.001344 |
 | 2023 Q7b(ii) alarm F¬E | 0.08064 |
 | 2021/2020 meningitis | **0.0002** = 1/5000 |
-| 2021 Q8a(ii) ¬B¬E | 6.28×10⁻⁴ |
-| 2021 Q8a(iii) B¬E | 5.91×10⁻⁴ |
+| 2021 Q8a: CPT params | **5** (BN) vs **7** (joint table) |
+| 2021 Q8b(ii) ¬B¬E | 6.28×10⁻⁴ |
+| 2021 Q8b(iii) B¬E | 5.91×10⁻⁴ |
 | 2022 B-3d(ii) ¬F¬E | 7.15×10⁻⁴ |
 | 2022 B-3d(iii) F¬E | 2.70×10⁻³ |
 

@@ -429,10 +429,69 @@ P(M \mid S) = \frac{P(S \mid M)\cdot P(M)}{P(S)}
 
 \newpage
 %% ===================================================
-\section{2021 --- Q8a --- Burglary Alarm Network (3.5 marks)}
+\section{2021 --- Q8a --- CPT Count vs Joint Table (3.5 marks)}
 %% ===================================================
 
 \begin{qbox}{2021 Q8a}
+To safeguard your house, you recently installed two different alarm systems by two different reputable manufacturers that use completely different sensors. Considering these facts, the Bayesian network is given below:
+\[
+\text{Burglary} (B) \longrightarrow \text{Alarm}_1 (A_1), \quad \text{Burglary} (B) \longrightarrow \text{Alarm}_2 (A_2)
+\]
+\begin{enumerate}[label=(\roman*)]
+  \item How many probabilities need to be specified for its Conditional Probability Tables (CPTs)?
+  \item How many probabilities would need to be given if the same joint probability distribution were specified in a joint probability table?
+\end{enumerate}
+\end{qbox}
+
+\begin{solbox}{Solution}
+
+\textbf{Network structure:} 3 nodes — Burglary (B), Alarm$_1$ (A$_1$), Alarm$_2$ (A$_2$). All are binary (True/False). B is the root; A$_1$ and A$_2$ are children of B only (independent given B, since sensors are from different manufacturers).
+
+\medskip
+\textbf{(i) CPT Method --- number of parameters:}
+
+For each binary node, we only need to specify $P(\text{node}=T \mid \ldots)$ since $P(\text{node}=F) = 1 - P(\text{node}=T)$.
+
+\begin{center}
+\begin{tabular}{llc}
+\toprule
+\textbf{Node} & \textbf{Parents} & \textbf{Free parameters} \\
+\midrule
+$B$ & None (root) & $P(B{=}T)$ \hspace{1em} \textbf{= 1} \\
+$A_1$ & $B$ & $P(A_1{=}T|B{=}T)$,\ $P(A_1{=}T|B{=}F)$ \hspace{1em} \textbf{= 2} \\
+$A_2$ & $B$ & $P(A_2{=}T|B{=}T)$,\ $P(A_2{=}T|B{=}F)$ \hspace{1em} \textbf{= 2} \\
+\midrule
+\textbf{Total} & & $\boxed{5}$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\textbf{(ii) Full Joint Probability Table --- number of parameters:}
+
+With 3 binary variables, the joint table has $2^3 = 8$ entries. Since all probabilities must sum to 1, we only need to specify $8 - 1 = \boxed{7}$ free parameters.
+
+\medskip
+\textbf{Conclusion:} The Bayesian Network requires only \textbf{5 parameters} instead of \textbf{7} in the joint table. This is because the BN exploits the conditional independence $A_1 \perp A_2 \mid B$ (the two alarms are independent given whether a burglary occurred). The savings grow exponentially as more nodes are added.
+
+\begin{keybox}{General Rule}
+For a BN with $n$ binary nodes each having at most $k$ binary parents:
+\[
+\text{CPT parameters} = \sum_i 2^{|Pa(X_i)|}
+\]
+\[
+\text{Joint table parameters} = 2^n - 1
+\]
+The BN is always more compact when nodes have fewer parents than the total number of nodes.
+\end{keybox}
+
+\end{solbox}
+
+\newpage
+%% ===================================================
+\section{2021 --- Q8b --- Burglary Alarm Network (5.25 marks)}
+%% ===================================================
+
+\begin{qbox}{2021 Q8b}
 Consider a Bayesian Network with nodes: Burglary (B), Earthquake (E), Alarm (A), JohnCalls (J), MaryCalls (M). Topology: $B \to A \leftarrow E$, $A \to J$, $A \to M$.\\[4pt]
 Given probabilities:
 \begin{itemize}[noitemsep]
@@ -685,8 +744,9 @@ $P(E) = \sum_i P(E|H_i)\cdot P(H_i)$ & Total probability (marginalization)\\
 2023 Q7b(i): BN scenario & $P \approx 0.001344$\\
 2023 Q7b(ii): BN scenario & $P \approx 0.08064$\\
 2021 Q7c / 2020 Q8b: Meningitis & $P(M|S) = 0.0002 = 0.02\%$\\
-2021 Q8a(ii): BN no burglary & $\approx 6.28 \times 10^{-4}$\\
-2021 Q8a(iii): BN burglary & $\approx 5.91 \times 10^{-4}$\\
+2021 Q8a: CPT count & 5 params (BN) vs 7 params (joint table)\\
+2021 Q8b(ii): BN no burglary & $\approx 6.28 \times 10^{-4}$\\
+2021 Q8b(iii): BN burglary & $\approx 5.91 \times 10^{-4}$\\
 2022 B-3d(ii): No fire/eq & $\approx 7.15 \times 10^{-4}$\\
 2022 B-3d(iii): Fire only & $\approx 2.70 \times 10^{-3}$\\
 \bottomrule

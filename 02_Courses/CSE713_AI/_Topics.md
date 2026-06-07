@@ -27,7 +27,7 @@ Status: 🔲 not started · 📖 learning · 🔁 needs recall · ✅ can explai
 | Hill Climbing + Simulated Annealing | ✅ | 5 | 2026-06-05 | 2026-06-07 | 5/5 · 4 marks | 3 limitations of HC; SA as escape mechanism |
 | Neural Networks + Learning | 🔲 | — | — | — | 5/5 · 7–9 marks | Section B; ANN vs biological; backprop |
 | CSP (map coloring, cryptarithmetic) | 🔲 | — | — | — | 4/5 · 1–3 marks | Small marks; don't over-invest |
-| Fuzzy Logic + Uncertainty | 🔲 | — | — | — | 4/5 · 2–3 marks | Short notes only needed |
+| Fuzzy Logic + Uncertainty | 📖 | — | 2026-06-07 | — | 2/5 · 2–3 marks | Slides read, wiki + solutions PDF done. Only 2024/2022 ask it (short notes, inside NN Q). 2021/2020 corrected to "not asked". |
 
 ## Column guide
 - **Conf** — confidence 1–5 (1=shaky, 5=bulletproof). Update after every recall pass.

@@ -332,14 +332,17 @@ R5: IF F THEN G
 ---
 
 ### Topic 11 — Fuzzy Logic + Uncertainty
-**Source:** FuzzyLogic-14.pdf · **Yield:** ⭐ (appears in parts)
+**Source:** FuzzyLogic-14.pdf · **Yield:** ⭐ (appears in only 2/5 years 2020–2024 — low yield, always a 2-3 mark "short notes" sub-part paired with Uncertainty inside the Neural Networks question)
 
 | Year | Section | Q# | Notes |
 |------|---------|-----|-------|
-| 2024 | A | Q4 (part) | Short note within Q4 |
-| 2022 | B | B-1d | Short note: Fuzzy logic + Uncertainty |
-| 2021 | B | combined | Part of Neural Networks question |
-| 2020 | B | combined | Part of Neural Networks question |
+| 2024 | B | Q8c (3 marks) | Short notes: i) Fuzzy logic ii) Uncertainty — sub-part of NN question Q8 |
+| 2022 | B | B-1d (2 marks) | Short notes: i) Fuzzy logic ii) Uncertainty — sub-part of NN question B-1 |
+| 2023 | — | not asked | — |
+| 2021 | — | not asked | No NN/Fuzzy question this year (verified — corrects prior map error) |
+| 2020 | — | not asked | No NN/Fuzzy question this year (verified — corrects prior map error) |
+
+**Correction note (2026-06-07):** Original map entries for 2021/2020 ("combined with NN") and 2024 ("Section A Q4") were wrong — verified against raw PDF pages. Actual 2024 location is Section B Q8c; 2021 and 2020 papers contain no Fuzzy Logic question at all.
 
 ---
 
@@ -613,7 +616,7 @@ Goal:  ON(C,A), ON(B,D), ONTABLE(A), ONTABLE(D)
 | FC/BC + Rule-Based | A-Q5c/B-Q5 | B-Q6a | B-3b,c | B-Q6 | B-Q6 |
 | Hill Climbing + SA | A-Q3a | A-Q3a | B-4a | A-Q3a | A-Q4b |
 | CSP | — | A-Q3c | B-4d | A-Q3c | A-Q4(pt) |
-| Fuzzy Logic | B-Q8(pt) | combined | B-1d | — | B-Q8(pt) |
+| Fuzzy Logic | — | — | B-1d | — | B-Q8c |
 | FOL + Resolution | A-Q4 | A-Q4,5 | A-2 | A-Q4 | A-Q4 |
 | STRIPS + Planning | B-Q6 | B-Q6b | A-3 | B-Q5 | B-Q5 |
 | Bayes + BN | B-Q7,8 | B-Q7,8 | B-3d | B-Q7 | B-Q7 |

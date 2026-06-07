@@ -6,3 +6,4 @@
 - [[wiki/propositional-logic|Propositional Logic + Resolution in PL]] — satisfiability, 4-step clause form, refutation proof
 - [[wiki/planning|STRIPS + Partial-Order Planning]] — STRIPS actions, Block World (4-block + Sussman Anomaly), POP causal links, threat resolution
 - [[wiki/bayes_networks|Bayes' Theorem + Bayesian Networks]] — Extended Bayes, BN DAG+CPT, joint factorization, 4 inference types, 2020–2024 numeric results
+- [[wiki/fuzzy_logic|Fuzzy Logic + Uncertainty]] — fuzzy sets, 3-step decision process (fuzzification → reasoning → defuzzification), min-max inference, COG; low-yield (2/5 years)

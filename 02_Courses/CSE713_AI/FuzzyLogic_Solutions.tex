@@ -1,0 +1,226 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[top=2.5cm,bottom=2.5cm,left=2.5cm,right=2.5cm,headheight=15pt]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs,array,longtable,tabularx,multirow}
+\usepackage{xcolor}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{mdframed}
+\usepackage{tcolorbox}
+\tcbuselibrary{skins,breakable}
+\usepackage{hyperref}
+
+%% ---- Colors ----
+\definecolor{planblue}{RGB}{0,82,165}
+\definecolor{lightblue}{RGB}{220,235,255}
+\definecolor{darkorange}{RGB}{180,70,0}
+\definecolor{lightorange}{RGB}{255,235,210}
+\definecolor{darkgreen}{RGB}{20,110,20}
+\definecolor{lightgreen}{RGB}{200,240,205}
+\definecolor{darkred}{RGB}{150,20,20}
+\definecolor{lightred}{RGB}{255,210,210}
+\definecolor{lightgray}{RGB}{242,242,242}
+
+%% ---- tcolorbox styles ----
+\newtcolorbox{qbox}[2][]{enhanced,breakable,
+  colback=lightorange,colframe=darkorange,arc=4pt,
+  title={\textbf{#2}},fonttitle=\bfseries\color{white},
+  attach boxed title to top left={yshift=-2mm,xshift=4mm},
+  boxed title style={colback=darkorange,arc=3pt},#1}
+
+\newtcolorbox{solbox}[2][]{enhanced,breakable,
+  colback=lightblue,colframe=planblue,arc=4pt,
+  title={\textbf{#2}},fonttitle=\bfseries\color{white},
+  attach boxed title to top left={yshift=-2mm,xshift=4mm},
+  boxed title style={colback=planblue,arc=3pt},#1}
+
+\newtcolorbox{keybox}[2][]{enhanced,breakable,
+  colback=lightgreen,colframe=darkgreen,arc=4pt,
+  title={\textbf{#2}},fonttitle=\bfseries\color{white},
+  attach boxed title to top left={yshift=-2mm,xshift=4mm},
+  boxed title style={colback=darkgreen,arc=3pt},#1}
+
+\newtcolorbox{warnbox}[2][]{enhanced,breakable,
+  colback=lightred,colframe=darkred,arc=4pt,
+  title={\textbf{#2}},fonttitle=\bfseries\color{white},
+  attach boxed title to top left={yshift=-2mm,xshift=4mm},
+  boxed title style={colback=darkred,arc=3pt},#1}
+
+%% ---- Page style ----
+\pagestyle{fancy}\fancyhf{}
+\lhead{\color{planblue}\textbf{Fuzzy Logic + Uncertainty --- CSE 713 AI}}
+\rhead{\color{darkorange}Past Papers 2020--2024}
+\cfoot{\thepage}
+
+%% ---- Section style ----
+\titleformat{\section}{\Large\bfseries\color{planblue}}{}{0em}{}[\titlerule]
+\titleformat{\subsection}{\large\bfseries\color{darkorange}}{}{0em}{}
+
+\hypersetup{colorlinks=true,linkcolor=planblue,urlcolor=planblue}
+
+%% ---- Title ----
+\title{\color{planblue}\Huge\bfseries Fuzzy Logic + Uncertainty\\[0.4em]
+  \Large Short-Notes Questions \& Model Answers\\[0.2em]
+  \normalsize Past Paper Questions \& Solutions (2020--2024)\\[0.2em]
+  \normalsize CSE 713 Artificial Intelligence}
+\author{Study Notes --- June 2026}
+\date{}
+
+\begin{document}
+\maketitle
+\tableofcontents
+\newpage
+
+%% ===================================================
+\section*{Exam Pattern Summary}
+\addcontentsline{toc}{section}{Exam Pattern Summary}
+%% ===================================================
+
+\begin{keybox}{Key Exam Facts}
+\begin{itemize}[noitemsep]
+  \item \textbf{Yield: only 2 of the 5 years (2020--2024) ask it} --- 2024 and 2022. Lowest-yield topic in the syllabus.
+  \item \textbf{Always appears the same way:} a 2--3 mark ``write short notes'' sub-part, bundled \emph{inside} the Neural Networks question (never its own question).
+  \item \textbf{Always paired with Uncertainty} --- the two short notes are asked together every single time they appear.
+  \item \textbf{2021 and 2020 do NOT ask it at all} --- the course's question map previously listed them as ``combined with NN'', but the raw papers contain no Fuzzy Logic mention in those years (corrected 2026-06-07).
+  \item \textbf{Strategy:} 10--15 minutes max. Memorise the one-paragraph definition + 4-step process below; do not deep-dive into COG arithmetic (never asked as a numerical in any year so far).
+\end{itemize}
+\end{keybox}
+
+\begin{warnbox}{Map Correction Note}
+The original \texttt{\_TopicQuestionMap.md} listed 2024 under Section A Q4 and claimed 2021/2020 had ``combined with NN'' Fuzzy Logic sub-parts. Both raw papers were re-checked page by page: \textbf{2021 and 2020 contain no Fuzzy Logic question whatsoever} (their NN-adjacent Section B questions cover only Bayesian Networks / Uncertainty / Meningitis, not Fuzzy Logic). The 2024 question is in \textbf{Section B, Q8c} (paired with the NN backprop numerical in Q8b), not Section A. The map has been corrected.
+\end{warnbox}
+
+\newpage
+%% ===================================================
+\section{2024 --- Q8c (3 marks)}
+%% ===================================================
+
+\begin{qbox}{2024 Section B, Q8c}
+Write short notes on the following:
+\begin{enumerate}[label=\roman*)]
+  \item Fuzzy logic
+  \item Uncertainty
+\end{enumerate}
+\textit{(Asked as the closing sub-part of Q8, whose main body (Q8a, Q8b) covered associative memory and a sigmoid-network backpropagation numerical --- see \texttt{NeuralNet\_Solutions.tex} / \texttt{BayesNet\_Solutions.tex} for those.)}
+\end{qbox}
+
+\begin{solbox}{Solution --- (i) Fuzzy Logic}
+\textbf{Definition (exam-ready, one sentence):}\\
+Fuzzy Logic (FL), conceived by Prof. Lotfi Zadeh in the mid-1960s, is a problem-solving methodology that simulates the process of normal human reasoning under \emph{uncertainty} by allowing degrees of truth between 0 and 1, instead of the strict true/false of Boolean logic.
+
+\textbf{Why it exists --- Boolean vs. Fuzzy sets:}
+\begin{itemize}[noitemsep]
+  \item \textbf{Conventional (crisp) set:} membership is all-or-nothing --- $f_S(x) \in \{0,1\}$. The transition between ``not a member'' and ``member'' is \emph{instantaneous} (e.g., 79$^\circ$F is either ``warm'' or not).
+  \item \textbf{Fuzzy set:} membership is graded --- a \emph{membership function} $m_A(x)$ maps each element to a value in $[0,1]$, so the transition is \emph{gradual} and an object can partially belong to multiple sets at once (e.g., 80$^\circ$F can be 0.6 ``warm'' AND 0.3 ``hot'' simultaneously).
+  \[
+  m_A(x) = 1 \Rightarrow x \text{ totally in } A, \quad
+  0 < m_A(x) < 1 \Rightarrow x \text{ partially in } A, \quad
+  m_A(x) = 0 \Rightarrow x \text{ not in } A
+  \]
+\end{itemize}
+
+\textbf{Five basic concepts of a fuzzy set:} Label, Degree of membership, Membership function, Scope (domain), Universe of discourse.
+
+\textbf{The Fuzzy Decision Process --- 3 steps (the core of any short note):}
+\begin{enumerate}[noitemsep]
+  \item \textbf{Fuzzification:} crisp input $\to$ fuzzy input. Assign fuzzy linguistic labels (e.g., cold/cool/normal/warm/hot) to the input via membership functions (commonly trapezoidal or triangular). E.g., crisp input $T=66^\circ$F gives two fuzzy inputs: $T_{cool}=0.2$, $T_{normal}=0.6$.
+  \item \textbf{Fuzzy reasoning (Rule Evaluation), via min--max inference:} apply IF--THEN rules of the form \texttt{IF <antecedent> AND <antecedent> THEN <consequent>}. Rule strength = $\min$ of antecedent truth values (fuzzy AND = intersection); when several rules share a consequent, the fuzzy output = $\max$ of their strengths (fuzzy OR = union). Fuzzy NOT (complement): $m_{\bar{A}}(x) = 1 - m_A(x)$.
+  \item \textbf{Defuzzification:} fuzzy output $\to$ crisp output. The most common technique is the \textbf{Centre of Gravity (COG) / centroid method}:
+  \[
+  COG = \frac{\int_a^b m(x)\,x\,dx}{\int_a^b m(x)\,dx} \approx \frac{\sum_{x=a}^{b} x \cdot m(x)}{\sum_{x=a}^{b} m(x)}
+  \]
+  (For singleton outputs, $COG = \dfrac{\sum_i FO_i \times SPos_i}{\sum_i FO_i}$, which needs far fewer computations.)
+\end{enumerate}
+
+\textbf{Advantages (pick 3--4 if asked):} provides flexibility; models uncertainty; shortens system development time; increases maintainability; uses cheaper hardware; handles control/decision problems that are hard to define mathematically.
+
+\textbf{Applications (pick 2--3 examples):} antilock braking systems, washing-machine control, air conditioners, train motion control, photocopier exposure control (Matsushita), strategic planning, stock selection.
+
+\textbf{One-line closer if more space is needed:} Fuzzy systems are one of the three pillars of \emph{Soft Computing} (with Neural Networks and Genetic Algorithms); combining FL with NN gives \emph{neuro-fuzzy systems}, which let a network learn/tune the membership functions and rules that a pure fuzzy system cannot acquire automatically.
+\end{solbox}
+
+\begin{solbox}{Solution --- (ii) Uncertainty}
+\textbf{Definition:} Uncertainty arises whenever an agent must reason or act on incomplete, imprecise, noisy, or conflicting information --- situations where classical sound inference (deduction) cannot guarantee a correct conclusion.
+
+\textbf{Canonical exam example --- the doorbell:}
+\begin{itemize}[noitemsep]
+  \item Prop 1: $AtDoor(x) \to Doorbell$
+  \item Prop 2: $Doorbell \to Wake(Karim)$
+  \item The doorbell rings at midnight --- was someone at the door? Did Karim wake up? \textbf{Neither can be concluded with certainty}: the doorbell could have a fault (rang with no one there), and Karim might sleep through it. Both forward (deductive) and backward (abductive) chaining fail to give a sound guarantee.
+\end{itemize}
+
+\textbf{Why deduction/abduction are not ``sound'' here:} they require complete and certain premises; in the real world, premises are themselves uncertain, so the conclusion inherits that uncertainty (affirming the consequent is not valid).
+
+\textbf{Sources of uncertainty (list 3--4):} weak implications/rules of thumb, imprecise language (``often'', ``rarely''), incomplete knowledge of the domain, conflicting evidence from multiple sources, and propagation/compounding of uncertainty through chains of inference.
+
+\textbf{How AI handles it:} probability theory and \textbf{Bayes' Theorem} (see \texttt{BayesNet\_Solutions.tex} for the full doorbell write-up, the Extended Bayes forms, and Bayesian Network worked examples — that file is the authoritative source for any numerical Uncertainty/Bayes question).
+\end{solbox}
+
+\newpage
+%% ===================================================
+\section{2022 --- B-1d (2 marks)}
+%% ===================================================
+
+\begin{qbox}{2022 Section B, B-1d}
+Write short notes on the following:
+\begin{enumerate}[label=\roman*)]
+  \item Fuzzy logic
+  \item Uncertainty
+\end{enumerate}
+\textit{(Closing sub-part of B-1, whose main body (B-1a, B-1b, B-1c) asked: what is an ANN \& how it compares to biological networks; what is learning / inductive learning; and supervised vs.\ unsupervised vs.\ reinforcement learning --- see \texttt{NeuralNet\_Solutions.tex} for those.)}
+\end{qbox}
+
+\begin{solbox}{Solution}
+\textbf{Identical question to 2024 Q8c, worth slightly fewer marks (2 vs.\ 3) --- use the exact same two model answers above, trimmed to fit:}
+\begin{itemize}[noitemsep]
+  \item \textbf{Fuzzy logic (condensed):} A methodology (Zadeh, 1960s) that lets truth be a matter of degree in $[0,1]$ via membership functions, instead of strict true/false. Process = Fuzzification $\to$ Fuzzy reasoning (min--max inference on IF--THEN rules) $\to$ Defuzzification (Centre of Gravity). Used for control/decision problems that resist precise mathematical modelling (e.g., washing machines, ABS brakes).
+  \item \textbf{Uncertainty (condensed):} Arises when information is incomplete, imprecise, or conflicting, so deduction/abduction cannot guarantee a correct conclusion (doorbell-at-midnight example). AI manages it quantitatively via probability theory and Bayes' Theorem.
+\end{itemize}
+\textbf{Exam tip:} with only 2 marks on offer, one crisp sentence per term plus one example each is sufficient --- do not write the full process breakdown unless marks $\geq 3$.
+\end{solbox}
+
+\newpage
+%% ===================================================
+\section*{Quick Reference Summary}
+\addcontentsline{toc}{section}{Quick Reference Summary}
+%% ===================================================
+
+\begin{keybox}{Year-by-Year Appearance (2020--2024)}
+\begin{tabular}{lll}
+\toprule
+\textbf{Year} & \textbf{Location} & \textbf{Ask} \\
+\midrule
+2024 & Section B, Q8c (3 marks) & Short notes: Fuzzy logic + Uncertainty (inside NN question) \\
+2023 & --- & Not asked \\
+2022 & Section B, B-1d (2 marks) & Short notes: Fuzzy logic + Uncertainty (inside NN question) \\
+2021 & --- & Not asked (no NN/Fuzzy question that year) \\
+2020 & --- & Not asked (no NN/Fuzzy question that year) \\
+\bottomrule
+\end{tabular}
+\end{keybox}
+
+\begin{keybox}{The One Paragraph to Memorise Cold}
+``Fuzzy Logic (Zadeh, 1960s) is a problem-solving methodology that simulates human reasoning under uncertainty using the mathematical theory of fuzzy sets, where membership grades range continuously over $[0,1]$ rather than being strictly 0 or 1 as in Boolean logic. A fuzzy decision process has three steps: \textbf{Fuzzification} (crisp input $\to$ fuzzy input via membership functions), \textbf{Fuzzy reasoning} (apply IF--THEN rules using min--max inference: AND = minimum, OR = maximum), and \textbf{Defuzzification} (fuzzy output $\to$ crisp output, typically via the Centre-of-Gravity / centroid method). It is used in control and decision-making systems that are difficult to model mathematically, e.g., ABS brakes, washing machines, photocopier exposure control.''
+\end{keybox}
+
+\begin{keybox}{Five Things That Could Be the +1 Mark}
+\begin{enumerate}[noitemsep]
+  \item Boolean logic = instantaneous transition; Fuzzy logic = gradual transition (partial membership in multiple sets).
+  \item Fuzzy AND $\to$ minimum (intersection); Fuzzy OR $\to$ maximum (union); Fuzzy NOT $\to$ $1-m_A(x)$ (complement).
+  \item Trapezoidal and triangular shapes are the most common membership functions; singletons simplify defuzzification.
+  \item COG formula: $COG = \dfrac{\sum x \cdot m(x)}{\sum m(x)}$ --- worked exam value from slides: $COG = 34.5$.
+  \item Fuzzy Logic + Neural Networks + Genetic Algorithms = \textbf{Soft Computing}; combining FL and NN gives \textbf{neuro-fuzzy systems} (cooperative: NN tunes FL parameters; hybrid: FL rules implemented as a fuzzy-neuron network).
+\end{enumerate}
+\end{keybox}
+
+\begin{warnbox}{Common Mistakes}
+\begin{itemize}[noitemsep]
+  \item Don't confuse \emph{fuzzification} (crisp$\to$fuzzy, step 1) with \emph{defuzzification} (fuzzy$\to$crisp, step 3) --- a frequent slip under time pressure.
+  \item Min--max is for \emph{rule evaluation / reasoning} (step 2), NOT for defuzzification (which uses Centre of Gravity).
+  \item Don't write a generic ``what is uncertainty'' answer without the doorbell example or a source-of-uncertainty list --- examiners reward the named example.
+  \item This topic is low-yield (2/5 years) --- don't over-invest revision time relative to Bayes/BN, NN, or FOL, all of which appear every year.
+\end{itemize}
+\end{warnbox}
+
+\end{document}

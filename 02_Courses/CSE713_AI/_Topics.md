@@ -25,7 +25,12 @@ Status: 🔲 not started · 📖 learning · 🔁 needs recall · ✅ can explai
 | ↳ Extended Bayes' Theorem | 📖 | — | 2026-06-06 | — | 3/5 · 3 marks | 2020 Q7d — P(Hi\|E)=P(E\|Hi)P(Hi)/Σ P(E\|Hk)P(Hk); also sequential form; 5 application areas |
 | ↳ BN Syntax, Semantics & Construction | 📖 | — | 2026-06-06 | — | 3/5 · 1–2 marks | 2020 Q8a — N=(X,G,P), DAG, chain rule: P(x1..xn)=ΠP(xi\|parents), Markov condition |
 | Hill Climbing + Simulated Annealing | ✅ | 5 | 2026-06-05 | 2026-06-07 | 5/5 · 4 marks | 3 limitations of HC; SA as escape mechanism |
-| Neural Networks + Learning | 🔲 | — | — | — | 5/5 · 7–9 marks | Section B; ANN vs biological; backprop |
+| Neural Networks + Learning | 📖 | — | 2026-06-07 | 2026-06-09 | 3/5 · 9 marks | Corrected yield (2024/2023/2022 only — 2021/2020 NOT asked, were Bayes-only). 5 new sources read in full: Banckpropogation, New Doc 2019, back propagation (Han&Kamber), NN Evolution, Lecture 13.2 ANN |
+| ↳ McCulloch-Pitts Neuron + Perceptron + Learning Rule | 📖 | — | 2026-06-07 | — | 1/5 · within NN Q | a=Σ(wi·xi); Perceptron Training Rule Δi=η(t−o)xi; bias-as-input-unit trick; 2 worked examples (bright/dark pixel classifier) |
+| ↳ Backpropagation Algorithm + Numerical (sigmoid fwd/bwd pass) | 📖 | — | 2026-06-07 | — | 1/5 · 6 marks (2023 Q8b) | Han&Kamber Example 9.1 is the canonical worked numerical — matches 2023's exact question style. Err_j=O_j(1−O_j)(T_j−O_j); Δw=l·Err_j·O_i |
+| ↳ Associative Memory + Hopfield Networks | 📖 | — | 2026-06-07 | — | 1/5 · 3 marks (2023 Q8a) | Recall complete patterns from partial input; Hopfield energy E=−½Σwij·si·sj; Nobel 2024 (Hopfield+Hinton) |
+| ↳ ANN vs Biological Network comparison + taxonomy | 📖 | — | 2026-06-07 | — | 2/5 · 3 marks | soma/dendrite/axon↔node/input/output mapping; feedforward vs recurrent; supervised/unsupervised/reinforcement |
+| ↳ NN Historical Evolution (AI Winters → Transformers) | 📖 | — | 2026-06-07 | — | 0/5 · background only | MP(1943)→Rosenblatt(1958)→Minsky XOR(1969)→Hopfield(1982)→Hinton backprop(1986)→CNN/LSTM(1989-97)→AlexNet(2012)→Transformers(2017). Not directly examined — context for "what is learning/ANN" essays |
 | CSP (map coloring, cryptarithmetic) | 🔲 | — | — | — | 4/5 · 1–3 marks | Small marks; don't over-invest |
 | Fuzzy Logic + Uncertainty | 📖 | — | 2026-06-07 | — | 2/5 · 2–3 marks | Slides read, wiki + solutions PDF done. Only 2024/2022 ask it (short notes, inside NN Q). 2021/2020 corrected to "not asked". |
 

@@ -1,0 +1,367 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[top=2.5cm,bottom=2.5cm,left=2.5cm,right=2.5cm,headheight=15pt]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs,array,longtable,tabularx,multirow}
+\usepackage{xcolor}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{mdframed}
+\usepackage{tcolorbox}
+\tcbuselibrary{skins,breakable}
+\usepackage{hyperref}
+
+%% ---- Colors ----
+\definecolor{planblue}{RGB}{0,82,165}
+\definecolor{lightblue}{RGB}{220,235,255}
+\definecolor{darkorange}{RGB}{180,70,0}
+\definecolor{lightorange}{RGB}{255,235,210}
+\definecolor{darkgreen}{RGB}{20,110,20}
+\definecolor{lightgreen}{RGB}{200,240,205}
+\definecolor{darkred}{RGB}{150,20,20}
+\definecolor{lightred}{RGB}{255,210,210}
+\definecolor{lightgray}{RGB}{242,242,242}
+
+%% ---- tcolorbox styles ----
+\newtcolorbox{qbox}[2][]{enhanced,breakable,
+  colback=lightorange,colframe=darkorange,arc=4pt,
+  title={\textbf{#2}},fonttitle=\bfseries\color{white},
+  attach boxed title to top left={yshift=-2mm,xshift=4mm},
+  boxed title style={colback=darkorange,arc=3pt},#1}
+
+\newtcolorbox{solbox}[2][]{enhanced,breakable,
+  colback=lightblue,colframe=planblue,arc=4pt,
+  title={\textbf{#2}},fonttitle=\bfseries\color{white},
+  attach boxed title to top left={yshift=-2mm,xshift=4mm},
+  boxed title style={colback=planblue,arc=3pt},#1}
+
+\newtcolorbox{keybox}[2][]{enhanced,breakable,
+  colback=lightgreen,colframe=darkgreen,arc=4pt,
+  title={\textbf{#2}},fonttitle=\bfseries\color{white},
+  attach boxed title to top left={yshift=-2mm,xshift=4mm},
+  boxed title style={colback=darkgreen,arc=3pt},#1}
+
+\newtcolorbox{warnbox}[2][]{enhanced,breakable,
+  colback=lightred,colframe=darkred,arc=4pt,
+  title={\textbf{#2}},fonttitle=\bfseries\color{white},
+  attach boxed title to top left={yshift=-2mm,xshift=4mm},
+  boxed title style={colback=darkred,arc=3pt},#1}
+
+%% ---- Page style ----
+\pagestyle{fancy}\fancyhf{}
+\lhead{\color{planblue}\textbf{Neural Networks + Learning --- CSE 713 AI}}
+\rhead{\color{darkorange}Past Papers 2020--2024}
+\cfoot{\thepage}
+
+%% ---- Section style ----
+\titleformat{\section}{\Large\bfseries\color{planblue}}{}{0em}{}[\titlerule]
+\titleformat{\subsection}{\large\bfseries\color{darkorange}}{}{0em}{}
+
+\hypersetup{colorlinks=true,linkcolor=planblue,urlcolor=planblue}
+
+%% ---- Title ----
+\title{\color{planblue}\Huge\bfseries Neural Networks + Learning\\[0.4em]
+  \Large Questions \& Model Answers + Canonical Worked Numerical\\[0.2em]
+  \normalsize Past Paper Questions \& Solutions (2020--2024)\\[0.2em]
+  \normalsize CSE 713 Artificial Intelligence}
+\author{Study Notes --- June 2026}
+\date{}
+
+\begin{document}
+\maketitle
+\tableofcontents
+\newpage
+
+%% ===================================================
+\section*{Exam Pattern Summary}
+\addcontentsline{toc}{section}{Exam Pattern Summary}
+%% ===================================================
+
+\begin{keybox}{Key Exam Facts}
+\begin{itemize}[noitemsep]
+  \item \textbf{Yield: 3 of the 5 years (2024, 2023, 2022)} ask a Neural Networks question --- \emph{not every year}, despite what the old map said. 9 marks each time it appears, always Section B.
+  \item \textbf{Always asked:} ANN definition + comparison with biological networks (2024, 2022) or ``associative memory / multilayer architecture'' framing (2023).
+  \item \textbf{Sometimes asked (1/5 years so far --- 2023 only):} a numerical --- sigmoid forward-pass / backward-pass / weight-update calculation. This is the highest-value thing to drill, because it is exactly the style of the canonical Han \& Kamber Example 9.1 (reproduced in full below).
+  \item \textbf{Always bundled:} Fuzzy Logic + Uncertainty short notes appear as the closing sub-part in 2024 and 2022 (see \texttt{FuzzyLogic\_Solutions.tex}).
+  \item \textbf{Strategy:} memorise (a) the ANN-vs-biological comparison cold, (b) the associative-memory + multilayer-architecture paragraph, and (c) walk through the Example 9.1 numerical by hand at least 3 times --- if a numerical appears again, it will look just like it.
+\end{itemize}
+\end{keybox}
+
+\begin{warnbox}{Map Correction Note (2026-06-07)}
+The original \texttt{\_TopicQuestionMap.md} claimed Neural Networks appears in \textbf{5/5 years}, listing ``2021 --- Q8 (9 marks) --- NN + Burglary Alarm Bayesian Network''. Both the 2021 and 2020 raw papers were re-read page by page to verify this:
+\begin{itemize}[noitemsep]
+  \item \textbf{2021 Q8} is \emph{entirely} a Bayesian Network question --- two independent alarm sensors, Burglary $\to$ Alarm1/Alarm2, full CPTs for Burglary/Earthquake/Alarm/JohnCalls/MaryCalls, joint-distribution computation. \textbf{Zero Neural Network content.}
+  \item \textbf{2020} contains no Neural Network question anywhere in the paper (Group A Q1--4, Group B Q5--8); that year's Q8 is Bayesian Network + meningitis (a Bayes' Theorem numerical), not NN.
+\end{itemize}
+\textbf{Corrected true yield: 3/5 years (2024, 2023, 2022 only).} The map, the Quick Lookup Table, and the CSP topic row (which had the same false ``combined with NN'' claim attached to 2020) have all been corrected. This still makes NN a high-value topic --- 9 marks, 3 years out of 5 --- just not a guaranteed-every-year one.
+\end{warnbox}
+
+\newpage
+%% ===================================================
+\section{2024 --- Q8 (9 marks)}
+%% ===================================================
+
+\begin{qbox}{2024 Section B, Q8}
+\begin{enumerate}[label=(\alph*)]
+  \item What is learning? Describe the inductive learning method with an example. (3)
+  \item Compare artificial and biological neural networks. What aspects of biological networks are not mimicked by artificial ones? What aspects are similar? (3)
+  \item Write short notes on: i) Fuzzy logic ii) Uncertainty (3) --- \textit{see \texttt{FuzzyLogic\_Solutions.tex} for part (c)}
+\end{enumerate}
+\end{qbox}
+
+\begin{solbox}{Solution (a) --- Learning \& Inductive Learning}
+\textbf{What is learning?} Learning is the process by which an agent improves its future performance on a task by acquiring knowledge or adjusting its behaviour based on past experience, observations, or training data --- in ANNs specifically, learning means \emph{adjusting connection weights} so the network's output approaches a desired target.
+
+\textbf{Inductive learning:} a form of supervised learning in which the learner is given a set of input--output examples (the \emph{training set}) and must infer a general function/hypothesis that maps inputs to outputs, which then generalises to \emph{unseen} examples. It moves from \emph{specific observations to a general rule} (the opposite of deduction).
+
+\textbf{Worked example:} Given examples of the function $f(x) = x^2$ as pairs $(1,1),(2,4),(3,9),(4,16)$, an inductive learner hypothesises the general rule $f(x)=x^2$ and can now predict $f(5)=25$ without being told. In an ANN context: shown many (image, label) pairs of handwritten digits, the network induces a general weight-pattern that classifies digits it has never seen.
+
+\textbf{Key property:} inductive learning is inherently \emph{uncertain} --- multiple hypotheses can fit the training data (the problem of induction / Hume's problem), so the learner must use a bias (e.g., prefer the simplest consistent hypothesis --- Occam's razor) to choose among them.
+\end{solbox}
+
+\begin{solbox}{Solution (b) --- Artificial vs Biological Neural Networks}
+\textbf{Structural mapping (memorise this table):}
+\begin{center}
+\begin{tabular}{ll}
+\toprule
+\textbf{Biological} & \textbf{Artificial} \\
+\midrule
+Soma (cell body) & Node / unit \\
+Dendrite & Input \\
+Axon & Output \\
+Synapse & Weight \\
+Slow speed ($\sim$ms) & Fast speed ($\sim$ns) \\
+Many ($10^{11}$) neurons & Few (tens--millions) units \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\textbf{Aspects \emph{NOT} mimicked by artificial networks:}
+\begin{itemize}[noitemsep]
+  \item True massive parallelism and scale ($10^{11}$ neurons, $10^{14}$ synapses vs.\ a few thousand--million units)
+  \item Chemical (neurotransmitter-based) signalling --- ANNs use only numeric weighted sums
+  \item Continuous, asynchronous, self-organising growth and rewiring (neuroplasticity) during the system's lifetime
+  \item Energy efficiency --- the brain runs on $\sim$20W; large ANNs require kilowatts of GPU power
+  \item Genuine understanding / consciousness / embodied sensorimotor grounding
+\end{itemize}
+
+\textbf{Aspects that \emph{are} similar:}
+\begin{itemize}[noitemsep]
+  \item Both are networks of simple processing units connected by weighted links
+  \item Both \emph{learn} by adjusting connection strengths (synaptic strength $\leftrightarrow$ weight) based on experience
+  \item Both produce an output as some (thresholded/activation) function of a weighted sum of inputs
+  \item Both exhibit \emph{distributed representation} --- knowledge is spread across many connections, not stored in one place (hence the ``black box'' property)
+  \item Both can generalise from examples to novel situations
+\end{itemize}
+\end{solbox}
+
+\newpage
+%% ===================================================
+\section{2023 --- Q8 (9 marks)}
+%% ===================================================
+
+\begin{qbox}{2023 Section B, Q8}
+\begin{enumerate}[label=(\alph*)]
+  \item What is associative memory? Is it your belief that neural networks are fundamentally rooted in associative memory? Explain considering the structure and principles of multilayer neural network architecture. (3)
+  \item Suppose neurons in a network use the sigmoid activation function and the network performs a forward pass followed by a backward pass to update its weights. The true output is $y=0.6$ and the learning rate is $0.8$. The network has weights $W_{13}=0.1,\ W_{14}=0.4,\ W_{23}=0.8,\ W_{24}=0.6,\ W_{35}=0.3,\ W_{45}=0.9$ and inputs $x_1=0.35,\ x_2=0.9$. Execute an additional forward pass with the updated network. (6)
+\end{enumerate}
+\end{qbox}
+
+\begin{solbox}{Solution (a) --- Associative Memory \& Multilayer Architecture}
+\textbf{Definition:} Associative memory is a memory organisation principle in which stored information (a pattern) is recalled not by its address/location but by \emph{content} --- presenting a partial, noisy, or distorted version of a pattern is enough to retrieve the complete, correct stored pattern (``pattern completion''). Hopfield networks are the canonical ANN realisation of this idea.
+
+\textbf{Are neural networks fundamentally rooted in associative memory? --- Yes, and here is why:}
+\begin{itemize}[noitemsep]
+  \item A multilayer (feedforward) network learns by storing an input--output \emph{association} ($\mathbf{x} \to \mathbf{y}$) distributed across its weight matrix --- exactly the content-addressable principle of associative memory, just generalised from binary patterns to continuous function approximation.
+  \item \textbf{Structure:} an input layer receives the pattern, one or more hidden layers build an internal (distributed) representation of it, and the output layer produces the associated response. Every unit's output becomes the next layer's input via weighted, summed, activated connections (typically sigmoid).
+  \item \textbf{Principle:} during training (e.g.\ via backpropagation), the network strengthens the weight pathways that connect a given input pattern to its correct output --- precisely the ``store an association by adjusting connection strength'' mechanism that defines associative memory, just realised through gradient descent rather than a one-shot Hebbian rule.
+  \item \textbf{Generalisation:} because the association is stored in \emph{distributed} weights rather than at discrete addresses, the network can recall/produce correct (or close) outputs even for inputs it has not seen before --- the same robustness-to-partial-input that defines associative recall.
+\end{itemize}
+\textbf{Conclusion (one-line for the exam):} Yes --- both single-layer associative memories (e.g.\ Hopfield nets) and multilayer feedforward networks store knowledge as distributed weighted associations between inputs and outputs, and recall/generalise via the same content-based, partial-pattern-completion principle; multilayer architectures simply extend this to richer, hierarchical, non-linear associations.
+\end{solbox}
+
+\begin{solbox}{Solution (b) --- Sigmoid Forward + Backward Pass Numerical}
+\textbf{Step 0 --- Network layout (from the given weight subscripts):}
+Units 1, 2 = inputs; units 3, 4 = hidden layer; unit 5 = output.
+Connections: $1{\to}3\,(W_{13}{=}0.1)$, $1{\to}4\,(W_{14}{=}0.4)$, $2{\to}3\,(W_{23}{=}0.8)$, $2{\to}4\,(W_{24}{=}0.6)$, $3{\to}5\,(W_{35}{=}0.3)$, $4{\to}5\,(W_{45}{=}0.9)$. Sigmoid: $\sigma(z) = \dfrac{1}{1+e^{-z}}$, with derivative $\sigma'(z)=\sigma(z)(1-\sigma(z))$. (Assume biases $=0$ unless given, as in the canonical Example 9.1 layout.)
+
+\textbf{Step 1 --- Forward pass (compute hidden \& output activations):}
+\begin{align*}
+net_3 &= W_{13}x_1 + W_{23}x_2 = (0.1)(0.35)+(0.8)(0.9) = 0.035+0.72 = 0.755 \\
+O_3 &= \sigma(0.755) = \frac{1}{1+e^{-0.755}} \approx 0.6803 \\
+net_4 &= W_{14}x_1 + W_{24}x_2 = (0.4)(0.35)+(0.6)(0.9) = 0.14+0.54 = 0.68 \\
+O_4 &= \sigma(0.68) = \frac{1}{1+e^{-0.68}} \approx 0.6637 \\
+net_5 &= W_{35}O_3 + W_{45}O_4 = (0.3)(0.6803)+(0.9)(0.6637) \approx 0.2041+0.5973 = 0.8014 \\
+O_5 &= \sigma(0.8014) \approx 0.6902
+\end{align*}
+
+\textbf{Step 2 --- Backward pass (error \& deltas, using $T=y=0.6$):}
+\begin{align*}
+Err_5 &= O_5(1-O_5)(T - O_5) = (0.6902)(0.3098)(0.6 - 0.6902) \\
+      &= (0.2138)(-0.0902) \approx -0.01928 \\
+Err_3 &= O_3(1-O_3)\,Err_5 W_{35} = (0.6803)(0.3197)(-0.01928)(0.3) \approx -0.00126 \\
+Err_4 &= O_4(1-O_4)\,Err_5 W_{45} = (0.6637)(0.3363)(-0.01928)(0.9) \approx -0.00387
+\end{align*}
+
+\textbf{Step 3 --- Weight updates ($\Delta w_{ij} = l \cdot Err_j \cdot O_i$, $l=0.8$):}
+\begin{align*}
+\Delta W_{35} &= (0.8)(-0.01928)(0.6803) \approx -0.01049 \;\Rightarrow\; W_{35}^{new} \approx 0.3 - 0.0105 = 0.2895\\
+\Delta W_{45} &= (0.8)(-0.01928)(0.6637) \approx -0.01024 \;\Rightarrow\; W_{45}^{new} \approx 0.9 - 0.0102 = 0.8898\\
+\Delta W_{13} &= (0.8)(-0.00126)(0.35) \approx -0.000353 \;\Rightarrow\; W_{13}^{new} \approx 0.0996\\
+\Delta W_{23} &= (0.8)(-0.00126)(0.9) \approx -0.000907 \;\Rightarrow\; W_{23}^{new} \approx 0.7991\\
+\Delta W_{14} &= (0.8)(-0.00387)(0.35) \approx -0.001084 \;\Rightarrow\; W_{14}^{new} \approx 0.3989\\
+\Delta W_{24} &= (0.8)(-0.00387)(0.9) \approx -0.002789 \;\Rightarrow\; W_{24}^{new} \approx 0.5972
+\end{align*}
+
+\textbf{Step 4 --- The actual question: re-run the forward pass with updated weights:}
+\begin{align*}
+net_3' &= (0.0996)(0.35)+(0.7991)(0.9) \approx 0.0349+0.7192 = 0.7541 \;\Rightarrow\; O_3' = \sigma(0.7541)\approx 0.6802\\
+net_4' &= (0.3989)(0.35)+(0.5972)(0.9) \approx 0.1396+0.5375 = 0.6771 \;\Rightarrow\; O_4' = \sigma(0.6771)\approx 0.6631\\
+net_5' &= (0.2895)(0.6802)+(0.8898)(0.6631) \approx 0.1969+0.5901 = 0.7870 \;\Rightarrow\; O_5' = \sigma(0.7870)\approx 0.6871
+\end{align*}
+\textbf{Result:} the new network output is $O_5' \approx 0.6871$ --- moved \emph{closer} to the true output $y=0.6$ than the original $O_5\approx 0.6902$ (error shrank from $-0.0902$ to $-0.0871$), demonstrating the weight update is working in the correct direction. \emph{(In the exam, showing this directional improvement explicitly is what earns the final mark — exact decimals matter less than the correct procedure and the correct conclusion.)}
+\end{solbox}
+
+\newpage
+%% ===================================================
+\section{2022 --- B-1 (9 marks)}
+%% ===================================================
+
+\begin{qbox}{2022 Section B, B-1}
+\begin{enumerate}[label=(\alph*)]
+  \item What is an ANN? Compare artificial and biological networks --- which aspects of biological networks are not mimicked by artificial ones, and which are similar? (3)
+  \item What is learning? Describe the inductive learning method with an example. (2)
+  \item Explain supervised, unsupervised, and reinforcement learning. (2)
+  \item Write short notes on: i) Fuzzy logic ii) Uncertainty (2) --- \textit{see \texttt{FuzzyLogic\_Solutions.tex} for part (d)}
+\end{enumerate}
+\end{qbox}
+
+\begin{solbox}{Solution (a) --- What is an ANN? + Comparison}
+\textbf{Definition:} An Artificial Neural Network (ANN) is a computational model loosely inspired by the structure of biological brains --- a network of simple processing units (\emph{nodes}/\emph{neurons}), connected by weighted links, that computes its output as a (typically non-linear, e.g.\ sigmoid) function of the weighted sum of its inputs, and \emph{learns} by adjusting those weights from examples.
+
+\textbf{Comparison:} \emph{identical content to 2024 Q8b above} --- reuse the soma/dendrite/axon/synapse $\leftrightarrow$ node/input/output/weight mapping table, the ``not mimicked'' list (scale, chemical signalling, neuroplasticity, energy efficiency, consciousness) and the ``similar'' list (weighted-sum + threshold computation, learning by adjusting connection strength, distributed representation, generalisation). With only 3 marks here, give the definition + 2 ``not mimicked'' + 2 ``similar'' points.
+\end{solbox}
+
+\begin{solbox}{Solution (b) --- Learning + Inductive Learning (condensed)}
+Identical core content to 2024 Q8a, trimmed to 2 marks: \emph{Learning} = improving performance via experience (in ANNs: adjusting weights toward a target). \emph{Inductive learning} = inferring a general rule from specific input--output examples that generalises to unseen cases (e.g.\ learning $f(x)=x^2$ from the pairs $(1,1),(2,4),(3,9)$ and predicting $f(4)=16$).
+\end{solbox}
+
+\begin{solbox}{Solution (c) --- Supervised vs Unsupervised vs Reinforcement Learning}
+\begin{itemize}[noitemsep]
+  \item \textbf{Supervised learning:} the learner is given labelled training examples --- pairs of (input, correct output/target) --- and adjusts its parameters to minimise the error between its prediction and the target. \emph{Example:} backpropagation training a network to classify loan applications as ``approve''/``reject'' given historical labelled cases.
+  \item \textbf{Unsupervised learning:} the learner is given only inputs, with \emph{no} target outputs, and must discover structure, patterns, clusters, or representations on its own. \emph{Examples:} Hopfield networks (pattern/cluster storage \& recall), Adaptive Resonance Theory (ART), Self-Organising Feature Maps (SOFM/Kohonen maps).
+  \item \textbf{Reinforcement learning:} the learner (agent) interacts with an environment, takes actions, and receives delayed \emph{reward/punishment} signals (not direct correct-answer labels); it learns a policy that maximises cumulative reward through trial-and-error exploration. \emph{Example:} an agent learning to play a game by being rewarded for winning moves and penalised for losing ones, without ever being told the ``correct'' move directly.
+\end{itemize}
+\textbf{One-line distinguishing test (useful if marks are tight):} supervised = ``here is the right answer for each example''; unsupervised = ``here is data, find the structure yourself''; reinforcement = ``here is a reward signal after you act --- learn from the consequences''.
+\end{solbox}
+
+\newpage
+%% ===================================================
+\section*{Canonical Worked Numerical --- Han \& Kamber Example 9.1}
+\addcontentsline{toc}{section}{Canonical Worked Numerical (Han \& Kamber Example 9.1)}
+%% ===================================================
+
+\begin{keybox}{Why memorise this specific example}
+This is the \emph{exact textbook example} (\texttt{back propagation.pdf}, Han \& Kamber \emph{Data Mining} Ch.\,9.2, Figure 9.5 / Tables 9.1--9.4) that the 2023 Q8b numerical is modelled on --- same network shape (3 input $\to$ 2 hidden $\to$ 1 output), same sigmoid activation, same forward $\to$ error $\to$ weight-update structure. If a numerical appears on your exam, walking through \emph{this} derivation by hand 2--3 times is the highest-value 20 minutes you can spend on this topic.
+\end{keybox}
+
+\begin{qbox}{Setup}
+Network: 3 input units (1, 2, 3) $\to$ 2 hidden units (4, 5) $\to$ 1 output unit (6), fully connected, biases $\theta_4,\theta_5,\theta_6$ included. Input tuple $X = (x_1,x_2,x_3) = (1,0,1)$, true class label $T_6 = 1$, learning rate $l = 0.9$. Initial weights/biases are given in Table 9.2.
+\end{qbox}
+
+\begin{solbox}{Step 1 --- Forward propagation (Table 9.3): $I_j = \sum_i w_{ij}O_i + \theta_j$, $\;O_j = \dfrac{1}{1+e^{-I_j}}$}
+\begin{center}
+\begin{tabular}{ll}
+\toprule
+Unit $j$ & Net input $I_j$ \quad / \quad Output $O_j$ \\
+\midrule
+4 & $I_4 = -0.7,\quad O_4 = 1/(1+e^{0.7}) = 0.332$ \\
+5 & $I_5 = 0.1,\quad O_5 = 1/(1+e^{-0.1}) = 0.525$ \\
+6 & $I_6 = -0.105,\quad O_6 = 1/(1+e^{0.105}) = 0.474$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+\end{solbox}
+
+\begin{solbox}{Step 2 --- Backpropagating the error (Table 9.3 cont.): $Err_j = O_j(1-O_j)(T_j - O_j)$ for output, $Err_j = O_j(1-O_j)\sum_k Err_k w_{jk}$ for hidden}
+\begin{align*}
+Err_6 &= O_6(1-O_6)(T_6 - O_6) = (0.474)(1-0.474)(1-0.474) = 0.1311\\
+Err_5 &= O_5(1-O_5)\,Err_6\, w_{56} = (0.525)(1-0.525)(0.1311)(-0.2) = -0.0065\\
+Err_4 &= O_4(1-O_4)\,Err_6\, w_{46} = (0.332)(1-0.332)(0.1311)(-0.3) = -0.0087
+\end{align*}
+\end{solbox}
+
+\begin{solbox}{Step 3 --- Updating weights and biases (Table 9.4): $\Delta w_{ij} = l \cdot Err_j \cdot O_i$, $\;w_{ij}^{new} = w_{ij} + \Delta w_{ij}$ \quad ($\Delta\theta_j = l\cdot Err_j$ for biases)}
+\begin{align*}
+w_{46} &= -0.3 + (0.9)(0.1311)(0.332) = -0.261 \\
+w_{56} &= -0.2 + (0.9)(0.1311)(0.525) = -0.138 \\
+w_{14} &= 0.2 + (0.9)(-0.0087)(1) = 0.192 \\
+w_{15} &= -0.3 + (0.9)(-0.0065)(1) = -0.306 \\
+w_{24} &= 0.4 + (0.9)(-0.0087)(0) = 0.4 \quad \text{(unchanged --- } O_2 = x_2 = 0\text{)}\\
+w_{25} &= 0.1 + (0.9)(-0.0065)(0) = 0.1 \quad \text{(unchanged)}\\
+w_{34} &= -0.5 + (0.9)(-0.0087)(1) = -0.508 \\
+w_{35} &= 0.2 + (0.9)(-0.0065)(1) = 0.194 \\
+\theta_6 &= 0.1 + (0.9)(0.1311) = 0.218,\quad
+\theta_5 = 0.2 + (0.9)(-0.0065) = 0.194,\quad
+\theta_4 = -0.4 + (0.9)(-0.0087) = -0.408
+\end{align*}
+\end{solbox}
+
+\begin{warnbox}{The pattern to internalise (applies to ANY similar numerical, including 2023 Q8b)}
+\begin{enumerate}[noitemsep]
+  \item \textbf{Forward:} net input = weighted sum of inputs + bias, then squash with sigmoid $\to$ unit output.
+  \item \textbf{Error (output unit):} $Err = O(1-O)(T-O)$ --- ``derivative of sigmoid'' $\times$ ``how wrong we are''.
+  \item \textbf{Error (hidden unit):} $Err = O(1-O)\sum(\text{downstream } Err \times \text{connecting weight})$ --- the error is \emph{passed backward} weighted by the same connections it travelled forward on. This is the literal meaning of ``backpropagation''.
+  \item \textbf{Update:} $\Delta w = l \times Err_{\text{(receiving unit)}} \times O_{\text{(sending unit)}}$, and $w^{new} = w^{old} + \Delta w$. Biases use the same rule with the ``sending output'' implicitly $=1$.
+  \item \textbf{Sanity check your answer} the way Table 9.4/the 2023 solution does: plug the new weights back through one more forward pass and confirm the output has moved \emph{closer} to the target --- this is often an explicit final sub-question (exactly what 2023 Q8b asks for).
+\end{enumerate}
+\end{warnbox}
+
+\newpage
+%% ===================================================
+\section*{Quick Reference Summary}
+\addcontentsline{toc}{section}{Quick Reference Summary}
+%% ===================================================
+
+\begin{keybox}{Year-by-Year Appearance (2020--2024) --- corrected}
+\begin{tabular}{lll}
+\toprule
+\textbf{Year} & \textbf{Location} & \textbf{What it asked} \\
+\midrule
+2024 & Section B, Q8 (9 marks) & Inductive learning + ANN-vs-biological comparison + Fuzzy/Uncertainty short notes \\
+2023 & Section B, Q8 (9 marks) & Associative memory/multilayer architecture + \textbf{sigmoid forward/backward numerical} \\
+2022 & Section B, B-1 (9 marks) & ANN definition+comparison + learning + supervised/unsupervised/reinforcement + short notes \\
+2021 & --- & \textbf{Not asked} (Q8 that year is a pure Bayesian Network question --- corrected 2026-06-07) \\
+2020 & --- & \textbf{Not asked} (no NN question anywhere in the paper --- corrected 2026-06-07) \\
+\bottomrule
+\end{tabular}
+\end{keybox}
+
+\begin{keybox}{Five Formulas to Have Cold}
+\begin{enumerate}[noitemsep]
+  \item Sigmoid: $\sigma(z) = \dfrac{1}{1+e^{-z}}$, derivative $\sigma'(z) = \sigma(z)(1-\sigma(z))$ --- the single most-reused identity in any NN numerical.
+  \item Net input: $I_j = \sum_i w_{ij}O_i + \theta_j$ (weighted sum + bias).
+  \item Output-unit error: $Err_j = O_j(1-O_j)(T_j - O_j)$.
+  \item Hidden-unit error (backpropagated): $Err_j = O_j(1-O_j)\sum_k Err_k\, w_{jk}$.
+  \item Weight/bias update: $\Delta w_{ij} = l \cdot Err_j \cdot O_i$, $\;w_{ij}^{new} = w_{ij}^{old} + \Delta w_{ij}$ (and $\Delta\theta_j = l \cdot Err_j$).
+\end{enumerate}
+\end{keybox}
+
+\begin{keybox}{The Two Paragraphs to Memorise Cold}
+\textbf{ANN vs Biological (for the comparison question):} ``An ANN is a network of simple processing units connected by weighted links that computes outputs as a function of weighted input sums and learns by adjusting those weights --- directly analogous to biological neurons (soma=node, dendrite=input, axon=output, synapse=weight) learning by adjusting synaptic strength. What is \emph{not} mimicked: the brain's massive parallel scale ($10^{11}$ neurons), chemical signalling, continuous self-organising neuroplasticity, and extreme energy efficiency. What \emph{is} similar: both are networks of simple units, both learn from experience by changing connection strengths, both compute via weighted-sum-plus-activation, and both store knowledge in a distributed, generalisable, `black box' fashion.''
+
+\textbf{Associative memory \& multilayer NNs (for the 2023-style question):} ``Associative memory recalls a complete stored pattern from a partial or noisy cue, by content rather than address. Multilayer neural networks are fundamentally rooted in this idea: they store an input-output association distributedly across their weight matrix (built up, layer by layer, via forward propagation and activation), and backpropagation is simply the mechanism by which that association is strengthened/corrected from examples --- making the network's learned behaviour a generalised, continuous-valued form of content-addressable, pattern-completing associative recall.''
+\end{keybox}
+
+\begin{warnbox}{Common Mistakes}
+\begin{itemize}[noitemsep]
+  \item Don't write a generic ``ANN = computer brain'' definition --- name the structural mapping (soma/dendrite/axon/synapse $\leftrightarrow$ node/input/output/weight) for marks.
+  \item In the backprop numerical: compute the \emph{output}-unit error first, then propagate \emph{backward} to hidden units --- a common slip is computing hidden-unit errors before the output error exists.
+  \item Remember $Err$ for a hidden unit uses the \emph{already-updated-direction} weights connecting it \emph{forward} to the next layer (not the weights feeding into it) --- this is the crux of ``back''-propagation.
+  \item If $x_i = 0$ for some input unit, $\Delta w$ for weights leaving that unit is exactly $0$ --- don't recompute it as if it were non-zero (a trap many students fall into, mirrored in the canonical example where $w_{24}, w_{25}$ stay unchanged because $O_2 = x_2 = 0$).
+  \item Don't confuse \emph{supervised} (has labelled targets), \emph{unsupervised} (no targets, finds structure), and \emph{reinforcement} (delayed reward signal, not direct labels) --- give a concrete example for each.
+  \item This topic is \emph{not} guaranteed every year (3/5) --- don't let it crowd out Bayes/BN, FOL, or Planning, all of which are 5/5.
+\end{itemize}
+\end{warnbox}
+
+\end{document}

@@ -327,7 +327,7 @@ R5: IF F THEN G
 | 2023 | A | Q3c | Map coloring CSP — identify variables, domains, constraints |
 | 2022 | B | B-4d | SEND+MORE=MONEY cryptarithmetic CSP trace |
 | 2021 | A | Q3c | Map coloring CSP — variables, domains, constraints |
-| 2020 | B | B-Q8 (part) | Combined with Neural Networks |
+| 2020 | — | — | Not asked. Corrected 2026-06-07: re-checked the full 2020 paper (Group A Q1-4, Group B Q5-8) — there is no CSP question that year; B-Q8 that year is Bayesian Network + meningitis (Bayes), no CSP or NN content. |
 
 ---
 
@@ -573,12 +573,13 @@ Goal:  ON(C,A), ON(B,D), ONTABLE(A), ONTABLE(D)
 ---
 
 ### Topic 8 — Neural Networks + Machine Learning
-**Source:** original lecture note.pdf · **Yield:** ⭐⭐⭐ 5/5 years · **Marks:** 7–9
+**Source:** original lecture note.pdf + Banckpropogation.pdf, back propagation.pdf, New Doc 2019-08-27.pdf, Neural_Network_Evolution.pdf, Lecture 13.2 Classification ANN.pdf · **Yield:** ⭐⭐⭐ 3/5 years (2024, 2023, 2022 only) · **Marks:** 9 each time it appears
 
-#### 🔁 PATTERN:
-- Always: ANN architecture + comparison with biological networks
-- Sometimes: backpropagation numerical (sigmoid, weight update)
-- Short notes: Fuzzy Logic + Uncertainty often combined here
+#### 🔁 PATTERN (corrected 2026-06-07):
+- Appears in 3 of 5 years (2024/2023/2022) — NOT every year. 2021 and 2020 do NOT contain an NN question.
+- Always: ANN definition + comparison with biological networks (asked in 2024, 2022; "associative memory" framing in 2023)
+- Sometimes (1/5 years so far — 2023 only): backpropagation numerical — sigmoid forward+backward pass, weight update — matches the canonical Han & Kamber Example 9.1 worked example almost exactly
+- Short notes: Fuzzy Logic + Uncertainty bundled in here in 2024/2022 (see Topic 11)
 
 #### Detailed Questions by Year:
 
@@ -597,8 +598,11 @@ Goal:  ON(C,A), ON(B,D), ONTABLE(A), ONTABLE(D)
 - c) Supervised, unsupervised, reinforcement learning. (2)
 - d) Short notes: Fuzzy Logic + Uncertainty. (2)
 
-**2021 — Q8 (9 marks) — NN + Burglary Alarm Bayesian Network**
-- See Bayesian Network details under Topic 7.
+**2021 — not asked**
+Corrected 2026-06-07: the original entry claimed "Q8 = NN + Burglary Alarm Bayesian Network", but the raw 2021 paper's Q8 is a PURE Bayesian Network question (two independent alarm sensors, Burglary→Alarm1/Alarm2 — no NN content whatsoever). Verified by re-reading 2021 Section-B pages directly.
+
+**2020 — not asked**
+Corrected 2026-06-07: verified the full 2020 paper (Group A Q1–4, Group B Q5–8) contains no Neural Network question of any kind. Group B Q8 that year is Bayesian Network + meningitis (Bayes), not NN.
 
 ---
 
@@ -620,7 +624,7 @@ Goal:  ON(C,A), ON(B,D), ONTABLE(A), ONTABLE(D)
 | FOL + Resolution | A-Q4 | A-Q4,5 | A-2 | A-Q4 | A-Q4 |
 | STRIPS + Planning | B-Q6 | B-Q6b | A-3 | B-Q5 | B-Q5 |
 | Bayes + BN | B-Q7,8 | B-Q7,8 | B-3d | B-Q7 | B-Q7 |
-| Neural Networks | B-Q8 | B-Q8 | B-1,2 | B-Q8 | B-Q8 |
+| Neural Networks | — | — | B-1 | B-Q8 | B-Q8 |
 
 ---
 

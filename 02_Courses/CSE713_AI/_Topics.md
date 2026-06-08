@@ -31,7 +31,7 @@ Status: 🔲 not started · 📖 learning · 🔁 needs recall · ✅ can explai
 | ↳ Associative Memory + Hopfield Networks | 📖 | — | 2026-06-07 | — | 1/5 · 3 marks (2023 Q8a) | Recall complete patterns from partial input; Hopfield energy E=−½Σwij·si·sj; Nobel 2024 (Hopfield+Hinton) |
 | ↳ ANN vs Biological Network comparison + taxonomy | 📖 | — | 2026-06-07 | — | 2/5 · 3 marks | soma/dendrite/axon↔node/input/output mapping; feedforward vs recurrent; supervised/unsupervised/reinforcement |
 | ↳ NN Historical Evolution (AI Winters → Transformers) | 📖 | — | 2026-06-07 | — | 0/5 · background only | MP(1943)→Rosenblatt(1958)→Minsky XOR(1969)→Hopfield(1982)→Hinton backprop(1986)→CNN/LSTM(1989-97)→AlexNet(2012)→Transformers(2017). Not directly examined — context for "what is learning/ANN" essays |
-| CSP (map coloring, cryptarithmetic) | 🔲 | — | — | — | 4/5 · 1–3 marks | Small marks; don't over-invest |
+| CSP (map coloring, cryptarithmetic) | 📖 | — | 2026-06-08 | — | 4/5 · 1–3 marks | Theory + 2021/2023 map-coloring CSP formulation + 2022 SEND+MORE=MONEY trace + 2024 short note added to Search_Solutions (Topic 10 section). Small marks; don't over-invest. |
 | Fuzzy Logic + Uncertainty | 📖 | — | 2026-06-07 | — | 2/5 · 2–3 marks | Slides read, wiki + solutions PDF done. Only 2024/2022 ask it (short notes, inside NN Q). 2021/2020 corrected to "not asked". |
 
 ## Column guide

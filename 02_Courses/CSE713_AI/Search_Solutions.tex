@@ -3170,4 +3170,149 @@ HC's 3 drone failures: \textbf{local maximum} (suboptimal route), \textbf{platea
 SA temperature schedule: $T$ starts high (broad exploration) $\to$ decreases to 0 (no worse moves accepted) $\to$ converges to optimum.
 \end{answerbox}
 
+%=====================================================================
+\section{Constraint Satisfaction Problems (Topic 10) — All Years}
+%=====================================================================
+
+\noindent Chapter 5 (slides 1--23, R\&N 5.1--5.3, 4.3) covers CSPs. Questions appear in \textbf{2021 A-Q3c, 2022 B-4d, 2023 A-Q3c, and 2024 A-Q4 (part)} — always as a 1--3 mark sub-part bundled with HC/SA/Fuzzy, never standalone. Two recurring patterns: (a) \textbf{formulate} a problem as a CSP (variables, domains, constraints), and (b) \textbf{trace} the cryptarithmetic SEND+MORE=MONEY puzzle.
+
+%----------------------------------------------------------------------
+\subsection{Theory — What Is a CSP?}
+%----------------------------------------------------------------------
+
+\begin{solutionbox}
+A \textbf{Constraint Satisfaction Problem (CSP)} is defined by a set of \textbf{variables} $X_i$, each with a \textbf{domain} $D_i$ of possible values, and a set of \textbf{constraints} $C$. The aim is to find an assignment of values to all variables, drawn from their domains, such that \textbf{none of the constraints are violated}.
+\end{solutionbox}
+
+\vspace{0.4em}
+
+\noindent\textbf{Varieties of constraints (slide 12):}
+\begin{itemize}[noitemsep]
+  \item \textbf{Unary} — involves a single variable, e.g.\ $M \neq 0$.
+  \item \textbf{Binary} — involves a pair of variables, e.g.\ $SA \neq WA$.
+  \item \textbf{Higher-order} — involves 3+ variables, e.g.\ $Y = D + E$ or $Y = D + E - 10$.
+  \item \textbf{Inequality (continuous)} — e.g.\ $\mathit{EndJob1} + 5 \leq \mathit{StartJob3}$.
+  \item \textbf{Soft (preferences)} — e.g.\ ``an 11am lecture is preferable to an 8am lecture''.
+\end{itemize}
+
+\vspace{0.4em}
+
+\noindent\textbf{Path Search vs.\ CSP — the key distinction (slide 16):} In a path-search problem (e.g.\ Rubik's Cube), the goal state is easy to recognise but hard to reach. In a CSP (e.g.\ $n$-Queens, map-coloring), the \textbf{difficult part is knowing the goal state itself} — once a complete, consistent assignment is found, ``how we got there'' is irrelevant.
+
+%----------------------------------------------------------------------
+\subsection{Backtracking Search — The Standard Algorithm}
+%----------------------------------------------------------------------
+
+\noindent\textbf{Standard search formulation (slide 12):} states = partial assignments; initial state = the empty assignment; successor function = assign a legal value to one unassigned variable (fail if none exists — \emph{not fixable}); goal test = assignment is complete. Every solution appears at \textbf{depth $n$} (for $n$ variables) $\Rightarrow$ \textbf{depth-first search} is the natural fit.
+
+\vspace{0.4em}
+
+\begin{mdframed}[style=notesframe]
+\textbf{Backtracking search (slides 13--14):}\\[0.3em]
+Since variable assignments are \textbf{commutative} ($[WA{=}red$ then $NT{=}green]$ is the same state as $[NT{=}green$ then $WA{=}red]$), we only need to consider assigning \textbf{one variable at a time} at each search-tree node. Depth-first search restricted to single-variable assignments \textbf{is} backtracking search:\\[0.3em]
+\textbf{1.} Pick an unassigned variable; try a value from its domain consistent with current assignments.\\
+\textbf{2.} Recurse on the remaining unassigned variables.\\
+\textbf{3.} If no value is consistent, \textbf{backtrack} — undo the last assignment and try the next alternative.\\[0.3em]
+Backtracking is the \textbf{basic algorithm for CSPs} — it can solve $n$-Queens for $n \approx 25$.
+\end{mdframed}
+
+%----------------------------------------------------------------------
+\subsection{Improvements to Backtracking (slides 17--23)}
+%----------------------------------------------------------------------
+
+\noindent Three general-purpose questions drive the speed-ups: \emph{(1) which variable to assign next? (2) which value to try first? (3) can failure be detected early?}
+
+\begin{center}
+\renewcommand{\arraystretch}{1.4}
+\small
+\begin{tabular}{p{3.3cm}|p{9cm}}
+\toprule
+\textbf{Heuristic} & \textbf{Idea} \\
+\midrule
+\textbf{Minimum Remaining Values (MRV)} & Choose the \textbf{variable} with the \textbf{fewest legal values} left — the most likely to fail soonest, so fail fast and prune the tree early. \\
+\textbf{Degree heuristic} & Tie-breaker for MRV: choose the variable involved in the \textbf{most constraints} on remaining unassigned variables. \\
+\textbf{Least Constraining Value (LCV)} & Given a variable, choose the \textbf{value} that rules out the \textbf{fewest} options for neighbouring variables — keeps the most flexibility for the rest of the search. \\
+\textbf{Forward checking} & After assigning a variable, \textbf{prune} that value from the domains of its neighbours; \textbf{terminate immediately} if any variable's domain becomes empty (failure detected before it is reached). \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{answerbox}
+\textbf{CSP cheat-sheet:} CSP = $\langle$Variables, Domains, Constraints$\rangle$. Solved by \textbf{backtracking} (DFS + single-variable assignment + undo on failure). Sped up by \textbf{MRV} (fewest legal values), \textbf{degree heuristic} (most constraints, tie-break), \textbf{LCV} (least restrictive value), and \textbf{forward checking} (prune neighbour domains, fail early). Combining these heuristics makes problems like 1000-Queens tractable.
+\end{answerbox}
+
+%----------------------------------------------------------------------
+\subsection{2021 — A-Q3(c) \& 2023 — A-Q3(c): Formulate Map Coloring as a CSP \ [part marks]}
+%----------------------------------------------------------------------
+
+\begin{solutionbox}
+\textbf{Question (recurring, 2021 \& 2023):} Formulate the map-coloring problem as a Constraint Satisfaction Problem — identify the variables, domains, and constraints.
+\end{solutionbox}
+
+\noindent\textbf{Problem:} Colour each region of a map so that no two adjacent regions share the same colour, using a fixed palette (e.g.\ $\{red, green, blue\}$).
+
+\begin{description}[leftmargin=3.4cm, labelwidth=3.2cm, labelsep=0.2cm]
+  \item[\textbf{Variables:}] One per region: $WA, NT, Q, NSW, V, SA, T$.
+  \item[\textbf{Domains:}] $D_i = \{red, green, blue\}$ for every region $i$.
+  \item[\textbf{Constraints (binary):}] Adjacent regions must receive different colours: $WA \neq NT$, $WA \neq SA$, $NT \neq SA$, $NT \neq Q$, $SA \neq Q$, $SA \neq NSW$, $SA \neq V$, $Q \neq NSW$, $NSW \neq V$. (No constraint on $T$ — Tasmania is an island, adjacent to nothing.)
+\end{description}
+
+\noindent\textbf{Example solution (a complete, consistent assignment):}
+$$\{WA{=}red,\; NT{=}green,\; Q{=}red,\; NSW{=}green,\; V{=}red,\; SA{=}blue,\; T{=}\text{any colour}\}$$
+
+\begin{answerbox}
+\textbf{One-line definition to open the answer:} ``A CSP is defined by a set of variables, each with a domain of possible values, and a set of constraints; a solution is an assignment of values to all variables that satisfies every constraint.'' Then plug in the three components above — that alone earns full marks on a 1--3 mark formulation sub-part.
+\end{answerbox}
+
+%----------------------------------------------------------------------
+\subsection{2022 — B-4(d): Trace the Cryptarithmetic SEND + MORE = MONEY CSP \ [3 marks]}
+%----------------------------------------------------------------------
+
+\begin{solutionbox}
+\textbf{Question:} What is a CSP? Trace how the cryptarithmetic puzzle SEND + MORE = MONEY is solved as a CSP.
+\end{solutionbox}
+
+\noindent\textbf{Setup (slide 7):}
+\begin{description}[leftmargin=3.4cm, labelwidth=3.2cm, labelsep=0.2cm]
+  \item[\textbf{Variables:}] $S, E, N, D, M, O, R, Y$ (each letter is a digit).
+  \item[\textbf{Domains:}] $D_i = \{0, 1, 2, \ldots, 9\}$.
+  \item[\textbf{Constraints:}]
+    \begin{itemize}[noitemsep]
+      \item \textbf{Unary:} $M \neq 0$ and $S \neq 0$ (no leading zeros).
+      \item \textbf{All-different:} every letter maps to a distinct digit.
+      \item \textbf{Higher-order (column arithmetic with carries $X_1, X_2, X_3$):} $D + E = Y + 10 X_1$;\; $N + R + X_1 = E + 10 X_2$;\; $E + O + X_2 = N + 10 X_3$;\; $S + M + X_3 = O + 10 M$.
+    \end{itemize}
+\end{description}
+
+\vspace{0.3em}
+\noindent\textbf{Trace (column-by-column, right to left, backtracking on conflict):}
+\begin{enumerate}[leftmargin=1.5cm, itemsep=4pt]
+  \item \textbf{Units column:} assign $D, E$ such that $D + E = Y$ or $Y + 10$ (carry $X_1{=}1$ if $\geq 10$). Backtrack if the resulting $Y$ clashes with an already-used digit.
+  \item \textbf{Tens column:} assign $N, R$ such that $N + R + X_1 = E$ or $E + 10$ (carry $X_2$). Any clash with previously assigned digits forces backtracking to the units column to try a new $(D,E)$ pair.
+  \item \textbf{Hundreds column:} assign $O$ such that $E + O + X_2 = N$ or $N + 10$ (carry $X_3$).
+  \item \textbf{Thousands column:} $S + M + X_3 = O + 10M$. Since the result MONEY has one more digit than the addends, the final carry $X_3$ \textbf{must propagate} to give the leading digit, forcing $M = X_3 = 1$ — and consequently $S = 8$ or $9$.
+  \item \textbf{Consistency check:} verify all eight letters are pairwise distinct (the all-different constraint). If any clash remains, backtrack to the most recent choice point and try the next legal value.
+\end{enumerate}
+
+\noindent\textbf{Unique solution found:}
+$$\{S{=}9,\ E{=}5,\ N{=}6,\ D{=}7,\ M{=}1,\ O{=}0,\ R{=}8,\ Y{=}2\} \;\Rightarrow\; 9567 + 1085 = 10652$$
+
+\begin{answerbox}
+\textbf{Why this is a CSP, in one line:} the puzzle has variables (letters), domains (digits 0--9), and constraints (no leading zeros, all-different, column-sum-with-carry); backtracking search assigns digits column by column and undoes a choice the moment any constraint is violated — exactly the general CSP solution method.
+\end{answerbox}
+
+%----------------------------------------------------------------------
+\subsection{2024 — A-Q4 (part): CSP Short Note (combined with HC/SA/Fuzzy) \ [part marks]}
+%----------------------------------------------------------------------
+
+\begin{solutionbox}
+\textbf{Question:} Short note on Constraint Satisfaction Problems (asked as one part of a combined HC/SA/Fuzzy/CSP question).
+\end{solutionbox}
+
+\noindent\textbf{Short-note answer:} A Constraint Satisfaction Problem is defined by a set of \textbf{variables}, each with a \textbf{domain} of possible values, and a set of \textbf{constraints} restricting which combinations of values are legal; a solution is a complete assignment that violates none of the constraints. Classic examples are \textbf{map-colouring} (variables = regions, domains = colours, constraints = adjacent regions differ) and \textbf{cryptarithmetic} (variables = letters, domains = digits 0--9, constraints = no leading zeros, all-different, column sums with carries). CSPs are solved by \textbf{backtracking search} — depth-first search that assigns one variable at a time and undoes a choice as soon as a constraint is violated — and sped up with \textbf{MRV}, \textbf{degree heuristic}, \textbf{least-constraining-value}, and \textbf{forward checking}. Real-world CSPs include timetabling, scheduling, and hardware/transport configuration (slide 11).
+
+\begin{answerbox}
+\textbf{If only a one-liner is asked:} ``A CSP is a problem defined by variables with domains and a set of constraints; solving it means finding an assignment satisfying every constraint, typically via backtracking search (e.g.\ map-colouring, $n$-Queens, cryptarithmetic).''
+\end{answerbox}
+
 \end{document}

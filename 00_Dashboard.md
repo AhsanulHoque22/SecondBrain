@@ -4,9 +4,9 @@
 
 ## Right now
 - **Active exam:** CSE 713 — Artificial Intelligence — **Wed 10 Jun 2026, 10:30 AM**
-- **Days left:** 2
-- **Phase:** AI Day 10 — **AI ONLY**, last 2 days: timed past papers + full recall sweep. Livora = 0.
-- **Single most important thing today:** Push Neural Networks from 📖 to ✅ (drill 2024/2023/2022 B-Q8 cold), then clear the Problem Formulation recall debt.
+- **Days left:** 1
+- **Phase:** AI Day 11 — **AI ONLY**, final light revision day: cheat sheet + full recall sweep, sleep early. Livora = 0.
+- **Single most important thing today:** Final light revision — close Search: Problem Formulation recall debt (5 days overdue), one last Neural Networks B-Q8 drill, finish the cheat sheet, sleep early.
 - **⚠️ Rule:** Google Calendar is the ONLY source of truth for daily plans. Never use the overnight rollover log for scheduling.
 - **🔴 Session protocols:** Read and execute `scripts/data/session_protocols.md` at EVERY session start. No exceptions.
 
@@ -37,7 +37,7 @@ Prayers structure the day — each gap is a study block:
 ## Status board (Claude updates)
 | Course | Topics mapped | High-yield done | Past paper attempts | Confidence /5 |
 |--------|:-:|:-:|:-:|:-:|
-| [[02_Courses/CSE713_AI/_Topics\|AI (713)]] | ✅ mapped (23 topics) | 15✅ · 1🔁 · 11📖 (Bayes/NN/Fuzzy read, not yet ✅) · 1🔲 (CSP) | ✅ past papers done per topic | 4.9 |
+| [[02_Courses/CSE713_AI/_Topics\|AI (713)]] | ✅ mapped (23 topics) | 15✅ · 1🔁 · 12📖 (Bayes/NN/Fuzzy/CSP read, not yet ✅) · 0🔲 | ✅ past papers done per topic | 4.8 |
 | [[02_Courses/CSE717_InfoSec/README\|InfoSec (717)]] | – | – | – | – |
 | [[02_Courses/CSE711_Compiler/README\|Compiler (711)]] | – | – | – | – |
 | [[02_Courses/CSE719_Distributed/README\|Distributed (719)]] | – | – | – | – |

@@ -1,9 +1,9 @@
 # Study Brain — Compiled State
-_Updated: 2026-06-07 by overnight rollover_
+_Updated: 2026-06-08 by overnight rollover_
 
 ## Active exam
 Course: CSE 713 — Artificial Intelligence
-Date: 2026-06-10 (Wednesday) | Days left from 2026-06-08: 2 | Phase: Day 10 — **AI ONLY**, last 2 days = subject only (timed past papers + full recall sweep). Livora = 0, no system tinkering.
+Date: 2026-06-10 (Wednesday) | Days left from 2026-06-09: 1 | Phase: Day 11 — **AI ONLY**, final light revision day: cheat sheet + full recall sweep, sleep early. Livora = 0, no system tinkering. Exam is tomorrow.
 
 ## Topics — CSE713 AI
 | Topic | Status | Conf | Next Recall |
@@ -11,33 +11,33 @@ Date: 2026-06-10 (Wednesday) | Days left from 2026-06-08: 2 | Phase: Day 10 — 
 | Intelligent Agents + Environments (PAGE) | ✅ | 4 | 2026-06-05 ⚠️ overdue |
 | Search: UCS, Greedy, A*, IDDFS — trace on graph | ✅ | 4 | 2026-06-05 ⚠️ overdue |
 | Search: Problem Formulation | 🔁 | 4 | 2026-06-04 ⚠️ overdue |
-| Alpha-Beta Pruning + Minimax | ✅ | 5 | 2026-06-07 |
+| Alpha-Beta Pruning + Minimax | ✅ | 5 | 2026-06-07 ⚠️ overdue |
 | Forward + Backward Chaining | ✅ | 5 | 2026-06-06 ⚠️ overdue |
 | ↳ PL Basics | ✅ | 5 | 2026-06-06 ⚠️ overdue |
 | ↳ Resolution in PL | ✅ | 5 | 2026-06-06 ⚠️ overdue |
-| FOL + Resolution + Inference | ✅ | 5 | 2026-06-07 |
-| ↳ FOL Syntax | ✅ | 5 | 2026-06-07 |
-| ↳ FOL Translation | ✅ | 5 | 2026-06-07 |
-| ↳ Canonical Form Conversion (9-step) | ✅ | 5 | 2026-06-07 |
-| ↳ Resolution in FOL | ✅ | 5 | 2026-06-07 |
-| ↳ KR & Mapping roles | ✅ | 5 | 2026-06-07 |
-| ↳ Evidential Reasoning (ER) | ✅ | 5 | 2026-06-07 |
-| STRIPS + Partial-Order Planning | ✅ | 5 | 2026-06-07 |
-| Hill Climbing + Simulated Annealing | ✅ | 5 | 2026-06-07 |
+| FOL + Resolution + Inference | ✅ | 5 | 2026-06-07 ⚠️ overdue |
+| ↳ FOL Syntax | ✅ | 5 | 2026-06-07 ⚠️ overdue |
+| ↳ FOL Translation | ✅ | 5 | 2026-06-07 ⚠️ overdue |
+| ↳ Canonical Form Conversion (9-step) | ✅ | 5 | 2026-06-07 ⚠️ overdue |
+| ↳ Resolution in FOL | ✅ | 5 | 2026-06-07 ⚠️ overdue |
+| ↳ KR & Mapping roles | ✅ | 5 | 2026-06-07 ⚠️ overdue |
+| ↳ Evidential Reasoning (ER) | ✅ | 5 | 2026-06-07 ⚠️ overdue |
+| STRIPS + Partial-Order Planning | ✅ | 5 | 2026-06-07 ⚠️ overdue |
+| Hill Climbing + Simulated Annealing | ✅ | 5 | 2026-06-07 ⚠️ overdue |
 | Bayes' Theorem + Bayesian Networks | 📖 | — | 2026-06-09 |
 | ↳ Uncertainty Concept (doorbell) | 📖 | — | — |
 | ↳ Extended Bayes' Theorem | 📖 | — | — |
 | ↳ BN Syntax, Semantics & Construction | 📖 | — | — |
 | Neural Networks + Learning | 📖 | — | 2026-06-09 |
 | ↳ McCulloch-Pitts/Perceptron/Backprop/Hopfield/ANN-vs-Bio/History (5 subtopics) | 📖 | — | — |
-| CSP (map coloring, cryptarithmetic) | 🔲 | — | — |
+| CSP (map coloring, cryptarithmetic) | 📖 | — | — |
 | Fuzzy Logic + Uncertainty | 📖 | — | — |
 
 ## Carry-forward
-- Neural Networks + Learning — 📖 reading complete (5 sources, wiki+solutions done) but NOT ✅ — needs active recall + timed past-paper drill (2024/2023/2022 B-Q8) before exam; only 2 revision days left
-- Search: Problem Formulation — 🔁 recall overdue since 2026-06-04 (now 3 days overdue) — drill 4-part template cold
+- Neural Networks + Learning — 📖 reading complete (5 sources, wiki+solutions done) but NOT ✅ — needs one final active recall + B-Q8 drill (2024/2023/2022) before exam; last revision day
+- Search: Problem Formulation — 🔁 recall overdue since 2026-06-04 (now 5 days overdue) — drill 4-part template cold first thing tomorrow
 
-## Recall due 2026-06-08
+## Recall due 2026-06-09
 - 🔁 Intelligent Agents + Environments (PAGE) `CSE713_AI` | conf 4/5
 - 🔁 Search: UCS, Greedy, A*, IDDFS — trace on graph `CSE713_AI` | conf 4/5
 - 🔁 Forward + Backward Chaining + Rule-Based System `CSE713_AI` | conf 5/5
@@ -55,6 +55,6 @@ Date: 2026-06-10 (Wednesday) | Days left from 2026-06-08: 2 | Phase: Day 10 — 
 - 🔁 ↳ Resolution in FOL: Unification, Skolemization, refutation `CSE713_AI` | conf 5/5
 
 ## Recent pattern (last 3 days)
-- 2026-06-05: ✅ STRIPS+POP + FOL+Resolution (all sub-topics) + Alpha-Beta + HC+SA (conf 5 each) | end-of-day log unfilled
 - 2026-06-06: 📖 Bayes + BN (slides read, wiki done, past papers solved 2020–2024) | end-of-day log unfilled
-- 2026-06-07: 📖 Neural Networks (5 sources read, wiki+solutions done, yield corrected) + Fuzzy Logic (wiki+solutions done) | end-of-day log unfilled — 3rd straight day with no log entry
+- 2026-06-07: 📖 Neural Networks (5 sources read, wiki+solutions done, yield corrected) + Fuzzy Logic (wiki+solutions done) | end-of-day log unfilled
+- 2026-06-08: 📖 CSP theory + solutions added (Search_Solutions Topic 10) | end-of-day log unfilled — **4th straight day with no log entry; cannot confirm whether the 15-topic recall sweep or NN drill actually happened**

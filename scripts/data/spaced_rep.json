@@ -7,6 +7,13 @@
       "next_recall": "2026-06-07",
       "recall_count": 0
     },
+    "Bayes' Theorem + Bayesian Networks": {
+      "confidence": 3,
+      "first_done": "2026-06-06",
+      "last_reviewed": "2026-06-06",
+      "next_recall": "2026-06-08",
+      "recall_count": 0
+    },
     "FOL + Resolution + Inference (Marcus/Pompeii)": {
       "confidence": 5,
       "first_done": "2026-06-05",
@@ -63,6 +70,13 @@
       "next_recall": "2026-06-07",
       "recall_count": 0
     },
+    "\u21b3 Extended Bayes' Theorem": {
+      "confidence": 3,
+      "first_done": "2026-06-06",
+      "last_reviewed": "2026-06-06",
+      "next_recall": "2026-06-08",
+      "recall_count": 0
+    },
     "\u21b3 FOL Syntax: Terms, Predicates, Functions, \u2200, \u2203, Sentences": {
       "confidence": 5,
       "first_done": "2026-06-05",
@@ -84,6 +98,13 @@
       "next_recall": "2026-06-07",
       "recall_count": 0
     },
+    "\u21b3 McCulloch-Pitts Neuron + Perceptron + Learning Rule": {
+      "confidence": 3,
+      "first_done": "2026-06-07",
+      "last_reviewed": "2026-06-07",
+      "next_recall": "2026-06-09",
+      "recall_count": 0
+    },
     "\u21b3 PL Basics: satisfiability, validity, entailment, Modus Ponens": {
       "confidence": 5,
       "first_done": "2026-06-04",
@@ -103,6 +124,13 @@
       "first_done": "2026-06-04",
       "last_reviewed": "2026-06-04",
       "next_recall": "2026-06-06",
+      "recall_count": 0
+    },
+    "\u21b3 Uncertainty Concept (doorbell)": {
+      "confidence": 3,
+      "first_done": "2026-06-06",
+      "last_reviewed": "2026-06-06",
+      "next_recall": "2026-06-08",
       "recall_count": 0
     }
   }

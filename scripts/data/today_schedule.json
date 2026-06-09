@@ -1,105 +1,42 @@
 {
-  "date": "2026-06-02",
-  "fetched_at": "2026-06-01T23:01:03Z",
+  "date": "2026-06-09",
+  "fetched_at": "2026-06-08T23:00:41Z",
   "events": [
     {
-      "id": "5h1qmgiomimfcbmccr29glrv6k",
-      "title": "AI Study — Minimax Algorithm + Game Trees + Practice",
-      "start_time": "2026-06-02T05:10:00+06:00",
-      "end_time": "2026-06-02T07:20:00+06:00",
-      "duration_minutes": 130,
-      "type": "study",
-      "description": "Fajr at 4:45 | 5:00-5:10: fix any red-circled gaps from Day 1\n\nBlock 1 (5:10-6:40): Chapter 5.pdf\n- Game tree: MAX nodes (maximise), MIN nodes (minimise)\n- Back-up procedure: propagate terminal values bottom-up\n- Trace 3-level tree with leaf values\n- Minimax limitation: exponential O(b^m) — infeasible for chess\n\nBreak (6:40-6:50) | Past Paper Practice (6:50-7:20):\n_TopicQuestionMap.md > Alpha-Beta Pruning\n→ 2020:A-Q3 (p.14) — show propagation at every node\n→ 2021:A-Q3 (p.11) — full Minimax trace"
-    },
-    {
-      "id": "64uu7sl6bctt4d88eltcbn1n4o",
-      "title": "AI Study — Alpha-Beta Pruning: Full Tree Trace",
-      "start_time": "2026-06-02T07:30:00+06:00",
-      "end_time": "2026-06-02T10:00:00+06:00",
-      "duration_minutes": 150,
-      "type": "study",
-      "description": "Block 2 (7:30-9:00): Chapter 5.pdf\n- α = best MAX can guarantee (init -∞), β = best MIN can guarantee (init +∞)\n- α-cutoff: at MIN node, value ≤ α → prune (MAX won't choose this path)\n- β-cutoff: at MAX node, value ≥ β → prune (MIN won't choose this path)\n- Prune when α ≥ β\n- Complexity: O(b^(d/2)) vs Minimax O(b^d)\n- Futility cutoff, quiescence search concepts\n\nBreak (9:00-9:10)\n\nBlock 3 (9:10-10:00):\nTrace the 2022 or 2023 exam game tree completely — show α/β at every node, cross out pruned"
-    },
-    {
-      "id": "1cdg1g5qacn23k71lsl198hdbg",
-      "title": "Meeting with Dr. Shakera Ahmed — AI in Medical Research & Documentation Management",
-      "start_time": "2026-06-02T10:00:00+06:00",
-      "end_time": "2026-06-02T13:00:00+06:00",
-      "duration_minutes": 180,
-      "type": "other",
-      "description": "Research meeting about how AI can help in medical research and documentation management.\\n\\nNotes: 04_Livora/Requirements_Gathering/2026-06-02_Dr_Shakera_Ahmed.md\\nLinked to: [[04_Livora/README|Livora]] · [[04_Livora/Requirements_Gathering/INDEX|Requirements Index]]"
-    },
-    {
-      "id": "sj844962ra1t8fgip0rtiv1k68",
-      "title": "Breakfast + Exercise + Public Speaking [Day 2]",
-      "start_time": "2026-06-02T10:00:00+06:00",
-      "end_time": "2026-06-02T11:55:00+06:00",
-      "duration_minutes": 115,
-      "type": "meal",
-      "description": "10:00-10:30 Breakfast\n\n10:30-11:00 Past Paper Practice — Alpha-Beta:\n→ _TopicQuestionMap.md > Alpha-Beta > 2022:A-Q3 (p.8) + 2023:A-Q3 (p.5)\n\n11:00-11:25 Exercise (try slightly longer cardio today if energy allows)\n\n11:25-11:55 Public Speaking in English:\nExplain Alpha-Beta pruning aloud: \"Alpha-Beta is an optimization of Minimax...\"\nWalk through why a branch gets pruned — explain α/β logic in plain English\nThen briefly explain what Hill Climbing is (preview of Block 4)"
-    },
-    {
-      "id": "9p3559f5cvkiik8ejd5v2qoduo",
-      "title": "AI Study — Hill Climbing + Simulated Annealing (Block 4)",
-      "start_time": "2026-06-02T12:00:00+06:00",
-      "end_time": "2026-06-02T13:00:00+06:00",
+      "id": "reclaim0focus0o020o029207350o0202606090o05290020o000o01709146831",
+      "title": "🎯 Focus time",
+      "start_time": "2026-06-09T08:00:00+06:00",
+      "end_time": "2026-06-09T09:00:00+06:00",
       "duration_minutes": 60,
+      "type": "other",
+      "description": "This event was created by Reclaim.ai.\n\nReclaim has blocked this time off for Ahsanul to focus. Reclaim defended this time because it's one of the last available in Ahsanul's schedule. Please find another time to meet with Ahsanul."
+    },
+    {
+      "id": "1h6ejflj8ag5uqgb063t157gl4",
+      "title": "⭐ PURE REVISION — Timed Past Paper (2022 or 2023)",
+      "start_time": "2026-06-09T09:00:00+06:00",
+      "end_time": "2026-06-09T13:00:00+06:00",
+      "duration_minutes": 240,
       "type": "study",
-      "description": "Block 4 (60 min): Chapter 4.pdf — Local Search section\n\nHill Climbing 3 problems (MEMORISE):\n1. Local maxima — stuck at a non-global peak\n2. Plateaux — flat region, no direction\n3. Ridges — narrow peak hard to navigate\n\nSimulated Annealing:\n- P(accept worse move) = e^(ΔE/T)\n- T = temperature: high T → explore widely, low T → greedy (like HC)\n- SA solves ALL 3 HC limitations via probabilistic acceptance\n- Application: drone route optimization (2024), robot navigation (2023)"
+      "description": "LAST DAY before exam. NO NEW CONTENT.\nTimed past paper under exam conditions (4 hours exactly)\nAfter: review errors one final time on revision sheets\nEvening: light review of all 10 RS sheets, then sleep early\nTarget wake-up: 7:00 AM tomorrow for exam at 10:30 AM"
     },
     {
-      "id": "uvokj0hkr2698p14j9t4b8t934",
-      "title": "Girlfriend Chat + Dhuhr Prayer + Lunch",
-      "start_time": "2026-06-02T13:00:00+06:00",
-      "end_time": "2026-06-02T14:30:00+06:00",
-      "duration_minutes": 90,
-      "type": "relationship",
-      "description": "13:00-13:30 Girlfriend chat Part 1 (30 min)\n13:30-13:45 Dhuhr prayer (15 min)\n13:45-14:00 Phone scrolling / break (15 min)\n14:00-14:30 Lunch"
+      "id": "reclaim0habit0o040o041249840o041249840o020260609",
+      "title": "🛡 🍱 Lunch",
+      "start_time": "2026-06-09T13:00:00+06:00",
+      "end_time": "2026-06-09T14:00:00+06:00",
+      "duration_minutes": 60,
+      "type": "meal",
+      "description": "This AI-powered event was created by Reclaim.ai.\n\nReclaim has blocked this time off for Ahsanul to work on an important commitment. Reclaim defended this time because it's one of the last available in Ahsanul's schedule. Please find another time to meet with Ahsanul."
     },
     {
-      "id": "uagj6vea9g2b3q7k5ma7n6u8as",
-      "title": "AI Study — Past Papers: Alpha-Beta + HC/SA (Timed)",
-      "start_time": "2026-06-02T14:30:00+06:00",
-      "end_time": "2026-06-02T16:30:00+06:00",
-      "duration_minutes": 120,
-      "type": "study",
-      "description": "Block 5 (120 min):\nPart 1 — Alpha-Beta (60 min):\n→ 2024:A-Q3 (p.2) — 30 min timed, show α/β at every node\n→ 2021:A-Q3 (p.11) — 30 min timed\n\nPart 2 — HC/SA (40 min):\n→ 2023:A-Q4 (p.7) HC limitations + SA + drone application — 20 min\n→ 2024:A-Q4 (p.3) HC + SA + short notes — 20 min\n\nPart 3 — Active recall (20 min):\nDraw a fresh game tree from memory, apply both Minimax and Alpha-Beta without notes. Can you do it?"
-    },
-    {
-      "id": "nnleo891g5f2j8tg0jk6sj7sos",
-      "title": "Girlfriend Chat + Break + Asr Prayer",
-      "start_time": "2026-06-02T16:30:00+06:00",
-      "end_time": "2026-06-02T17:45:00+06:00",
-      "duration_minutes": 75,
-      "type": "relationship",
-      "description": "16:30-17:00 Girlfriend chat Part 2 (30 min)\n17:00-17:30 Phone scrolling / break (30 min)\n17:30-17:45 Asr prayer (15 min)"
-    },
-    {
-      "id": "1bps4ffvcndjqb0tcb6qkd2lmg",
-      "title": "AI Study — Spaced Recall: Day 1 Topics (Notes Closed)",
-      "start_time": "2026-06-02T17:45:00+06:00",
-      "end_time": "2026-06-02T18:30:00+06:00",
-      "duration_minutes": 45,
-      "type": "study",
-      "description": "Block 6 (45 min) — spaced repetition pass on Day 1:\nAnswer your Day 1 flashcard questions from memory:\n- A* formula? Trace UCS on a graph?\n- All 5 agent architectures + 1-line definitions?\n- PAGE model for Mars Rover?\n- Admissible heuristic definition?\n\nThen add 5 new Day 2 flashcard questions for tomorrow morning."
-    },
-    {
-      "id": "etephcr9gjsemuc2b79va6bkmg",
-      "title": "Maghrib Prayer + Girlfriend Chat + Dinner",
-      "start_time": "2026-06-02T18:45:00+06:00",
-      "end_time": "2026-06-02T20:00:00+06:00",
-      "duration_minutes": 75,
-      "type": "prayer",
-      "description": "18:45-19:00 Maghrib prayer (15 min)\n19:00-19:30 Girlfriend chat Part 3 (30 min)\n19:30-20:00 Dinner"
-    },
-    {
-      "id": "sort45k0mtpbqpcmed9ptkisec",
-      "title": "Days 1+2 EOD Review + Isha Prayer + Girlfriend + Sleep 21:45",
-      "start_time": "2026-06-02T20:00:00+06:00",
-      "end_time": "2026-06-02T21:45:00+06:00",
-      "duration_minutes": 105,
-      "type": "prayer",
-      "description": "20:00-20:30 Block 7 — Days 1+2 brain dump:\nBlank page. Write from memory: Alpha-Beta cutoff rules, HC 3 limitations, SA formula, one search trace. Check gaps. Red-circle misses.\n\n20:30-20:45 Isha prayer\n20:45-21:15 Girlfriend chat Part 4\n21:15-21:45 Wind down — no screens\n21:45 SLEEP"
+      "id": "reclaim0focus0o020o029207350o0202606090o05290020o000o01961530395",
+      "title": "🎯 Focus time",
+      "start_time": "2026-06-09T14:00:00+06:00",
+      "end_time": "2026-06-09T18:00:00+06:00",
+      "duration_minutes": 240,
+      "type": "other",
+      "description": "This event was created by Reclaim.ai.\n\nReclaim has blocked this time off for Ahsanul to focus. Reclaim defended this time because it's one of the last available in Ahsanul's schedule. Please find another time to meet with Ahsanul."
     }
   ]
 }

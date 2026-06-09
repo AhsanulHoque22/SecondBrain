@@ -4,9 +4,9 @@
 
 ## Right now
 - **Active exam:** CSE 713 — Artificial Intelligence — **Wed 10 Jun 2026, 10:30 AM**
-- **Days left:** 1
-- **Phase:** AI Day 11 — **AI ONLY**, final light revision day: cheat sheet + full recall sweep, sleep early. Livora = 0.
-- **Single most important thing today:** Final light revision — close Search: Problem Formulation recall debt (5 days overdue), one last Neural Networks B-Q8 drill, finish the cheat sheet, sleep early.
+- **Days left:** 0 — **EXAM TODAY**
+- **Phase:** EXAM DAY — cheat sheet + light verbal sweep only before 10:30. No new material. Post-exam: reset → InfoSec (CSE 717, 2026-06-17).
+- **Single most important thing today:** Pre-exam verbal sweep of all 23 topics — out loud, from memory, cheat sheet only. Then rest. Exam at 10:30 AM.
 - **⚠️ Rule:** Google Calendar is the ONLY source of truth for daily plans. Never use the overnight rollover log for scheduling.
 - **🔴 Session protocols:** Read and execute `scripts/data/session_protocols.md` at EVERY session start. No exceptions.
 
@@ -37,7 +37,7 @@ Prayers structure the day — each gap is a study block:
 ## Status board (Claude updates)
 | Course | Topics mapped | High-yield done | Past paper attempts | Confidence /5 |
 |--------|:-:|:-:|:-:|:-:|
-| [[02_Courses/CSE713_AI/_Topics\|AI (713)]] | ✅ mapped (23 topics) | 15✅ · 1🔁 · 12📖 (Bayes/NN/Fuzzy/CSP read, not yet ✅) · 0🔲 | ✅ past papers done per topic | 4.8 |
+| [[02_Courses/CSE713_AI/_Topics\|AI (713)]] | ✅ mapped (28 topics) | 19✅ · 1🔁 · 7📖 · 1🔲 | ✅ past papers done per topic | 4.8 |
 | [[02_Courses/CSE717_InfoSec/README\|InfoSec (717)]] | – | – | – | – |
 | [[02_Courses/CSE711_Compiler/README\|Compiler (711)]] | – | – | – | – |
 | [[02_Courses/CSE719_Distributed/README\|Distributed (719)]] | – | – | – | – |

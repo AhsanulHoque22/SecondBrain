@@ -1,7 +1,7 @@
 {
   "topics": [
-    "Neural Networks + Learning — 📖 reading complete (5 sources, wiki + solutions PDF done) but NOT yet ✅ — light verbal pass only before exam (no drilling); last chance before CSE 713 exam.",
-    "Search: Problem Formulation — 🔁 recall overdue since 2026-06-04 (now 6 days overdue) — verbal 4-part template pass only (TSP, M&C, Water Jug, Robot Vacuum, Map Coloring) — exam day, light touch only"
+    "InfoSec (CSE 717) course setup — BLOCKING for Window 2. No syllabus/slides/past papers in 02_Courses/CSE717_InfoSec/ yet (only NotebookLM_Sources.md placeholder). User must add materials before Claude can build _Topics.md/_Syllabus.md and rank topics by yield. Highest-priority action for 2026-06-11."
   ],
-  "last_updated": "2026-06-09"
+  "note": "AI (CSE 713) exam was sat today (2026-06-10). Previous carry-forwards (Neural Networks, Search: Problem Formulation) dropped — AI exam window closed. NN and Search Problem Formulation remain at 📖/🔁 in _Topics.md for reference but are no longer exam-critical.",
+  "last_updated": "2026-06-10"
 }

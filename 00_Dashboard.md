@@ -3,10 +3,10 @@
 > Living file. Claude Code updates this every session. You read this first, every day.
 
 ## Right now
-- **Active exam:** CSE 713 — Artificial Intelligence — **Wed 10 Jun 2026, 10:30 AM**
-- **Days left:** 0 — **EXAM TODAY**
-- **Phase:** EXAM DAY — cheat sheet + light verbal sweep only before 10:30. No new material. Post-exam: reset → InfoSec (CSE 717, 2026-06-17).
-- **Single most important thing today:** Pre-exam verbal sweep of all 23 topics — out loud, from memory, cheat sheet only. Then rest. Exam at 10:30 AM.
+- **Active exam:** CSE 717 — Information Security — **Wed 17 Jun 2026, 10:30 AM**
+- **Days left:** 6
+- **Phase:** Window 2, Day 1 (Thu) — Reset + load InfoSec. **BLOCKED:** no syllabus/slides/past papers in `02_Courses/CSE717_InfoSec/` yet — only a NotebookLM placeholder. CSE 713 AI exam was sat 2026-06-10.
+- **Single most important thing today:** Add InfoSec materials (syllabus, slides, past papers) to `02_Courses/CSE717_InfoSec/`, then ask Claude to clone the AI structure and rank topics by yield. Until then, do a fast consolidated AI recall sweep (19 topics due) for retention.
 - **⚠️ Rule:** Google Calendar is the ONLY source of truth for daily plans. Never use the overnight rollover log for scheduling.
 - **🔴 Session protocols:** Read and execute `scripts/data/session_protocols.md` at EVERY session start. No exceptions.
 
@@ -37,8 +37,8 @@ Prayers structure the day — each gap is a study block:
 ## Status board (Claude updates)
 | Course | Topics mapped | High-yield done | Past paper attempts | Confidence /5 |
 |--------|:-:|:-:|:-:|:-:|
-| [[02_Courses/CSE713_AI/_Topics\|AI (713)]] | ✅ mapped (28 topics) | 19✅ · 1🔁 · 7📖 · 1🔲 | ✅ past papers done per topic | 4.8 |
-| [[02_Courses/CSE717_InfoSec/README\|InfoSec (717)]] | – | – | – | – |
+| [[02_Courses/CSE713_AI/_Topics\|AI (713)]] | ✅ EXAM DONE (27 topics) | 18✅ · 1🔁 · 7📖 · 1🔲 | ✅ past papers done per topic | 4.2 |
+| [[02_Courses/CSE717_InfoSec/README\|InfoSec (717)]] | ⏳ awaiting materials | – | – | – |
 | [[02_Courses/CSE711_Compiler/README\|Compiler (711)]] | – | – | – | – |
 | [[02_Courses/CSE719_Distributed/README\|Distributed (719)]] | – | – | – | – |
 | [[02_Courses/CSE715_Graphics/README\|Graphics (715)]] | – | – | – | – |

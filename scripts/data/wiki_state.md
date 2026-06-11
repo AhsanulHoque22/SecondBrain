@@ -1,9 +1,9 @@
 # Study Brain — Compiled State
-_Updated: 2026-06-10 by overnight rollover_
+_Updated: 2026-06-11 by overnight rollover_
 
 ## Active exam
 Course: CSE 717 — Information Security
-Date: 2026-06-17 (Wednesday) | Days left from 2026-06-11: **6** | Phase: **Window 2, Day 1 (Thu) — Reset + load InfoSec**. CSE 713 AI exam was sat today (2026-06-10). **BLOCKED:** `02_Courses/CSE717_InfoSec/` has no syllabus/slides/past papers yet (only NotebookLM_Sources.md placeholder) — adding materials is the #1 unblocking action for 2026-06-11. Until materials arrive, do a fast consolidated AI recall sweep for retention.
+Date: 2026-06-17 (Wednesday) | Days left from 2026-06-12: **5** | Phase: **Window 2, Day 2 (Fri) — still BLOCKED**. `02_Courses/CSE717_InfoSec/` has no syllabus/slides/past papers yet (only NotebookLM_Sources.md + README placeholder) — adding materials is the #1 unblocking action, now urgent (hasn't moved in 2 days). Until materials arrive, continue the AI consolidated recall sweep for retention.
 
 ## Topics — CSE713 AI (exam complete — archived for retention recall)
 | Topic | Status | Conf | Next Recall |
@@ -41,10 +41,9 @@ Date: 2026-06-17 (Wednesday) | Days left from 2026-06-11: **6** | Phase: **Windo
 Not set up yet — no `_Topics.md`. Awaiting materials in `02_Courses/CSE717_InfoSec/`.
 
 ## Carry-forward
-- InfoSec (CSE 717) course setup — BLOCKING. Add syllabus/slides/past papers, then ask Claude to clone the AI structure (`_Topics.md`, `_Syllabus.md`, `_TopicQuestionMap.md`) and rank topics by yield.
-- (Dropped from carry-forward, AI window closed) Neural Networks + Learning (📖) and Search: Problem Formulation (🔁) remain incomplete in AI _Topics.md but are no longer exam-critical.
+- InfoSec (CSE 717) course setup — BLOCKING, 2 days running. Add syllabus/slides/past papers, then ask Claude to clone the AI structure (`_Topics.md`, `_Syllabus.md`, `_TopicQuestionMap.md`) and rank topics by yield. 5 days to exam.
 
-## Recall due 2026-06-11
+## Recall due 2026-06-12
 - 🔁 Intelligent Agents + Environments (PAGE) `CSE713_AI` | conf 4/5
 - 🔁 Search: UCS, Greedy, A*, IDDFS — trace on graph `CSE713_AI` | conf 4/5
 - 🔁 Forward + Backward Chaining + Rule-Based System `CSE713_AI` | conf 5/5
@@ -66,6 +65,6 @@ Not set up yet — no `_Topics.md`. Awaiting materials in `02_Courses/CSE717_Inf
 - 🔁 ↳ McCulloch-Pitts Neuron + Perceptron + Learning Rule `CSE713_AI` | conf 3/5
 
 ## Recent pattern (last 3 days)
-- 2026-06-08: 📖 CSP theory + solutions added (Search_Solutions Topic 10) | end-of-day log unfilled
 - 2026-06-09: end-of-day log unfilled — no new completions logged
-- 2026-06-10: 🎓 CSE 713 AI EXAM SAT (10:30 AM) | end-of-day log unfilled — pre-exam sweep / post-exam reset not confirmed
+- 2026-06-10: 🎓 CSE 713 AI EXAM SAT (10:30 AM) | end-of-day log unfilled
+- 2026-06-11: end-of-day log unfilled — no new completions logged, InfoSec setup still blocked, 19 AI recalls all still overdue

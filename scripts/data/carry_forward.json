@@ -1,7 +1,7 @@
 {
   "topics": [
-    "InfoSec (CSE 717) course setup — BLOCKING for Window 2. No syllabus/slides/past papers in 02_Courses/CSE717_InfoSec/ yet (only NotebookLM_Sources.md placeholder). User must add materials before Claude can build _Topics.md/_Syllabus.md and rank topics by yield. Highest-priority action for 2026-06-11."
+    "InfoSec (CSE 717) course setup — BLOCKING for Window 2. No syllabus/slides/past papers in 02_Courses/CSE717_InfoSec/ yet (only NotebookLM_Sources.md + README placeholder). User must add materials before Claude can build _Topics.md/_Syllabus.md and rank topics by yield. Highest-priority action for 2026-06-12 — 5 days now from InfoSec exam (17 Jun)."
   ],
-  "note": "AI (CSE 713) exam was sat today (2026-06-10). Previous carry-forwards (Neural Networks, Search: Problem Formulation) dropped — AI exam window closed. NN and Search Problem Formulation remain at 📖/🔁 in _Topics.md for reference but are no longer exam-critical.",
-  "last_updated": "2026-06-10"
+  "note": "2026-06-11 end-of-day log was unfilled (no progress reported), so no topics completed today and the AI consolidated recall sweep status is unconfirmed. AI (CSE 713) exam is over; 19 AI recall topics remain due (now repeating for retention, not exam-critical). InfoSec setup is still the #1 blocker — has not moved in 2 days.",
+  "last_updated": "2026-06-11"
 }

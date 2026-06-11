@@ -4,9 +4,9 @@
 
 ## Right now
 - **Active exam:** CSE 717 — Information Security — **Wed 17 Jun 2026, 10:30 AM**
-- **Days left:** 6
-- **Phase:** Window 2, Day 1 (Thu) — Reset + load InfoSec. **BLOCKED:** no syllabus/slides/past papers in `02_Courses/CSE717_InfoSec/` yet — only a NotebookLM placeholder. CSE 713 AI exam was sat 2026-06-10.
-- **Single most important thing today:** Add InfoSec materials (syllabus, slides, past papers) to `02_Courses/CSE717_InfoSec/`, then ask Claude to clone the AI structure and rank topics by yield. Until then, do a fast consolidated AI recall sweep (19 topics due) for retention.
+- **Days left:** 5
+- **Phase:** Window 2, Day 2 (Fri) — Still **BLOCKED**: no syllabus/slides/past papers in `02_Courses/CSE717_InfoSec/` yet — only a NotebookLM placeholder. Setup hasn't moved in 2 days; 5 days to exam.
+- **Single most important thing today:** Add InfoSec materials (syllabus, slides, past papers) to `02_Courses/CSE717_InfoSec/`, then ask Claude to clone the AI structure and rank topics by yield. This is now urgent — do it first thing. AI recall sweep (19 topics, retention only) continues alongside.
 - **⚠️ Rule:** Google Calendar is the ONLY source of truth for daily plans. Never use the overnight rollover log for scheduling.
 - **🔴 Session protocols:** Read and execute `scripts/data/session_protocols.md` at EVERY session start. No exceptions.
 

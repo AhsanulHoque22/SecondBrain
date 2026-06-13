@@ -129,13 +129,16 @@ Past papers ask **DES/Feistel structure/S-box/avalanche effect** and **Digital S
 
 ---
 
-## 2-Day Core Learning Plan (Sat 13 / Sun 14) — then Mon/Tue pure revision
+## 4-Day Plan (Sat 13 → Tue 16) — 2.5 days core, 1.5 days revision, exam Wed 17
 
 | Day | Topics | Why |
 |-----|--------|-----|
-| **Sat 13 Jun** | Number Theory & Modular Arithmetic + RSA (Tier 1, #1-2) → Classical Ciphers (#3) | Foundation for RSA, digital signatures, ECC. Every year guaranteed. |
-| **Sun 14 Jun** | AES (#4) + Security Fundamentals/Attacks (#5) + Symmetric/Asymmetric concepts (#6) + Blockchain/Bitcoin (#7) → IPsec (#8) if time | Covers Section A/B mix; Blockchain is the new dedicated topic — high probability this year. |
-| **Mon 15 / Tue 16** | Pure revision + timed past papers (2020-2024, all years) + DES/DigSig insurance sheet + Markov/Quantum quick pass if time | Per CLAUDE.md rule: last 2 days = this subject only. |
+| **Sat 13 Jun (full day)** | Number Theory & Modular Arithmetic + RSA (Tier 1, #1-2) → Classical Ciphers (#3) | Foundation for RSA, digital signatures, ECC. Every year guaranteed — must be cold by tonight. |
+| **Sun 14 Jun (full day)** | AM: AES (#4) + Security Fundamentals/Attacks (#5). PM: Symmetric/Asymmetric & Block/Stream (#6) + Blockchain/Bitcoin (#7, NEW dedicated topic — high priority) | Covers Section A/B mix; Blockchain likely tested given dedicated Lc#11A/B materials just added. |
+| **Mon 15 Jun — AM only (last new-material slot)** | IPsec (#8) + Hash Functions/Randomness (#9) + Markov Chains (#10) + Quantum/ECC (#11) + DES/Feistel & Digital Signature insurance cheat sheet (verify source, 30 min) | Clear the remaining lower-yield/new topics in one condensed sweep so PM onward is pure revision. |
+| **Mon 15 Jun PM → Tue 16 Jun (1.5 days revision)** | Timed past papers 2020, 2021, 2022, 2023, 2024 (one per sitting where possible) + active recall sweep across ALL 11+2 topics, notes closed + cheat sheets for insurance topics + weak-spot repair | Per CLAUDE.md: last 2 days = this subject only, timed practice simulating 10:30 AM exam. |
+
+**Note:** This compresses what the AI exam got 5 days for into 2.5 — Mon AM topics (#8-11 + insurance) get "exposure + cheat sheet" depth, not full mastery. If Mon AM overflows, IPsec and Blockchain are non-negotiable (high marks); Markov/Quantum/ECC are the first to cut (no past-paper precedent).
 
 ## Exam Structure Reminder
 - ~54 marks, 4 hours, Section A (Q1-4) + Section B (Q5-8), answer 3 of 4 each

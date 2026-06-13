@@ -1,148 +1,157 @@
 # CSE 717 — Information Security · Syllabus (CONFIRMED from lecture materials + 2020–2024 past papers)
 > [[_Topics]] · [[_TopicQuestionMap]] · [[00_Dashboard]]
 
-> Built 2026-06-13 by Claude Code after scanning all 13 lecture PDFs (Lc#1–#11B) + 5-year past paper analysis (image-OCR read, since PDF is scanned).
+> Built 2026-06-13 by Claude Code. **Revised same day** after re-reading all 5 past papers at 300dpi (first pass had significant OCR errors).
 > Exam format: ~54 marks, 4 hours, Section A + Section B, answer 3 of 4 from each section.
 > **Topics below are ordered by learning flow / lecture flow (Lc#1 → Lc#11)**, not by yield — yield stars (⭐) tell you how hard to push on each. Only **2.5 days** of core learning available (Sat 13 → Mon 15 AM) before 1.5 days pure revision. Ruthless 80/20 within each block.
 
 ---
 
-## ⚠️ Source gap — flag for Day 1
-Past papers ask **DES/Feistel structure/S-box/avalanche effect** and **Digital Signature (generic model)** and **Diffie-Hellman key exchange** in **every single year 2020–2024**, often worth 5–10 marks combined — but these terms do **not appear in any of the 13 uploaded lecture PDFs** (Lc#1–#11B). Either:
-- They're in diagram-only slides pdftotext can't read (check visually on Day 1), or
-- The 2026 syllabus dropped them in favor of AES/ECC/Quantum/Blockchain (new topics with dedicated materials #6,7,8,11A,11B).
-**Action:** Open Lc#1 (59pg), Lc#7 (Quantum, 22pg), Lc#8 (AES,14pg) visually for 10 min on Day 1 to confirm. If truly absent, treat DES/DigSig/DH as low priority (not in this year's materials) but keep a 1-page cheat sheet ready as insurance since they're historically guaranteed.
+## ⚠️ 2026-06-13 major correction
+First-pass past-paper analysis was wrong in places. Re-read at 300dpi confirmed:
+- **DES/Feistel/S-box/Avalanche (#13)** and **Digital Signature generic model (#14)** appear in **EVERY SINGLE YEAR 2020-2024** — these are NOT "insurance/maybe absent" topics, they are guaranteed marks. Neither is covered in the 2026 Lc materials, so both need a focused cheat sheet — but they are now CRITICAL, scheduled into TODAY.
+- **Markov Chains (#6)** appears in BOTH 2023 and 2024 (2-state steady-state probability) — upgraded from "no precedent" to high-confidence repeat.
+- **Game Theory/Nash Equilibrium (#5)** and **Hash Table Collision Resolution (#4)** are TWO NEW topics, both appearing in 2023+2024, and BOTH have matching worked examples in Lc#3 and Lc#2 respectively.
+- **IPsec (#11)** upgraded from 2/5 to 3/5 (2024 confirmed).
 
 ---
 
 ## 1. Classical Ciphers
-**Yield:** ⭐⭐⭐ 3/5 years, 5–7.5 marks
+**Yield:** ⭐⭐⭐⭐⭐ 5/5 years, 2–9 marks
 **Source:** Lc#1 (Caesar, Playfair, Hill Cipher — pp.310-355)
 **What to know:**
-- Caesar Cipher: shift cipher, brute-force attack feasibility
-- Playfair Cipher: 5×5 key matrix construction + encrypt/decrypt
-- Hill Cipher: matrix-based encryption (2×2 matrix, mod 26)
-- One-Time Pad (OTP): perfect secrecy concept
-- Substitution vs Transposition ciphers
-- **Past paper pattern:** 2024 Q1 (OTP-based scheme, P=47), 2021 Q2 (Hill/Playfair matrix encrypt/decrypt), 2020 Group A (Playfair + Vigenère encrypt/decrypt — note: Vigenère not in current Lc materials, check Lc#1 visually)
+- Caesar Cipher: f(p)=(ap+b) mod 26 forms — both encrypt AND decrypt, brute-force feasibility
+- Playfair Cipher: 5×5 matrix — in the exam the matrix is usually GIVEN, not built from a keyword. Practice encrypting full sentences (strip spaces, handle digraphs/duplicate letters with X filler)
+- Vigenère Cipher: repeating-key shift (2020 — encrypt "explanation" key "cse")
+- Hill Cipher: matrix-based encryption (2×2 matrix, mod 26) — in Lc#1 with worked "HI"/"CD" examples, not seen in past papers but a likely substitute for Playfair
+- One-Time Pad (OTP): perfect secrecy concept, fundamental difficulties (2021 conceptual)
+- **Past paper pattern:** EVERY year. 2024: Caesar encrypt+decrypt (3). 2023: Playfair given-matrix (4) + Caesar encrypt+decrypt (4). 2022: Caesar/OTP cryptanalysis. 2021: OTP conceptual (2.75) + Playfair given-matrix (2) + Caesar program (2). 2020: Playfair given-matrix (4) + Vigenère (4.75).
 
 ## 2. Security Fundamentals & Attack Vectors
-**Yield:** ⭐⭐⭐ 3/5 years, 4–9 marks
+**Yield:** ⭐⭐⭐⭐ 4/5 years, 2–9 marks
 **Source:** Lc#1 (phishing, SQL injection, malware — pp.90-130), Lc#3 (Firewall)
 **What to know:**
-- CIA triad, security terminology (confidentiality, authenticity, non-repudiation)
-- Security professions: pentester, cybersecurity analyst, cybersecurity architect, network analyst, data security analyst
+- CIA triad, security terminology (threat actor, asset, attack vector, confidentiality, authenticity, non-repudiation)
+- Security professions: pentester, cybersecurity analyst/architect/auditor, network analyst, data security analyst
 - Steganography vs cryptography
-- Attack types: phishing, SQL injection, social engineering, malware, DoS
-- Firewall basics, intrusion detection
-- SWIFT banking network scenario (pentest write-up style)
-- **Past paper pattern:** 2024 Q1 (security terms fill-blank + steganography), 2022/2023 Q1 (same fill-blank pattern), 2022/2023 Q7 (SQL injection, social engineering, SWIFT pentest scenario — write short notes)
+- Attack types: phishing, SQL injection, social engineering, malware, DoS/DDoS, ransomware (Clop/WannaCry), backdoor/logic bomb/Trojan horse
+- Risk equation (threat × probability × loss), biometrics auth limitations, wireless threats
+- SWIFT banking network pentest scenario (write-up style)
+- **Past paper pattern:** 2024 (symmetric/asymmetric+ecommerce, handshaking/message-digest = 5). 2023 (phishing/DoS/SQLi/ransomware short-notes = 2). 2022 (fill-blank vocab+professions+steganography = 8, SQLi/social-eng/SWIFT = several marks). 2021 (risk equation+biometrics+wireless = 4.75, ransomware vs social-eng + backdoor/Trojan = 3.75).
 
 ## 3. Symmetric vs Asymmetric Crypto / Block vs Stream Ciphers
-**Yield:** ⭐⭐ 2/5 years, 4 marks
+**Yield:** ⭐⭐⭐ usually bundled into #2, but 10 marks standalone in 2022
 **Source:** Lc#1, Lc#7 (Symmetric crypto)
 **What to know:**
 - Ingredients of a symmetric cipher (plaintext, encryption algorithm, secret key, ciphertext, decryption algorithm)
 - Block cipher vs stream cipher — definitions + differences
 - Public-key cryptosystem roles/components
 - Caesar cipher / OTP as cryptanalysis examples
-- **Past paper pattern:** 2022/2023 Q2 — symmetric cipher ingredients, block vs stream, Caesar/OTP cryptanalysis, public-key roles
+- **Past paper pattern:** 2022 Q2 — symmetric cipher ingredients (3), block vs stream (3), Caesar/OTP cryptanalysis (2), public-key roles (2) = 10. 2020 — Feistel structure (3) + block vs stream (1).
 
-## 4. Hash Functions & Randomness
-**Yield:** ⭐ supporting role only
-**Source:** Lc#2 (Hash Function), Lc#9 (Basic Data Statistics), Lc#10 (Randomness, SHA)
+## 4. Hash Functions & Hash Table Collision Resolution (NEW)
+**Yield:** ⭐⭐⭐ 2/5 years (2023+2024, both most recent), 3 marks each + supports #12/#14
+**Source:** Lc#2 (Hash Function — has WORKED EXAMPLES matching exam style exactly)
 **What to know:**
-- Hash function properties: deterministic, fixed-size output, avalanche effect (small input change → large output change), one-way
-- SHA family basics
-- Randomness/PRNG concepts, basic statistics (mean/variance — likely supporting Markov chain topic)
-- **Past paper pattern:** No direct historical question, but hash functions underpin Blockchain Q8 (Merkle tree) and Digital Signatures — study as supporting concept, don't over-invest standalone.
+- Hash function properties: deterministic, fixed-size output, avalanche, one-way, collision-resistant, pre-image/second-pre-image resistance
+- **Collision resolution: linear probing AND double hashing** — practice inserting ~6 keys into a hash table of size m=10-13 by hand for BOTH methods
+- **Past paper pattern:** 2024 double hashing insert [8,47,22,44,39,32] m=13, h1=k mod13, h2=7+(k mod7) (3). 2023 linear probing insert [21,8,13,44,28,33] m=13, h(k)=(k+2)mod m (3). 2023 hash function properties (2.5).
 
-## 5. Markov Chains
-**Yield:** ⭐ unknown, new
+## 5. Game Theory & Nash Equilibrium (NEW)
+**Yield:** ⭐⭐⭐ 2/5 years (2023+2024, both most recent), 3–6 marks
+**Source:** Lc#3 (Game Theory — has worked Nash equilibrium examples)
+**What to know:**
+- Payoff matrix (2x2), best-response analysis, Nash equilibrium identification
+- Dominant strategy (strict) — does either player have one?
+- **Past paper pattern:** 2024 — Eve/Mallory PT vs ND payoff matrix, find Nash equilibria + dominant strategies (3). 2023 — "design a strategy to identify attackers using game theory" (3) + Alice/Bob ST#1/ST#2 payoff matrix, Nash equilibrium (3).
+
+## 6. Markov Chains (UPGRADED)
+**Yield:** ⭐⭐⭐⭐ 2/5 years (2023+2024, both most recent — strong recency signal), 3–4 marks
 **Source:** Lc#4A (Markov Chain theory), Lc#4B (Markov Chain assignment/numericals)
 **What to know:**
 - Markov chain definition: states, transition probabilities, memoryless property
-- Compute multi-step transition probabilities (matrix power)
-- Worked example: sunny/rainy weather chain
-- **Past paper pattern:** None found 2020–2024. Likely a NEW addition (probability/cryptanalysis foundation). Low priority unless time permits — but if tested, it's a "free" numeric question type (practice the 1 worked example in Lc#4B).
+- **2-state steady-state probability**: set up transition matrix P, solve πP=π with Σπ=1
+- Worked example: weather chain (Lc#4B) — map directly onto "Secure/Compromised" or "Secure/Insecure" security-state framing
+- **Past paper pattern:** 2024 — Secure/Compromised system, Secure→Secure w.p.0.4, Compromised→Secure w.p.0.3, find steady-state + interpret (4). 2023 — Secure/insecure network, patch-cycle transitions, long-term behaviour (3).
 
-## 6. Number Theory & Modular Arithmetic
-**Yield:** ⭐⭐⭐⭐⭐ 5/5 years, 5–8 marks — foundation for #7, #8, #13
+## 7. Number Theory & Modular Arithmetic
+**Yield:** ⭐⭐⭐⭐⭐ 5/5 years, 5–9 marks — foundation for #8 and #14
 **Source:** Lc#5 (Modular Arithmetic), Lc#6 (Modular Arithmetic + RSA + Euler/Fermat)
 **What to know:**
-- Modular arithmetic basics: mod operations, properties
-- Euclidean Algorithm + Extended Euclidean Algorithm (find GCD, multiplicative inverse)
+- Modular arithmetic basics, Extended Euclidean Algorithm (GCD + multiplicative inverse)
 - Fermat's Little Theorem: a^(p-1) ≡ 1 (mod p)
 - Euler's Theorem + Euler's Totient function φ(n)
 - Chinese Remainder Theorem (CRT) — solve system of congruences
-- Discrete logarithm problem
-- Miller-Rabin primality test (determine if n is prime, witness selection)
-- Multiplicative inverse mod n (find x such that a·x ≡ 1 mod n)
-- **Past paper pattern:** 2024 Q2 (CRT modulus 47, prime check), 2023/2022 Q3 (Miller-Rabin, discrete log, Euler's totient), 2021 Q3 (Euclidean alg, Fermat, CRT discrete log), 2020 Q2 (CRT, Euler totient, discrete log, multiplicative inverse)
+- Discrete logarithm problem, cyclic groups
+- Miller-Rabin primality test
+- **Past paper pattern:** EVERY year, 5-9 marks. Recurring seed: `3^20x mod 11` and `7^1000 mod 10/11` (2020,2021,2023,2024). CRT (2020 & 2023). Extended Euclidean for mult. inverse (almost every year). Miller-Rabin + discrete log (2020-2022).
 
-## 7. RSA — Key Generation + Encryption/Decryption Numericals
-**Yield:** ⭐⭐⭐⭐⭐ 5/5 years, 4.75–5 marks
+## 8. RSA — Key Generation + Encryption/Decryption Numericals
+**Yield:** ⭐⭐⭐⭐⭐ 5/5 years, 5–16 marks (largest single block some years)
 **Source:** Lc#6 (RSA basics), Lc#7 (RSA + Quantum threat)
 **What to know:**
 - Key generation: choose p,q primes → n=pq, φ(n)=(p-1)(q-1), choose e, compute d=e⁻¹ mod φ(n)
 - Encryption: C = M^e mod n; Decryption: M = C^d mod n
-- **Always given small p,q (e.g., p=13,q=7 or similar) — practice the full numeric pipeline**
-- **Past paper pattern:** EVERY year — 2024 Q3(b), 2023 Q6(a), 2022 Q6(a), 2021 Q5, 2020 Q5(a) — all numeric RSA encrypt/decrypt with given p,q,e,M
+- **Always given small p,q (3,7,11,13,17,31,43,53,59,61 range) — drill the full pipeline cold**
+- "Given e,n find d" variant repeats verbatim (2020&2021: e=31,n=3599)
+- **Past paper pattern:** EVERY year — 2024 (encrypt+decrypt, 6), 2023 (encrypt+decrypt, 5), 2022 (full key-gen+encrypt+explain, 16!), 2021 (encrypt/decrypt + find d, 6.75), 2020 (encrypt/decrypt + find d, 8.75)
 
-## 8. AES (Advanced Encryption Standard)
-**Yield:** ⭐⭐⭐ 3/5 years, 4.75 marks
+## 9. AES (Advanced Encryption Standard) (UPGRADED)
+**Yield:** ⭐⭐⭐⭐ 4/5 years, 4–6 marks
 **Source:** Lc#8 (AES, 14pg)
 **What to know:**
-- AES structure overview (rounds, key sizes 128/192/256)
-- S-box and GF(2^8) (Galois Field) arithmetic — multiplicative/additive inverse in GF(2^8)
-- SubBytes, ShiftRows, MixColumns, AddRoundKey (at least conceptually)
-- **Past paper pattern:** 2022/2023 Q5 — describe AES operations using S-box, GF(2^8) inverse computation; 2020 Group B mentions "advanced encryption standard" AES encryption
+- AES block diagram (rounds, key sizes 128/192/256, SubBytes/ShiftRows/MixColumns/AddRoundKey) — recurs as a "draw the diagram" question
+- S-box and GF(2^8) arithmetic — multiplicative inverse computation
+- ShiftRows transformation trace on a given state matrix
+- **Past paper pattern:** 2024 (ShiftRows/MixColumns diffusion + perform ShiftRows = 4, block diagram = 2). 2023 (block diagram = 4). 2022 (S-box GF(2^8) inverse = 6). 2021 (block diagram = 4.75).
 
-## 9. Quantum Attacks & ECC
-**Yield:** ⭐ unknown, new
-**Source:** Lc#7 (Quantum Attack, ECC, RSA threat)
+## 10. Quantum Attacks & ECC
+**Yield:** ⭐⭐ 1/5 years (2024 only — NEW numeric type), 3–5 marks
+**Source:** Lc#6 (ECC worked examples), Lc#7 (Quantum Attack, ECC, RSA threat)
 **What to know:**
-- Why quantum computing threatens RSA/ECC (Shor's algorithm — factor large numbers / discrete log fast)
-- Elliptic Curve Cryptography (ECC) basics — what it is, why smaller keys than RSA
-- Post-quantum crypto motivation
-- **Past paper pattern:** None found 2020–2024 — NEW topic. Likely short-note/conceptual question only (1-2 marks). Don't over-invest.
+- Elliptic curve point arithmetic: given E: y²=x³+ax+b over F_p and point P, compute 2P (point doubling) — 2024 asked exactly this
+- Why ECC/RSA are vulnerable to quantum attacks (Shor's algorithm) vs symmetric algorithms
+- **Past paper pattern:** 2024 only — elliptic curve 2P computation (3) + quantum vulnerability conceptual (2). Don't over-invest beyond one worked point-doubling example.
 
-## 10. IPsec
-**Yield:** ⭐⭐ 2/5 years but 8.5–10 marks when it appears, cyclical
+## 11. IPsec (UPGRADED)
+**Yield:** ⭐⭐⭐ 3/5 years, 2.25–9 marks
 **Source:** Lc#7 (IPSec architecture, AH/ESP protocols, key exchange)
 **What to know:**
-- IPsec architecture: AH (Authentication Header) vs ESP (Encapsulating Security Payload)
-- Transport mode vs Tunnel mode
-- RFC 4301
-- Benefits of IPsec, applications
-- **Past paper pattern:** 2021 Q7 (benefits, transport/tunnel difference, RFC4301, application/architecture — 8.5 marks), 2020 Group B Q8 (transport/tunnel mode, RFC4301, architecture — high marks). NOT in 2022/2023/2024 — cyclical, may return.
+- IPsec architecture: AH vs ESP, security associations
+- Transport mode vs Tunnel mode, RFC 4301 services
+- Session state vs connection state, application areas, benefits
+- **Past paper pattern:** 2024 (architecture + security associations = 3). 2021 (application areas + session/connection state = 2.5, architecture = 2.5). 2020 (benefits+transport/tunnel = 2.25, RFC4301 = 2.25, application+session/connection = 2.25, architecture = 2) = 9 total. Same sub-Q cluster recurs.
 
-## 11. Blockchain & Bitcoin (NEW — dedicated materials, likely high-weight this year)
-**Yield:** ⭐⭐⭐⭐ 2/5 years historically, but expect 2026 emphasis (4.4–9 marks)
+## 12. Blockchain & Bitcoin
+**Yield:** ⭐⭐⭐⭐ 3/5 years, 2.75–12 marks — dedicated 2026 materials → expect strong emphasis
 **Source:** Lc#11A (Blockchain), Lc#11B (Bitcoin Mining)
 **What to know:**
-- Blockchain definition, block structure, immutability/tamper-resistance
+- Blockchain definition, block structure, immutability, Proof of Work
 - Merkle tree — construction, root computation, integrity checking
-- Bitcoin: decentralized P2P payment, mining process, consensus
+- Bitcoin: mining, input/output scripts for signature validation
 - Ethereum vs Bitcoin — key differences (ETH vs BTC)
-- Hash functions role in blockchain (SHA)
-- **Past paper pattern:** 2022/2023 Q8 — same-origin policy + blockchain schematic, data integrity via Merkle tree, Ethereum vs Bitcoin distinction. Given dedicated #11A/#11B materials were JUST added, expect this to be tested directly this year.
+- Hash functions role in blockchain security (links to #4)
+- **Past paper pattern:** 2024 (PoW + hashing security = 3). 2022 (same-origin policy via blockchain = 4, Merkle tree diagram = 4, ETH vs BTC = 4 → 12 total). 2021 (blockchain-crypto relation + "what is bitcoin" = 4.75, input/output scripts = 4).
 
-## 12. ⚠️ DES / Feistel Structure / S-box / Avalanche Effect (insurance)
-**Yield:** 5/5 years historically, 5–7 marks — NOT FOUND in 2026 materials, verify Day 1
-**What to know if needed:**
-- Feistel network 16-round structure
-- DES S-box purpose = nonlinearity
-- Avalanche effect = 1-bit input change flips ~half output bits
-- 3-DES block diagram, block vs stream cipher differences
-- **Past paper pattern:** 2023/2022 Q4, 2021 Q4, 2020 Group B Q5 — every year
+## 13. ⚠️ DES / Feistel Structure / S-box / Avalanche / 3-DES — CRITICAL, NOT INSURANCE
+**Yield:** ⭐⭐⭐⭐⭐ 5/5 years EVERY YEAR, 5–10 marks — NOT in any 2026 Lc material, cheat sheet required, scheduled TODAY
+**What to know (cheat sheet, ~45min):**
+- Classical Feistel cipher structure (16-round network) + properties
+- 3-DES block diagram + simple encryption equation
+- Avalanche effect (1-bit change → ~half output bits flip) + name the two families of DES attacks (differential & linear cryptanalysis)
+- F-function components diagram in DES
+- S-box purpose (nonlinearity) + S1-box table lookup for a given input byte (37 appeared in both 2020 & 2022)
+- IP / IP⁻¹ permutation purpose and the decryption-reversal equation
+- **Past paper pattern:** literally every year, cycling through these 6 sub-patterns. ~6-10 guaranteed marks for ~45min of focused memorization — best ROI on the entire syllabus.
 
-## 13. ⚠️ Digital Signature — Generic Model (insurance)
-**Yield:** 4/5 years historically, 2–4.75 marks — NOT FOUND in 2026 materials, verify Day 1
-**What to know if needed:**
-- Generic model: sender hashes msg → encrypts hash with private key → receiver decrypts with public key → compares hash
+## 14. ⚠️ Digital Signature — Generic Model + Properties — CRITICAL, NOT INSURANCE
+**Yield:** ⭐⭐⭐⭐⭐ 5/5 years EVERY YEAR, 1–7 marks — NOT in any 2026 Lc material, cheat sheet required, scheduled TODAY
+**What to know (cheat sheet, ~30min):**
+- Generic model diagram: sender hashes msg → encrypts hash with private key → receiver decrypts with public key → compares hashes (recurs as a draw/sketch question almost every year, 1-4.75 marks)
 - Properties a digital signature scheme must satisfy
-- **Past paper pattern:** 2024 Q7(b), 2022/2023 Q6(b), 2021 Q7(a), 2020 Group B Q6(b) — every year
+- Attack types that make digital signatures vulnerable
+- RSA key-reuse safety question (2023): if private key leaks, is reusing the same n with new e/d safe? (No — must generate new modulus)
+- **Past paper pattern:** every year — 2024 (concept+vulnerable attacks=6, diagram=1), 2023 (concept+vulnerable=6, key-reuse safety=1), 2022 (properties+requirements, signature-order), 2021 (diagram=2), 2020 (diagram=4.75).
 
 ---
 
@@ -150,13 +159,13 @@ Past papers ask **DES/Feistel structure/S-box/avalanche effect** and **Digital S
 
 | Day | Topics (in learning-flow order) | Why this grouping |
 |-----|--------|-----|
-| **Sat 13 Jun (full day)** | #1 Classical Ciphers → #2 Security Fundamentals & Attacks → #3 Symmetric/Asymmetric & Block/Stream → #4 Hash Functions & Randomness | Lc#1-3 cluster: security context + intro crypto, lowest prerequisite load — good warm-up day. |
-| **Sun 14 Jun (full day)** | #5 Markov Chains → #6 Number Theory & Modular Arithmetic → #7 RSA → #8 AES | Lc#4-8 cluster: the math/crypto core. #6 is the prerequisite for #7 and #13 — must land before RSA. |
-| **Mon 15 Jun — AM only** | #9 Quantum Attacks & ECC → #10 IPsec → #11 Blockchain & Bitcoin → #12 DES/Feistel insurance → #13 Digital Signature insurance | Lc#7/11 cluster + insurance cheat sheets. All conceptual/short-note style — fits a condensed AM sweep. |
-| **Mon 15 Jun PM → Tue 16 Jun (1.5 days revision)** | Timed past papers 2020, 2021, 2022, 2023, 2024 (one per sitting where possible) + active recall sweep across ALL 13 topics, notes closed + weak-spot repair | Per CLAUDE.md: last 2 days = this subject only, timed practice simulating 10:30 AM exam. |
+| **Sat 13 Jun (full day)** | #1 Classical Ciphers → #2 Security Fundamentals & Attacks → #3 Symmetric/Asymmetric (quick, bundled) → #4 Hash Functions & Collision Resolution → **#13 DES/Feistel cheat sheet → #14 Digital Signature cheat sheet** | Lc#1-2 cluster + the two CRITICAL no-source cheat sheets, scheduled early since they're standalone (no prerequisites) and now confirmed guaranteed — maximize safety margin. |
+| **Sun 14 Jun (full day)** | #5 Game Theory → #6 Markov Chains → #7 Number Theory & Modular Arithmetic → #8 RSA | Lc#3-6 cluster: two NEW-but-quick topics (game theory, Markov) + the math/crypto core. #7 is the prerequisite for #8 and #14 — must land before RSA. |
+| **Mon 15 Jun — AM only** | #9 AES → #10 Quantum/ECC → #11 IPsec → #12 Blockchain & Bitcoin | Lc#7/8/11 cluster. All diagram/conceptual + one ECC numeric — fits a condensed AM sweep. |
+| **Mon 15 Jun PM → Tue 16 Jun (1.5 days revision)** | Timed past papers 2020, 2021, 2022, 2023, 2024 (one per sitting where possible) + active recall sweep across ALL 14 topics, notes closed + weak-spot repair | Per CLAUDE.md: last 2 days = this subject only, timed practice simulating 10:30 AM exam. |
 
-**Note:** This compresses what the AI exam got 5 days for into 2.5. If Mon AM overflows, IPsec and Blockchain (#10, #11) are non-negotiable (high marks); Quantum/ECC (#9) is the first to cut (no past-paper precedent, 1-2 marks at most).
+**Note:** 14 topics in 2.5 days is tight, but #3 (bundled), #13, #14 (cheat sheets) are lower-depth, and #5/#6/#10 are each a single worked-example pattern. If Mon AM overflows, #10 (Quantum/ECC, 1/5 years) is the first to cut.
 
 ## Exam Structure Reminder
 - ~54 marks, 4 hours, Section A (Q1-4) + Section B (Q5-8), answer 3 of 4 each
-- Numeric problems (RSA, CRT, Miller-Rabin, AES GF arithmetic) carry the most reliable marks — prioritize being able to COMPUTE, not just define
+- Numeric problems (RSA, CRT/Fermat/Euler, Miller-Rabin, AES GF arithmetic, Markov steady-state, hash table insertion, Nash equilibrium, ECC point-doubling) carry the most reliable marks — prioritize being able to COMPUTE, not just define

@@ -3,7 +3,7 @@ _Updated: 2026-06-13 by session (InfoSec unblocked)_
 
 ## Active exam
 Course: CSE 717 — Information Security
-Date: 2026-06-17 (Wednesday) | Days left from 2026-06-13: **4** | Phase: **UNBLOCKED — Day 1 of 2.5 core-learning days**. Materials arrived (11 lecture PDFs + 5-year past papers + Blockchain/Bitcoin). `_Syllabus.md`, `_Topics.md`, `_TopicQuestionMap.md` built and reordered by learning/lecture flow (Lc#1→Lc#11). Today's focus (Lc#1-3 cluster): Classical Ciphers → Security Fundamentals & Attacks → Symmetric/Asymmetric & Block/Stream → Hash Functions & Randomness. Sun (Lc#4-8 cluster): Markov Chains → Number Theory & Modular Arithmetic → RSA → AES. Mon AM (Lc#7/11 + insurance): Quantum/ECC → IPsec → Blockchain/Bitcoin → DES/Feistel + Digital Signature cheat sheets. Mon PM/Tue = 1.5 days pure revision + timed past papers. ⚠️ Open question: DES/Feistel/S-box and Digital Signature generic model appear in every past paper but weren't found via text search in 2026 materials — verify visually Day 1 (flagged in `_Syllabus.md`).
+Date: 2026-06-17 (Wednesday) | Days left from 2026-06-13: **4** | Phase: **UNBLOCKED — Day 1 of 2.5 core-learning days**. ⚠️ MAJOR REVISION 2026-06-13 mid-morning: re-read all 5 past papers at 300dpi (first OCR pass had errors). DES/Feistel (#13) and Digital Signature (#14) confirmed in EVERY year 2020-2024 — reclassified from "insurance" to CRITICAL, both scheduled TODAY as cheat sheets. 2 NEW topics added with confirmed Lc source: Hash Table Collision Resolution (#4, Lc#2, in 2023+2024) and Game Theory/Nash Equilibrium (#5, Lc#3, in 2023+2024). Markov Chains (#6) upgraded — appears 2023+2024. Now **14 topics total**. Today (Lc#1-2 cluster + critical cheat sheets): Classical Ciphers → Security Fundamentals & Attacks → Symmetric/Asymmetric → Hash Functions & Collision Resolution → DES/Feistel cheat sheet → Digital Signature cheat sheet. Sun: Game Theory → Markov Chains → Number Theory → RSA. Mon AM: AES → Quantum/ECC → IPsec → Blockchain/Bitcoin. Mon PM/Tue = 1.5 days pure revision + timed past papers.
 
 ## Topics — CSE713 AI (exam complete — archived for retention recall)
 | Topic | Status | Conf | Next Recall |
@@ -37,27 +37,28 @@ Date: 2026-06-17 (Wednesday) | Days left from 2026-06-13: **4** | Phase: **UNBLO
 | CSP (map coloring, cryptarithmetic) | 🔲 | — | — |
 | Fuzzy Logic + Uncertainty | 📖 | — | — |
 
-## Topics — CSE717 InfoSec (ordered by learning/lecture flow Lc#1→Lc#11)
+## Topics — CSE717 InfoSec (ordered by learning/lecture flow Lc#1→Lc#11; revised 2026-06-13)
 | # | Topic | Status | Conf | Yield |
 |---|---|:---:|:---:|---|
-| 1 | Classical Ciphers (Caesar, Playfair, Hill Cipher, OTP) | 🔲 | — | 3/5 · 5–7.5 marks |
-| 2 | Security Fundamentals & Attacks (CIA, professions, steganography, SQLi, SWIFT, firewall) | 🔲 | — | 3/5 · 4–9 marks |
-| 3 | Symmetric/Asymmetric & Block/Stream Cipher | 🔲 | — | 2/5 · 4 marks |
-| 4 | Hash Functions & Randomness | 🔲 | — | 1/5 · supporting |
-| 5 | Markov Chains | 🔲 | — | 1/5 · new, unknown |
-| 6 | Number Theory & Modular Arithmetic (Euclidean, Fermat, Euler, CRT, Miller-Rabin) | 🔲 | — | 5/5 · 5–8 marks |
-| 7 | RSA (key gen + encrypt/decrypt numericals) | 🔲 | — | 5/5 · 4.75–5 marks |
-| 8 | AES (S-box, GF(2^8)) | 🔲 | — | 3/5 · 4.75 marks |
-| 9 | Quantum Attacks & ECC | 🔲 | — | 1/5 · new, unknown |
-| 10 | IPsec (AH/ESP, transport/tunnel, RFC4301) | 🔲 | — | 2/5 · 8.5–10 marks, cyclical |
-| 11 | Blockchain & Bitcoin (Merkle tree, ETH vs BTC) | 🔲 | — | 4/5 · NEW, expect high weight |
-| 12 | ⚠️ DES/Feistel/S-box/Avalanche (insurance) | 🔲 | — | 5/5 historically — verify Day 1 |
-| 13 | ⚠️ Digital Signature generic model (insurance) | 🔲 | — | 4/5 historically — verify Day 1 |
+| 1 | Classical Ciphers (Caesar, Playfair, Hill, Vigenère, OTP) | 🔲 | — | 5/5 · 2–9 marks |
+| 2 | Security Fundamentals & Attacks (CIA, professions, steganography, SQLi, SWIFT, firewall) | 🔲 | — | 4/5 · 2–9 marks |
+| 3 | Symmetric/Asymmetric & Block/Stream Cipher | 🔲 | — | bundled, 10 marks in 2022 |
+| 4 | Hash Functions & Hash Table Collision Resolution (NEW) | 🔲 | — | 2/5 (2023+24) · 3 marks |
+| 5 | Game Theory & Nash Equilibrium (NEW) | 🔲 | — | 2/5 (2023+24) · 3–6 marks |
+| 6 | Markov Chains (steady-state probability) | 🔲 | — | 2/5 (2023+24) · 3–4 marks |
+| 7 | Number Theory & Modular Arithmetic (Euclidean, Fermat, Euler, CRT, Miller-Rabin) | 🔲 | — | 5/5 · 5–9 marks |
+| 8 | RSA (key gen + encrypt/decrypt numericals) | 🔲 | — | 5/5 · 5–16 marks |
+| 9 | AES (S-box, GF(2^8), block diagram) | 🔲 | — | 4/5 · 4–6 marks |
+| 10 | Quantum Attacks & ECC (point arithmetic) | 🔲 | — | 1/5 (2024) · 3–5 marks |
+| 11 | IPsec (AH/ESP, transport/tunnel, RFC4301) | 🔲 | — | 3/5 · 2.25–9 marks |
+| 12 | Blockchain & Bitcoin (Merkle tree, PoW, ETH vs BTC) | 🔲 | — | 3/5 · 2.75–12 marks |
+| 13 | ⚠️ DES/Feistel/S-box/Avalanche/3-DES — CRITICAL cheat sheet | 🔲 | — | 5/5 EVERY YEAR · 5–10 marks |
+| 14 | ⚠️ Digital Signature generic model + properties — CRITICAL cheat sheet | 🔲 | — | 5/5 EVERY YEAR · 1–7 marks |
 
 Full detail in `02_Courses/CSE717_InfoSec/_Topics.md` + `_Syllabus.md` + `_TopicQuestionMap.md`.
 
 ## Carry-forward
-- None — InfoSec unblocked. Today's #1: Classical Ciphers → Security Fundamentals & Attacks → Symmetric/Asymmetric → Hash Functions (Blocks 1-4), then 10-min source check for DES/Digital Signature.
+- None — InfoSec unblocked. Today's order: Classical Ciphers → Security Fundamentals & Attacks → Symmetric/Asymmetric → Hash Functions & Collision Resolution → DES/Feistel cheat sheet → Digital Signature cheat sheet (Blocks 1-6).
 
 ## Recall due 2026-06-12
 - 🔁 Intelligent Agents + Environments (PAGE) `CSE713_AI` | conf 4/5

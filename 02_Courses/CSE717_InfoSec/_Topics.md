@@ -4,22 +4,30 @@
 Status: 🔲 not started · 📖 learning · 🔁 needs recall · ✅ can explain it cold
 
 > Ordered by **learning flow / lecture flow** (Lc#1 → Lc#11), not by yield. See `_Syllabus.md` for the 4-day plan and yield-based priority calls.
+>
+> ⚠️ **2026-06-13 major revision:** re-read all 5 past papers at 300dpi — first-pass OCR had significant errors. Added 2 NEW topics (#4 Hash Table Collision Resolution, #5 Game Theory — both confirmed in Lc#2/Lc#3 and both appear in 2023+2024). DES/Feistel (#13) and Digital Signature (#14) are CONFIRMED 5/5 years — reclassified from "insurance" to CRITICAL, cheat sheets required regardless of Lc coverage. Markov Chains (#6) upgraded from "1/5 unknown" to "2/5, both most recent years".
 
 | # | Topic | Status | Conf | Last Reviewed | Next Recall | Yield | Notes / weak spots |
 |---|-------|:------:|:----:|:-------------:|:-----------:|:-----:|--------------------|
-| 1 | Classical Ciphers (Caesar, Playfair, Hill Cipher, OTP) | 🔲 | — | — | — | 3/5 · 5–7.5 marks | Vigenère unclear in materials — check Lc#1 visually. Source: Lc#1 |
-| 2 | Security Fundamentals & Attacks (CIA, professions, steganography, SQLi, social eng, SWIFT, firewall) | 🔲 | — | — | — | 3/5 · 4–9 marks | Source: Lc#1, Lc#3 |
-| 3 | Symmetric vs Asymmetric / Block vs Stream Cipher | 🔲 | — | — | — | 2/5 · 4 marks | Source: Lc#1, Lc#7 |
-| 4 | Hash Functions & Randomness (SHA, avalanche effect) | 🔲 | — | — | — | 1/5 · supporting | No direct past Q — supports Blockchain/DigSig. Source: Lc#2, Lc#9, Lc#10 |
-| 5 | Markov Chains (transition probabilities, weather example) | 🔲 | — | — | — | 1/5 · unknown, new | No past-paper precedent. Source: Lc#4A, Lc#4B |
-| 6 | Number Theory & Modular Arithmetic (Euclidean, Fermat, Euler, CRT, Miller-Rabin) | 🔲 | — | — | — | 5/5 · 5–8 marks | Foundation for RSA/digital sig. Source: Lc#5, Lc#6 |
-| 7 | RSA (key gen + encrypt/decrypt numericals) | 🔲 | — | — | — | 5/5 · 4.75–5 marks | Every year, same numeric pipeline. Source: Lc#6, Lc#7 |
-| 8 | AES (S-box, GF(2^8), structure) | 🔲 | — | — | — | 3/5 · 4.75 marks | Source: Lc#8 |
-| 9 | Quantum Attacks & ECC | 🔲 | — | — | — | 1/5 · unknown, new | No past-paper precedent. Source: Lc#7 |
-| 10 | IPsec (AH/ESP, transport/tunnel, RFC4301) | 🔲 | — | — | — | 2/5 · 8.5–10 marks | Cyclical — absent 2022-24, big marks when it appears. Source: Lc#7 |
-| 11 | Blockchain & Bitcoin (Merkle tree, mining, ETH vs BTC) | 🔲 | — | — | — | 4/5 · 4.4–9 marks | NEW dedicated materials → expect high weight. Source: Lc#11A, Lc#11B |
-| 12 | ⚠️ DES/Feistel/S-box/Avalanche (insurance) | 🔲 | — | — | — | 5/5 historically · 5-7 marks | NOT FOUND in any 2026 Lc material — verify Day 1, else use cheat sheet |
-| 13 | ⚠️ Digital Signature (generic model) (insurance) | 🔲 | — | — | — | 4/5 historically · 2-4.75 marks | NOT FOUND in any 2026 Lc material — verify Day 1, else use cheat sheet |
+| 1 | Classical Ciphers (Caesar, Playfair, Hill Cipher, Vigenère, OTP) | 📖 | — | 2026-06-13 | — | 5/5 · 2–9 marks | Playfair matrix usually GIVEN in exam — practice encrypting sentences (with spaces). Wiki + solutions PDF done. Source: Lc#1 |
+| ↳ Caesar Cipher (encrypt + decrypt, f(p)=(ap+b)mod26) | 🔲 | — | — | — | 5/5 every year | 2024 encrypt+decrypt; 2023 encrypt+decrypt; 2021 general-form program |
+| ↳ Playfair Cipher (given-matrix encryption) | 🔲 | — | — | — | 3/5 (2020/21/23) · 2–4 marks | Matrix always GIVEN — drill digraph rules + spaces/duplicates handling |
+| ↳ Hill Cipher (2×2 matrix encrypt/decrypt) | 🔲 | — | — | — | 0/5 in past papers, in Lc#1 | Not seen 2020-24 but worked examples in source — light pass only |
+| ↳ Vigenère Cipher | 🔲 | — | — | — | 1/5 (2020) · 4.75 marks | Key "cse" on "explanation" — repeatable algorithm |
+| ↳ One-Time Pad (OTP) — conceptual | 🔲 | — | — | — | 2/5 (2021/22) | "Perfect secrecy" argument + cryptanalysis conceptual answers |
+| 2 | Security Fundamentals & Attacks (CIA, professions, steganography, SQLi, social eng, SWIFT, phishing, ransomware) | 🔲 | — | — | — | 4/5 · 2–9 marks | Fill-blank vocab Q1 style + attack short-notes. Source: Lc#1, Lc#3 |
+| 3 | Symmetric vs Asymmetric / Block vs Stream Cipher | 🔲 | — | — | — | bundled into #2 most yrs, 10 marks in 2022 | Comparison table. Source: Lc#1, Lc#7 |
+| 4 | Hash Functions & Hash Table Collision Resolution (linear probing, double hashing) | 🔲 | — | — | — | 2/5 (2023+2024) · 3 marks | NEW topic — confirmed in Lc#2 w/ worked examples matching exam style exactly. Source: Lc#2 |
+| 5 | Game Theory & Nash Equilibrium (payoff matrix, dominant strategy) | 🔲 | — | — | — | 2/5 (2023+2024) · 3–6 marks | NEW topic — confirmed in Lc#3 w/ worked examples. Source: Lc#3 |
+| 6 | Markov Chains (steady-state probability, 2-state security model) | 🔲 | — | — | — | 2/5 (2023+2024) · 3–4 marks | UPGRADED — both most recent years ask 2-state Markov steady-state. Source: Lc#4A, Lc#4B |
+| 7 | Number Theory & Modular Arithmetic (Euclidean, Fermat, Euler, CRT, Miller-Rabin, discrete log) | 🔲 | — | — | — | 5/5 · 5–9 marks | Foundation for RSA/DigSig. Recurring seed: 3^20x mod11, 7^1000 mod10/11. Source: Lc#5, Lc#6 |
+| 8 | RSA (key gen + encrypt/decrypt numericals) | 🔲 | — | — | — | 5/5 · 5–16 marks | Every year, same numeric pipeline. "e=31,n=3599→find d" repeats verbatim 2020&2021. Source: Lc#6, Lc#7 |
+| 9 | AES (S-box, GF(2^8), block diagram) | 🔲 | — | — | — | 4/5 · 4–6 marks | Block diagram recurs (2021/23/24); GF(2^8) S-box inverse (2022); ShiftRows trace (2024). Source: Lc#8 |
+| 10 | Quantum Attacks & ECC (point arithmetic) | 🔲 | — | — | — | 1/5 (2024 only) · 3–5 marks | NEW numeric type — elliptic curve point-doubling 2P. Don't over-invest. Source: Lc#6, Lc#7 |
+| 11 | IPsec (AH/ESP, transport/tunnel, RFC4301, architecture) | 🔲 | — | — | — | 3/5 · 2.25–9 marks | UPGRADED from 2/5 — 2024 confirmed. Same sub-Q cluster recurs (2020/21/24). Source: Lc#7 |
+| 12 | Blockchain & Bitcoin (Merkle tree, PoW, ETH vs BTC) | 🔲 | — | — | — | 3/5 · 2.75–12 marks | NEW dedicated materials → expect high weight 2026. Source: Lc#11A, Lc#11B |
+| 13 | DES/Feistel/S-box/Avalanche/3-DES (CHEAT SHEET) | 🔲 | — | — | — | 5/5 · 5–10 marks | ⚠️ CRITICAL, CONFIRMED EVERY YEAR — NOT insurance. NOT in any 2026 Lc material. 6 recurring sub-patterns (see map). ~45min cheat sheet |
+| 14 | Digital Signature — generic model + properties + vulnerabilities (CHEAT SHEET) | 🔲 | — | — | — | 5/5 · 1–7 marks | ⚠️ CRITICAL, CONFIRMED EVERY YEAR — NOT insurance. Diagram + concepts, low prerequisite. ~30min cheat sheet |
 
 ## Column guide
 - **Conf** — confidence 1–5 (1=shaky, 5=bulletproof). Update after every recall pass.

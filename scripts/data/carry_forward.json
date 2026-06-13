@@ -1,7 +1,11 @@
 {
   "topics": [
-    "InfoSec (CSE 717) course setup — BLOCKING for Window 2. No syllabus/slides/past papers in 02_Courses/CSE717_InfoSec/ yet (only NotebookLM_Sources.md + README placeholder). User must add materials before Claude can build _Topics.md/_Syllabus.md and rank topics by yield. Highest-priority action for 2026-06-12 — 5 days now from InfoSec exam (17 Jun)."
+    "Block 3: Symmetric vs Asymmetric & Block vs Stream Cipher (#3) — Lc#1+Lc#7, quick comparison-table topic, not started 2026-06-13",
+    "Block 4: Hash Functions & Hash Table Collision Resolution (#4) — Lc#2, practice linear probing + double hashing by hand, not started 2026-06-13",
+    "Block 5: DES/Feistel/S-box/Avalanche/3-DES cheat sheet (#13) — CRITICAL, guaranteed every year, no Lc source, not started 2026-06-13",
+    "Block 6: Digital Signature generic model + properties cheat sheet (#14) — CRITICAL, guaranteed every year, no Lc source, not started 2026-06-13",
+    "Active recall pass on Blocks 1-2 (Classical Ciphers + Security Fundamentals, notes closed) — not done 2026-06-13"
   ],
-  "note": "2026-06-11 end-of-day log was unfilled (no progress reported), so no topics completed today and the AI consolidated recall sweep status is unconfirmed. AI (CSE 713) exam is over; 19 AI recall topics remain due (now repeating for retention, not exam-critical). InfoSec setup is still the #1 blocker — has not moved in 2 days.",
-  "last_updated": "2026-06-11"
+  "note": "2026-06-13 Day 1 of the 4-day InfoSec plan only completed 2/6 planned blocks (#1 Classical Ciphers done with wiki+solutions+✅; #2 Security Fundamentals wiki+solutions done but still 📖, recall not yet run). End-of-day log was unfilled again (3rd day running), so confidence/energy/blockers are unconfirmed. 4 days to InfoSec exam (17 Jun) — Day 1 carryover (#3,#4,#13,#14) must be absorbed into Day 2 (Sun 14), which already had #5,#6,#7,#8 planned. That's 8 topics for one day — likely #8 RSA slips to Monday AM, compressing the Mon AM block further. 19 AI retention recalls remain due, lower priority than InfoSec but should get a fast consolidated sweep if time allows.",
+  "last_updated": "2026-06-13"
 }

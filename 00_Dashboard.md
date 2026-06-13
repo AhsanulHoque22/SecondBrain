@@ -4,9 +4,9 @@
 
 ## Right now
 - **Active exam:** CSE 717 — Information Security — **Wed 17 Jun 2026, 10:30 AM**
-- **Days left:** 5
-- **Phase:** Window 2, Day 2 (Fri) — Still **BLOCKED**: no syllabus/slides/past papers in `02_Courses/CSE717_InfoSec/` yet — only a NotebookLM placeholder. Setup hasn't moved in 2 days; 5 days to exam.
-- **Single most important thing today:** Add InfoSec materials (syllabus, slides, past papers) to `02_Courses/CSE717_InfoSec/`, then ask Claude to clone the AI structure and rank topics by yield. This is now urgent — do it first thing. AI recall sweep (19 topics, retention only) continues alongside.
+- **Days left:** 3
+- **Phase:** Day 2 of 2.5 core-learning days (Sun). Day 1 (#1 Classical Ciphers ✅, #2 Security Fundamentals 📖) only got 2/6 planned blocks done — #3, #4, #13, #14 carried forward into today on top of the original #5/#6/#7 plan. #8 RSA likely slips to Monday AM.
+- **Single most important thing today:** Cheat sheets first — #13 DES/Feistel and #14 Digital Signature are CONFIRMED every year and have no Lc source, so they go in Block 1-2 before anything else.
 - **⚠️ Rule:** Google Calendar is the ONLY source of truth for daily plans. Never use the overnight rollover log for scheduling.
 - **🔴 Session protocols:** Read and execute `scripts/data/session_protocols.md` at EVERY session start. No exceptions.
 
@@ -38,7 +38,7 @@ Prayers structure the day — each gap is a study block:
 | Course | Topics mapped | High-yield done | Past paper attempts | Confidence /5 |
 |--------|:-:|:-:|:-:|:-:|
 | [[02_Courses/CSE713_AI/_Topics\|AI (713)]] | ✅ EXAM DONE (27 topics) | 18✅ · 1🔁 · 7📖 · 1🔲 | ✅ past papers done per topic | 4.2 |
-| [[02_Courses/CSE717_InfoSec/README\|InfoSec (717)]] | ⏳ awaiting materials | – | – | – |
+| [[02_Courses/CSE717_InfoSec/_Topics\|InfoSec (717)]] | ✅ 14 topics ranked | 1✅ · 1📖 · 12🔲 | – | pending |
 | [[02_Courses/CSE711_Compiler/README\|Compiler (711)]] | – | – | – | – |
 | [[02_Courses/CSE719_Distributed/README\|Distributed (719)]] | – | – | – | – |
 | [[02_Courses/CSE715_Graphics/README\|Graphics (715)]] | – | – | – | – |

@@ -1,66 +1,43 @@
 # Study Brain — Compiled State
-_Updated: 2026-06-13 by session (InfoSec unblocked)_
+_Updated: 2026-06-13 by overnight rollover_
 
 ## Active exam
 Course: CSE 717 — Information Security
-Date: 2026-06-17 (Wednesday) | Days left from 2026-06-13: **4** | Phase: **UNBLOCKED — Day 1 of 2.5 core-learning days**. ⚠️ MAJOR REVISION 2026-06-13 mid-morning: re-read all 5 past papers at 300dpi (first OCR pass had errors). DES/Feistel (#13) and Digital Signature (#14) confirmed in EVERY year 2020-2024 — reclassified from "insurance" to CRITICAL, both scheduled TODAY as cheat sheets. 2 NEW topics added with confirmed Lc source: Hash Table Collision Resolution (#4, Lc#2, in 2023+2024) and Game Theory/Nash Equilibrium (#5, Lc#3, in 2023+2024). Markov Chains (#6) upgraded — appears 2023+2024. Now **14 topics total**. Today (Lc#1-2 cluster + critical cheat sheets): Classical Ciphers → Security Fundamentals & Attacks → Symmetric/Asymmetric → Hash Functions & Collision Resolution → DES/Feistel cheat sheet → Digital Signature cheat sheet. Sun: Game Theory → Markov Chains → Number Theory → RSA. Mon AM: AES → Quantum/ECC → IPsec → Blockchain/Bitcoin. Mon PM/Tue = 1.5 days pure revision + timed past papers.
+Date: 2026-06-17 (Wednesday) | Days left from 2026-06-14: **3** | Phase: **Day 2 of 2.5 core-learning days**. Day 1 (Sat) only completed 2/6 planned blocks (#1 Classical Ciphers ✅, #2 Security Fundamentals 📖 — both have wiki+solutions PDFs). Carryover (#3, #4, #13, #14) absorbed into today on top of the original Day 2 plan (#5, #6, #7) — #8 RSA likely slips to Monday AM, compressing Mon AM further. Cheat sheets #13 (DES/Feistel) and #14 (Digital Signature) are CONFIRMED guaranteed marks every year and go first today.
 
-## Topics — CSE713 AI (exam complete — archived for retention recall)
+## Topics — CSE717 InfoSec
 | Topic | Status | Conf | Next Recall |
 |---|:---:|:---:|---|
-| Intelligent Agents + Environments (PAGE) | ✅ | 4 | 2026-06-05 ⚠️ overdue |
-| Search: UCS, Greedy, A*, IDDFS — trace on graph | ✅ | 4 | 2026-06-05 ⚠️ overdue |
-| Search: Problem Formulation | 🔁 | 4 | 2026-06-04 ⚠️ overdue |
-| Alpha-Beta Pruning + Minimax | ✅ | 5 | 2026-06-07 ⚠️ overdue |
-| Forward + Backward Chaining | ✅ | 5 | 2026-06-06 ⚠️ overdue |
-| ↳ PL Basics | ✅ | 5 | 2026-06-06 ⚠️ overdue |
-| ↳ Resolution in PL | ✅ | 5 | 2026-06-06 ⚠️ overdue |
-| FOL + Resolution + Inference | ✅ | 5 | 2026-06-07 ⚠️ overdue |
-| ↳ FOL Syntax | ✅ | 5 | 2026-06-07 ⚠️ overdue |
-| ↳ FOL Translation | ✅ | 5 | 2026-06-07 ⚠️ overdue |
-| ↳ Canonical Form Conversion (9-step) | ✅ | 5 | 2026-06-07 ⚠️ overdue |
-| ↳ Resolution in FOL | ✅ | 5 | 2026-06-07 ⚠️ overdue |
-| ↳ KR & Mapping roles | ✅ | 5 | 2026-06-07 ⚠️ overdue |
-| ↳ Evidential Reasoning (ER) | ✅ | 5 | 2026-06-07 ⚠️ overdue |
-| STRIPS + Partial-Order Planning | ✅ | 5 | 2026-06-07 ⚠️ overdue |
-| Hill Climbing + Simulated Annealing | ✅ | 5 | 2026-06-07 ⚠️ overdue |
-| Bayes' Theorem + Bayesian Networks | ✅ | 3 | 2026-06-09 ⚠️ overdue |
-| ↳ Uncertainty Concept (doorbell) | ✅ | 3 | 2026-06-09 ⚠️ overdue |
-| ↳ Extended Bayes' Theorem | ✅ | 3 | 2026-06-09 ⚠️ overdue |
-| ↳ BN Syntax, Semantics & Construction | 📖 | — | — |
-| ↳ McCulloch-Pitts Neuron + Perceptron | ✅ | 3 | — |
-| Neural Networks + Learning (main) | 📖 | — | 2026-06-09 ⚠️ overdue |
-| ↳ Backpropagation (sigmoid fwd/bwd) | 📖 | — | — |
-| ↳ Associative Memory + Hopfield | 📖 | — | — |
-| ↳ ANN vs Biological + taxonomy | 📖 | — | — |
-| ↳ NN Historical Evolution | 📖 | — | — |
-| CSP (map coloring, cryptarithmetic) | 🔲 | — | — |
-| Fuzzy Logic + Uncertainty | 📖 | — | — |
-
-## Topics — CSE717 InfoSec (ordered by learning/lecture flow Lc#1→Lc#11; revised 2026-06-13)
-| # | Topic | Status | Conf | Yield |
-|---|---|:---:|:---:|---|
-| 1 | Classical Ciphers (Caesar, Playfair, Hill, Vigenère, OTP) | 🔲 | — | 5/5 · 2–9 marks |
-| 2 | Security Fundamentals & Attacks (CIA, professions, steganography, SQLi, SWIFT, firewall) | 🔲 | — | 4/5 · 2–9 marks |
-| 3 | Symmetric/Asymmetric & Block/Stream Cipher | 🔲 | — | bundled, 10 marks in 2022 |
-| 4 | Hash Functions & Hash Table Collision Resolution (NEW) | 🔲 | — | 2/5 (2023+24) · 3 marks |
-| 5 | Game Theory & Nash Equilibrium (NEW) | 🔲 | — | 2/5 (2023+24) · 3–6 marks |
-| 6 | Markov Chains (steady-state probability) | 🔲 | — | 2/5 (2023+24) · 3–4 marks |
-| 7 | Number Theory & Modular Arithmetic (Euclidean, Fermat, Euler, CRT, Miller-Rabin) | 🔲 | — | 5/5 · 5–9 marks |
-| 8 | RSA (key gen + encrypt/decrypt numericals) | 🔲 | — | 5/5 · 5–16 marks |
-| 9 | AES (S-box, GF(2^8), block diagram) | 🔲 | — | 4/5 · 4–6 marks |
-| 10 | Quantum Attacks & ECC (point arithmetic) | 🔲 | — | 1/5 (2024) · 3–5 marks |
-| 11 | IPsec (AH/ESP, transport/tunnel, RFC4301) | 🔲 | — | 3/5 · 2.25–9 marks |
-| 12 | Blockchain & Bitcoin (Merkle tree, PoW, ETH vs BTC) | 🔲 | — | 3/5 · 2.75–12 marks |
-| 13 | ⚠️ DES/Feistel/S-box/Avalanche/3-DES — CRITICAL cheat sheet | 🔲 | — | 5/5 EVERY YEAR · 5–10 marks |
-| 14 | ⚠️ Digital Signature generic model + properties — CRITICAL cheat sheet | 🔲 | — | 5/5 EVERY YEAR · 1–7 marks |
-
-Full detail in `02_Courses/CSE717_InfoSec/_Topics.md` + `_Syllabus.md` + `_TopicQuestionMap.md`.
+| 1. Classical Ciphers (Caesar, Playfair, Hill, Vigenère, OTP) | ✅ | — | 2026-06-15 |
+| ↳ Caesar Cipher (encrypt+decrypt) | 🔲 | — | — |
+| ↳ Playfair Cipher (given-matrix) | 🔲 | — | — |
+| ↳ Hill Cipher (2×2 matrix) | 🔲 | — | — |
+| ↳ Vigenère Cipher | 🔲 | — | — |
+| ↳ One-Time Pad (OTP) | 🔲 | — | — |
+| 2. Security Fundamentals & Attacks (CIA, professions, steganography, SQLi, SWIFT, firewall) | 📖 | — | — |
+| ↳ Attack-vector short notes (DoS/DDoS/Phishing/SQLi/Ransomware/Rogue security software) | 🔲 | — | — |
+| ↳ Security vocab cheat sheet (CIA, professions, steganography, biometrics, SWIFT, etc.) | 🔲 | — | — |
+| 3. Symmetric vs Asymmetric / Block vs Stream Cipher | 🔲 | — | — |
+| 4. Hash Functions & Hash Table Collision Resolution | 🔲 | — | — |
+| 5. Game Theory & Nash Equilibrium | 🔲 | — | — |
+| 6. Markov Chains (steady-state probability) | 🔲 | — | — |
+| 7. Number Theory & Modular Arithmetic | 🔲 | — | — |
+| 8. RSA (key gen + encrypt/decrypt numericals) | 🔲 | — | — |
+| 9. AES (S-box, GF(2^8), block diagram) | 🔲 | — | — |
+| 10. Quantum Attacks & ECC | 🔲 | — | — |
+| 11. IPsec (AH/ESP, transport/tunnel, RFC4301) | 🔲 | — | — |
+| 12. Blockchain & Bitcoin | 🔲 | — | — |
+| 13. ⚠️ DES/Feistel/S-box/Avalanche/3-DES cheat sheet (CRITICAL) | 🔲 | — | — |
+| 14. ⚠️ Digital Signature generic model + properties cheat sheet (CRITICAL) | 🔲 | — | — |
 
 ## Carry-forward
-- None — InfoSec unblocked. Today's order: Classical Ciphers → Security Fundamentals & Attacks → Symmetric/Asymmetric → Hash Functions & Collision Resolution → DES/Feistel cheat sheet → Digital Signature cheat sheet (Blocks 1-6).
+- Block 3: Symmetric vs Asymmetric & Block vs Stream Cipher (#3) — Lc#1+Lc#7, quick comparison table, not started
+- Block 4: Hash Functions & Hash Table Collision Resolution (#4) — Lc#2, practice linear probing + double hashing by hand, not started
+- Block 5: DES/Feistel/S-box/Avalanche/3-DES cheat sheet (#13) — CRITICAL, guaranteed every year, not started
+- Block 6: Digital Signature generic model + properties cheat sheet (#14) — CRITICAL, guaranteed every year, not started
+- Active recall pass on Blocks 1-2 (Classical Ciphers + Security Fundamentals, notes closed) — not done
 
-## Recall due 2026-06-12
+## Recall due 2026-06-14
 - 🔁 Intelligent Agents + Environments (PAGE) `CSE713_AI` | conf 4/5
 - 🔁 Search: UCS, Greedy, A*, IDDFS — trace on graph `CSE713_AI` | conf 4/5
 - 🔁 Forward + Backward Chaining + Rule-Based System `CSE713_AI` | conf 5/5
@@ -81,7 +58,9 @@ Full detail in `02_Courses/CSE717_InfoSec/_Topics.md` + `_Syllabus.md` + `_Topic
 - 🔁 ↳ Uncertainty Concept (doorbell) `CSE713_AI` | conf 3/5
 - 🔁 ↳ McCulloch-Pitts Neuron + Perceptron + Learning Rule `CSE713_AI` | conf 3/5
 
+> Note: AI exam is over — these 19 are retention-only. Don't let them crowd out InfoSec (3 days out). Skip entirely if time is tight.
+
 ## Recent pattern (last 3 days)
-- 2026-06-09: end-of-day log unfilled — no new completions logged
-- 2026-06-10: 🎓 CSE 713 AI EXAM SAT (10:30 AM) | end-of-day log unfilled
-- 2026-06-11: end-of-day log unfilled — no new completions logged, InfoSec setup still blocked, 19 AI recalls all still overdue
+- 2026-06-11: end-of-day log unfilled — no completions logged, InfoSec setup still blocked
+- 2026-06-12: end-of-day log unfilled — no completions logged, but InfoSec materials arrived (unblocked) during/by end of day
+- 2026-06-13: InfoSec unblocked, 4-day plan built — #1 Classical Ciphers ✅ (wiki+solutions), #2 Security Fundamentals 📖 (wiki+solutions, recall pending); Blocks 3-6 + cheat sheets not started; end-of-day log unfilled (3rd day running)

@@ -9,7 +9,7 @@ Status: 🔲 not started · 📖 learning · 🔁 needs recall · ✅ can explai
 
 | # | Topic | Status | Conf | Last Reviewed | Next Recall | Yield | Notes / weak spots |
 |---|-------|:------:|:----:|:-------------:|:-----------:|:-----:|--------------------|
-| 1 | Classical Ciphers (Caesar, Playfair, Hill Cipher, Vigenère, OTP) | 📖 | — | 2026-06-13 | — | 5/5 · 2–9 marks | Playfair matrix usually GIVEN in exam — practice encrypting sentences (with spaces). Wiki + solutions PDF done. Source: Lc#1 |
+| 1 | Classical Ciphers (Caesar, Playfair, Hill Cipher, Vigenère, OTP) | ✅ | — | 2026-06-13 | 2026-06-15 | 5/5 · 2–9 marks | Playfair matrix usually GIVEN in exam — practice encrypting sentences (with spaces). Wiki + solutions PDF done. Source: Lc#1 |
 | ↳ Caesar Cipher (encrypt + decrypt, f(p)=(ap+b)mod26) | 🔲 | — | — | — | 5/5 every year | 2024 encrypt+decrypt; 2023 encrypt+decrypt; 2021 general-form program |
 | ↳ Playfair Cipher (given-matrix encryption) | 🔲 | — | — | — | 3/5 (2020/21/23) · 2–4 marks | Matrix always GIVEN — drill digraph rules + spaces/duplicates handling |
 | ↳ Hill Cipher (2×2 matrix encrypt/decrypt) | 🔲 | — | — | — | 0/5 in past papers, in Lc#1 | Not seen 2020-24 but worked examples in source — light pass only |

@@ -54,13 +54,22 @@ Memorize this matrix cold — high chance it recurs again in 2026. If given, you
 ---
 
 ### Topic 3 — Symmetric/Asymmetric & Block/Stream Ciphers
-**Yield:** ⭐⭐⭐ bundled into Topic 2 most years, standalone big Q in 2022 (10 marks)
+**Yield:** ⭐⭐⭐ bundled into Topic 2 most years, standalone Q in 2022 (7 marks) + 2020 (4 marks)
 
-- **2024 Q1(a):** symmetric vs asymmetric crypto, why asymmetric for e-commerce (3) — overlaps Topic 2
-- **2022 Q2:** essential ingredients of symmetric cipher (3), block vs stream cipher difference (3), Caesar/OTP cryptanalysis (2), public/private key roles (2) = 10
-- **2020 Q5(b,c):** classical Feistel structure (3), block vs stream differences (1)
+⚠️ **No-source cheat sheet** — Lc#1 pp.25-28 and Lc#7 p.12 are TITLE-ONLY slides ("How Cryptography Works with Public and Private Key?", "Why Symmetric Algorithms Are Less Vulnerable") with zero body text. Grepped ALL Lc#1-11 PDFs for "block cipher / stream cipher / Feistel structure / ingredients of symmetric / public-key cryptosystem" — ZERO hits. Content below is standard textbook knowledge (Stallings), like Topics #13/#14.
 
-**Pattern:** Comparison-table material (symmetric ingredients; block vs stream; public/private key roles). Quick to memorize, moderate but recurring credit.
+- **2024 Q1(a) [3]:** symmetric vs asymmetric crypto + why asymmetric for e-commerce — already answered in `SecurityFundamentals_Solutions.pdf` (Topic 2), cross-ref only.
+- **2022 Q2 — verified at 300dpi (pghi-5), header "3+3+2+2":**
+  - Q2(a) [3]: essential ingredients of a symmetric cipher
+  - Q2(b) [3]: Caesar/OTP cryptanalysis — belongs to Topic 1, answered in `ClassicalCiphers_Solutions.pdf`
+  - Q2(c) [2+2=4]: principal elements of a public-key cryptosystem (2) + roles of the public and private key (2)
+  - → Topic 3 portion of 2022 Q2 = (a)+(c) = 3+4 = **7 marks**
+- **2020 Group-B Q5 — verified at 300dpi (pghi-9):**
+  - Q5(b) [3]: draw the classical Feistel cipher structure for the symmetric block encryption algorithm
+  - Q5(c) [1]: differences between a block cipher and a stream cipher
+  - → Topic 3 portion of 2020 Q5 = (b)+(c) = **4 marks**
+
+**Pattern:** Comparison-table / definition material (symmetric cipher ingredients; block vs stream; Feistel structure; public-key cryptosystem elements & key roles). Quick to memorize, moderate but recurring credit (~4-7 marks in years it appears standalone). Full solutions: `SymmetricAsymmetric_Solutions.pdf`.
 
 ---
 

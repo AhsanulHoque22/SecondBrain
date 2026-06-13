@@ -41,15 +41,15 @@ Memorize this matrix cold — high chance it recurs again in 2026. If given, you
 ---
 
 ### Topic 2 — Security Fundamentals & Attack Vectors
-**Yield:** ⭐⭐⭐⭐ 4/5 years (2–9 marks)
+**Yield:** ⭐⭐⭐⭐ 4/5 years (2–9 marks) — re-verified 2026-06-13 via 300dpi re-read
 
-- **2024 Q1(a):** Symmetric vs asymmetric crypto + why asymmetric useful for e-commerce (3); **Q1(b):** handshaking + message-digest (2)
-- **2023 Q2(c):** Short explain: phishing, DoS, SQL injection, Clop ransomware (2)
-- **2022 Q1:** Fill-in-blank security terms (threat actor/asset/attack vector), security professions (pentester, cybersecurity analyst/architect/auditor, data security analyst, network analyst), steganography (2+3+2+1=8); **Q7(b):** SQL injection + social engineering short notes; **Q7(c):** SWIFT banking pentest scenario (goal-setting + non-damage steps)
-- **2021 A1:** Risk equation (threat agent × probability × loss) + model (a); biometrics auth failure modes + evaluation criteria (b); wireless network threats (c) — 4.75 total; **B4:** ransomware vs social engineering (2), backdoor/logic bomb/Trojan horse (1.75)
-- **2020:** not directly present as standalone — overlaps with Topic 1/13
+- **2024 Q1(a):** Briefly describe symmetric and asymmetric cryptography with an example; point out why asymmetric cryptography is useful for e-commerce (3); **Q1(b):** What is handshaking? Briefly describe how message-digest works (2)
+- **2023 Q2(c):** Explain briefly how to secure a network from: (i) Phishing attack (ii) Denial of service attack (iii) SQL injection attack (iv) Clop ransomware (2). *Related (not core):* Q2(b) digital certificates/CA/SSL secure web exchange (4); Q4(c) Shannon's two atomic operations in security [confusion & diffusion] (1)
+- **2022 Q1 (whole question, 2+3+2+1=8):** (a) "Ambiguity is security" — why and how? (2); (b) Fill-in-the-blank security terms — "A ... (C) ... here is the existence of an individual motivated to profit by stealing an asset and selling it for cash" [threat actor/asset/attack vector] (3); (c) Write down key roles/responsibilities of: penetration tester, cyber security analyst, cyber security auditor, data security analyst, network analyst, cyber security architect (2); (d) What is steganography? (1). **Q7(b):** Write short notes on SQL injection and social engineering (~3); **Q7(c):** SWIFT banking-network pentest scenario — goal-setting + non-damaging steps for testing a bank's SWIFT gateway (~4)
+- **2021 A-1(a):** Derive a risk equation depending on threat agent, probability of attack, and expected loss; draw a related model (4.75); **A-1(b):** How do physical and behavioural biometrics fail for authentication? How would you evaluate biometrics using standard criteria? (3); **A-1(c):** Remark on the threats in wireless security (1). **B-4(a):** How would you differentiate between ransomware and social engineering? (2); **B-4(d):** Describe backdoor, logic bomb, and Trojan horse (1.75)
+- **2020:** not directly present as standalone — 2020 paper covers Playfair/Vigenère/CRT/discrete-log/Fermat/Euler/DES/RSA/digital signature/Miller-Rabin/IPsec only, nothing matching this topic's vocab/attack-type theme
 
-**Pattern:** Fill-in-blank vocabulary (professions, steganography, CIA-triad terms) is a recurring Q1 style (2022/2023-ish). SWIFT/pentest scenario essay recurs. Attack-type short-notes (phishing/SQLi/social engineering/ransomware/backdoor/Trojan) rotate every year in some form.
+**Pattern:** Fill-in-blank/short-note vocabulary (CIA-triad-adjacent terms, security professions, steganography, biometrics, wireless threats, backdoor/logic-bomb/Trojan, ransomware vs social engineering) is the dominant style — appears as a multi-part Q1 (2022) or scattered across A-1/B-4 (2021) or Q1/Q2(c) (2024/2023). SWIFT/pentest essay (2022) and Shannon's confusion/diffusion (2023) are one-off but plausible repeats. NONE of this is covered in any Lc material except the 6 attack types on Lc#1 pp.2-17 (Rogue security software, DoS, DDoS, Phishing, SQL Injection, Ransomware) — everything else is a cheat-sheet item like Topics 13/14.
 
 ---
 

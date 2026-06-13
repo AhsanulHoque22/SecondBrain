@@ -15,7 +15,9 @@ Status: 🔲 not started · 📖 learning · 🔁 needs recall · ✅ can explai
 | ↳ Hill Cipher (2×2 matrix encrypt/decrypt) | 🔲 | — | — | — | 0/5 in past papers, in Lc#1 | Not seen 2020-24 but worked examples in source — light pass only |
 | ↳ Vigenère Cipher | 🔲 | — | — | — | 1/5 (2020) · 4.75 marks | Key "cse" on "explanation" — repeatable algorithm |
 | ↳ One-Time Pad (OTP) — conceptual | 🔲 | — | — | — | 2/5 (2021/22) | "Perfect secrecy" argument + cryptanalysis conceptual answers |
-| 2 | Security Fundamentals & Attacks (CIA, professions, steganography, SQLi, social eng, SWIFT, phishing, ransomware) | 🔲 | — | — | — | 4/5 · 2–9 marks | Fill-blank vocab Q1 style + attack short-notes. Source: Lc#1, Lc#3 |
+| 2 | Security Fundamentals & Attacks (CIA, professions, steganography, SQLi, social eng, SWIFT, phishing, ransomware) | 📖 | — | 2026-06-13 | — | 4/5 · 2–9 marks | Fill-blank vocab Q1 style + attack short-notes. Lc#1 pp2-17 covers attack vectors; rest (CIA/professions/steganography/biometrics/SWIFT/backdoor-Trojan) NOT in any Lc — cheat sheet, like #13/#14. Wiki done. |
+| ↳ Attack-vector short notes (DoS, DDoS, Phishing, SQLi, Ransomware, Rogue security software) | 🔲 | — | — | — | Lc#1 pp2-17, used 2023/2022/2021 | 6 definitions, exam asks "explain briefly" / "short note" |
+| ↳ Security vocab cheat sheet (CIA-ish terms, risk eqn, professions, steganography, biometrics FAR/FRR, wireless threats, backdoor/logic bomb/Trojan, SWIFT, handshaking+digest, Shannon confusion/diffusion) | 🔲 | — | — | — | NOT in any Lc, 4/5 years | ~15 terms — no calculation, pure memorization |
 | 3 | Symmetric vs Asymmetric / Block vs Stream Cipher | 🔲 | — | — | — | bundled into #2 most yrs, 10 marks in 2022 | Comparison table. Source: Lc#1, Lc#7 |
 | 4 | Hash Functions & Hash Table Collision Resolution (linear probing, double hashing) | 🔲 | — | — | — | 2/5 (2023+2024) · 3 marks | NEW topic — confirmed in Lc#2 w/ worked examples matching exam style exactly. Source: Lc#2 |
 | 5 | Game Theory & Nash Equilibrium (payoff matrix, dominant strategy) | 🔲 | — | — | — | 2/5 (2023+2024) · 3–6 marks | NEW topic — confirmed in Lc#3 w/ worked examples. Source: Lc#3 |

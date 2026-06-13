@@ -1,9 +1,9 @@
 # Study Brain — Compiled State
-_Updated: 2026-06-11 by overnight rollover_
+_Updated: 2026-06-13 by session (InfoSec unblocked)_
 
 ## Active exam
 Course: CSE 717 — Information Security
-Date: 2026-06-17 (Wednesday) | Days left from 2026-06-12: **5** | Phase: **Window 2, Day 2 (Fri) — still BLOCKED**. `02_Courses/CSE717_InfoSec/` has no syllabus/slides/past papers yet (only NotebookLM_Sources.md + README placeholder) — adding materials is the #1 unblocking action, now urgent (hasn't moved in 2 days). Until materials arrive, continue the AI consolidated recall sweep for retention.
+Date: 2026-06-17 (Wednesday) | Days left from 2026-06-13: **4** | Phase: **UNBLOCKED — Day 1 of 2 core-learning days**. Materials arrived (11 lecture PDFs + 5-year past papers + Blockchain/Bitcoin). `_Syllabus.md`, `_Topics.md`, `_TopicQuestionMap.md` built, 11 topics ranked by yield (see `02_Courses/CSE717_InfoSec/_Topics.md`). Today's focus: Number Theory & Modular Arithmetic → RSA → Classical Ciphers (Tier 1, every-year guaranteed). Tomorrow (Sun): AES, Security Fundamentals/Attacks, Symmetric/Stream concepts, Blockchain/Bitcoin (new dedicated topic, expect high weight), IPsec if time. Mon/Tue = pure revision + timed past papers. ⚠️ Open question: DES/Feistel/S-box and Digital Signature generic model appear in every past paper but weren't found via text search in 2026 materials — verify visually Day 1 (flagged in `_Syllabus.md`).
 
 ## Topics — CSE713 AI (exam complete — archived for retention recall)
 | Topic | Status | Conf | Next Recall |
@@ -38,10 +38,26 @@ Date: 2026-06-17 (Wednesday) | Days left from 2026-06-12: **5** | Phase: **Windo
 | Fuzzy Logic + Uncertainty | 📖 | — | — |
 
 ## Topics — CSE717 InfoSec
-Not set up yet — no `_Topics.md`. Awaiting materials in `02_Courses/CSE717_InfoSec/`.
+| Topic | Status | Conf | Yield |
+|---|:---:|:---:|---|
+| Number Theory & Modular Arithmetic (Euclidean, Fermat, Euler, CRT, Miller-Rabin) | 🔲 | — | 5/5 · 5–8 marks |
+| RSA (key gen + encrypt/decrypt numericals) | 🔲 | — | 5/5 · 4.75–5 marks |
+| Classical Ciphers (Caesar, Playfair, Hill Cipher, OTP) | 🔲 | — | 3/5 · 5–7.5 marks |
+| AES (S-box, GF(2^8)) | 🔲 | — | 3/5 · 4.75 marks |
+| Security Fundamentals & Attacks (CIA, professions, steganography, SQLi, SWIFT) | 🔲 | — | 3/5 · 4–9 marks |
+| Symmetric/Asymmetric & Block/Stream Cipher | 🔲 | — | 2/5 · 4 marks |
+| Blockchain & Bitcoin (Merkle tree, ETH vs BTC) | 🔲 | — | 4/5 · NEW, expect high weight |
+| IPsec (AH/ESP, transport/tunnel, RFC4301) | 🔲 | — | 2/5 · 8.5–10 marks, cyclical |
+| Hash Functions & Randomness | 🔲 | — | 1/5 · supporting |
+| Markov Chains | 🔲 | — | 1/5 · new, unknown |
+| Quantum Attacks & ECC | 🔲 | — | 1/5 · new, unknown |
+| ⚠️ DES/Feistel/S-box/Avalanche (insurance) | 🔲 | — | 5/5 historically — verify Day 1 |
+| ⚠️ Digital Signature generic model (insurance) | 🔲 | — | 4/5 historically — verify Day 1 |
+
+Full detail in `02_Courses/CSE717_InfoSec/_Topics.md` + `_Syllabus.md` + `_TopicQuestionMap.md`.
 
 ## Carry-forward
-- InfoSec (CSE 717) course setup — BLOCKING, 2 days running. Add syllabus/slides/past papers, then ask Claude to clone the AI structure (`_Topics.md`, `_Syllabus.md`, `_TopicQuestionMap.md`) and rank topics by yield. 5 days to exam.
+- None — InfoSec unblocked. Today's #1: Number Theory + RSA (Block 1-2), then Classical Ciphers (Block 3), then 10-min source check for DES/Digital Signature.
 
 ## Recall due 2026-06-12
 - 🔁 Intelligent Agents + Environments (PAGE) `CSE713_AI` | conf 4/5

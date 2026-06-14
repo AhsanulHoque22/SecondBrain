@@ -27,11 +27,10 @@ Date: 2026-06-17 (Wednesday) | Days left from 2026-06-14: **3** | Phase: **Day 2
 | 10. Quantum Attacks & ECC | 🔲 | — | — |
 | 11. IPsec (AH/ESP, transport/tunnel, RFC4301) | 🔲 | — | — |
 | 12. Blockchain & Bitcoin | 🔲 | — | — |
-| 13. ⚠️ DES/Feistel/S-box/Avalanche/3-DES cheat sheet (CRITICAL) | 🔲 | — | — |
+| 13. ⚠️ DES/Feistel/S-box/Avalanche/3-DES cheat sheet (CRITICAL) | ✅ | — | 2026-06-16 |
 | 14. ⚠️ Digital Signature generic model + properties cheat sheet (CRITICAL) | 🔲 | — | — |
 
 ## Carry-forward
-- Block 5: DES/Feistel/S-box/Avalanche/3-DES cheat sheet (#13) — CRITICAL, guaranteed every year, not started
 - Block 6: Digital Signature generic model + properties cheat sheet (#14) — CRITICAL, guaranteed every year, not started
 - Active recall pass on Blocks 1-2 (Classical Ciphers + Security Fundamentals, notes closed) — not done
 

@@ -21,7 +21,7 @@ Date: 2026-06-17 (Wednesday) | Days left from 2026-06-15: **2** | Phase: **Day 1
 | 4. Hash Functions & Hash Table Collision Resolution | ✅ | — | 2026-06-16 |
 | 5. Game Theory & Nash Equilibrium | 🔲 | — | — |
 | 6. Markov Chains (steady-state probability) | 🔲 | — | — |
-| 7. Number Theory & Modular Arithmetic | 🔲 | — | — |
+| 7. Number Theory & Modular Arithmetic | ✅ | — | 2026-06-17 |
 | 8. RSA (key gen + encrypt/decrypt numericals) | 🔲 | — | — |
 | 9. AES (S-box, GF(2^8), block diagram) | 🔲 | — | — |
 | 10. Quantum Attacks & ECC | 🔲 | — | — |
@@ -31,8 +31,7 @@ Date: 2026-06-17 (Wednesday) | Days left from 2026-06-15: **2** | Phase: **Day 1
 | 14. ⚠️ Digital Signature generic model + properties cheat sheet (CRITICAL) | ✅ | — | 2026-06-16 |
 
 ## Carry-forward
-- #7 Number Theory & Modular Arithmetic — not started, foundation for RSA/DigSig (HIGH PRIORITY)
-- #8 RSA — not started, CRITICAL (5/5 years, 5-16 marks), already pushed once
+- #8 RSA — not started, CRITICAL (5/5 years, 5-16 marks), already pushed once (NEXT PRIORITY — builds directly on #7)
 - #5 Game Theory & Nash Equilibrium — not started, slipped from Sunday Block 4
 - #6 Markov Chains — not started, slipped from Sunday Block 5
 - Active recall pass on Blocks 1-2 (Classical Ciphers + Security Fundamentals, notes closed) — carried 2 days now

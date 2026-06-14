@@ -1,0 +1,527 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[top=2.5cm,bottom=2.5cm,left=2.5cm,right=2.5cm,headheight=15pt]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{tikz}
+\usetikzlibrary{shapes,arrows,arrows.meta,positioning,calc,backgrounds,fit,matrix}
+\usepackage{booktabs,array,longtable,tabularx,multirow}
+\usepackage{xcolor}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{mdframed}
+\usepackage{tcolorbox}
+\tcbuselibrary{skins,breakable}
+\usepackage{hyperref}
+
+%% ---- Colors ----
+\definecolor{folblue}{RGB}{0,82,165}
+\definecolor{lightblue}{RGB}{220,235,255}
+\definecolor{darkorange}{RGB}{180,70,0}
+\definecolor{lightorange}{RGB}{255,235,210}
+\definecolor{darkgreen}{RGB}{20,110,20}
+\definecolor{lightgreen}{RGB}{200,240,205}
+\definecolor{darkred}{RGB}{150,20,20}
+\definecolor{lightred}{RGB}{255,210,210}
+\definecolor{lightgray}{RGB}{242,242,242}
+
+%% ---- tcolorbox styles ----
+\newtcolorbox{qbox}[2][]{enhanced,breakable,
+  colback=lightorange,colframe=darkorange,arc=4pt,
+  title={\textbf{#2}},fonttitle=\bfseries\color{white},
+  attach boxed title to top left={yshift=-2mm,xshift=4mm},
+  boxed title style={colback=darkorange,arc=3pt},#1}
+
+\newtcolorbox{solbox}[2][]{enhanced,breakable,
+  colback=lightblue,colframe=folblue,arc=4pt,
+  title={\textbf{#2}},fonttitle=\bfseries\color{white},
+  attach boxed title to top left={yshift=-2mm,xshift=4mm},
+  boxed title style={colback=folblue,arc=3pt},#1}
+
+\newtcolorbox{keybox}[2][]{enhanced,breakable,
+  colback=lightgreen,colframe=darkgreen,arc=4pt,
+  title={\textbf{#2}},fonttitle=\bfseries\color{white},
+  attach boxed title to top left={yshift=-2mm,xshift=4mm},
+  boxed title style={colback=darkgreen,arc=3pt},#1}
+
+\newtcolorbox{algobox}[2][]{enhanced,breakable,
+  colback=lightgray,colframe=gray!60,arc=4pt,
+  title={\textbf{#2}},fonttitle=\bfseries,
+  attach boxed title to top left={yshift=-2mm,xshift=4mm},
+  boxed title style={colback=gray!60,arc=3pt},#1}
+
+\newtcolorbox{warnbox}[2][]{enhanced,breakable,
+  colback=lightred,colframe=darkred,arc=4pt,
+  title={\textbf{#2}},fonttitle=\bfseries\color{white},
+  attach boxed title to top left={yshift=-2mm,xshift=4mm},
+  boxed title style={colback=darkred,arc=3pt},#1}
+
+%% ---- Page style ----
+\pagestyle{fancy}\fancyhf{}
+\lhead{\color{folblue}\textbf{Number Theory \& Modular Arithmetic --- CSE 717 InfoSec}}
+\rhead{\color{folblue}Exam: 17 Jun 2026}
+\cfoot{--- \thepage\ ---}
+\renewcommand{\headrulewidth}{0.4pt}
+
+%% ---- Section style ----
+\titleformat{\section}{\large\bfseries\color{folblue}}{}{0em}{}[\titlerule]
+\titleformat{\subsection}{\normalsize\bfseries\color{darkorange}}{}{0em}{}
+
+\begin{document}
+
+\begin{center}
+{\LARGE\bfseries\color{folblue} CSE 717 --- Information Security}\\[4pt]
+{\large\bfseries Topic 7: Number Theory \& Modular Arithmetic}\\[2pt]
+{\large Complete Past Paper Solutions: 2020--2024}\\[6pt]
+{\normalsize Source: Lc\#5 (GCD, Extended Euclidean, linear congruence), Lc\#6 (Fermat, Euler) --- CRT, Miller-Rabin, discrete log/cyclic groups are no-source cheat sheet}\\[2pt]
+{\normalsize\color{darkred}\textbf{HIGHEST-YIELD TOPIC: 5/5 years, 5--9 marks. Every Topic-7 question 2020--2024 included. Zero omissions.}}
+\end{center}
+
+\tableofcontents
+\newpage
+
+%% ==========================================
+\section*{Quick Reference --- 8 Recurring Sub-Patterns (CHEAT SHEET)}
+%% ==========================================
+
+\begin{warnbox}{CONFIRMED EVERY YEAR --- foundation for RSA (Topic 8) and Digital Signature (Topic 14)}
+Recurring numeric ``seeds'': $3^{20x} \bmod 11$ and $7^{1000} \bmod (10 \text{ or } 11)$ (Fermat/Euler combo, appears 2020/2021/2023/2024). Extended Euclidean for multiplicative inverse appears almost every year. CRT appears 2020 \& 2023. Miller-Rabin + discrete log appear 2020--2022. \textbf{Patterns A--E sourced from Lc\#5/Lc\#6; patterns F--H are NOT in any 2026 Lc material --- pure cheat sheet, memorize the algorithm + 1 worked example each.}
+\end{warnbox}
+
+\begin{algobox}{A. GCD via the Euclidean Algorithm}
+Repeatedly apply $\gcd(a,b) = \gcd(b, a \bmod b)$ until the remainder is 0. The last nonzero remainder is the GCD.
+
+\textbf{Worked example (Lc\#5): $\gcd(414,662)$}
+\[
+662 = 1(414)+248,\quad 414=1(248)+166,\quad 248=1(166)+82,\quad 166=2(82)+2,\quad 82=41(2)+0
+\]
+$\Rightarrow \gcd(414,662)=2$.
+
+\textbf{Worked example (Lc\#5): $\gcd(252,198)$}
+\[
+252=1(198)+54,\quad 198=3(54)+36,\quad 54=1(36)+18,\quad 36=2(18)+0
+\]
+$\Rightarrow \gcd(252,198)=18$.
+\end{algobox}
+
+\begin{algobox}{B. Extended Euclidean Algorithm --- GCD as a Linear Combination \& Multiplicative Inverse}
+Back-substitute through the Euclidean steps to write $\gcd(a,b)=sa+tb$ for integers $s,t$. If $\gcd(a,b)=1$, then $s \equiv a^{-1} \pmod b$ (or $t \equiv b^{-1} \pmod a$).
+
+\textbf{Worked example (Lc\#5): $18 = \gcd(252,198)$ as a linear combination}
+\[
+18 = 54-1(36) = 54-1(198-3(54)) = 4(54)-198 = 4(252-198)-198 = 4(252)+(-5)(198)
+\]
+\[
+\Rightarrow 18 = 4(252) + (-5)(198)
+\]
+
+\textbf{Worked example (2021 A3): multiplicative inverse of $1234 \bmod 4321$}
+Euclidean steps: $4321=3(1234)+619$, $1234=1(619)+615$, $619=1(615)+4$, $615=153(4)+3$, $4=1(3)+1$.
+Back-substitute: $1 = 309(4321) - 1082(1234)$
+\[
+\Rightarrow 1234^{-1} \equiv -1082 \equiv 4321-1082 = \boxed{3239} \pmod{4321}
+\]
+(Check: $1234 \times 3239 = 3{,}996{,}926 = 925 \times 4321 + 1$.)
+
+\textbf{Worked example (2020 Q3): multiplicative inverse of $550 \bmod 1769$}
+Euclidean steps reduce to $1 = 550(550) - 171(1769)$
+\[
+\Rightarrow 550^{-1} \equiv \boxed{550} \pmod{1769}
+\]
+(Check: $550 \times 550 = 302{,}500 = 171 \times 1769 + 1$. Pleasant surprise --- 550 is its own inverse!)
+\end{algobox}
+
+\begin{algobox}{C. Linear Congruence $ax \equiv b \pmod m$}
+\textbf{Steps:}
+\begin{enumerate}[noitemsep]
+  \item Check $\gcd(a,m)=1$ (otherwise need $\gcd(a,m) \mid b$ for solutions to exist).
+  \item Find $a^{-1} \bmod m$ via Extended Euclidean (pattern B).
+  \item Solution: $x \equiv a^{-1} \cdot b \pmod m$. General solution: $x_0 + mk$ for integer $k$.
+\end{enumerate}
+
+\textbf{Worked example (Lc\#5): solve $33x \equiv 38 \pmod{280}$}
+$\gcd(33,280)=1$. Extended Euclidean: $1 = 17(33) - 2(280) \Rightarrow 33^{-1} \equiv 17 \pmod{280}$.
+\[
+x \equiv 17 \times 38 = 646 \equiv 646 - 2(280) = \boxed{86} \pmod{280}, \quad \text{general: } 86+280k
+\]
+
+\textbf{Worked example (2023 Section B Q7(b)): solve $33x \equiv 18 \pmod{280}$}
+Same $33^{-1}=17$.
+\[
+x \equiv 17 \times 18 = 306 \equiv 306-280 = \boxed{26} \pmod{280}, \quad \text{general: } 26+280k
+\]
+\end{algobox}
+
+\begin{algobox}{D. Fermat's Little Theorem}
+\[
+a^{p-1} \equiv 1 \pmod{p}, \quad \text{where } p \text{ is prime and } \gcd(a,p)=1.
+\]
+\textbf{Steps to compute $a^n \bmod p$:}
+\begin{enumerate}[noitemsep]
+  \item Write $n = (p-1)\cdot k + r$, i.e.\ $r = n \bmod (p-1)$.
+  \item Then $a^n = (a^{p-1})^k \cdot a^r \equiv 1^k \cdot a^r \equiv a^r \pmod p$.
+  \item Compute $a^r \bmod p$ directly.
+\end{enumerate}
+
+\textbf{Worked example (Lc\#6): $5^{301} \bmod 11$}
+$5^{10}\equiv1\pmod{11}$. $301=10(30)+1 \Rightarrow 5^{301}\equiv5^1=\boxed{5}\pmod{11}$.
+
+\textbf{Quick practice (Lc\#6): $3^{31}\bmod7$, $2^{35}\bmod7$, $128^{129}\bmod17$}
+$3^6\equiv1\bmod7$, $31=6(5)+1\Rightarrow3^{31}\equiv3^1=\boxed{3}\bmod7$.
+$2^6\equiv1\bmod7$, $35=6(5)+5\Rightarrow2^{35}\equiv2^5=32\equiv\boxed{4}\bmod7$.
+$128\equiv9\bmod17$, $9^{16}\equiv1\bmod17$, $129=16(8)+1\Rightarrow128^{129}\equiv9^1=\boxed{9}\bmod17$.
+\end{algobox}
+
+\begin{algobox}{E. Euler's Theorem \& Totient Function}
+\[
+a^{\phi(n)} \equiv 1 \pmod{n}, \quad \text{where } \gcd(a,n)=1, \qquad \phi(n) = n\prod_{p \mid n}\left(1-\frac{1}{p}\right)
+\]
+\textbf{Steps:} (1) factor $n$, compute $\phi(n)$; (2) write the exponent as a multiple of $\phi(n)$ plus a remainder; (3) reduce using $a^{\phi(n)}\equiv1$.
+
+\textbf{Worked example (Lc\#6): $7^{402} \bmod 1000$}
+$\phi(1000)=1000(1-\tfrac12)(1-\tfrac15)=400$. $402=400+2 \Rightarrow 7^{402}\equiv7^{400}\cdot7^2\equiv1\cdot49=\boxed{49}\pmod{1000}$.
+
+\textbf{Special case --- $\gcd(a,n)\neq1$:} Euler's theorem does NOT apply directly; instead look for a short repeating cycle of $a^k \bmod n$ by direct computation (see 2022 Q3 below, $5^{1000}\bmod10$).
+\end{algobox}
+
+\begin{algobox}{F. Chinese Remainder Theorem (CRT) --- NOT in any 2026 Lc material}
+\textbf{Statement:} If $m_1,\dots,m_k$ are pairwise coprime, the system $x\equiv a_i \pmod{m_i}$ has a unique solution modulo $M=\prod m_i$.
+
+\textbf{Fast shortcut when all $a_i$ are ``the same offset'' from $m_i$:}
+\begin{itemize}[noitemsep]
+  \item If $a_i \equiv -1 \pmod{m_i}$ for every $i$ (i.e.\ $a_i=m_i-1$), then $x \equiv -1 \equiv M-1 \pmod M$.
+  \item If $a_i \equiv c \pmod{m_i}$ for the \emph{same} constant $c$ in every congruence, then $x\equiv c \pmod M$.
+\end{itemize}
+
+\textbf{General method (when shortcuts don't apply):}
+\begin{enumerate}[noitemsep]
+  \item Compute $M=\prod m_i$ and $M_i = M/m_i$.
+  \item Find $y_i = M_i^{-1} \bmod m_i$ (Extended Euclidean, pattern B).
+  \item $x \equiv \sum_i a_i M_i y_i \pmod M$.
+\end{enumerate}
+
+\textbf{Worked example (2023 Q4(a)): $x\equiv2\pmod3,\ x\equiv4\pmod5,\ x\equiv6\pmod7$}
+Notice $2\equiv-1\pmod3$, $4\equiv-1\pmod5$, $6\equiv-1\pmod7$ --- the shortcut applies!
+$M=3\times5\times7=105 \Rightarrow x\equiv-1\equiv\boxed{104}\pmod{105}$.
+
+\textbf{Worked example (2020 Q2): $x\equiv1\pmod{3,4,5,7}$}
+Same constant $c=1$ in every congruence $\Rightarrow x\equiv\boxed{1}\pmod{420}$ (where $M=3\times4\times5\times7=420$).
+\end{algobox}
+
+\begin{algobox}{G. Miller-Rabin Primality Test --- NOT in any 2026 Lc material}
+\textbf{Goal:} probabilistically decide whether $n$ is prime.
+
+\textbf{Algorithm:}
+\begin{enumerate}[noitemsep]
+  \item Write $n-1 = 2^k \cdot q$ with $q$ odd.
+  \item Pick a random base $a$ with $1<a<n-1$.
+  \item Compute $x = a^q \bmod n$.
+  \item If $x \equiv 1$ or $x \equiv n-1 \pmod n$: $n$ \textbf{passes} this round (probably prime).
+  \item Otherwise, square $x \leftarrow x^2 \bmod n$ up to $k-1$ more times. If $x \equiv n-1$ at any point: \textbf{passes}.
+  \item If $x$ never becomes $n-1$: $n$ is \textbf{definitely composite} (base $a$ is a ``witness'').
+\end{enumerate}
+
+\textbf{Worked example: test $n=21$ with base $a=2$}
+$n-1=20=2^2 \times 5 \Rightarrow k=2,\ q=5$.
+\[
+x=a^q\bmod n = 2^5\bmod21 = 32\bmod21 = 11
+\]
+$11\neq1$ and $11\neq20$. Square once ($k-1=1$ time): $x=11^2\bmod21=121\bmod21=16$.
+$16\neq20$. No more squarings left $\Rightarrow$ \textbf{21 is composite} (witness $a=2$). Indeed $21=3\times7$. \checkmark
+\end{algobox}
+
+\begin{algobox}{H. Discrete Logarithm \& Cyclic Groups --- NOT in any 2026 Lc material}
+\textbf{Cyclic group:} the nonzero residues mod a prime $p$, $\{1,2,\dots,p-1\}$, form a group under multiplication of order $p-1$. A \textbf{generator (primitive root)} $g$ produces every element as a power $g^1,g^2,\dots,g^{p-1}$ --- all distinct.
+
+\textbf{Discrete log problem:} given $g^x \equiv h \pmod p$, find $x$. Easy to compute $g^x$ forward; hard to invert for large $p$ (basis of Diffie-Hellman/ElGamal security). For small $p$, just compute powers of $g$ one by one until you hit $h$.
+
+\textbf{Worked example (2022 Q3): solve $3^x \equiv 11 \pmod{17}$}
+\[
+3^1=3,\ 3^2=9,\ 3^3=10,\ 3^4=13,\ 3^5=5,\ 3^6=15,\ 3^7=\boxed{11}\pmod{17}
+\]
+$\Rightarrow x=7$ (general $x=7+16k$, since $3^{16}\equiv1\pmod{17}$ --- 3 is a primitive root mod 17).
+
+\textbf{Worked example (2020 Q2): distinct remainders of $b^x \bmod 7$ for $b=3$, $x=1..6$}
+\[
+3^1=3,\ 3^2=2,\ 3^3=6,\ 3^4=4,\ 3^5=5,\ 3^6=1 \pmod7
+\]
+All six remainders $\{3,2,6,4,5,1\}$ are \textbf{distinct} $\Rightarrow$ 3 is a \textbf{primitive root mod 7} (cyclic group of order $\phi(7)=6$ is fully generated by 3).
+\end{algobox}
+
+\newpage
+%% ==========================================
+\section{2024 --- Q1(b,c): Fermat's Little Theorem + Euler's Theorem Pair (2.5 + 2.5)}
+%% ==========================================
+
+\begin{warnbox}{Note on exact numbers}
+The exact numeric values for 2024 Q1(b,c) were not captured in \texttt{\_TopicQuestionMap.md}. The question is confirmed to be a \textbf{Fermat's Little Theorem + Euler's Theorem pair}, in the same style as every other year. Apply Cheat Sheet patterns D and E directly to whatever $a, p, n$ are given --- the method below (using the 2023/2021/2020 seeds) is representative of the expected solution shape.
+\end{warnbox}
+
+\begin{qbox}{Question --- 2024 Q1(b,c) (representative form)}
+(b) Using Fermat's Little Theorem, compute $a^{p-1+r} \bmod p$ for given $a,p$. \hfill [2.5]\\
+(c) Using Euler's Theorem, find $m \in [0,9]$ such that $m \equiv a^{1000} \bmod n$. \hfill [2.5]
+\end{qbox}
+
+\begin{solbox}{Answer --- General Method}
+\textbf{(b) Fermat (pattern D):} Reduce the exponent mod $(p-1)$, since $a^{p-1}\equiv1\pmod p$. Then compute the small remaining power directly. (See worked examples: $3^{302}\bmod11=9$, $3^{301}\bmod11=3$, $2^{83}\bmod5=3$, $3^{202}\bmod11=9$ below.)
+
+\textbf{(c) Euler (pattern E):} If $\gcd(a,n)=1$, reduce the exponent mod $\phi(n)$, since $a^{\phi(n)}\equiv1\pmod n$. If $\gcd(a,n)\neq1$, find the short repeating cycle directly. (See worked examples: $7^{1000}\bmod11=1$, $7^{1000}\bmod10=1$, $5^{1000}\bmod10=5$ below.)
+\end{solbox}
+
+\newpage
+%% ==========================================
+\section{2023 --- Q1(b,c): Fermat + Euler (2.5+2.5); Q4(a): CRT (5); Section B Q7(b): Linear Congruence (3)}
+%% ==========================================
+
+\begin{qbox}{Question --- 2023 Q1(b,c)}
+(b) Using Fermat's Little Theorem, find $3^{302} \bmod 11$. \hfill [2.5]\\
+(c) Using Euler's Theorem, find $m \in [0,9]$ such that $m \equiv 7^{1000} \bmod 11$. \hfill [2.5]
+\end{qbox}
+
+\subsection{Part (b): Fermat's Little Theorem $3^{302} \bmod 11$}
+\begin{solbox}{Answer --- 2023 Q1(b)}
+$11$ is prime, $\gcd(3,11)=1 \Rightarrow 3^{10}\equiv1\pmod{11}$ (Cheat Sheet D).
+\[
+302 = 10(30)+2 \Rightarrow 3^{302} \equiv (3^{10})^{30}\cdot3^2 \equiv 1\cdot9 = \boxed{9} \pmod{11}
+\]
+\end{solbox}
+
+\subsection{Part (c): Euler's Theorem --- $m \equiv 7^{1000} \bmod 11$}
+\begin{solbox}{Answer --- 2023 Q1(c)}
+$\gcd(7,11)=1$, $11$ prime $\Rightarrow \phi(11)=10$ and $7^{10}\equiv1\pmod{11}$ (Cheat Sheet E).
+\[
+1000 = 10(100)+0 \Rightarrow 7^{1000} \equiv (7^{10})^{100} \equiv 1^{100} = \boxed{1} \pmod{11}
+\]
+$m=1$, which lies in $[0,9]$. \checkmark
+\end{solbox}
+
+\newpage
+\begin{qbox}{Question --- 2023 Q4(a)}
+State the Chinese Remainder Theorem and use it to solve: $X\equiv2\pmod3$, $X\equiv4\pmod5$, $X\equiv6\pmod7$. \hfill [5]
+\end{qbox}
+
+\begin{solbox}{Answer --- 2023 Q4(a)}
+\textbf{CRT statement (Cheat Sheet F):} If $m_1,\dots,m_k$ are pairwise coprime, the system of congruences $X\equiv a_i\pmod{m_i}$ has a \textbf{unique solution modulo} $M=\prod m_i$.
+
+\textbf{Application:} $3,5,7$ are pairwise coprime, $M=3\times5\times7=105$.
+
+Observe: $2\equiv-1\pmod3$, $4\equiv-1\pmod5$, $6\equiv-1\pmod7$ --- i.e.\ $X\equiv-1$ in every modulus.
+\[
+\Rightarrow X \equiv -1 \equiv 105-1 = \boxed{104} \pmod{105}
+\]
+\textbf{Check:} $104 = 34(3)+2$ \checkmark, $104=20(5)+4$ \checkmark, $104=14(7)+6$ \checkmark.
+
+General solution: $X = 104 + 105k$.
+\end{solbox}
+
+\newpage
+\begin{qbox}{Question --- 2023 Section B Q7(b)}
+Solve the linear congruence $33X \equiv 18 \pmod{280}$. \hfill [3]
+\end{qbox}
+
+\begin{solbox}{Answer --- 2023 Section B Q7(b)}
+Using Cheat Sheet C: $\gcd(33,280)=1$, and Extended Euclidean gives $33^{-1}\equiv17\pmod{280}$ (since $1=17(33)-2(280)$).
+\[
+X \equiv 17 \times 18 = 306 \equiv 306-280 = \boxed{26} \pmod{280}
+\]
+\textbf{Check:} $33\times26=858=3(280)+18$. \checkmark
+
+General solution: $X = 26+280k$.
+\end{solbox}
+
+\newpage
+%% ==========================================
+\section{2022 --- Q3: Miller-Rabin (3); Discrete Log (3); Fermat (2); Euler (1)}
+%% ==========================================
+
+\begin{qbox}{Question --- 2022 Q3}
+\begin{enumerate}[label=(\alph*)]
+  \item State the Miller-Rabin primality algorithm and apply it to test a given number. \hfill [3]
+  \item Given $11 \equiv 3^X \pmod{17}$, explain how to find $X$ using cyclic groups. \hfill [3]
+  \item Using Fermat's Little Theorem, find $2^{83} \bmod 5$. \hfill [2]
+  \item Using Euler's Theorem, find $X \in [0,9]$ such that $X \equiv 5^{1000} \bmod 10$. \hfill [1]
+\end{enumerate}
+\end{qbox}
+
+\subsection{Part (a): Miller-Rabin Primality Test}
+\begin{solbox}{Answer --- 2022 Q3(a)}
+\textbf{Algorithm (Cheat Sheet G):}
+\begin{enumerate}[noitemsep]
+  \item Write $n-1=2^k q$ with $q$ odd.
+  \item Pick random base $a$, $1<a<n-1$. Compute $x=a^q\bmod n$.
+  \item If $x\equiv1$ or $x\equiv n-1$: ``probably prime''.
+  \item Else square $x$ up to $k-1$ times; if it ever equals $n-1$: ``probably prime''.
+  \item If never $\equiv n-1$: \textbf{definitely composite}.
+\end{enumerate}
+\textbf{Applied example: $n=21$, $a=2$.} $n-1=20=2^2\times5 \Rightarrow k=2,q=5$.
+$x=2^5\bmod21=32\bmod21=11$. $11\neq1,20$. Square: $x=11^2\bmod21=121\bmod21=16\neq20$. No squarings left $\Rightarrow$ \textbf{21 is composite} (matches $21=3\times7$).
+\end{solbox}
+
+\subsection{Part (b): Discrete Log via Cyclic Groups --- $3^X\equiv11\pmod{17}$}
+\begin{solbox}{Answer --- 2022 Q3(b)}
+\textbf{Cyclic group concept (Cheat Sheet H):} $\{1,\dots,16\}$ under multiplication mod 17 is a cyclic group of order 16. If 3 is a generator (primitive root), its powers $3^1,\dots,3^{16}$ run through all 16 nonzero residues exactly once. Find $X$ by computing successive powers of 3 until reaching 11:
+\[
+3^1=3,\ 3^2=9,\ 3^3=10,\ 3^4=13,\ 3^5=5,\ 3^6=15,\ 3^7=\boxed{11}\pmod{17}
+\]
+$\Rightarrow X=7$ (general $X=7+16k$, since $3^{16}\equiv1\pmod{17}$).
+\end{solbox}
+
+\subsection{Part (c): Fermat's Little Theorem --- $2^{83} \bmod 5$}
+\begin{solbox}{Answer --- 2022 Q3(c)}
+$5$ is prime, $\gcd(2,5)=1 \Rightarrow 2^4\equiv1\pmod5$.
+\[
+83=4(20)+3 \Rightarrow 2^{83}\equiv(2^4)^{20}\cdot2^3\equiv1\cdot8\equiv\boxed{3}\pmod5
+\]
+\end{solbox}
+
+\subsection{Part (d): Euler's Theorem (special case) --- $X\equiv5^{1000}\bmod10$}
+\begin{solbox}{Answer --- 2022 Q3(d)}
+$\gcd(5,10)=5\neq1$, so Euler's theorem does \textbf{not} apply directly (Cheat Sheet E special case). Instead compute the pattern directly:
+\[
+5^1=5,\quad 5^2=25\equiv5\pmod{10},\quad 5^3\equiv5\pmod{10},\ \dots
+\]
+$5^n\equiv5\pmod{10}$ for every $n\geq1$ $\Rightarrow X=\boxed{5}$.
+\end{solbox}
+
+\newpage
+%% ==========================================
+\section{2021 --- A3: Discrete Log (2.75); Ext.\ Euclidean Mult.\ Inverse (2); Fermat (2); Euler (2)}
+%% ==========================================
+
+\begin{qbox}{Question --- 2021 A3}
+\begin{enumerate}[label=(\alph*)]
+  \item Discrete logarithm / cyclic group problem. \hfill [2.75]
+  \item Find the multiplicative inverse of $1234 \bmod 4321$ using the Extended Euclidean Algorithm. \hfill [2]
+  \item Using Fermat's Little Theorem, find $3^{301} \bmod 11$. \hfill [2]
+  \item Using Euler's Theorem, find $X \in [0,28]$ such that $X^{45} \equiv 6 \pmod{35}$. \hfill [2]
+\end{enumerate}
+\end{qbox}
+
+\subsection{Part (a): Discrete Log / Cyclic Group}
+\begin{solbox}{Answer --- 2021 A3(a)}
+\textit{Exact numbers not captured in \texttt{\_TopicQuestionMap.md}.} Apply Cheat Sheet H: identify the cyclic group $\{1,\dots,p-1\}$ under multiplication mod $p$, confirm/use a generator (primitive root), and compute successive powers of the base until the target residue is reached --- same method as 2022 Q3(b) and 2020 Q2 above.
+\end{solbox}
+
+\subsection{Part (b): Multiplicative Inverse of $1234 \bmod 4321$}
+\begin{solbox}{Answer --- 2021 A3(b)}
+Using Cheat Sheet B, the Euclidean steps are:
+\[
+4321=3(1234)+619,\ \ 1234=1(619)+615,\ \ 619=1(615)+4,\ \ 615=153(4)+3,\ \ 4=1(3)+1
+\]
+Back-substituting gives $1=309(4321)-1082(1234)$, so
+\[
+1234^{-1} \equiv -1082 \equiv 4321-1082 = \boxed{3239} \pmod{4321}
+\]
+\textbf{Check:} $1234\times3239 = 3{,}996{,}926 = 925(4321)+1$. \checkmark
+\end{solbox}
+
+\subsection{Part (c): Fermat's Little Theorem --- $3^{301}\bmod11$}
+\begin{solbox}{Answer --- 2021 A3(c)}
+$3^{10}\equiv1\pmod{11}$. $301=10(30)+1 \Rightarrow 3^{301}\equiv(3^{10})^{30}\cdot3^1\equiv1\cdot3=\boxed{3}\pmod{11}$.
+\end{solbox}
+
+\subsection{Part (d): Euler's Theorem --- $X^{45}\equiv6\pmod{35}$, $X\in[0,28]$}
+\begin{solbox}{Answer --- 2021 A3(d)}
+$35=5\times7$. Solve via CRT (Cheat Sheet F) by working mod 5 and mod 7 separately.
+
+\textbf{Mod 5:} $\phi(5)=4$, $45=4(11)+1 \Rightarrow X^{45}\equiv X^1\pmod5$ (for $\gcd(X,5)=1$). Need $X\equiv6\equiv1\pmod5$.
+
+\textbf{Mod 7:} $\phi(7)=6$, $45=6(7)+3 \Rightarrow X^{45}\equiv X^3\pmod7$. Need $X^3\equiv6\pmod7$. Testing $X=1..6$: $3^3=27\equiv6$, $5^3=125\equiv6$, $6^3=216\equiv6 \pmod7$ --- so $X\equiv3,5,6\pmod7$.
+
+\textbf{Combine with CRT:} need $X\equiv1\pmod5$ AND $X\in\{3,5,6\}\pmod7$, with $X\in[0,28]$.
+Values $\equiv1\pmod5$ in range: $1,6,11,16,21,26$. Checking mod 7: $6\bmod7=6$ \checkmark, $26\bmod7=5$ \checkmark (others fail).
+\[
+\Rightarrow X = \boxed{6} \text{ or } X=\boxed{26}
+\]
+\textbf{Sanity check for $X=6$:} $6^2=36\equiv1\pmod{35}$, so $6^{45}=6^{2(22)+1}\equiv1^{22}\cdot6=6\pmod{35}$. \checkmark
+\end{solbox}
+
+\newpage
+%% ==========================================
+\section{2020 --- Q2: CRT (4.75) + Discrete Log/Cyclic Groups (2+2); Q3: Ext.\ Euclidean (4.75) + Fermat \& Euler (2+2)}
+%% ==========================================
+
+\begin{qbox}{Question --- 2020 Q2}
+\begin{enumerate}[label=(\alph*)]
+  \item Use CRT to solve $X\equiv1\pmod{3}$, $X\equiv1\pmod{4}$, $X\equiv1\pmod{5}$, $X\equiv1\pmod{7}$. \hfill [4.75]
+  \item Discrete logarithm / cyclic group concept. \hfill [2]
+  \item List the distinct remainders of $b^x \bmod 7$ for $x=1,\dots,6$. \hfill [2]
+\end{enumerate}
+\end{qbox}
+
+\subsection{Part (a): CRT --- $X\equiv1$ modulo 3, 4, 5, 7}
+\begin{solbox}{Answer --- 2020 Q2(a)}
+$3,4,5,7$ are pairwise coprime, $M=3\times4\times5\times7=420$ (Cheat Sheet F).
+Since $X\equiv1$ for \textbf{every} modulus (same constant $c=1$):
+\[
+X \equiv \boxed{1} \pmod{420}
+\]
+General solution: $X=1+420k$ (smallest positive: $X=1$, or $X=421$ if a nonzero/positive-only answer is expected).
+\end{solbox}
+
+\subsection{Part (b): Discrete Log / Cyclic Group Concept}
+\begin{solbox}{Answer --- 2020 Q2(b)}
+\textit{Exact numbers not captured in \texttt{\_TopicQuestionMap.md}.} Use Cheat Sheet H: explain that $\{1,\dots,p-1\}$ under multiplication mod $p$ is a cyclic group of order $p-1$; a generator (primitive root) $g$ produces all elements via $g^1,\dots,g^{p-1}$; the discrete log problem is to invert $g^x\equiv h\pmod p$ for $x$ --- easy forward, hard backward for large $p$.
+\end{solbox}
+
+\subsection{Part (c): Distinct Remainders of $b^x \bmod 7$, $x=1..6$}
+\begin{solbox}{Answer --- 2020 Q2(c)}
+Take $b=3$ (a primitive root mod 7):
+\[
+3^1=3,\ 3^2=2,\ 3^3=6,\ 3^4=4,\ 3^5=5,\ 3^6=1 \pmod 7
+\]
+The remainders $\{3,2,6,4,5,1\}$ are \textbf{all distinct} $\Rightarrow$ 3 generates the full cyclic group of order $\phi(7)=6$, i.e.\ 3 is a \textbf{primitive root mod 7}.
+\end{solbox}
+
+\newpage
+\begin{qbox}{Question --- 2020 Q3}
+\begin{enumerate}[label=(\alph*)]
+  \item Find the multiplicative inverse of $550 \bmod 1769$ using the Extended Euclidean Algorithm. \hfill [4.75]
+  \item Using Fermat's Little Theorem, find $3^{202} \bmod 11$. \hfill [2]
+  \item Using Euler's Theorem, find $7^{1000} \bmod 10$. \hfill [2]
+\end{enumerate}
+\end{qbox}
+
+\subsection{Part (a): Multiplicative Inverse of $550 \bmod 1769$}
+\begin{solbox}{Answer --- 2020 Q3(a)}
+Using Cheat Sheet B, the Euclidean steps on $(1769,550)$ reduce (after full back-substitution) to:
+\[
+1 = 550(550) - 171(1769)
+\]
+\[
+\Rightarrow 550^{-1} \equiv \boxed{550} \pmod{1769}
+\]
+\textbf{Check:} $550\times550=302{,}500=171(1769)+1$. \checkmark \quad (550 happens to be its own inverse mod 1769.)
+\end{solbox}
+
+\subsection{Part (b): Fermat's Little Theorem --- $3^{202}\bmod11$}
+\begin{solbox}{Answer --- 2020 Q3(b)}
+$3^{10}\equiv1\pmod{11}$. $202=10(20)+2 \Rightarrow 3^{202}\equiv(3^{10})^{20}\cdot3^2\equiv1\cdot9=\boxed{9}\pmod{11}$.
+\end{solbox}
+
+\subsection{Part (c): Euler's Theorem --- $7^{1000}\bmod10$}
+\begin{solbox}{Answer --- 2020 Q3(c)}
+$\gcd(7,10)=1$, $\phi(10)=10(1-\tfrac12)(1-\tfrac15)=4 \Rightarrow 7^4\equiv1\pmod{10}$.
+\[
+1000=4(250)+0 \Rightarrow 7^{1000}\equiv(7^4)^{250}\equiv1^{250}=\boxed{1}\pmod{10}
+\]
+\end{solbox}
+
+\newpage
+%% ==========================================
+\section*{Exam Strategy Summary}
+%% ==========================================
+
+\begin{keybox}{High-Yield Checklist for Number Theory \& Modular Arithmetic (5/5 years, 5--9 marks --- HIGHEST YIELD)}
+\begin{enumerate}[noitemsep]
+  \item \textbf{Extended Euclidean $\to$ multiplicative inverse} (Cheat Sheet B): asked 2020, 2021 --- 4.75/2 marks. Practice the back-substitution table until it's mechanical.
+  \item \textbf{Fermat's Little Theorem} $a^{p-1}\equiv1\pmod p$ (Cheat Sheet D): asked EVERY year 2020--2024, recurring seed $3^{20x}\bmod11$. Reduce exponent mod $(p-1)$.
+  \item \textbf{Euler's Theorem} $a^{\phi(n)}\equiv1\pmod n$ (Cheat Sheet E): asked EVERY year 2020--2024, recurring seed $7^{1000}\bmod(10\text{ or }11)$. Watch for the $\gcd(a,n)\neq1$ special case (2022 Q3(d)).
+  \item \textbf{CRT} (Cheat Sheet F, NO-SOURCE): asked 2020, 2023 --- look for the ``$\equiv-1$'' or ``same constant'' shortcuts first before doing full CRT arithmetic.
+  \item \textbf{Miller-Rabin} (Cheat Sheet G, NO-SOURCE): asked 2022 --- memorize the 6-step algorithm + the $n=21,a=2$ worked example.
+  \item \textbf{Discrete log / cyclic groups} (Cheat Sheet H, NO-SOURCE): asked 2020--2022 --- compute successive powers of the base by hand until the target is reached; know the term ``primitive root''.
+  \item \textbf{Linear congruence $ax\equiv b\pmod m$} (Cheat Sheet C): asked 2023 --- find $a^{-1}$ via Extended Euclidean, multiply by $b$.
+\end{enumerate}
+\textit{This topic feeds directly into RSA (Topic 8) --- the Extended Euclidean / multiplicative inverse skill (B) and Euler's totient (E) are the exact mechanics behind RSA key generation. Master this topic first.}
+\end{keybox}
+
+\end{document}

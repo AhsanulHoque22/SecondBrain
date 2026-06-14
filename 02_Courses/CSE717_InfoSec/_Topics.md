@@ -37,7 +37,7 @@ Status: 🔲 not started · 📖 learning · 🔁 needs recall · ✅ can explai
 | 11 | IPsec (AH/ESP, transport/tunnel, RFC4301, architecture) | 🔲 | — | — | — | 3/5 · 2.25–9 marks | UPGRADED from 2/5 — 2024 confirmed. Same sub-Q cluster recurs (2020/21/24). Source: Lc#7 |
 | 12 | Blockchain & Bitcoin (Merkle tree, PoW, ETH vs BTC) | 🔲 | — | — | — | 3/5 · 2.75–12 marks | NEW dedicated materials → expect high weight 2026. Source: Lc#11A, Lc#11B |
 | 13 | DES/Feistel/S-box/Avalanche/3-DES (CHEAT SHEET) | ✅ | — | 2026-06-14 | 2026-06-16 | 5/5 · 5–10 marks | ⚠️ CRITICAL, CONFIRMED EVERY YEAR — NOT insurance. NOT in any 2026 Lc material. 6 recurring sub-patterns covered: Feistel structure, IP/IP⁻¹, F-function, S1-box(37)=8, avalanche+differential/linear cryptanalysis, 3-DES EDE. Wiki + solutions PDF done. |
-| 14 | Digital Signature — generic model + properties + vulnerabilities (CHEAT SHEET) | 🔲 | — | — | — | 5/5 · 1–7 marks | ⚠️ CRITICAL, CONFIRMED EVERY YEAR — NOT insurance. Diagram + concepts, low prerequisite. ~30min cheat sheet |
+| 14 | Digital Signature — generic model + properties + vulnerabilities (CHEAT SHEET) | ✅ | — | 2026-06-14 | 2026-06-16 | 5/5 · 1–7 marks | ⚠️ CRITICAL, CONFIRMED EVERY YEAR. Generic model diagram (hash→encrypt w/ private key→DS; decrypt w/ public key→compare), properties/requirements, attack types→forgery types, sign-then-encrypt order + direct-DS threats, RSA key-leak forward secrecy. Wiki + solutions PDF done. |
 
 ## Column guide
 - **Conf** — confidence 1–5 (1=shaky, 5=bulletproof). Update after every recall pass.

@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex 2025.9.21)  14 JUN 2026 10:15
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex 2025.9.21)  14 JUN 2026 10:31
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1056,101 +1056,95 @@ File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 
 ] [2{/usr/share/texmf/fonts/enc/dvips/cm-super/cm-super-ts1.enc}] [3] [4] [5]
 LaTeX Font Info:    Font shape `OT1/cmtt/bx/n' in size <12> not available
-(Font)              Font shape `OT1/cmtt/m/n' tried instead on input line 170.
+(Font)              Font shape `OT1/cmtt/m/n' tried instead on input line 171.
 
-Overfull \hbox (267.49832pt too wide) detected at line 181
+Overfull \hbox (267.49832pt too wide) detected at line 182
 [] [] [] [] [] [] []
  []
 
 [6]
-Underfull \hbox (badness 1931) in paragraph at lines 196--197
+Underfull \hbox (badness 1931) in paragraph at lines 197--198
 []|\OT1/cmr/m/n/12 Input val-i-da-tion/sanitization, pa-ram-e-ter-ized queries
  []
 
 
-Underfull \hbox (badness 2744) in paragraph at lines 196--197
+Underfull \hbox (badness 2744) in paragraph at lines 197--198
 \OT1/cmr/m/n/12 (pre-pared state-ments), least-privilege database ac-
  []
 
 
-Underfull \hbox (badness 2460) in paragraph at lines 208--209
+Underfull \hbox (badness 2460) in paragraph at lines 209--210
 []\OT1/cmr/bx/n/12 Confusion: \OT1/cmr/m/n/12 makes the re-la-tion-ship be-twee
 n key and ci-pher-text as
  []
 
 [7]
-Overfull \hbox (2.40361pt too wide) in paragraph at lines 216--216
+Overfull \hbox (2.40361pt too wide) in paragraph at lines 217--217
 |[]\OT1/cmr/bx/n/14.4 2022 --- Q1 (8 marks): Se-cu-rity Vo-cab-u-lary; Q7(b,c):
  SQLi/Social
  []
 
 
-Overfull \hbox (14.04388pt too wide) in paragraph at lines 242--253
+Overfull \hbox (14.04388pt too wide) in paragraph at lines 244--255
  [] 
  []
 
 [8] [9] [10] [11]
-Overfull \hbox (18.45364pt too wide) in paragraph at lines 314--314
+Overfull \hbox (18.45364pt too wide) in paragraph at lines 323--323
 \OT1/cmr/bx/n/14.4 B-4(a,d): Ran-somware/Social Eng + Back-door/Logic Bomb/Troj
 an
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 336--338
-\OT1/cmr/m/n/12 i.e. $[] \OMS/cmsy/m/n/12 / \OT1/cmr/m/n/12 ([]) \OMS/cmsy/m/n/
-12 ^^B
- []
-
-
-Overfull \hbox (2.88968pt too wide) in paragraph at lines 359--372
+Overfull \hbox (2.88968pt too wide) in paragraph at lines 373--386
  [] 
  []
 
 [12]
-Underfull \hbox (badness 10000) in paragraph at lines 394--394
+Underfull \hbox (badness 10000) in paragraph at lines 408--408
 []|\OT1/cmr/m/n/12 Malicious \OT1/cmr/m/it/12 soft-ware \OT1/cmr/m/n/12 that
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 394--394
+Underfull \hbox (badness 10000) in paragraph at lines 408--408
 \OT1/cmr/m/n/12 en-crypts a vic-tim's
  []
 
 
-Underfull \hbox (badness 4291) in paragraph at lines 394--394
+Underfull \hbox (badness 4291) in paragraph at lines 408--408
 \OT1/cmr/m/n/12 files/systems and de-mands
  []
 
 
-Underfull \hbox (badness 3323) in paragraph at lines 394--395
+Underfull \hbox (badness 3323) in paragraph at lines 408--409
 []|\OT1/cmr/m/n/12 A \OT1/cmr/m/it/12 tech-nique \OT1/cmr/m/n/12 of psy-cho-log
 -
  []
 
 
-Underfull \hbox (badness 5637) in paragraph at lines 394--395
+Underfull \hbox (badness 5637) in paragraph at lines 408--409
 \OT1/cmr/m/n/12 i-cally ma-nip-u-lat-ing peo-ple
  []
 
 
-Underfull \hbox (badness 4886) in paragraph at lines 396--396
+Underfull \hbox (badness 4886) in paragraph at lines 410--410
 \OT1/cmr/m/n/12 gi-neer-ing (e.g. a phish-ing
  []
 
 
-Underfull \hbox (badness 2671) in paragraph at lines 396--396
+Underfull \hbox (badness 2671) in paragraph at lines 410--410
 \OT1/cmr/m/n/12 ning the ran-somware pay-
  []
 
 
-Underfull \hbox (badness 3439) in paragraph at lines 396--397
+Underfull \hbox (badness 3439) in paragraph at lines 410--411
 \OT1/cmr/m/it/12 tor \OT1/cmr/m/n/12 for mal-ware in-clud-ing
  []
 
 [13]
 
 Package tcolorbox Warning: Using nobreak failed. Try to enlarge `lines before b
-reak' or set page breaks manually on input line 401.
+reak' or set page breaks manually on input line 415.
 
 [14] [15] (./SecurityFundamentals_Solutions.aux)
  ***********
@@ -1162,10 +1156,10 @@ changed.
 (rerunfilecheck)             Checksum: D352BD7CCFCCCE7BC2EDFCBA9040547D;7527.
  ) 
 Here is how much of TeX's memory you used:
- 29140 strings out of 476182
- 597984 string characters out of 5795595
- 1951975 words of memory out of 5000000
- 50591 multiletter control sequences out of 15000+600000
+ 29141 strings out of 476182
+ 598003 string characters out of 5795595
+ 1952975 words of memory out of 5000000
+ 50592 multiletter control sequences out of 15000+600000
  565085 words of font info for 62 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
  102i,12n,107p,853b,1246s stack positions out of 10000i,1000n,20000p,200000b,200000s
@@ -1176,7 +1170,7 @@ r/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb></usr/share
 -dist/fonts/type1/public/amsfonts/cm/cmti12.pfb></usr/share/texlive/texmf-dist/
 fonts/type1/public/amsfonts/cm/cmtt12.pfb></usr/share/texmf/fonts/type1/public/
 cm-super/sfrm1200.pfb>
-Output written on SecurityFundamentals_Solutions.pdf (15 pages, 149777 bytes).
+Output written on SecurityFundamentals_Solutions.pdf (15 pages, 149488 bytes).
 PDF statistics:
  262 PDF objects out of 1000 (max. 8388607)
  228 compressed objects within 3 object streams

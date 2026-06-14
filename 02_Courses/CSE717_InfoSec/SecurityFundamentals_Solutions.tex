@@ -122,9 +122,10 @@
 
 \subsection{Part (a): Symmetric vs Asymmetric Cryptography}
 \begin{solbox}{Answer --- 2024 Q1(a)}
-\textbf{Symmetric cryptography:} the \emph{same} key is used for both encryption and decryption. Both parties must share this secret key in advance. \emph{Example:} AES, DES --- fast, suited to bulk data encryption.
-
-\textbf{Asymmetric cryptography:} uses a mathematically-linked \emph{key pair} --- a \textbf{public key} (freely shared) and a \textbf{private key} (kept secret). Data encrypted with the public key can only be decrypted with the matching private key (and vice-versa for signatures). \emph{Example:} RSA.
+\begin{itemize}[noitemsep]
+  \item \textbf{Symmetric cryptography:} \emph{same} key for encryption \& decryption; both parties must share the secret key in advance. \emph{Example:} AES, DES --- fast, suited to bulk data.
+  \item \textbf{Asymmetric cryptography:} mathematically-linked \emph{key pair} --- \textbf{public key} (shared freely) + \textbf{private key} (secret). Data encrypted with one key can only be decrypted with the other. \emph{Example:} RSA.
+\end{itemize}
 
 \textbf{Why asymmetric is useful for e-commerce:}
 \begin{itemize}[noitemsep]
@@ -136,9 +137,9 @@
 
 \subsection{Part (b): Handshaking and Message Digest}
 \begin{solbox}{Answer --- 2024 Q1(b)}
-\textbf{Handshaking:} the initial negotiation phase between two communicating parties before real data exchange. Both sides agree on protocol version, supported cryptographic algorithms, and exchange/derive session keys (e.g.\ the TLS handshake establishes a shared symmetric session key using asymmetric crypto).
+\textbf{Handshaking:} initial negotiation between two parties before real data exchange --- agree on protocol version, supported algorithms, and exchange/derive session keys (e.g.\ TLS handshake establishes a shared symmetric session key using asymmetric crypto).
 
-\textbf{Message digest:} the fixed-length output of a one-way \textbf{hash function} (e.g.\ SHA-256) applied to a message of any length. It acts as a "fingerprint":
+\textbf{Message digest:} fixed-length output of a one-way \textbf{hash function} (e.g.\ SHA-256) applied to any-length message --- a "fingerprint":
 \begin{itemize}[noitemsep]
   \item Same input $\to$ always the same digest (deterministic).
   \item Any change to the input --- even one bit --- produces a completely different digest (used to verify \textbf{integrity}).
@@ -161,11 +162,11 @@
 
 \subsection{Part (b): Digital Certificates, Certificate Authorities, and SSL}
 \begin{solbox}{Answer --- 2023 Q2(b)}
-\textbf{Digital certificate:} an electronic document that binds a \textbf{public key} to an identity (e.g.\ a website's domain name), digitally signed by a trusted third party. It contains: subject identity, public key, issuer (CA) name, validity period, and the CA's signature.
-
-\textbf{Certificate Authority (CA):} a trusted third-party organization (e.g.\ DigiCert, Let's Encrypt) that verifies the identity of an entity (e.g.\ a website owner) and \textbf{signs} its certificate with the CA's own private key, vouching for the binding between identity and public key. Browsers/OSes ship with a built-in list of trusted \textbf{root CA} certificates.
-
-\textbf{SSL/TLS:} the protocol that uses these certificates to establish an authenticated, encrypted channel between a client (browser) and server.
+\begin{itemize}[noitemsep]
+  \item \textbf{Digital certificate:} electronic document binding a \textbf{public key} to an identity (e.g.\ a website's domain). Contains: subject identity, public key, issuer (CA) name, validity period, CA's signature.
+  \item \textbf{Certificate Authority (CA):} trusted third party (e.g.\ DigiCert, Let's Encrypt) that verifies an entity's identity and \textbf{signs} its certificate with the CA's private key --- vouching for the identity$\leftrightarrow$public-key binding. Browsers/OSes ship with pre-installed trusted \textbf{root CA} certificates.
+  \item \textbf{SSL/TLS:} protocol that uses these certificates to establish an authenticated, encrypted channel between client (browser) and server.
+\end{itemize}
 
 \textbf{How they work together --- illustrative example (browser visiting \texttt{https://bank.com}):}
 \begin{enumerate}[noitemsep]
@@ -227,11 +228,12 @@ Together they defeat statistical cryptanalysis (e.g.\ frequency analysis) --- th
 
 \subsection{Part (a): ``Ambiguity is Security'' --- Why and How?}
 \begin{solbox}{Answer --- 2022 Q1(a)}
-This refers to \textbf{security through obscurity}: keeping implementation details, configurations, or system internals \emph{ambiguous/hidden} raises the effort and uncertainty for an attacker --- e.g.\ hiding software version banners, using non-default ports, not publishing network topology, randomizing memory layouts (ASLR).
-
-\textbf{How it helps:} an attacker who doesn't know exactly what they're attacking must spend more time on reconnaissance, increasing the chance of detection.
-
-\textbf{Caveat (Kerckhoffs's principle):} ambiguity should only be a \emph{supplementary} layer --- a system's core security must not depend on secrecy of its design/algorithm, only on the secrecy of the key. Relying solely on ambiguity is "false security."
+\textbf{Concept: security through obscurity} --- keeping implementation details, configs, or system internals \emph{ambiguous/hidden} raises effort/uncertainty for an attacker.
+\begin{itemize}[noitemsep]
+  \item \textbf{Examples:} hide software version banners, use non-default ports, don't publish network topology, randomize memory layouts (ASLR).
+  \item \textbf{How it helps:} an attacker who doesn't know exactly what they're attacking must spend more time on reconnaissance --- increasing chance of detection.
+  \item \textbf{Caveat (Kerckhoffs's principle):} ambiguity is only a \emph{supplementary} layer --- core security must depend on secrecy of the \textbf{key}, not secrecy of the design/algorithm. Ambiguity alone = "false security."
+\end{itemize}
 \end{solbox}
 
 \subsection{Part (b): Fill-in-the-Blank --- Threat Actor Terminology}
@@ -275,9 +277,11 @@ Cyber Security Architect & Designs the overall security structure/strategy of sy
 
 \subsection{Part (d): Steganography}
 \begin{solbox}{Answer --- 2022 Q1(d)}
-\textbf{Steganography} is the practice of hiding the \emph{existence} of a secret message within an ordinary-looking carrier (e.g.\ embedding text inside an image, audio, or video file) so that only sender and receiver know a hidden message exists.
-
-\textbf{Contrast with cryptography:} cryptography hides the \emph{content} of a message that is openly known to exist (visible ciphertext); steganography hides the \emph{fact that a message exists at all}. The two are complementary and often combined (encrypt, then hide).
+\begin{itemize}[noitemsep]
+  \item \textbf{Steganography:} hides the \emph{existence} of a secret message within an ordinary-looking carrier (e.g.\ embedded in an image/audio/video file) --- only sender and receiver know a hidden message exists.
+  \item \textbf{vs Cryptography:} cryptography hides the \emph{content} of a message known to exist (visible ciphertext); steganography hides the \emph{fact that a message exists at all}.
+  \item \textbf{Complementary:} often combined --- encrypt first, then hide.
+\end{itemize}
 \end{solbox}
 
 \subsection{Part Q7(b): SQL Injection and Social Engineering --- Short Notes}
@@ -285,9 +289,10 @@ Cyber Security Architect & Designs the overall security structure/strategy of sy
 Write short notes on: SQL injection and social engineering. \hfill [$\approx$3]
 \end{qbox}
 \begin{solbox}{Answer --- 2022 Q7(b)}
-\textbf{SQL Injection:} an attack where malicious SQL code is inserted into application input fields (e.g.\ login forms) and executed by the backend database --- can bypass authentication, read/modify/delete data, or even gain control of the database server. Mitigation: parameterized queries, input validation, least-privilege DB accounts.
-
-\textbf{Social Engineering:} manipulating people (not systems) into divulging confidential information or performing actions that compromise security --- exploits trust, urgency, or authority rather than technical flaws. Phishing is its most common form. Mitigation: security-awareness training, verification procedures for sensitive requests.
+\begin{itemize}[noitemsep]
+  \item \textbf{SQL Injection:} malicious SQL inserted into app input fields (e.g.\ login forms), executed by the backend DB --- can bypass authentication, read/modify/delete data, or take over the DB server. \textbf{Mitigation:} parameterized queries, input validation, least-privilege DB accounts.
+  \item \textbf{Social Engineering:} manipulating \emph{people} (not systems) into divulging confidential info or performing risky actions --- exploits trust, urgency, authority rather than technical flaws. Phishing is its most common form. \textbf{Mitigation:} security-awareness training, verification procedures for sensitive requests.
+\end{itemize}
 \end{solbox}
 
 \subsection{Part Q7(c): SWIFT Banking Network Pentest Scenario}
@@ -295,7 +300,11 @@ Write short notes on: SQL injection and social engineering. \hfill [$\approx$3]
 SWIFT is a worldwide network used by banks to send and receive financial transaction messages. \dots You've been hired to do a penetration test of a bank's SWIFT gateway. What should your goal be? That is, what concrete, verifiable result would prove that you have successfully hacked your client's SWIFT gateway? \dots Of course you do not want to damage the SWIFT gateway in any way, and especially not do anything that would leave it open to other attackers. What steps would you take to ensure that there was no damage? \hfill [$\approx$4]
 \end{qbox}
 \begin{solbox}{Answer --- 2022 Q7(c)}
-\textbf{Goal-setting (proving success without real fraud):} demonstrate the \emph{capability} to send/alter a SWIFT message or access restricted SWIFT infrastructure --- e.g.\ show you could have injected a fraudulent transaction message into the queue, or accessed credentials/keys used to authorize SWIFT transfers --- \textbf{without actually submitting it}. A concrete, verifiable proof: a screenshot/log showing access to the SWIFT messaging interface or successful privilege escalation to a SWIFT-operator account, captured non-destructively.
+\textbf{Goal-setting (proving success without real fraud):}
+\begin{itemize}[noitemsep]
+  \item Demonstrate the \emph{capability} to send/alter a SWIFT message or access restricted SWIFT infrastructure --- \textbf{without actually submitting it}, e.g.\ show you could have injected a fraudulent transaction or accessed credentials/keys authorizing SWIFT transfers.
+  \item \textbf{Concrete, verifiable proof:} a screenshot/log showing access to the SWIFT messaging interface, or successful privilege escalation to a SWIFT-operator account --- captured non-destructively.
+\end{itemize}
 
 \textbf{Non-damaging steps (rules of engagement):}
 \begin{enumerate}[noitemsep]
@@ -334,13 +343,18 @@ SWIFT is a worldwide network used by banks to send and receive financial transac
 \[
 \text{Risk} = \text{Threat Agent} \times \text{Probability of Attack} \times \text{Expected Loss (Impact)}
 \]
-i.e.\ $\text{Risk} \propto (\text{likelihood of a threat agent attacking}) \times (\text{magnitude of loss if it succeeds})$. Equivalently, the general security-risk form: $\text{Risk}=\text{Threat}\times\text{Vulnerability}\times\text{Asset Value}$.
+Equivalent general form: $\text{Risk}=\text{Threat}\times\text{Vulnerability}\times\text{Asset Value}$.
 
 \textbf{Model (chain of causation):}
 \[
 \boxed{\text{Threat Agent}} \xrightarrow{\text{exploits}} \boxed{\text{Vulnerability}} \xrightarrow{\text{in}} \boxed{\text{Asset}} \xrightarrow{\text{causes}} \boxed{\text{Impact / Loss}}
 \]
-A higher probability of attack (more attractive/exposed asset) or a higher expected loss (more valuable/critical asset) both increase overall \textbf{Risk}. Risk-reduction strategies target each factor: reduce vulnerability (patching), reduce probability (deterrence/monitoring), or reduce impact (backups, segmentation, insurance).
+
+\begin{itemize}[noitemsep]
+  \item Higher probability of attack (more attractive/exposed asset) $\to$ higher Risk.
+  \item Higher expected loss (more valuable/critical asset) $\to$ higher Risk.
+  \item \textbf{Risk-reduction levers:} reduce vulnerability (patching), reduce probability (deterrence/monitoring), reduce impact (backups, segmentation, insurance).
+\end{itemize}
 \end{solbox}
 
 \subsection{Part A-1(b): Biometric Authentication --- Failure Modes and Evaluation}

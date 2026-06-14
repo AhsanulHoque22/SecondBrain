@@ -49,6 +49,12 @@
 - Use `qbox` (orange) for question text, `solbox` (blue) for solutions
 - For math: use `\forall`, `\exists`, `\land`, `\lor`, `\neg`, `\rightarrow`, `\leftrightarrow`
 - Include a Quick Summary section at the end with exam patterns
+- **Theory-heavy answers (definitions, "explain"/"describe"/"differentiate" questions):
+  default to `itemize`/`enumerate` lists with `\textbf{}` on every key term, not prose
+  paragraphs.** Use tables for comparisons (X vs Y), numbered steps for processes/protocols,
+  and `\boxed{}`/`\xrightarrow{}` chain diagrams for flows. Reserve full sentences for the
+  connective "why/how" reasoning between bullet points. Goal: every answer should be
+  skimmable and memorizable in one pass — no answer should be a wall of paragraph text.
 
 ### Step 6 — Compile PDF
 ```bash

@@ -17,7 +17,7 @@ Date: 2026-06-17 (Wednesday) | Days left from 2026-06-14: **3** | Phase: **Day 2
 | 2. Security Fundamentals & Attacks (CIA, professions, steganography, SQLi, SWIFT, firewall) | 📖 | — | — |
 | ↳ Attack-vector short notes (DoS/DDoS/Phishing/SQLi/Ransomware/Rogue security software) | 🔲 | — | — |
 | ↳ Security vocab cheat sheet (CIA, professions, steganography, biometrics, SWIFT, etc.) | 🔲 | — | — |
-| 3. Symmetric vs Asymmetric / Block vs Stream Cipher | 📖 | — | — |
+| 3. Symmetric vs Asymmetric / Block vs Stream Cipher | ✅ | — | 2026-06-16 |
 | 4. Hash Functions & Hash Table Collision Resolution | 🔲 | — | — |
 | 5. Game Theory & Nash Equilibrium | 🔲 | — | — |
 | 6. Markov Chains (steady-state probability) | 🔲 | — | — |
@@ -31,7 +31,6 @@ Date: 2026-06-17 (Wednesday) | Days left from 2026-06-14: **3** | Phase: **Day 2
 | 14. ⚠️ Digital Signature generic model + properties cheat sheet (CRITICAL) | 🔲 | — | — |
 
 ## Carry-forward
-- Block 4: Hash Functions & Hash Table Collision Resolution (#4) — Lc#2, practice linear probing + double hashing by hand, not started
 - Block 5: DES/Feistel/S-box/Avalanche/3-DES cheat sheet (#13) — CRITICAL, guaranteed every year, not started
 - Block 6: Digital Signature generic model + properties cheat sheet (#14) — CRITICAL, guaranteed every year, not started
 - Active recall pass on Blocks 1-2 (Classical Ciphers + Security Fundamentals, notes closed) — not done

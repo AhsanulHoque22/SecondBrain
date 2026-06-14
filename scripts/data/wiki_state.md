@@ -18,7 +18,7 @@ Date: 2026-06-17 (Wednesday) | Days left from 2026-06-14: **3** | Phase: **Day 2
 | ↳ Attack-vector short notes (DoS/DDoS/Phishing/SQLi/Ransomware/Rogue security software) | 🔲 | — | — |
 | ↳ Security vocab cheat sheet (CIA, professions, steganography, biometrics, SWIFT, etc.) | 🔲 | — | — |
 | 3. Symmetric vs Asymmetric / Block vs Stream Cipher | ✅ | — | 2026-06-16 |
-| 4. Hash Functions & Hash Table Collision Resolution | 🔲 | — | — |
+| 4. Hash Functions & Hash Table Collision Resolution | ✅ | — | 2026-06-16 |
 | 5. Game Theory & Nash Equilibrium | 🔲 | — | — |
 | 6. Markov Chains (steady-state probability) | 🔲 | — | — |
 | 7. Number Theory & Modular Arithmetic | 🔲 | — | — |

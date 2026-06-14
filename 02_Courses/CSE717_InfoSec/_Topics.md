@@ -23,7 +23,11 @@ Status: 🔲 not started · 📖 learning · 🔁 needs recall · ✅ can explai
 | ↳ Block vs stream cipher comparison | 🔲 | — | — | — | 1/5 (2020) · 1 mark | one-line difference table |
 | ↳ Classical Feistel cipher structure (diagram) | 🔲 | — | — | — | 1/5 (2020) · 3 marks | shared with DES cheat sheet #13 — same diagram |
 | ↳ Public-key cryptosystem elements & key roles | 🔲 | — | — | — | 1/5 (2022) · 4 marks | 6 elements (plaintext/algo/keys/ciphertext) + public encrypts·verifies / private decrypts·signs |
-| 4 | Hash Functions & Hash Table Collision Resolution (linear probing, double hashing) | 🔲 | — | — | — | 2/5 (2023+2024) · 3 marks | NEW topic — confirmed in Lc#2 w/ worked examples matching exam style exactly. Source: Lc#2 |
+| 4 | Hash Functions & Hash Table Collision Resolution (linear probing, double hashing) | ✅ | — | 2026-06-14 | 2026-06-16 | 2/5 (2023+2024) · 3 marks | Confirmed in Lc#2 w/ worked examples matching exam style exactly. Wiki + solutions PDF done. Source: Lc#2 |
+| ↳ Properties of a good hash function (6: deterministic, quick computation, pre-image resistance, avalanche, collision resistant, puzzle friendly) | 🔲 | — | — | — | 1/5 (2023) · 2.5 marks | Pure recall — 5-6 term list |
+| ↳ Linear probing insertion (open addressing) | 🔲 | — | — | — | 1/5 (2023) · 3 marks | h(k)=(k+c) mod m, trace 6-key insertion |
+| ↳ Double hashing insertion | 🔲 | — | — | — | 1/5 (2024) · 3 marks | h_new=(h1(k)+i·h2(k)) mod m, trace 6-key insertion |
+| ↳ Quadratic probing (not in past papers, Lc#2 only) | 🔲 | — | — | — | 0/5, light pass | f(i)=i² offset — know formula as backup |
 | 5 | Game Theory & Nash Equilibrium (payoff matrix, dominant strategy) | 🔲 | — | — | — | 2/5 (2023+2024) · 3–6 marks | NEW topic — confirmed in Lc#3 w/ worked examples. Source: Lc#3 |
 | 6 | Markov Chains (steady-state probability, 2-state security model) | 🔲 | — | — | — | 2/5 (2023+2024) · 3–4 marks | UPGRADED — both most recent years ask 2-state Markov steady-state. Source: Lc#4A, Lc#4B |
 | 7 | Number Theory & Modular Arithmetic (Euclidean, Fermat, Euler, CRT, Miller-Rabin, discrete log) | 🔲 | — | — | — | 5/5 · 5–9 marks | Foundation for RSA/DigSig. Recurring seed: 3^20x mod11, 7^1000 mod10/11. Source: Lc#5, Lc#6 |

@@ -1,9 +1,9 @@
 # Study Brain — Compiled State
-_Updated: 2026-06-13 by overnight rollover_
+_Updated: 2026-06-14 by overnight rollover_
 
 ## Active exam
 Course: CSE 717 — Information Security
-Date: 2026-06-17 (Wednesday) | Days left from 2026-06-14: **3** | Phase: **Day 2 of 2.5 core-learning days**. Day 1 (Sat) only completed 2/6 planned blocks (#1 Classical Ciphers ✅, #2 Security Fundamentals 📖 — both have wiki+solutions PDFs). Carryover (#3, #4, #13, #14) absorbed into today on top of the original Day 2 plan (#5, #6, #7) — #8 RSA likely slips to Monday AM, compressing Mon AM further. Cheat sheets #13 (DES/Feistel) and #14 (Digital Signature) are CONFIRMED guaranteed marks every year and go first today.
+Date: 2026-06-17 (Wednesday) | Days left from 2026-06-15: **2** | Phase: **Day 1 of "last 2 days"**. Sunday completed #3, #4, #13, #14 (all ✅ — both CRITICAL cheat sheets done with wiki+solutions PDFs). But #5, #6, #7, #8 are still completely untouched, plus 2 recall passes are backlogged. Monday must be a hybrid day: core-learn #7 (Number Theory, foundation) + #8 RSA (CRITICAL, 5-16 marks every year) in the morning, then clear the recall backlog and condensed #5/#6 in the afternoon. Tuesday becomes the real pure-revision + timed-paper day.
 
 ## Topics — CSE717 InfoSec
 | Topic | Status | Conf | Next Recall |
@@ -31,9 +31,14 @@ Date: 2026-06-17 (Wednesday) | Days left from 2026-06-14: **3** | Phase: **Day 2
 | 14. ⚠️ Digital Signature generic model + properties cheat sheet (CRITICAL) | ✅ | — | 2026-06-16 |
 
 ## Carry-forward
-- Active recall pass on Blocks 1-2 (Classical Ciphers + Security Fundamentals, notes closed) — not done
+- #7 Number Theory & Modular Arithmetic — not started, foundation for RSA/DigSig (HIGH PRIORITY)
+- #8 RSA — not started, CRITICAL (5/5 years, 5-16 marks), already pushed once
+- #5 Game Theory & Nash Equilibrium — not started, slipped from Sunday Block 4
+- #6 Markov Chains — not started, slipped from Sunday Block 5
+- Active recall pass on Blocks 1-2 (Classical Ciphers + Security Fundamentals, notes closed) — carried 2 days now
+- Active recall pass on today's cheat sheets (#3, #4, #13, #14) — slipped from Sunday Block 7
 
-## Recall due 2026-06-14
+## Recall due 2026-06-15
 - 🔁 Intelligent Agents + Environments (PAGE) `CSE713_AI` | conf 4/5
 - 🔁 Search: UCS, Greedy, A*, IDDFS — trace on graph `CSE713_AI` | conf 4/5
 - 🔁 Forward + Backward Chaining + Rule-Based System `CSE713_AI` | conf 5/5
@@ -54,9 +59,9 @@ Date: 2026-06-17 (Wednesday) | Days left from 2026-06-14: **3** | Phase: **Day 2
 - 🔁 ↳ Uncertainty Concept (doorbell) `CSE713_AI` | conf 3/5
 - 🔁 ↳ McCulloch-Pitts Neuron + Perceptron + Learning Rule `CSE713_AI` | conf 3/5
 
-> Note: AI exam is over — these 19 are retention-only. Don't let them crowd out InfoSec (3 days out). Skip entirely if time is tight.
+> Note: AI exam is over — these 19 are retention-only. With #5/#6/#7/#8 still untouched and 2 days to InfoSec, **skip this sweep entirely.** Revisit after the InfoSec exam.
 
 ## Recent pattern (last 3 days)
-- 2026-06-11: end-of-day log unfilled — no completions logged, InfoSec setup still blocked
-- 2026-06-12: end-of-day log unfilled — no completions logged, but InfoSec materials arrived (unblocked) during/by end of day
-- 2026-06-13: InfoSec unblocked, 4-day plan built — #1 Classical Ciphers ✅ (wiki+solutions), #2 Security Fundamentals 📖 (wiki+solutions, recall pending); Blocks 3-6 + cheat sheets not started; end-of-day log unfilled (3rd day running)
+- 2026-06-12: end-of-day log unfilled — no completions logged, but InfoSec materials arrived (unblocked) by end of day
+- 2026-06-13: InfoSec unblocked, 4-day plan built — #1 Classical Ciphers ✅ (wiki+solutions), #2 Security Fundamentals 📖; Blocks 3-6 + cheat sheets not started; end-of-day log unfilled
+- 2026-06-14: #3, #4, #13, #14 all ✅ (both CRITICAL cheat sheets done, wiki+solutions PDFs) — 4/7 planned blocks done; #5/#6/#7/#8 still untouched; end-of-day log unfilled again (3rd day running)

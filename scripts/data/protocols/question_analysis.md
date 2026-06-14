@@ -27,6 +27,15 @@
   - Pages 11–13: 2021
   - Pages 14–16: 2020
 - Add any missing questions to `_TopicQuestionMap.md`
+- **Include "Related (not core)" questions too.** If the topic map lists a question as
+  "Related (not core)" for this topic — i.e.\ it's bundled in the same exam question
+  (e.g.\ same Q2 with parts (a)/(b)/(c) split across topics) but its primary home is
+  another topic — answer it HERE as well, in its own subsection, UNLESS it is already
+  fully answered in that other topic's `_Solutions.tex`/`.pdf`. Check the other topic's
+  solutions file first; if the part is missing there too, answer it in both places (or
+  at minimum in whichever topic's solutions file is generated first) and cross-reference.
+  **Zero parts of any listed exam question may go unanswered across all topic solution
+  PDFs combined.**
 
 ### Step 4 — Update _Topics.md
 - Add any sub-topics found in the slides that are not already in `_Topics.md`
@@ -34,7 +43,8 @@
 
 ### Step 5 — Generate LaTeX Solutions
 - Create `02_Courses/CSE713_AI/[TopicSlug]_Solutions.tex`
-- Include EVERY question found in Step 3 — zero omissions
+- Include EVERY question found in Step 3 — zero omissions, including "Related (not core)"
+  parts pulled in by Step 3 (give each its own `\subsection{}`, labeled "Related (Q...)")
 - Structure: one `\section{}` per year, `\subsection{}` per question part
 - Use `qbox` (orange) for question text, `solbox` (blue) for solutions
 - For math: use `\forall`, `\exists`, `\land`, `\lor`, `\neg`, `\rightarrow`, `\leftrightarrow`

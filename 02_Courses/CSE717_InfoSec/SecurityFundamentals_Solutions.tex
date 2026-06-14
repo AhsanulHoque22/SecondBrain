@@ -148,7 +148,7 @@
 
 \newpage
 %% ==========================================
-\section{2023 --- Q2(c): Securing a Network from 4 Attack Types (2 marks)}
+\section{2023 --- Q2(b,c): Digital Certificates/CA/SSL + Securing a Network from 4 Attack Types (6 marks)}
 %% ==========================================
 
 \begin{qbox}{Question --- 2023 Q2}
@@ -158,6 +158,30 @@
 \end{enumerate}
 \noindent\textit{(Related, 2023 Q4(c)):} Discuss about two atomic operations proposed by Shannon in security. \hfill [1]
 \end{qbox}
+
+\subsection{Part (b): Digital Certificates, Certificate Authorities, and SSL}
+\begin{solbox}{Answer --- 2023 Q2(b)}
+\textbf{Digital certificate:} an electronic document that binds a \textbf{public key} to an identity (e.g.\ a website's domain name), digitally signed by a trusted third party. It contains: subject identity, public key, issuer (CA) name, validity period, and the CA's signature.
+
+\textbf{Certificate Authority (CA):} a trusted third-party organization (e.g.\ DigiCert, Let's Encrypt) that verifies the identity of an entity (e.g.\ a website owner) and \textbf{signs} its certificate with the CA's own private key, vouching for the binding between identity and public key. Browsers/OSes ship with a built-in list of trusted \textbf{root CA} certificates.
+
+\textbf{SSL/TLS:} the protocol that uses these certificates to establish an authenticated, encrypted channel between a client (browser) and server.
+
+\textbf{How they work together --- illustrative example (browser visiting \texttt{https://bank.com}):}
+\begin{enumerate}[noitemsep]
+  \item \textbf{Certificate presentation:} the server sends its digital certificate, containing \texttt{bank.com}'s public key and the CA's signature over that certificate.
+  \item \textbf{Certificate verification:} the browser checks the CA's signature using the CA's public key (already trusted/pre-installed as a root certificate) --- confirming the certificate is genuine and \texttt{bank.com}'s public key is authentic, and checks the domain name and expiry date.
+  \item \textbf{Key exchange (SSL/TLS handshake):} the browser generates a random \textbf{session key}, encrypts it with \texttt{bank.com}'s verified public key, and sends it to the server. Only the server's private key can decrypt it.
+  \item \textbf{Secure data exchange:} both sides now share the session key and use fast \textbf{symmetric encryption} (e.g.\ AES) for the rest of the session --- ensuring confidentiality, integrity, and server authenticity (the padlock icon).
+\end{enumerate}
+
+\textbf{Chain of trust:}
+\[
+\boxed{\text{Root CA (pre-trusted)}} \xrightarrow{\text{signs}} \boxed{\text{Server's Certificate (bank.com's public key)}} \xrightarrow{\text{verified by}} \boxed{\text{Browser}} \xrightarrow{\text{establishes}} \boxed{\text{Encrypted SSL/TLS Session}}
+\]
+
+\textit{One-line summary: the CA's signature lets the browser trust the server's public key \emph{without ever having met the server before}; SSL/TLS then uses that public key to safely agree on a symmetric session key for the actual encrypted exchange.}
+\end{solbox}
 
 \subsection{Part (c): Securing a Network from 4 Attack Types}
 \begin{solbox}{Answer --- 2023 Q2(c)}

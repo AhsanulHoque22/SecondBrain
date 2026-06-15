@@ -133,5 +133,14 @@
       "next_recall": "2026-06-08",
       "recall_count": 0
     }
+  },
+  "CSE717_InfoSec": {
+    "Number Theory & Modular Arithmetic (Euclidean, Fermat, Euler, CRT, Miller-Rabin, discrete log)": {
+      "confidence": 5,
+      "first_done": "2026-06-15",
+      "last_reviewed": "2026-06-15",
+      "next_recall": "2026-06-17",
+      "recall_count": 0
+    }
   }
 }

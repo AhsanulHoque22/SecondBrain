@@ -1,42 +1,15 @@
 {
-  "date": "2026-06-09",
-  "fetched_at": "2026-06-08T23:00:41Z",
+  "date": "2026-06-15",
+  "fetched_at": "2026-06-15T00:00:00+06:00",
   "events": [
     {
-      "id": "reclaim0focus0o020o029207350o0202606090o05290020o000o01709146831",
-      "title": "🎯 Focus time",
-      "start_time": "2026-06-09T08:00:00+06:00",
-      "end_time": "2026-06-09T09:00:00+06:00",
-      "duration_minutes": 60,
-      "type": "other",
-      "description": "This event was created by Reclaim.ai.\n\nReclaim has blocked this time off for Ahsanul to focus. Reclaim defended this time because it's one of the last available in Ahsanul's schedule. Please find another time to meet with Ahsanul."
-    },
-    {
-      "id": "1h6ejflj8ag5uqgb063t157gl4",
-      "title": "⭐ PURE REVISION — Timed Past Paper (2022 or 2023)",
-      "start_time": "2026-06-09T09:00:00+06:00",
-      "end_time": "2026-06-09T13:00:00+06:00",
-      "duration_minutes": 240,
-      "type": "study",
-      "description": "LAST DAY before exam. NO NEW CONTENT.\nTimed past paper under exam conditions (4 hours exactly)\nAfter: review errors one final time on revision sheets\nEvening: light review of all 10 RS sheets, then sleep early\nTarget wake-up: 7:00 AM tomorrow for exam at 10:30 AM"
-    },
-    {
-      "id": "reclaim0habit0o040o041249840o041249840o020260609",
+      "id": "reclaim0habit0o040o041249840o041249840o020260615",
       "title": "🛡 🍱 Lunch",
-      "start_time": "2026-06-09T13:00:00+06:00",
-      "end_time": "2026-06-09T14:00:00+06:00",
+      "start_time": "2026-06-15T12:00:00+06:00",
+      "end_time": "2026-06-15T13:00:00+06:00",
       "duration_minutes": 60,
       "type": "meal",
-      "description": "This AI-powered event was created by Reclaim.ai.\n\nReclaim has blocked this time off for Ahsanul to work on an important commitment. Reclaim defended this time because it's one of the last available in Ahsanul's schedule. Please find another time to meet with Ahsanul."
-    },
-    {
-      "id": "reclaim0focus0o020o029207350o0202606090o05290020o000o01961530395",
-      "title": "🎯 Focus time",
-      "start_time": "2026-06-09T14:00:00+06:00",
-      "end_time": "2026-06-09T18:00:00+06:00",
-      "duration_minutes": 240,
-      "type": "other",
-      "description": "This event was created by Reclaim.ai.\n\nReclaim has blocked this time off for Ahsanul to focus. Reclaim defended this time because it's one of the last available in Ahsanul's schedule. Please find another time to meet with Ahsanul."
+      "description": ""
     }
   ]
 }

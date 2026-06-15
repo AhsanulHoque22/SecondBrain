@@ -135,13 +135,14 @@ Memorize this matrix cold — high chance it recurs again in 2026. If given, you
 ### Topic 9 — AES (Advanced Encryption Standard)
 **Yield:** ⭐⭐⭐⭐ 4/5 years (4–6 marks)
 
-- **2024 Q1(c):** ShiftRows+MixColumns diffusion explanation + perform ShiftRows on given state matrix (4); **Q3(d):** AES encryption block diagram (2)
+- **2024 Q3(a):** ShiftRows+MixColumns diffusion explanation + perform ShiftRows on given state matrix (4); **Q3(c):** AES encryption block diagram (2)
 - **2023 Q3(c):** AES encryption block diagram (4)
-- **2022 Section B Q5:** AES S-box operation via GF(2^8), multiplicative inverse table, S-box({C4})=? (1.5+4.5)
+- **2022 Section B Q5:** AES S-box operation via GF(2^8), multiplicative inverse table, Aᵢ=(11000010)₂=C2hex, S-box(C2)=25 (1.5+4.5)
 - **2021 Section B Q1(a):** AES encryption block diagram (4.75)
 - 2020: not found directly
 
 **Pattern:** AES block diagram (rounds, SubBytes/ShiftRows/MixColumns/AddRoundKey) is a recurring "draw the diagram" question (2021,2023,2024). S-box/GF(2^8) inverse computation (2022) and ShiftRows trace (2024) are the numeric variants — practice both diagram + one GF(2^8) inverse lookup.
+- All 4 confirmed years answered in full in `AES_Solutions.pdf`.
 
 ---
 

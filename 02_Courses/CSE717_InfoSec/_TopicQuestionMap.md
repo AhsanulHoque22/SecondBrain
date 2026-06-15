@@ -121,11 +121,12 @@ Memorize this matrix cold — high chance it recurs again in 2026. If given, you
 ### Topic 8 — RSA Encryption/Decryption Numericals
 **Yield:** ⭐⭐⭐⭐⭐ 5/5 years (5–16 marks every year — largest single-topic block some years)
 
-- **2024 Q2(c):** Encrypt "DATA" via RSA, p=61,q=53,e=17 (3); **Q3(a):** decrypt ciphertext block c=17 with same p,q,e (3)
-- **2023 Q7(c):** Encrypt "CU" via RSA, p=43,q=59 (3); **Q7(d):** decrypt with same p,q (2)
+- **2024 Q2(c):** Encrypt "DATA" via RSA, p=61,q=53,e=17 (3); **Q2(d):** decrypt ciphertext block c=17 with same p,q,e (3)
+- **2023 Section B Q7(c):** Encrypt "CU" via RSA, p=43,q=59, e not legible in scan (3); **Q7(d):** decrypt "0981 0461" with same p,q (2)
 - **2022 Q6:** Encrypt M=3 via RSA, p=13,q=7, choose e<10, show steps; explain why eavesdropper (Charlie) can't decrypt without private key (3+3+2+8=16!)
-- **2021 B2(a):** Encrypt+decrypt RSA, p=3,q=11,e=7,M=2 (2.75); **B2(b):** given e=31,n=3599, find private key d (2+2)
+- **2021 Section B Q2(a):** Encrypt+decrypt RSA, p=3,q=11,e=7,M=2 (2.75); **Q2(b):** given e=31,n=3599, find private key d (2+2)
 - **2020 Q6(a):** Encrypt+decrypt RSA, p=3,q=11,e=7,M=2 (4.75); **Q6(b):** given e=31,n=3599, find private key d (2+2)
+- All 5 years answered in full in `RSA_Solutions.pdf` (square-and-multiply traces + Extended Euclidean for d).
 
 **Pattern:** ALWAYS small primes (3,7,11,13,17,31,43,53,59,61 range). Drill the full pipeline cold: n=pq → φ(n)=(p-1)(q-1) → pick/verify e coprime to φ(n) → d=e⁻¹ mod φ(n) (extended Euclidean — links to Topic 7) → C=Mᵉ mod n → M=Cᵏ mod n. The "given e,n find d" variant (2020&2021, identical numbers e=31,n=3599) is a near-certain repeat style.
 

@@ -145,6 +145,36 @@ A \textbf{digital signature} is a cryptographic value, computed from a message a
 \end{center}
 \end{algobox}
 
+\begin{keybox}{Symbol Legend --- What Each Term Means}
+\begin{tabularx}{\textwidth}{@{}l X@{}}
+\toprule
+\textbf{Symbol} & \textbf{Meaning} \\
+\midrule
+$M$ & The original message (plaintext) being sent. \\
+$H(M) = h$ & Hash function applied to $M$, producing digest $h$. \\
+$PR_a$ & Sender A's \textbf{private key} (secret, only A has it). \\
+$PU_a$ & Sender A's \textbf{public key} (shared with everyone). \\
+$E_{PR_a}(h)$ & Encrypt $h$ using A's private key $\to$ produces $DS$. \\
+$DS$ & Digital Signature = the encrypted hash. \\
+$D_{PU_a}(DS)$ & Decrypt $DS$ using A's public key $\to$ recovers $h$. \\
+$h'$ & Hash computed by the \textbf{receiver}, independently, from the received $M$. \\
+$h \stackrel{?}{=} h'$ & The verification check: ``does the decrypted hash match the freshly computed one?'' \\
+\bottomrule
+\end{tabularx}
+
+\vspace{6pt}
+\textbf{Flow walkthrough (left $\to$ right):}
+\begin{itemize}[noitemsep]
+  \item \textbf{Sender column (top to bottom):} hash $M$ to get $h$ $\to$ encrypt $h$ with $PR_a$ to get $DS$.
+  \item \textbf{Orange box:} the pair $(M, DS)$ is sent together over the channel --- two arrows feed it (one from $M$, one from $DS$).
+  \item \textbf{Receiver column:} \emph{two independent paths} from the orange box: (1) $M$ arrives and is re-hashed to give $h'$; (2) $DS$ is decrypted with $PU_a$ to recover $h$.
+  \item \textbf{Green box:} compare $h$ (recovered) with $h'$ (freshly computed). Equal $\to$ valid signature; not equal $\to$ reject.
+\end{itemize}
+
+\vspace{4pt}
+\textbf{Why this proves authenticity:} only A's private key $PR_a$ could have produced a $DS$ that decrypts correctly with A's public key $PU_a$ into the matching hash $h$. If $h = h'$, the message is both \emph{authentic} (came from A) and \emph{unmodified} (matches $h'$).
+\end{keybox}
+
 \begin{algobox}{3. Properties / Requirements of a Digital Signature Scheme}
 \textbf{A digital signature must:}
 \begin{itemize}[noitemsep]

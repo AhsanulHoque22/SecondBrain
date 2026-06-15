@@ -1,9 +1,0 @@
-\contentsline {section}{\numberline {1}2024 --- Q2(a): Digital Signature + Vulnerable Attacks (3); Section B Q2(c): Same Theme (3); Section B Q8(d): Generic Model Diagram (1)}{5}{section.1}%
-\contentsline {section}{\numberline {2}2023 --- Q2(a): Digital Signature + Vulnerable Attacks (3); Section B Q5(c): Attack Types (3); Section B Q5(d): RSA Key-Reuse Safety (1)}{6}{section.2}%
-\contentsline {subsection}{\numberline {2.1}Parts (a) and Section B (c): Digital Signature + Attacks}{6}{subsection.2.1}%
-\contentsline {subsection}{\numberline {2.2}Part Section B (d): RSA Key-Reuse Safety After Private-Key Leak}{6}{subsection.2.2}%
-\contentsline {section}{\numberline {3}2022 --- Section B Q5(b): Properties + Scheme Requirements; Q7(a): Signature vs Confidentiality Order + Threats to Direct DS}{7}{section.3}%
-\contentsline {subsection}{\numberline {3.1}Part (a): Properties + Scheme Requirements}{7}{subsection.3.1}%
-\contentsline {subsection}{\numberline {3.2}Part (b): Signature vs Confidentiality Order + Threats to Direct Digital Signature}{7}{subsection.3.2}%
-\contentsline {section}{\numberline {4}2021 --- Section B Q2(c): Generic Model Diagram (2 marks)}{8}{section.4}%
-\contentsline {section}{\numberline {5}2020 --- Q7(a): Generic Model of Digital Signature Process (4.75 marks)}{9}{section.5}%

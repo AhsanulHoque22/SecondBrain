@@ -4,9 +4,9 @@
 
 ## Right now
 - **Active exam:** CSE 717 — Information Security — **Wed 17 Jun 2026, 10:30 AM**
-- **Days left:** 2
-- **Phase:** Day 1 of "last 2 days" (Mon). Sunday completed #3, #4, #13, #14 (all ✅, both CRITICAL cheat sheets done). But #5, #6, #7, #8 are still untouched (🔲), plus 2 recall passes carried over. Hybrid day required: core-learn #7 (foundation) + #8 RSA in the morning, then clear recall backlog + condensed #5/#6 in the afternoon. Tuesday is the real pure-revision/timed-paper day.
-- **Single most important thing today:** #7 Number Theory + #8 RSA (Block 1-2) — RSA is 5/5 years, 5-16 marks, and cannot be skipped even with only 2 days left.
+- **Days left:** 1
+- **Phase:** Day 2 of "last 2 days" (Tue) — InfoSec ONLY, pure revision + timed past papers. Monday was a big win: #7 Number Theory, #8 RSA, and #9 AES all reached ✅ with wiki+solutions PDFs. Remaining: #5/#6 (condensed cheat sheets), #2 unfinished, recall backlog on #1/#2 (3 days overdue) and #3/#4/#13/#14 (due today), and zero timed papers run so far.
+- **Single most important thing today:** Clear the recall backlog (#1/#2) first thing, then run at least one full timed past paper (Block 4) — this has slipped twice and there's only one day left.
 - **⚠️ Rule:** Google Calendar is the ONLY source of truth for daily plans. Never use the overnight rollover log for scheduling.
 - **🔴 Session protocols:** Read and execute `scripts/data/session_protocols.md` at EVERY session start. No exceptions.
 
@@ -38,7 +38,7 @@ Prayers structure the day — each gap is a study block:
 | Course | Topics mapped | High-yield done | Past paper attempts | Confidence /5 |
 |--------|:-:|:-:|:-:|:-:|
 | [[02_Courses/CSE713_AI/_Topics\|AI (713)]] | ✅ EXAM DONE (27 topics) | 18✅ · 1🔁 · 7📖 · 1🔲 | ✅ past papers done per topic | 4.2 |
-| [[02_Courses/CSE717_InfoSec/_Topics\|InfoSec (717)]] | ✅ 14 topics ranked | 5✅ · 1📖 · 8🔲 | – | pending |
+| [[02_Courses/CSE717_InfoSec/_Topics\|InfoSec (717)]] | ✅ 14 topics ranked | 8✅ · 1📖 · 5🔲 | – | pending |
 | [[02_Courses/CSE711_Compiler/README\|Compiler (711)]] | – | – | – | – |
 | [[02_Courses/CSE719_Distributed/README\|Distributed (719)]] | – | – | – | – |
 | [[02_Courses/CSE715_Graphics/README\|Graphics (715)]] | – | – | – | – |

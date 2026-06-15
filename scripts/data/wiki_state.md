@@ -3,13 +3,13 @@ _Updated: 2026-06-15 by overnight rollover_
 
 ## Active exam
 Course: CSE 717 — Information Security
-Date: 2026-06-17 (Wednesday) | Days left from 2026-06-16: **1** | Phase: **Day 2 of "last 2 days"** — InfoSec ONLY, no Livora, no system tinkering. Monday was a big win: #7 Number Theory, #8 RSA, and #9 AES all reached ✅ with wiki+solutions PDFs. Remaining gaps: #5/#6 (condensed cheat sheets), #2 still 📖, recall backlog on #1/#2 (3 days overdue) and #3/#4/#13/#14 (due today), and NO timed past paper run yet — must happen today.
+Date: 2026-06-17 (Wednesday) | Days left from 2026-06-16: **1** | Phase: **Day 2 of "last 2 days"** — InfoSec ONLY, no Livora, no system tinkering. Monday was a big win: #2 Security Fundamentals, #7 Number Theory, #8 RSA, and #9 AES all reached ✅ with wiki+solutions PDFs (where applicable). Remaining gaps: #5/#6 (condensed cheat sheets), recall backlog on #1/#2 (3 days overdue) and #3/#4/#13/#14 (due today), and NO timed past paper run yet — must happen today.
 
 ## Topics — CSE717 InfoSec
 | Topic | Status | Conf | Next Recall |
 |---|:---:|:---:|---|
 | 1. Classical Ciphers (Caesar, Playfair, Hill, Vigenère, OTP) | ✅ | — | 2026-06-15 (overdue) |
-| 2. Security Fundamentals & Attacks (CIA, professions, steganography, SQLi, SWIFT, firewall) | 📖 | — | — |
+| 2. Security Fundamentals & Attacks (CIA, professions, steganography, SQLi, SWIFT, firewall) | ✅ | — | 2026-06-17 |
 | 3. Symmetric vs Asymmetric / Block vs Stream Cipher | ✅ | — | 2026-06-16 |
 | 4. Hash Functions & Hash Table Collision Resolution | ✅ | — | 2026-06-16 |
 | 5. Game Theory & Nash Equilibrium | 🔲 | — | — |
@@ -26,7 +26,6 @@ Date: 2026-06-17 (Wednesday) | Days left from 2026-06-16: **1** | Phase: **Day 2
 ## Carry-forward
 - #5 Game Theory & Nash Equilibrium — condensed cheat sheet, slipped 2 days now
 - #6 Markov Chains — condensed cheat sheet, slipped 2 days now
-- #2 Security Fundamentals — still 📖, finish attack-vector short notes + vocab cheat sheet
 - Active recall pass on #1 + #2 (notes closed) — 3 days overdue, clear first thing Tuesday
 - Active recall pass on #3/#4/#13/#14 cheat sheets — due today
 - Timed past-paper practice (full paper, 10:30 simulation) — slipped from Monday, CRITICAL for Tuesday
@@ -58,4 +57,4 @@ The 19 AI (CSE713) retention recalls below are due/overdue but should be **skipp
 ## Recent pattern (last 3 days)
 - 2026-06-13: InfoSec unblocked, 4-day plan built — #1 Classical Ciphers ✅ (wiki+solutions), #2 Security Fundamentals 📖; end-of-day log unfilled
 - 2026-06-14: #3, #4, #13, #14 all ✅ (both CRITICAL cheat sheets done, wiki+solutions PDFs) — 4/7 planned blocks; #5/#6/#7/#8 still untouched; end-of-day log unfilled
-- 2026-06-15: #7 Number Theory, #8 RSA, #9 AES all ✅ (wiki+solutions PDFs) — biggest single day yet, but #5/#6/#2 still open, recall backlog growing, zero timed papers run; end-of-day log unfilled (4th day running)
+- 2026-06-15: #2 Security Fundamentals, #7 Number Theory, #8 RSA, #9 AES all ✅ (wiki+solutions PDFs where applicable) — biggest single day yet, only #5/#6 still open, recall backlog growing, zero timed papers run; end-of-day log unfilled (4th day running)

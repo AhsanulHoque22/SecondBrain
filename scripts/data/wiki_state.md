@@ -19,7 +19,7 @@ Date: 2026-06-17 (Wednesday) | Days left from 2026-06-16: **1** | Phase: **Day 2
 | 9. AES (S-box, GF(2^8), block diagram) | ✅ | — | 2026-06-17 |
 | 10. Quantum Attacks & ECC | 🔲 | — | — |
 | 11. IPsec (AH/ESP, transport/tunnel, RFC4301) | 🔲 | — | — |
-| 12. Blockchain & Bitcoin | 🔲 | — | — |
+| 12. Blockchain & Bitcoin | ✅ | — | 2026-06-17 |
 | 13. ⚠️ DES/Feistel/S-box/Avalanche/3-DES cheat sheet (CRITICAL) | ✅ | — | 2026-06-16 |
 | 14. ⚠️ Digital Signature generic model + properties cheat sheet (CRITICAL) | ✅ | — | 2026-06-16 |
 

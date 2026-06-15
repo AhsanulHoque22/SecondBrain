@@ -169,13 +169,15 @@ Memorize this matrix cold — high chance it recurs again in 2026. If given, you
 ---
 
 ### Topic 12 — Blockchain & Bitcoin
-**Yield:** ⭐⭐⭐⭐ 3/5 years (2.75–12 marks), dedicated 2026 materials (Lc#11A/B) → expect strong 2026 emphasis
+**Yield:** ⭐⭐⭐ 2/5 years (3–8.75 marks), dedicated 2026 materials (Lc#11A/B) → expect strong 2026 emphasis
 
-- **2024 Q3(c):** Blockchain security via hashing + Proof of Work (3)
-- **2022 Q8:** same-origin policy via blockchain example (4), Merkle tree data-integrity diagram (4), ETH vs BTC distinction (4) = 12
-- **2021 Section B Q3:** blockchain-cryptography relation + "what is bitcoin" (2.75+2), bitcoin input/output script signature validation (4)
+- **2024 Q3(b):** "A company maintains a blockchain-based distributed ledger... explain how blockchain ensures security, specifically in terms of hashing and Proof of Work" (3)
+- **2021 Section B Q3(a,b):** (a)(i) how blockchain is related to cryptography (2.75), (ii) what is bitcoin (2), (b) discuss the process of input-output scripts for signature validation in bitcoin (4) = 8.75
+- 2020/2022/2023: not found
+- ⚠️ **Correction (2026-06-15):** the previously-listed "2022 Q8 (12 marks, Merkle tree / ETH vs BTC)" entry was checked against the actual 2022 paper (page 5 of the consolidated past-papers PDF, which contains only Q1–Q5) and does NOT exist — it was an OCR hallucination from the 2026-06-13 first pass. Removed; yield downgraded from 3/5 to 2/5 accordingly.
 
-**Pattern:** Merkle tree diagram-based integrity question (2022) is the most detailed historical ask. Proof-of-Work + hashing security (2024) is simpler/conceptual. ETH vs BTC comparison recurs. Given NEW dedicated Lc#11A/11B materials, expect a full Q8-style question — HIGH PRIORITY, matches existing rating.
+**Pattern:** Proof-of-Work + hashing security (2024) is conceptual/short. Bitcoin-specific (crypto relation, what-is-bitcoin, input/output scripts, mining, wallets, exchanges) confirmed via 2021. Lc#11A also covers Merkle tree, genesis block, public/private/hybrid chains, blockchain vs shared DB, ETH vs BTC — all NOT yet seen in past papers but plausible given dedicated 2026 materials (Lc#11A/11B) → cover as bonus/insurance.
+- Both confirmed years answered in full in `Blockchain_Solutions.pdf`, plus a bonus Lc#11A/11B cheat-sheet section (Merkle tree, ETH vs BTC, types of blockchain) for insurance.
 
 ---
 

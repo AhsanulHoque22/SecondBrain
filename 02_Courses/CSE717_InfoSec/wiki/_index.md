@@ -11,3 +11,4 @@
 - [[wiki/number_theory|Number Theory & Modular Arithmetic]] — GCD/Ext.Euclidean+mult.inverse, linear congruence, Fermat, Euler, CRT, Miller-Rabin, discrete log/cyclic groups; HIGHEST-YIELD, 5/5 years, 5–9 marks, foundation for RSA.
 - [[wiki/rsa|RSA]] — 8-step key generation + encrypt/decrypt pipeline, square-and-multiply, "given e,n find d"; 5/5 years, 5–16 marks (largest single-topic block some years).
 - [[wiki/aes|AES]] — 10-round structure (AddRoundKey, SubBytes/ShiftRows/MixColumns/AddRoundKey×9, final round drops MixColumns), GF(2^8) S-box + MixColumns; 4/5 years, 4–6 marks, block diagram near-certain.
+- [[wiki/game_theory|Game Theory & Nash Equilibrium]] — 2×2 payoff matrix, 6-step underline method for NE, strictly dominant strategy; 2/5 years (2023+2024, both most recent), 3–6 marks.

@@ -88,10 +88,12 @@ Memorize this matrix cold — high chance it recurs again in 2026. If given, you
 ### Topic 5 — Game Theory & Nash Equilibrium (NEW — confirmed in Lc#3)
 **Yield:** ⭐⭐⭐ 2/5 years (2023, 2024 — both most recent), 3-6 marks
 
-- **2024 Section B Q7(a):** Eve/Mallory choosing PT vs ND training, given payoff matrix — find all Nash equilibria; does either player have a strictly dominant strategy? (3)
-- **2023 Q4(b):** "Using game theory, design a strategy to identify attackers in a mobile social network" (3); **Section B Q8(a):** Alice/Bob ST#1/ST#2 payoff matrix (10,10 / 8,4 / 4,8 / 5,5) — find Nash equilibrium + dominant strategy (3)
+- **2024 Section B Q7(a):** Eve/Mallory choosing PT vs ND training, payoff matrix [(4,3),(1,2)/(2,1),(3,4)] — find all Nash equilibria (TWO: (PT,PT) and (ND,ND)); neither player has a strictly dominant strategy (3)
+- **2023 Q4(b):** "Using game theory, design a strategy to identify attackers in a mobile social network" — server/node surveillance model (3); **Section B Q8(a):** Alice/Bob ST#1/ST#2 payoff matrix (10,10 / 8,4 / 4,8 / 5,5) — unique NE=(ST#1,ST#1)=(10,10); BOTH players have ST#1 as strictly dominant (3)
+- 2020/2021/2022: not found
 
 **Pattern:** 2x2 payoff-matrix questions — find Nash equilibrium(s) by checking best responses, and identify dominant strategies. Lc#3 covers this with worked examples. Cheap, mechanical marks once the method is drilled.
+- All 2 confirmed years (+conceptual 2023 Q4b) answered in full in `GameTheory_Solutions.pdf`.
 
 ---
 

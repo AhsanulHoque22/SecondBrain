@@ -1,0 +1,305 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[top=2.5cm,bottom=2.5cm,left=2.5cm,right=2.5cm,headheight=15pt]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{tikz}
+\usetikzlibrary{shapes,arrows,arrows.meta,positioning,calc}
+\usepackage{booktabs,array}
+\usepackage{xcolor}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{mdframed}
+\usepackage{tcolorbox}
+\tcbuselibrary{skins,breakable}
+\usepackage{hyperref}
+
+%% ---- Colors ----
+\definecolor{folblue}{RGB}{0,82,165}
+\definecolor{lightblue}{RGB}{220,235,255}
+\definecolor{darkorange}{RGB}{180,70,0}
+\definecolor{lightorange}{RGB}{255,235,210}
+\definecolor{darkgreen}{RGB}{20,110,20}
+\definecolor{lightgreen}{RGB}{200,240,205}
+\definecolor{darkred}{RGB}{150,20,20}
+\definecolor{lightred}{RGB}{255,210,210}
+\definecolor{lightgray}{RGB}{242,242,242}
+
+%% ---- tcolorbox styles ----
+\newtcolorbox{qbox}[2][]{enhanced,breakable,
+  colback=lightorange,colframe=darkorange,arc=4pt,
+  title={\textbf{#2}},fonttitle=\bfseries\color{white},
+  attach boxed title to top left={yshift=-2mm,xshift=4mm},
+  boxed title style={colback=darkorange,arc=3pt},#1}
+
+\newtcolorbox{solbox}[2][]{enhanced,breakable,
+  colback=lightblue,colframe=folblue,arc=4pt,
+  title={\textbf{#2}},fonttitle=\bfseries\color{white},
+  attach boxed title to top left={yshift=-2mm,xshift=4mm},
+  boxed title style={colback=folblue,arc=3pt},#1}
+
+\newtcolorbox{keybox}[2][]{enhanced,breakable,
+  colback=lightgreen,colframe=darkgreen,arc=4pt,
+  title={\textbf{#2}},fonttitle=\bfseries\color{white},
+  attach boxed title to top left={yshift=-2mm,xshift=4mm},
+  boxed title style={colback=darkgreen,arc=3pt},#1}
+
+\newtcolorbox{algobox}[2][]{enhanced,breakable,
+  colback=lightgray,colframe=gray!60,arc=4pt,
+  title={\textbf{#2}},fonttitle=\bfseries,
+  attach boxed title to top left={yshift=-2mm,xshift=4mm},
+  boxed title style={colback=gray!60,arc=3pt},#1}
+
+\newtcolorbox{warnbox}[2][]{enhanced,breakable,
+  colback=lightred,colframe=darkred,arc=4pt,
+  title={\textbf{#2}},fonttitle=\bfseries\color{white},
+  attach boxed title to top left={yshift=-2mm,xshift=4mm},
+  boxed title style={colback=darkred,arc=3pt},#1}
+
+%% ---- Page style ----
+\pagestyle{fancy}\fancyhf{}
+\lhead{\color{folblue}\textbf{Markov Chains --- CSE 717 InfoSec}}
+\rhead{\color{folblue}Exam: 17 Jun 2026}
+\cfoot{--- \thepage\ ---}
+\renewcommand{\headrulewidth}{0.4pt}
+
+%% ---- Section style ----
+\titleformat{\section}{\large\bfseries\color{folblue}}{}{0em}{}[\titlerule]
+\titleformat{\subsection}{\normalsize\bfseries\color{darkorange}}{}{0em}{}
+
+\begin{document}
+
+\begin{center}
+{\LARGE\bfseries\color{folblue} CSE 717 --- Information Security}\\[4pt]
+{\large\bfseries Topic 6: Markov Chains --- Steady-State Probability, 2-State Security Model}\\[2pt]
+{\large Complete Past Paper Solutions: 2020--2024}\\[6pt]
+{\normalsize Source: Lc\#4A (Markov Chain theory) + Lc\#4B (Assignment numericals)}\\[2pt]
+{\normalsize\color{darkred}\textbf{2/5 years (2023, 2024 --- both most recent), 3--4 marks. Strong recency signal --- near-certain repeat.}}
+\end{center}
+
+\tableofcontents
+
+%% ==========================================
+\section*{Quick Reference --- Steady-State Method (CHEAT SHEET)}
+%% ==========================================
+
+\begin{warnbox}{2020--2022: no Markov Chain question found}
+This topic first appeared in 2023 and 2024 (both most recent years) as a 2-state security model: \textbf{Secure/Compromised} or \textbf{Secure/Insecure}. The method is identical both years --- only the transition probabilities change. Master one worked example cold.
+\end{warnbox}
+
+\begin{algobox}{Key Definitions (Lc\#4A)}
+\begin{itemize}[noitemsep]
+  \item \textbf{Markov chain:} a model where the next state depends \emph{only} on the current state (memoryless / Markov property).
+  \item \textbf{State:} a possible situation of the system (e.g.\ Secure, Compromised, Sunny, Rainy).
+  \item \textbf{Transition probability:} the probability of moving from one state to another in one step. All outgoing probabilities from a state must sum to 1.
+  \item \textbf{Transition matrix $T$:} $k \times k$ matrix for $k$ states; entry $T_{ij}$ = probability of going from state $i$ to state $j$. Each \emph{row} sums to 1.
+  \item \textbf{State vector $x^{(n)}$:} a row vector of probabilities of being in each state at step $n$. Updated as $x^{(n)} = x^{(n-1)} T$.
+  \item \textbf{Steady-state vector $V$:} the long-run probability distribution, satisfying $VT = V$ (does not change after further steps). Also written $V(T - I) = 0$ with the constraint $\sum V_i = 1$.
+\end{itemize}
+\end{algobox}
+
+\begin{algobox}{5-Step Algorithm to Find Steady-State (Lc\#4A standard method)}
+\begin{enumerate}[noitemsep]
+  \item \textbf{Set up transition matrix $T$} from the given probabilities (rows = ``from'', columns = ``to'').
+  \item \textbf{Write $V(T-I) = 0$}: subtract the identity matrix $I$ from $T$, multiply row vector $V = [S \;\; C]$ on the left, set equal to zero row vector.
+  \item \textbf{Extract equations}: one equation per column (they are linearly dependent --- any one can be dropped). This gives a relation between $S$ and $C$.
+  \item \textbf{Use the normalization constraint} $S + C = 1$ (probabilities must sum to 1) together with the relation from Step 3.
+  \item \textbf{Solve for $S$ and $C$}, state the steady-state vector $V = [S \;\; C]$, and \textbf{interpret} (which state dominates long-run?).
+\end{enumerate}
+\end{algobox}
+
+\begin{keybox}{Worked example from slides (Lc\#4A) --- Sunny/Rainy weather}
+\[
+T = \begin{pmatrix} 0.9 & 0.1 \\ 0.5 & 0.5 \end{pmatrix}
+\quad \text{(Sunny$\to$Sunny=0.9, Rainy$\to$Sunny=0.5)}
+\]
+$T - I = \begin{pmatrix} -0.1 & 0.1 \\ 0.5 & -0.5 \end{pmatrix}$
+
+$[S\;\;R]\begin{pmatrix}-0.1 & 0.1 \\ 0.5 & -0.5\end{pmatrix} = [0\;\;0]$
+$\;\Rightarrow\; -0.1S + 0.5R = 0 \;\Rightarrow\; S = 5R$
+
+With $S + R = 1$: $5R + R = 1 \Rightarrow R = 1/6 \approx 0.167$, $S = 5/6 \approx 0.833$.
+
+$\boxed{V = [0.833\;\;0.167]}$ --- long-run: 83.3\% sunny days.
+\end{keybox}
+
+%% ==========================================
+\section{2024 --- Q1(c): Secure/Compromised 2-state system --- find steady-state, interpret (3)}
+%% ==========================================
+
+\begin{qbox}{Question --- 2024 Q1(c) \hfill [3 marks]}
+An information system can be in one of two states: \textbf{Secure (S)} or \textbf{Compromised (C)}.
+\begin{itemize}[noitemsep]
+  \item If the system is \textbf{Secure} during a security assessment cycle (active patching, effective controls), it remains Secure with probability \textbf{0.4}. Otherwise it transitions to Compromised.
+  \item If the system is \textbf{Compromised} during an assessment cycle (failed controls, unpatched vulnerabilities), incident-response actions return it to Secure with probability \textbf{0.3}. Otherwise it remains Compromised.
+\end{itemize}
+Determine the steady-state probabilities of Secure (S) and Compromised (C) states, and evaluate whether the system is more likely to be secure or compromised in the long run.
+\end{qbox}
+
+\begin{solbox}{Answer --- 2024 Q1(c)}
+
+\textbf{Step 1 --- Transition Matrix.}
+
+From the given probabilities:
+\begin{itemize}[noitemsep]
+  \item Secure $\to$ Secure: $0.4$;\quad Secure $\to$ Compromised: $1 - 0.4 = 0.6$
+  \item Compromised $\to$ Secure: $0.3$;\quad Compromised $\to$ Compromised: $1 - 0.3 = 0.7$
+\end{itemize}
+\[
+T = \begin{pmatrix} 0.4 & 0.6 \\ 0.3 & 0.7 \end{pmatrix}
+\quad\text{(rows = ``from'' state, columns = ``to'' state)}
+\]
+
+\textbf{Step 2 --- Set up steady-state equation $V(T - I) = 0$.}
+\[
+T - I = \begin{pmatrix} 0.4 & 0.6 \\ 0.3 & 0.7 \end{pmatrix} - \begin{pmatrix} 1 & 0 \\ 0 & 1 \end{pmatrix} = \begin{pmatrix} -0.6 & 0.6 \\ 0.3 & -0.3 \end{pmatrix}
+\]
+\[
+[S \;\; C]\begin{pmatrix} -0.6 & 0.6 \\ 0.3 & -0.3 \end{pmatrix} = [0 \;\; 0]
+\]
+
+\textbf{Step 3 --- Extract equation from column 1.}
+\[
+-0.6S + 0.3C = 0 \;\Rightarrow\; C = 2S \quad \cdots (1)
+\]
+(Column 2 gives $0.6S - 0.3C = 0$ --- the same equation, linearly dependent. Discard it.)
+
+\textbf{Step 4 --- Apply normalization constraint $S + C = 1$.}
+\[
+S + C = 1 \quad \cdots (2)
+\]
+
+\textbf{Step 5 --- Solve.}
+
+Substituting (1) into (2):
+\[
+S + 2S = 1 \;\Rightarrow\; 3S = 1 \;\Rightarrow\; \boxed{S = \tfrac{1}{3} \approx 0.333}
+\]
+\[
+C = 2S = \tfrac{2}{3} \;\Rightarrow\; \boxed{C \approx 0.667}
+\]
+
+\textbf{Steady-state vector:}
+\[
+V = [S \;\; C] = [0.333 \;\; 0.667]
+\]
+
+\textbf{Interpretation:} In the long run, the system is in the \textbf{Secure} state only \textbf{33.3\%} of the time and in the \textbf{Compromised} state \textbf{66.7\%} of the time.
+
+\[
+\boxed{\text{The system is more likely COMPROMISED in the long run (66.7\% vs 33.3\%).}}
+\]
+
+\textit{Intuition: although incident-response recovers from Compromised state 30\% of the time, the patching mechanism only keeps the system Secure 40\% of the time --- so the system drifts towards compromise.}
+\end{solbox}
+
+%% ==========================================
+\section{2023 --- Section B Q6(c): Secure/Insecure network with patch-cycle transitions --- long-term behaviour (4)}
+%% ==========================================
+
+\begin{qbox}{Question --- 2023 Section B Q6(c) \hfill [4 marks]}
+Consider a network system that can either be in a \textbf{secure state} or an \textbf{insecure state}. The network system periodically undergoes patches to maintain security. However, there is a risk that the system may be vulnerable to attacks at any given time.
+\begin{itemize}[noitemsep]
+  \item[(i)] When the system remains secure because the patching mechanism is effective and there are no new vulnerabilities, there is an \textbf{80\% chance} that the system remains secure after a security check.
+  \item[(ii)] When no patch is applied or the patching mechanism fails, the system remains insecure and there is a \textbf{60\% chance} that the system remains secure after a security check.
+\end{itemize}
+Determine the long-term behaviour of this network system, whether it is secure or insecure.
+\end{qbox}
+
+\begin{solbox}{Answer --- 2023 Section B Q6(c)}
+
+\textbf{Step 1 --- Transition Matrix.}
+
+From the given probabilities:
+\begin{itemize}[noitemsep]
+  \item Secure $\to$ Secure: $0.8$;\quad Secure $\to$ Insecure: $1 - 0.8 = 0.2$
+  \item Insecure $\to$ Secure: $0.6$;\quad Insecure $\to$ Insecure: $1 - 0.6 = 0.4$
+\end{itemize}
+\[
+T = \begin{pmatrix} 0.8 & 0.2 \\ 0.6 & 0.4 \end{pmatrix}
+\quad\text{(rows = ``from'', columns = ``to'')}
+\]
+
+\textbf{Step 2 --- Set up steady-state equation $V(T - I) = 0$.}
+\[
+T - I = \begin{pmatrix} 0.8 & 0.2 \\ 0.6 & 0.4 \end{pmatrix} - \begin{pmatrix} 1 & 0 \\ 0 & 1 \end{pmatrix} = \begin{pmatrix} -0.2 & 0.2 \\ 0.6 & -0.6 \end{pmatrix}
+\]
+\[
+[S \;\; I]\begin{pmatrix} -0.2 & 0.2 \\ 0.6 & -0.6 \end{pmatrix} = [0 \;\; 0]
+\]
+
+\textbf{Step 3 --- Extract equation from column 1.}
+\[
+-0.2S + 0.6I = 0 \;\Rightarrow\; S = 3I \quad \cdots (1)
+\]
+(Column 2 gives $0.2S - 0.6I = 0$ --- same equation. Discard.)
+
+\textbf{Step 4 --- Apply normalization constraint $S + I = 1$.}
+\[
+S + I = 1 \quad \cdots (2)
+\]
+
+\textbf{Step 5 --- Solve.}
+
+Substituting (1) into (2):
+\[
+3I + I = 1 \;\Rightarrow\; 4I = 1 \;\Rightarrow\; \boxed{I = 0.25}
+\]
+\[
+S = 3I = 3 \times 0.25 \;\Rightarrow\; \boxed{S = 0.75}
+\]
+
+\textbf{Steady-state vector:}
+\[
+V = [S \;\; I] = [0.75 \;\; 0.25]
+\]
+
+\textbf{Interpretation:} In the long run, the system is in the \textbf{Secure} state \textbf{75\%} of the time and in the \textbf{Insecure} state only \textbf{25\%} of the time.
+
+\[
+\boxed{\text{The system is more likely SECURE in the long run (75\% vs 25\%).}}
+\]
+
+\textit{Intuition: even when insecure, the 60\% patch-recovery rate is strong. Combined with 80\% staying-secure rate, the patching mechanism is effective overall --- the system gravitates toward the secure state.}
+\end{solbox}
+
+%% ==========================================
+\section*{2020--2022 --- No Markov Chain question found}
+%% ==========================================
+
+\begin{warnbox}{2020/2021/2022 papers}
+No Markov Chain question was found in the 2020, 2021, or 2022 past papers for CSE-717 / CSE-7197. The topic first appears in 2023 and 2024 (consecutive most recent years) --- a strong signal that it has been added to the repeating question pool and will very likely appear in 2026.
+\end{warnbox}
+
+%% ==========================================
+\section*{Exam Strategy Summary}
+%% ==========================================
+
+\begin{keybox}{High-Yield Checklist for Markov Chains (2/5 years, both most recent, 3--4 marks)}
+\begin{enumerate}[noitemsep]
+  \item \textbf{Transition matrix orientation:} rows = ``from'' state, columns = ``to'' state. Each \textbf{row sums to 1}. Check this immediately after writing the matrix.
+  \item \textbf{Fill in the missing probability:} if ``Secure$\to$Secure $= 0.4$'' is given, then ``Secure$\to$Compromised $= 0.6$'' automatically. Never leave a row incomplete.
+  \item \textbf{Steady-state equation:} $VT = V \;\Leftrightarrow\; V(T-I) = 0$. Expand to get one useful linear equation (the two equations are always dependent --- keep only one).
+  \item \textbf{Normalization:} $\pi_1 + \pi_2 = 1$ is the second equation. Together with the linear relation, solve in two lines.
+  \item \textbf{Always interpret the result:} state which system (Secure vs Compromised/Insecure) dominates, with the exact long-run percentage. This interpretation is the final mark.
+  \item \textbf{Both exam questions are 2-state security models} (Secure/Compromised in 2024, Secure/Insecure in 2023). Expect the same framing in 2026 --- the lecture worked example is a weather chain (Sunny/Rainy), but map the method directly onto the security context.
+\end{enumerate}
+
+\medskip
+\textbf{Key contrast between the two years:}
+\begin{center}
+\begin{tabular}{lcc}
+\toprule
+ & \textbf{2024} & \textbf{2023} \\
+\midrule
+States & Secure / Compromised & Secure / Insecure \\
+Stay-in-Secure prob & 0.4 & 0.8 \\
+Recover-to-Secure prob & 0.3 & 0.6 \\
+$\pi_{\text{Secure}}$ & $1/3 \approx 0.333$ & $3/4 = 0.75$ \\
+$\pi_{\text{Compromised/Insecure}}$ & $2/3 \approx 0.667$ & $1/4 = 0.25$ \\
+Long-run verdict & Compromised & Secure \\
+\bottomrule
+\end{tabular}
+\end{center}
+\end{keybox}
+
+\end{document}

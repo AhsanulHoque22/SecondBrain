@@ -1,12 +1,8 @@
 {
   "topics": [
-    "#5 Game Theory & Nash Equilibrium (Lc#3) — not started, slipped from Sun Block 4 → Mon Block 4 → now Tue. 2/5 (2023+2024), 3-6 marks. Payoff matrix, dominant strategy, Nash equilibrium. Condensed cheat-sheet pass only — last day before exam.",
-    "#6 Markov Chains (Lc#4A/4B) — not started, slipped from Sun Block 5 → Mon Block 5 → now Tue. 2/5 (2023+2024), 3-4 marks. 2-state steady-state probability, solve πP=π. Condensed cheat-sheet pass only.",
-    "#2 Security Fundamentals & Attacks — still 📖, not finished. Attack-vector short notes + security vocab cheat sheet (CIA, professions, steganography, SWIFT, etc.) still 🔲. 4/5 · 2-9 marks.",
-    "Active recall pass on Blocks 1-2 (Classical Ciphers #1 + Security Fundamentals #2, notes closed) — carried 2026-06-13 → 14 → 15 → now 16. 3 days overdue. Must clear first thing Tuesday.",
-    "Active recall pass on cheat sheets (#3 Sym/Asym, #4 Hash, #13 DES/Feistel, #14 Digital Signature) — slipped from Mon Block 6. Next Recall now due 2026-06-16.",
-    "Timed past-paper practice (full paper, 10:30 simulation) — slipped from Mon Block 7. CRITICAL for Tuesday — last full practice before the real exam."
+    "POST-EXAM (2026-06-17 afternoon): CSE 711 Compiler reset — skim syllabus, analyze past papers (2020–2024), rank topics by yield. Weekly Engine: exam Wednesday afternoon = reset day for next course.",
+    "#6 Markov Chains — reached 📖 (wiki + solutions PDF done 2026-06-16) but never reached ✅. Exam is today — no further prep needed. Note for Compiler prep: Markov chains not expected in Compiler syllabus."
   ],
-  "note": "2026-06-15 (Day 1 of last-2-days) was a BIG day: #7 Number Theory, #8 RSA, and #9 AES all reached ✅ with wiki + solutions PDFs (Last Reviewed 2026-06-15, Next Recall 2026-06-17 = exam day). All three are HIGH-YIELD/CRITICAL topics — major progress, only #1/#3/#4/#13/#14 (already ✅) plus these three now cover the bulk of the syllabus. Remaining gaps for Tuesday (the actual last day before the 17 Jun exam, pure revision + timed papers per Weekly Engine): #5 Game Theory and #6 Markov Chains (both small, 2/5 years) still untouched; #2 Security Fundamentals still 📖; recall passes on #1-4/#13/#14 backlogged (some 3 days overdue); and NO timed past paper has been run yet despite 2 days of 'last 2 days' already elapsing. Tuesday must front-load: (1) clear the 3-day-old recall backlog on #1/#2 first thing, (2) condensed #5/#6 cheat sheets, (3) at least one full timed past paper — this has been pushed every day and cannot slip again with only 1 day left. End-of-day log unfilled again (4th day running) — energy/confidence/blockers unconfirmed; flag this to Ahsanul.",
-  "last_updated": "2026-06-15"
+  "note": "2026-06-17 is InfoSec EXAM DAY (CSE 717, 10:30 AM). All pre-exam InfoSec carry-forward items are cleared — exam is happening regardless. Post-exam focus is Compiler (CSE 711, Window 3, 17–24 Jun). Flag to Ahsanul: end-of-day logs unfilled for 5 days running (Jun 12–16) — please fill after the exam.",
+  "last_updated": "2026-06-16"
 }

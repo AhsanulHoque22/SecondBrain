@@ -3,10 +3,11 @@
 > Living file. Claude Code updates this every session. You read this first, every day.
 
 ## Right now
-- **Active exam:** CSE 717 — Information Security — **Wed 17 Jun 2026, 10:30 AM**
-- **Days left:** 1
-- **Phase:** Day 2 of "last 2 days" (Tue) — InfoSec ONLY, pure revision + timed past papers. Monday was a big win: #2 Security Fundamentals, #5 Game Theory, #7 Number Theory, #8 RSA, and #9 AES all reached ✅ with wiki+solutions PDFs (where applicable). Remaining: #6 Markov Chains (condensed cheat sheet), recall backlog on #1/#2 (3 days overdue) and #3/#4/#13/#14 (due today), and zero timed papers run so far.
-- **Single most important thing today:** Clear the recall backlog (#1/#2) first thing, then run at least one full timed past paper (Block 4) — this has slipped twice and there's only one day left.
+- **Active exam:** CSE 717 — Information Security — **TODAY, Wed 17 Jun 2026, 10:30 AM** ← EXAM DAY
+- **Days left:** 0 (exam this morning)
+- **Phase:** Exam day. Pre-exam: final brain dump (Block 1, 5:10 AM) + light scan (Block 2, 7:30 AM). Stop studying by 9:30. Post-exam afternoon: reset for CSE 711 Compiler (Window 3, 17–24 Jun).
+- **Single most important thing:** Nail the exam. Post-exam: start Compiler past-paper analysis (Weekly Engine Day 1).
+- **Next exam:** CSE 711 — Compiler — Wed 24 Jun 2026, 10:30 AM (7 days from today)
 - **⚠️ Rule:** Google Calendar is the ONLY source of truth for daily plans. Never use the overnight rollover log for scheduling.
 - **🔴 Session protocols:** Read and execute `scripts/data/session_protocols.md` at EVERY session start. No exceptions.
 
@@ -38,7 +39,7 @@ Prayers structure the day — each gap is a study block:
 | Course | Topics mapped | High-yield done | Past paper attempts | Confidence /5 |
 |--------|:-:|:-:|:-:|:-:|
 | [[02_Courses/CSE713_AI/_Topics\|AI (713)]] | ✅ EXAM DONE (27 topics) | 18✅ · 1🔁 · 7📖 · 1🔲 | ✅ past papers done per topic | 4.2 |
-| [[02_Courses/CSE717_InfoSec/_Topics\|InfoSec (717)]] | ✅ 14 topics ranked | 11✅ · 0📖 · 3🔲 | – | pending |
+| [[02_Courses/CSE717_InfoSec/_Topics\|InfoSec (717)]] | ✅ 14 topics ranked | 11✅ · 3📖 · 0🔲 | – | pending |
 | [[02_Courses/CSE711_Compiler/README\|Compiler (711)]] | – | – | – | – |
 | [[02_Courses/CSE719_Distributed/README\|Distributed (719)]] | – | – | – | – |
 | [[02_Courses/CSE715_Graphics/README\|Graphics (715)]] | – | – | – | – |

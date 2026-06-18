@@ -1,12 +1,28 @@
 # Study Brain — Compiled State
-_Updated: 2026-06-16 by overnight rollover_
+_Updated: 2026-06-18 (Compiler reset)_
 
 ## Active exam
-Course: CSE 717 — Information Security
-Date: 2026-06-17 (Wednesday) | Days left from 2026-06-17: **0 — EXAM DAY, 10:30 AM** | Phase: **Exam morning → post-exam Compiler (CSE 711) reset**
-Next: CSE 711 — Compiler — Wed 24 Jun 2026 (7 days from exam day)
+Course: CSE 711 — Compiler
+Date: 2026-06-24 (Wednesday) | Days left from 2026-06-18: **6** | Phase: **Core learning (Thu-Sun), Topic 1 today**
 
-## Topics — CSE717 InfoSec
+InfoSec (CSE 717) exam was 2026-06-17 — done. Compiler reset complete: 8 years of past papers (2024-2016) analyzed, lecture slides mapped to professor's 8-topic flow. ⚠️ Lecture 7 (Code Generation source) missing — pending user upload, low historical yield anyway. See [[02_Courses/CSE711_Compiler/_Topics]] and [[02_Courses/CSE711_Compiler/_TopicQuestionMap]].
+
+## Topics — CSE711 Compiler (professor's flow order; yield notes in _Topics.md)
+| # | Topic | Status | Yield |
+|---|---|:---:|---|
+| 1. Lexical Analysis | 🔲 | token/pattern/lexeme guaranteed every year |
+| 2. Top-Down Parsing | 🔲 | HIGHEST yield — 8/8 years, 10-20+ marks |
+| 3. Bottom-Up Parsing | 🔲 | 7/8 years |
+| 4. Syntax-Directed Translation | 🔲 | synth/inherited guaranteed every year |
+| 5. Intermediate Code | 🔲 | TAC/quad/triple 7/8 years; backpatching unconfirmed |
+| 6. Runtime Environments | 🔲 | Fibonacci/mergesort activation tree recurring full Q |
+| 7. Code Optimisation | 🔲 | basic blocks+CFG guaranteed every year |
+| 8. Code Generation | 🔲 | lowest confirmed yield; source slides missing |
+
+## 6-day plan
+Thu 18: Topic 1 | Fri 19: Topic 2 | Sat 20: Topic 3 | Sun 21: Topics 4+5+6+7 | Mon 22-Tue 23: pure revision + timed papers | Wed 24: EXAM 10:30 AM
+
+## Topics — CSE717 InfoSec (exam passed 2026-06-17, archived)
 | Topic | Status | Conf | Next Recall |
 |---|:---:|:---:|---|
 | 1. Classical Ciphers (Caesar, Playfair, Hill, Vigenère, OTP) | ✅ | — | 2026-06-15 (overdue) |

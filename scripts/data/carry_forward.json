@@ -1,8 +1,7 @@
 {
   "topics": [
-    "POST-EXAM (2026-06-17 afternoon): CSE 711 Compiler reset — skim syllabus, analyze past papers (2020–2024), rank topics by yield. Weekly Engine: exam Wednesday afternoon = reset day for next course.",
-    "#6 Markov Chains — reached 📖 (wiki + solutions PDF done 2026-06-16) but never reached ✅. Exam is today — no further prep needed. Note for Compiler prep: Markov chains not expected in Compiler syllabus."
+    "Topic 2 — Top-Down Parsing (CSE711 Compiler): planned for 2026-06-18 (full day) but end-of-day log unfilled and all 3 planned blocks unchecked — status unknown, treat as not done. Re-attempt 2026-06-19: Lc#3 Part1 (CFG, derivations, ambiguity, left recursion, left factoring) + Part2 (recursive descent, FIRST/FOLLOW, LL(1) table), active recall, past-paper drill (left recursion elimination, left factoring, FIRST/FOLLOW+LL(1) table, dangling-else)."
   ],
-  "note": "2026-06-17 is InfoSec EXAM DAY (CSE 717, 10:30 AM). All pre-exam InfoSec carry-forward items are cleared — exam is happening regardless. Post-exam focus is Compiler (CSE 711, Window 3, 17–24 Jun). Flag to Ahsanul: end-of-day logs unfilled for 5 days running (Jun 12–16) — please fill after the exam.",
-  "last_updated": "2026-06-16"
+  "note": "2026-06-18 (Thu) end-of-day log was left unfilled — 6th day running (Jun 12-18 except logging gaps). Cannot confirm whether Topic 2 study happened. Flag to Ahsanul directly: fill the log or tell Claude what got done so the plan doesn't drift. Old carry-forward items (Compiler reset, Markov Chains note) are cleared — both were already actioned and reflected in _Topics.md / wiki_state.md.",
+  "last_updated": "2026-06-18"
 }

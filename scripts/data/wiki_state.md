@@ -1,74 +1,48 @@
 # Study Brain — Compiled State
-_Updated: 2026-06-18 (Compiler reset)_
+_Updated: 2026-06-18 by overnight rollover_
 
 ## Active exam
-Course: CSE 711 — Compiler
-Date: 2026-06-24 (Wednesday) | Days left from 2026-06-18: **6** | Phase: **Core learning (Thu-Sun), Topic 1 today**
+CSE 711 — Compiler · Wed 24 Jun 2026, 10:30 AM · 5 days from 2026-06-19 · Phase: **Core learning (Thu–Sun)**
 
-InfoSec (CSE 717) exam was 2026-06-17 — done. Compiler reset complete: 8 years of past papers (2024-2016) analyzed, lecture slides mapped to professor's 8-topic flow. ⚠️ Lecture 7 (Code Generation source) missing — pending user upload, low historical yield anyway. See [[02_Courses/CSE711_Compiler/_Topics]] and [[02_Courses/CSE711_Compiler/_TopicQuestionMap]].
-
-## Topics — CSE711 Compiler (professor's flow order; yield notes in _Topics.md)
-| # | Topic | Status | Yield |
-|---|---|:---:|---|
-| 1. Lexical Analysis | 🔲 | token/pattern/lexeme guaranteed every year |
-| 2. Top-Down Parsing | 🔲 | HIGHEST yield — 8/8 years, 10-20+ marks |
-| 3. Bottom-Up Parsing | 🔲 | 7/8 years |
-| 4. Syntax-Directed Translation | 🔲 | synth/inherited guaranteed every year |
-| 5. Intermediate Code | 🔲 | TAC/quad/triple 7/8 years; backpatching unconfirmed |
-| 6. Runtime Environments | 🔲 | Fibonacci/mergesort activation tree recurring full Q |
-| 7. Code Optimisation | 🔲 | basic blocks+CFG guaranteed every year |
-| 8. Code Generation | 🔲 | lowest confirmed yield; source slides missing |
-
-## 6-day plan
-Thu 18: Topic 1 | Fri 19: Topic 2 | Sat 20: Topic 3 | Sun 21: Topics 4+5+6+7 | Mon 22-Tue 23: pure revision + timed papers | Wed 24: EXAM 10:30 AM
-
-## Topics — CSE717 InfoSec (exam passed 2026-06-17, archived)
-| Topic | Status | Conf | Next Recall |
-|---|:---:|:---:|---|
-| 1. Classical Ciphers (Caesar, Playfair, Hill, Vigenère, OTP) | ✅ | — | 2026-06-15 (overdue) |
-| 2. Security Fundamentals & Attacks (CIA, professions, steganography, SQLi, SWIFT) | ✅ | — | 2026-06-17 |
-| 3. Symmetric vs Asymmetric / Block vs Stream Cipher | ✅ | — | 2026-06-16 (overdue) |
-| 4. Hash Functions & Hash Table Collision Resolution | ✅ | — | 2026-06-16 (overdue) |
-| 5. Game Theory & Nash Equilibrium | ✅ | — | 2026-06-17 |
-| 6. Markov Chains (steady-state probability) | 📖 | — | 2026-06-17 |
-| 7. Number Theory & Modular Arithmetic | ✅ | — | 2026-06-17 |
-| 8. RSA (key gen + encrypt/decrypt numericals) | ✅ | — | 2026-06-17 |
-| 9. AES (S-box, GF(2^8), block diagram) | ✅ | — | 2026-06-17 |
-| 10. Quantum Attacks & ECC | 📖 | — | 2026-06-17 |
-| 11. IPsec (AH/ESP, transport/tunnel, RFC4301) | 📖 | — | 2026-06-17 |
-| 12. Blockchain & Bitcoin | ✅ | — | 2026-06-17 |
-| 13. ⚠️ DES/Feistel/S-box/Avalanche/3-DES cheat sheet (CRITICAL) | ✅ | — | 2026-06-16 (overdue) |
-| 14. ⚠️ Digital Signature generic model + properties cheat sheet (CRITICAL) | ✅ | — | 2026-06-16 (overdue) |
+## Topics — CSE711 Compiler
+| # | Topic | Status | Conf | Next Recall |
+|---|---|:---:|:---:|---|
+| 1 | Lexical Analysis | 📖 | — | 2026-06-19 (recall pass) |
+| 2 | Top-down Parsing (HIGHEST YIELD) | 🔲 | — | — |
+| 3 | Bottom-up Parsing | 🔲 | — | — |
+| 4 | Syntax-Directed Translation | 🔲 | — | — |
+| 5 | Intermediate Code | 🔲 | — | — |
+| 6 | Runtime Environments | 🔲 | — | — |
+| 7 | Code Optimisation | 🔲 | — | — |
+| 8 | Code Generation (Lc#7 missing) | 🔲 | — | — |
 
 ## Carry-forward
-- POST-EXAM (2026-06-17 afternoon): CSE 711 Compiler reset — skim syllabus, analyze past papers (2020–2024), rank topics by yield
-- #6 Markov Chains — 📖 (wiki + solutions PDF done), never reached ✅; exam is today, no further prep needed
+- Topic 2 — Top-Down Parsing (CSE711): planned for 2026-06-18 full day but end-of-day log unfilled, all 3 blocks unchecked — status unknown, treat as not done, re-attempt 2026-06-19.
 
-## Recall due 2026-06-17
-**InfoSec:** #7 Number Theory & Modular Arithmetic | conf 5/5 — fold into Block 1 morning brain dump (exam day, not a separate recall session).
-
-**AI (CSE713) — 19 topics overdue — skip today (exam day); begin retention passes Thu 18 Jun:**
-- 🔁 Intelligent Agents + Environments (PAGE) `CSE713_AI` ⚠️ 14d overdue | conf 4/5
-- 🔁 Search: UCS, Greedy, A*, IDDFS — trace on graph `CSE713_AI` ⚠️ 14d overdue | conf 4/5
-- 🔁 Forward + Backward Chaining + Rule-Based System `CSE713_AI` ⚠️ 11d overdue | conf 5/5
-- 🔁 ↳ PL Basics: satisfiability, validity, entailment, Modus Ponens `CSE713_AI` ⚠️ 11d overdue | conf 5/5
-- 🔁 ↳ Resolution in PL: clause form (4-step), refutation proof `CSE713_AI` ⚠️ 11d overdue | conf 5/5
-- 🔁 Alpha-Beta Pruning + Minimax `CSE713_AI` ⚠️ 10d overdue | conf 5/5
-- 🔁 FOL + Resolution + Inference (Marcus/Pompeii) `CSE713_AI` ⚠️ 10d overdue | conf 5/5
-- 🔁 Hill Climbing + Simulated Annealing `CSE713_AI` ⚠️ 10d overdue | conf 5/5
-- 🔁 STRIPS + Partial-Order Planning (Block World) `CSE713_AI` ⚠️ 10d overdue | conf 5/5
-- 🔁 ↳ Canonical Form Conversion (9-step algorithm) `CSE713_AI` ⚠️ 10d overdue | conf 5/5
-- 🔁 ↳ Evidential Reasoning (ER): Dempster-Shafer, degree of belief `CSE713_AI` ⚠️ 10d overdue | conf 5/5
-- 🔁 ↳ FOL Syntax: Terms, Predicates, Functions, ∀, ∃, Sentences `CSE713_AI` ⚠️ 10d overdue | conf 5/5
-- 🔁 ↳ FOL Translation (car/drone/robot scenario) `CSE713_AI` ⚠️ 10d overdue | conf 5/5
-- 🔁 ↳ Knowledge Representation and Mapping (roles) `CSE713_AI` ⚠️ 10d overdue | conf 5/5
-- 🔁 ↳ Resolution in FOL: Unification, Skolemization, refutation `CSE713_AI` ⚠️ 10d overdue | conf 5/5
-- 🔁 Bayes' Theorem + Bayesian Networks `CSE713_AI` ⚠️ 9d overdue | conf 3/5
-- 🔁 ↳ Extended Bayes' Theorem `CSE713_AI` ⚠️ 9d overdue | conf 3/5
-- 🔁 ↳ Uncertainty Concept (doorbell) `CSE713_AI` ⚠️ 9d overdue | conf 3/5
-- 🔁 ↳ McCulloch-Pitts Neuron + Perceptron + Learning Rule `CSE713_AI` ⚠️ 8d overdue | conf 3/5
+## Recall due 2026-06-19
+**20 topics due (all overdue):**
+- 🔁 Intelligent Agents + Environments (PAGE) `CSE713_AI` ⚠️ 15d overdue | conf 4/5
+- 🔁 Search: UCS, Greedy, A*, IDDFS — trace on graph `CSE713_AI` ⚠️ 15d overdue | conf 4/5
+- 🔁 Forward + Backward Chaining + Rule-Based System `CSE713_AI` ⚠️ 12d overdue | conf 5/5
+- 🔁 ↳ PL Basics: satisfiability, validity, entailment, Modus Ponens `CSE713_AI` ⚠️ 12d overdue | conf 5/5
+- 🔁 ↳ Resolution in PL: clause form (4-step), refutation proof `CSE713_AI` ⚠️ 12d overdue | conf 5/5
+- 🔁 Alpha-Beta Pruning + Minimax `CSE713_AI` ⚠️ 11d overdue | conf 5/5
+- 🔁 FOL + Resolution + Inference (Marcus/Pompeii) `CSE713_AI` ⚠️ 11d overdue | conf 5/5
+- 🔁 Hill Climbing + Simulated Annealing `CSE713_AI` ⚠️ 11d overdue | conf 5/5
+- 🔁 STRIPS + Partial-Order Planning (Block World) `CSE713_AI` ⚠️ 11d overdue | conf 5/5
+- 🔁 ↳ Canonical Form Conversion (9-step algorithm) `CSE713_AI` ⚠️ 11d overdue | conf 5/5
+- 🔁 ↳ Evidential Reasoning (ER): Dempster-Shafer, degree of belief `CSE713_AI` ⚠️ 11d overdue | conf 5/5
+- 🔁 ↳ FOL Syntax: Terms, Predicates, Functions, ∀, ∃, Sentences `CSE713_AI` ⚠️ 11d overdue | conf 5/5
+- 🔁 ↳ FOL Translation (car/drone/robot scenario) `CSE713_AI` ⚠️ 11d overdue | conf 5/5
+- 🔁 ↳ Knowledge Representation and Mapping (roles) `CSE713_AI` ⚠️ 11d overdue | conf 5/5
+- 🔁 ↳ Resolution in FOL: Unification, Skolemization, refutation `CSE713_AI` ⚠️ 11d overdue | conf 5/5
+- 🔁 Bayes' Theorem + Bayesian Networks `CSE713_AI` ⚠️ 10d overdue | conf 3/5
+- 🔁 ↳ Extended Bayes' Theorem `CSE713_AI` ⚠️ 10d overdue | conf 3/5
+- 🔁 ↳ Uncertainty Concept (doorbell) `CSE713_AI` ⚠️ 10d overdue | conf 3/5
+- 🔁 ↳ McCulloch-Pitts Neuron + Perceptron + Learning Rule `CSE713_AI` ⚠️ 9d overdue | conf 3/5
+- 🔁 Number Theory & Modular Arithmetic (Euclidean, Fermat, Euler, CRT, Miller-Rabin, discrete log) `CSE717_InfoSec` ⚠️ 1d overdue | conf 5/5
 
 ## Recent pattern (last 3 days)
-- 2026-06-14: #3 Sym/Asym, #4 Hash, #13 DES/Feistel, #14 Digital Signature all ✅ (both CRITICAL cheat sheets done, wiki+solutions PDFs) | energy unconfirmed (log unfilled)
-- 2026-06-15: #2 Security Fundamentals, #5 Game Theory, #7 Number Theory, #8 RSA, #9 AES all ✅ (wiki+solutions PDFs where applicable) — biggest single day; zero timed papers run; log unfilled (4th day)
-- 2026-06-16: #12 Blockchain bonus work confirmed; #6/#10/#11 advanced to 📖; end-of-day log unfilled (5th day running) — energy/timed-paper status unconfirmed
+- 2026-06-16: #12 Blockchain bonus work confirmed; #6/#10/#11 advanced to 📖; end-of-day log unfilled — energy/timed-paper status unconfirmed.
+- 2026-06-17: InfoSec exam day (CSE717) — exam taken. Post-exam: Compiler reset — 8 years past papers analyzed, topics ranked, 6-day plan built.
+- 2026-06-18: Topic 2 (Top-Down Parsing) planned as full-day focus — end-of-day log unfilled, all 3 blocks unchecked, status unconfirmed. Carried forward to 2026-06-19.

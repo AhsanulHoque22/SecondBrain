@@ -1,7 +1,8 @@
 {
   "topics": [
-    "Topic 2 — Top-Down Parsing (CSE711 Compiler): planned for 2026-06-18 (full day) but end-of-day log unfilled and all 3 planned blocks unchecked — status unknown, treat as not done. Re-attempt 2026-06-19: Lc#3 Part1 (CFG, derivations, ambiguity, left recursion, left factoring) + Part2 (recursive descent, FIRST/FOLLOW, LL(1) table), active recall, past-paper drill (left recursion elimination, left factoring, FIRST/FOLLOW+LL(1) table, dangling-else)."
+    "Topic 2 — Top-Down Parsing (CSE711 Compiler): planned 2026-06-18, re-planned 2026-06-19 — both days end-of-day logs unfilled and blocks unchecked. 2026-06-20 has NO daily log file at all (rollover never ran / day not logged). Status still unknown across 2 full days — treat as not done. HIGHEST YIELD topic (8/8 years), exam in 4 days (Wed 24 Jun). Must be priority #1 for 2026-06-21: Lc#3 Part1 (CFG, derivations, ambiguity, left recursion, left factoring) + Part2 (recursive descent, FIRST/FOLLOW, LL(1) table), active recall, past-paper drill.",
+    "Topic 1 (Lexical Analysis) recall pass — scheduled 2026-06-19, missed; re-scheduled 2026-06-20, missed (no log). Push to 2026-06-21, fold into spare time after Topic 2."
   ],
-  "note": "2026-06-18 (Thu) end-of-day log was left unfilled — 6th day running (Jun 12-18 except logging gaps). Cannot confirm whether Topic 2 study happened. Flag to Ahsanul directly: fill the log or tell Claude what got done so the plan doesn't drift. Old carry-forward items (Compiler reset, Markov Chains note) are cleared — both were already actioned and reflected in _Topics.md / wiki_state.md.",
-  "last_updated": "2026-06-18"
+  "note": "Two consecutive days (2026-06-19, 2026-06-20) with no confirmed study progress. 2026-06-20 daily log file does not exist at all — bigger gap than a simply-unfilled log. With exam 4 days out and Topic 2 (8/8-year highest-yield topic) still untouched, this needs Ahsanul's direct input: what actually happened those 2 days, and is the 6-day Compiler plan still realistic or does it need re-scoping (e.g. cut to Topics 1, 2, 4 only — guaranteed-yield topics — and drop 3/5/6/7/8).",
+  "last_updated": "2026-06-20"
 }

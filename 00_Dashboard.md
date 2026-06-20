@@ -4,10 +4,10 @@
 
 ## Right now
 - **Active exam:** CSE 711 — Compiler — Wed 24 Jun 2026, 10:30 AM
-- **Days left:** 5
-- **Phase:** Core learning (Thu–Sun). ⚠️ Topic 2 (Top-Down Parsing) status unconfirmed — 2026-06-18 end-of-day log unfilled, all 3 planned blocks unchecked. Treat as not done; carried into 2026-06-19.
-- **Single most important thing:** Confirm/complete Topic 2 — Top-Down Parsing (highest yield, 8/8 years). Fill the daily log so the plan can track real progress.
-- **Next exam:** CSE 711 — Compiler — Wed 24 Jun 2026, 10:30 AM (5 days from today)
+- **Days left:** 3
+- **Phase:** Last day of core learning (Thu–Sun) — Mon/Tue are pure revision. ⚠️ Topic 2 (Top-Down Parsing) STILL unconfirmed after 3 days (18th, 19th, 20th) — 2026-06-20 has no daily log at all. Treat as not done.
+- **Single most important thing:** Topic 2 — Top-Down Parsing MUST land today (highest yield, 8/8 years) or the revision days absorb first-pass learning. Fill the daily log tonight regardless of outcome.
+- **Next exam:** CSE 711 — Compiler — Wed 24 Jun 2026, 10:30 AM (3 days from today)
 - **⚠️ Rule:** Google Calendar is the ONLY source of truth for daily plans. Never use the overnight rollover log for scheduling.
 - **🔴 Session protocols:** Read and execute `scripts/data/session_protocols.md` at EVERY session start. No exceptions.
 
@@ -40,7 +40,7 @@ Prayers structure the day — each gap is a study block:
 |--------|:-:|:-:|:-:|:-:|
 | [[02_Courses/CSE713_AI/_Topics\|AI (713)]] | ✅ EXAM DONE (27 topics) | 18✅ · 1🔁 · 7📖 · 1🔲 | ✅ past papers done per topic | 4.2 |
 | [[02_Courses/CSE717_InfoSec/_Topics\|InfoSec (717)]] | ✅ 14 topics ranked | 11✅ · 3📖 · 0🔲 | – | pending |
-| [[02_Courses/CSE711_Compiler/_Topics\|Compiler (711)]] | ✅ 8 topics ranked (8yr past papers) | 0✅ · 1📖 (Topic 1, recall pass) · 7🔲 | – | pending |
+| [[02_Courses/CSE711_Compiler/_Topics\|Compiler (711)]] | ✅ 8 topics ranked (8yr past papers) | 0✅ · 1📖 (Topic 1, recall missed twice) · 7🔲 | – | pending |
 | [[02_Courses/CSE719_Distributed/README\|Distributed (719)]] | – | – | – | – |
 | [[02_Courses/CSE715_Graphics/README\|Graphics (715)]] | – | – | – | – |
 | [[02_Courses/CSE700_Thesis/README\|Thesis (700)]] | – | – | – | – |

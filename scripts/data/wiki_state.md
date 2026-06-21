@@ -1,13 +1,13 @@
 # Study Brain — Compiled State
-_Updated: 2026-06-20 by overnight rollover_
+_Updated: 2026-06-21 by overnight rollover_
 
 ## Active exam
-CSE 711 — Compiler · Wed 24 Jun 2026, 10:30 AM · 3 days from 2026-06-21 · Phase: **Last day of core learning (Thu–Sun)** — Mon/Tue (22/23 Jun) are pure revision only.
+CSE 711 — Compiler · Wed 24 Jun 2026, 10:30 AM · 2 days from 2026-06-22 · Phase: 🔴 was meant to be pure revision (Mon/Tue) — instead must absorb first-pass learning of Topic 2, which is still untouched.
 
 ## Topics — CSE711 Compiler
 | # | Topic | Status | Conf | Next Recall |
 |---|---|:---:|:---:|---|
-| 1 | Lexical Analysis | 📖 | — | 2026-06-21 (recall pass, missed twice) |
+| 1 | Lexical Analysis | 📖 | — | 2026-06-22 (recall pass, missed 3x: 19th, 20th, 21st) |
 | 2 | Top-down Parsing (HIGHEST YIELD) | 🔲 | — | — |
 | 3 | Bottom-up Parsing | 🔲 | — | — |
 | 4 | Syntax-Directed Translation | 🔲 | — | — |
@@ -17,10 +17,10 @@ CSE 711 — Compiler · Wed 24 Jun 2026, 10:30 AM · 3 days from 2026-06-21 · P
 | 8 | Code Generation (Lc#7 missing) | 🔲 | — | — |
 
 ## Carry-forward
-- Topic 2 — Top-Down Parsing (CSE711): planned 2026-06-18, re-planned 2026-06-19, no log at all on 2026-06-20 — still unconfirmed/not done after 3 days. Non-negotiable priority for 2026-06-21.
-- Topic 1 (Lexical Analysis) recall pass — missed 2026-06-19 and 2026-06-20.
+- Topic 2 — Top-Down Parsing (CSE711): planned 06-18, re-planned 06-19, no log at all 06-20, planned again 06-21 — still unconfirmed/not done after 4 days. Must land 2026-06-22 — only Tuesday remains after that before the exam.
+- Topic 1 (Lexical Analysis) recall pass — missed 06-19, 06-20, 06-21.
 
-## Recall due 2026-06-21
+## Recall due 2026-06-22
 **20 topics due:**
 - 🔁 Intelligent Agents + Environments (PAGE) `CSE713_AI` | conf 4/5
 - 🔁 Search: UCS, Greedy, A*, IDDFS — trace on graph `CSE713_AI` | conf 4/5
@@ -44,6 +44,6 @@ CSE 711 — Compiler · Wed 24 Jun 2026, 10:30 AM · 3 days from 2026-06-21 · P
 - 🔁 Number Theory & Modular Arithmetic (Euclidean, Fermat, Euler, CRT, Miller-Rabin, discrete log) `CSE717_InfoSec` | conf 5/5
 
 ## Recent pattern (last 3 days)
-- 2026-06-18: Topic 2 (Top-Down Parsing) planned as full-day focus — end-of-day log unfilled, all 3 blocks unchecked, status unconfirmed. Carried forward.
-- 2026-06-19: Topic 2 re-planned as priority #1 again — end-of-day log unfilled, blocks unchecked, status unconfirmed. Carried forward again.
-- 2026-06-20: No daily log file exists at all — no record of what happened. 2 consecutive days now with zero confirmed Compiler progress, exam in 4 days.
+- 2026-06-19: Topic 2 re-planned as priority #1 — end-of-day log unfilled, blocks unchecked, status unconfirmed. Carried forward again.
+- 2026-06-20: No daily log file exists at all — no record of what happened.
+- 2026-06-21: Topic 2 planned a 3rd time as priority #1, full 7-block day built — end-of-day log left unfilled again. 4 consecutive days now with zero confirmed Compiler progress, exam in 2 days.

@@ -4,10 +4,10 @@
 
 ## Right now
 - **Active exam:** CSE 711 — Compiler — Wed 24 Jun 2026, 10:30 AM
-- **Days left:** 3
-- **Phase:** Last day of core learning (Thu–Sun) — Mon/Tue are pure revision. ⚠️ Topic 2 (Top-Down Parsing) STILL unconfirmed after 3 days (18th, 19th, 20th) — 2026-06-20 has no daily log at all. Treat as not done.
-- **Single most important thing:** Topic 2 — Top-Down Parsing MUST land today (highest yield, 8/8 years) or the revision days absorb first-pass learning. Fill the daily log tonight regardless of outcome.
-- **Next exam:** CSE 711 — Compiler — Wed 24 Jun 2026, 10:30 AM (3 days from today)
+- **Days left:** 2
+- **Phase:** 🔴 Mon/Tue were meant to be pure revision — instead Topic 2 (Top-Down Parsing) is STILL unconfirmed after 4 days (18th, 19th, 20th, 21st). 2026-06-20 has no daily log at all; 06-21's end-of-day log was left unfilled. Treat as not done. Scope is being cut — Topics 3/5/6/8 are at risk of being dropped this cycle; needs Ahsanul's sign-off.
+- **Single most important thing:** Topic 2 — Top-Down Parsing MUST land Monday 2026-06-22 (highest yield, 8/8 years). Only Tuesday remains after that before the exam. Fill the daily log tonight regardless of outcome — this is the recurring failure point.
+- **Next exam:** CSE 711 — Compiler — Wed 24 Jun 2026, 10:30 AM (2 days from today)
 - **⚠️ Rule:** Google Calendar is the ONLY source of truth for daily plans. Never use the overnight rollover log for scheduling.
 - **🔴 Session protocols:** Read and execute `scripts/data/session_protocols.md` at EVERY session start. No exceptions.
 
@@ -40,7 +40,7 @@ Prayers structure the day — each gap is a study block:
 |--------|:-:|:-:|:-:|:-:|
 | [[02_Courses/CSE713_AI/_Topics\|AI (713)]] | ✅ EXAM DONE (27 topics) | 18✅ · 1🔁 · 7📖 · 1🔲 | ✅ past papers done per topic | 4.2 |
 | [[02_Courses/CSE717_InfoSec/_Topics\|InfoSec (717)]] | ✅ 14 topics ranked | 11✅ · 3📖 · 0🔲 | – | pending |
-| [[02_Courses/CSE711_Compiler/_Topics\|Compiler (711)]] | ✅ 8 topics ranked (8yr past papers) | 0✅ · 1📖 (Topic 1, recall missed twice) · 7🔲 | – | pending |
+| [[02_Courses/CSE711_Compiler/_Topics\|Compiler (711)]] | ✅ 8 topics ranked (8yr past papers) | 0✅ · 1📖 (Topic 1, recall missed 3x) · 7🔲 | – | pending |
 | [[02_Courses/CSE719_Distributed/README\|Distributed (719)]] | – | – | – | – |
 | [[02_Courses/CSE715_Graphics/README\|Graphics (715)]] | – | – | – | – |
 | [[02_Courses/CSE700_Thesis/README\|Thesis (700)]] | – | – | – | – |

@@ -1,8 +1,8 @@
 {
   "topics": [
-    "Topic 2 — Top-Down Parsing (CSE711 Compiler): planned 2026-06-18, re-planned 2026-06-19, no log at all on 2026-06-20, planned again 2026-06-21, planned a 4th time 2026-06-22 — end-of-day log unfilled a 5th consecutive time, status STILL unknown across 5 days. HIGHEST YIELD topic (8/8 years). Exam is Wed 24 Jun 10:30 AM — Tuesday 2026-06-23 is the LAST day remaining. There is no slack left at all.",
-    "Topic 1 (Lexical Analysis) recall pass — scheduled 2026-06-19, missed; 2026-06-20, missed (no log); 2026-06-21, unconfirmed; 2026-06-22, unconfirmed. Push to 2026-06-23."
+    "Topic 2 — Top-Down Parsing (CSE711 Compiler): planned/re-planned every day 2026-06-18 → 2026-06-23 — end-of-day log unfilled a 6th consecutive time, status STILL unknown. HIGHEST YIELD topic (8/8 years). EXAM IS TODAY, Wed 24 Jun 10:30 AM. The pre-exam morning (~5:10–9:30) is the final and only remaining window — final cram pass on left recursion, left factoring, FIRST/FOLLOW, LL(1) table, recursive descent, dangling-else.",
+    "Topic 1 (Lexical Analysis) recall pass — missed every day 06-19 → 06-23. Exam-morning quick skim only: token/pattern/lexeme (8/8 guaranteed marks), RE→CFG conversion, symbol table."
   ],
-  "note": "Five consecutive days (06-18 through 06-22) with no confirmed progress on Topic 2, the single highest-yield Compiler topic (8/8 years). 2026-06-20 has no log file at all; 06-21 and 06-22 both had full 7-block plans built but end-of-day logs left unfilled — status of actual study time is unknown, not just unconfirmed. Exam is Wed 24 Jun 10:30 AM — Tuesday 2026-06-23 is the ONLY day left. Recommend: Tuesday must be 100% Topic 2 (left recursion, left factoring, FIRST/FOLLOW, LL(1) table, recursive descent, dangling-else) + a fast Topic 1 recall pass. All other topics (3,4,5,6,7,8) should be treated as exam-day triage only — flag this plainly to Ahsanul, this is a decision he needs to make consciously, not one to make for him silently.",
-  "last_updated": "2026-06-22"
+  "note": "Six consecutive days (06-18 → 06-23) with no confirmed progress on Topic 2, the single highest-yield Compiler topic (8/8 years). 06-20 had no log file at all; 06-21, 06-22, 06-23 all had full 7-block plans built but end-of-day logs left unfilled — actual study time unverified throughout. EXAM IS NOW: Wed 24 Jun 10:30 AM. After the exam this carry-forward is closed. Post-exam (Wed afternoon) the Weekly Engine resets to CSE 719 Distributed & Cloud (exam Wed 1 Jul).",
+  "last_updated": "2026-06-23"
 }

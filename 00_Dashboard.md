@@ -3,11 +3,12 @@
 > Living file. Claude Code updates this every session. You read this first, every day.
 
 ## Right now
-- **Active exam:** CSE 711 — Compiler — Wed 24 Jun 2026, 10:30 AM
-- **Days left:** 1
-- **Phase:** 🔴 LAST DAY before exam. Topic 2 (Top-Down Parsing) is STILL unconfirmed after 5 days (18th–22nd). 2026-06-20 has no daily log at all; 06-21 and 06-22 both had full plans but end-of-day logs left unfilled — actual study time unverified. Treat as not done. Tuesday 06-23 must be 100% Topic 2 + Topic 1 recall. Topics 3/4/5/6/7/8 are exam-day triage only; needs Ahsanul's sign-off.
-- **Single most important thing:** Topic 2 — Top-Down Parsing MUST land Tuesday 2026-06-23 (highest yield, 8/8 years). This is the only day left before the exam — no more slack. Fill the daily log tonight regardless of outcome.
-- **Next exam:** CSE 711 — Compiler — Wed 24 Jun 2026, 10:30 AM (1 day from today)
+- **Active exam:** 🎯 CSE 711 — Compiler — **TODAY, Wed 24 Jun 2026, 10:30 AM**
+- **Days left:** 0 — EXAM DAY
+- **Phase:** 🔴🔴 EXAM DAY. Topic 2 (Top-Down Parsing) went unconfirmed for 6 straight days (18th–23rd) — every end-of-day log left blank, study time unverified throughout. Pre-exam morning (~5:10–9:30) is the final cram window: Topic 2 high-yield only, then a quick Topic 1 skim. No new topics. Sleep beats cramming if exhausted.
+- **Single most important thing:** Final morning pass on Topic 2 — left recursion, left factoring, FIRST/FOLLOW, LL(1) table, recursive descent, dangling-else (8/8 years). Walk in with the guaranteed marks (token/pattern/lexeme, synth-vs-inherited, basic-blocks+CFG) locked.
+- **After the exam:** Weekly Engine reset → skim CSE 719 Distributed & Cloud syllabus + past papers (next exam Wed 1 Jul).
+- **Next exam:** CSE 719 — Distributed & Cloud — Wed 1 Jul 2026 (7 days out)
 - **⚠️ Rule:** Google Calendar is the ONLY source of truth for daily plans. Never use the overnight rollover log for scheduling.
 - **🔴 Session protocols:** Read and execute `scripts/data/session_protocols.md` at EVERY session start. No exceptions.
 
@@ -40,7 +41,7 @@ Prayers structure the day — each gap is a study block:
 |--------|:-:|:-:|:-:|:-:|
 | [[02_Courses/CSE713_AI/_Topics\|AI (713)]] | ✅ EXAM DONE (27 topics) | 18✅ · 1🔁 · 7📖 · 1🔲 | ✅ past papers done per topic | 4.2 |
 | [[02_Courses/CSE717_InfoSec/_Topics\|InfoSec (717)]] | ✅ 14 topics ranked | 11✅ · 3📖 · 0🔲 | – | pending |
-| [[02_Courses/CSE711_Compiler/_Topics\|Compiler (711)]] | ✅ 8 topics ranked (8yr past papers) | 0✅ · 1📖 (Topic 1, recall missed 4x) · 7🔲 | – | pending |
+| [[02_Courses/CSE711_Compiler/_Topics\|Compiler (711)]] | ✅ 8 topics ranked (8yr past papers) | 0✅ · 1📖 (Topic 1, recall missed 5x) · 7🔲 — EXAM TODAY | – | pending |
 | [[02_Courses/CSE719_Distributed/README\|Distributed (719)]] | – | – | – | – |
 | [[02_Courses/CSE715_Graphics/README\|Graphics (715)]] | – | – | – | – |
 | [[02_Courses/CSE700_Thesis/README\|Thesis (700)]] | – | – | – | – |

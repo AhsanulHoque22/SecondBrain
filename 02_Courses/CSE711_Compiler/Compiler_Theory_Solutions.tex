@@ -1,0 +1,463 @@
+% CSE 711 — Compiler
+% All Non-Numerical (Theory / Conceptual) Questions — Complete Model Answers (2016–2024)
+% University of Chittagong, Graduate Exam
+%
+% Scope: definitions, comparisons and explanation questions across all 8 topics.
+% Excludes construction/trace/computation problems (derivations, FIRST/FOLLOW,
+% LL(1)/LR table construction, parse traces, annotated trees, DAGs, TAC generation,
+% activation-record diagrams, instruction-cost calculation).
+%
+% Compile with: pdflatex Compiler_Theory_Solutions.tex (run twice for TOC)
+
+\documentclass[12pt, a4paper]{article}
+
+\usepackage[left=2.3cm, right=2.3cm, top=2.6cm, bottom=2.6cm, headheight=15pt]{geometry}
+\usepackage{amsmath, amssymb}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{xcolor}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{mdframed}
+\usepackage{tabularx}
+\usepackage{multirow}
+\usepackage{hyperref}
+
+%----- Colours -----
+\definecolor{sectionblue}{RGB}{10,60,110}
+\definecolor{boxbg}{RGB}{242,247,255}
+\definecolor{answerbg}{RGB}{240,255,240}
+\definecolor{notesbg}{RGB}{255,250,230}
+\definecolor{keyblue}{RGB}{0,80,160}
+\definecolor{accent}{RGB}{180,40,40}
+
+%----- Box environments -----
+\mdfdefinestyle{qframe}{linecolor=sectionblue, backgroundcolor=boxbg, roundcorner=4pt, linewidth=1.2pt, innertopmargin=6pt, innerbottommargin=6pt, innerleftmargin=8pt, innerrightmargin=8pt}
+\mdfdefinestyle{notesframe}{linecolor=orange!70!black, backgroundcolor=notesbg, roundcorner=4pt, linewidth=1pt, innertopmargin=5pt, innerbottommargin=5pt, innerleftmargin=8pt, innerrightmargin=8pt}
+\newenvironment{qbox}{\begin{mdframed}[style=qframe]}{\end{mdframed}}
+\newenvironment{notesbox}{\begin{mdframed}[style=notesframe]}{\end{mdframed}}
+
+%----- Page style -----
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{\small\color{sectionblue} CSE 711 — Compiler}
+\rhead{\small\color{sectionblue} Theory Model Answers (2016–2024)}
+\cfoot{\small\thepage}
+\renewcommand{\headrulewidth}{0.5pt}
+
+%----- Section formatting -----
+\titleformat{\section}{\Large\bfseries\color{sectionblue}}{}{0em}{}[\vspace{-2pt}\color{sectionblue}\rule{\linewidth}{0.8pt}]
+\titleformat{\subsection}{\large\bfseries\color{sectionblue!85!black}}{}{0em}{}
+
+%----- Custom lists -----
+\setlist[itemize]{leftmargin=1.4em, itemsep=1.5pt, topsep=2pt}
+\setlist[enumerate]{leftmargin=1.6em, itemsep=2pt, topsep=2pt}
+
+%----- Macros -----
+\newcommand{\yr}[1]{{\small\color{accent}\textbf{[#1]}}}
+\newcommand{\term}[1]{\textbf{\color{keyblue}#1}}
+\renewcommand{\arraystretch}{1.25}
+\newcolumntype{Y}{>{\raggedright\arraybackslash}X}
+
+\hypersetup{colorlinks=true, linkcolor=sectionblue, urlcolor=sectionblue}
+
+\begin{document}
+
+%==================== TITLE ====================
+\begin{center}
+{\LARGE\bfseries\color{sectionblue} CSE 711 — Compiler}\\[4pt]
+{\large\bfseries All Non-Numerical (Theory) Questions — Model Answers}\\[3pt]
+{\small Past papers 2016--2024 \quad$\cdot$\quad University of Chittagong \quad$\cdot$\quad Exam: Wed 24 Jun 2026}
+\end{center}
+
+\begin{notesbox}
+\small
+\textbf{Scope.} This sheet answers every \emph{conceptual / written-answer} question (definitions, comparisons,
+explanations) found across the 8-year question map. It deliberately \emph{excludes} the construction \&
+computation problems (derivations, ambiguity demos, left-recursion elimination, left-factoring, FIRST/FOLLOW,
+LL(1)/LR table construction, parse traces, annotated parse trees, dependency graphs, DAGs, TAC/quad/triple
+generation, activation-record diagrams, CFG construction, instruction-cost calculation) — those need worked
+diagrams, not prose. Year tags \yr{20XX} show where each concept was asked.
+\end{notesbox}
+
+\tableofcontents
+\vspace{6pt}
+
+%==================== TOPIC 1 ====================
+\section{Lexical Analysis}
+
+\subsection{Token, Pattern, Lexeme \yr{2024 Q2c}\,\yr{2022 A-2}\,\yr{2021 Q3a}\,\yr{2018 Q2a}\,\yr{2017 Q1b}\,\yr{2016 Q2a}}
+\begin{qbox}
+\begin{itemize}
+\item \term{Token:} a pair \(\langle\) token-name, optional attribute value \(\rangle\). The token-name is an abstract
+symbol (a terminal of the grammar) the parser works with, e.g.\ \texttt{id}, \texttt{num}, \texttt{if}, \texttt{relop}.
+\item \term{Pattern:} the rule — usually a regular expression — that describes the \emph{set} of strings a token may stand for.
+\item \term{Lexeme:} the actual sequence of characters in the source program that matches a pattern and is recognised as one instance of a token.
+\end{itemize}
+\textbf{Relationship:} the scanner reads characters and forms a \emph{lexeme}; the lexeme matches a \emph{pattern};
+the pattern defines a \emph{token} that is passed to the parser.
+
+\medskip
+\begin{tabularx}{\linewidth}{@{}l l Y@{}}
+\toprule
+\textbf{Token} & \textbf{Pattern} & \textbf{Sample lexemes}\\
+\midrule
+\texttt{id} & letter followed by letters/digits & \texttt{count}, \texttt{x1}, \texttt{position}\\
+\texttt{num} & digit$^+$ (with optional fraction/exp) & \texttt{27}, \texttt{3.14}\\
+\texttt{relop} & \texttt{< | <= | = | <> | > | >=} & \texttt{<=}, \texttt{>}\\
+\texttt{if} & the characters \texttt{i f} & \texttt{if}\\
+\bottomrule
+\end{tabularx}
+\end{qbox}
+
+\subsection{Scanning vs. Parsing; Lexer/Parser Tools \yr{2024 Q2d}\,\yr{2023 A-4a}}
+\begin{qbox}
+\begin{tabularx}{\linewidth}{@{}l Y Y@{}}
+\toprule
+ & \textbf{Scanning (Lexical Analysis)} & \textbf{Parsing (Syntax Analysis)}\\
+\midrule
+Job & groups characters into tokens; strips whitespace/comments & groups tokens into grammatical phrases; builds the parse tree\\
+Governed by & regular expressions / DFA & context-free grammar / pushdown automaton\\
+Power & regular languages & context-free languages\\
+Output & stream of tokens & parse / syntax tree\\
+Errors caught & illegal characters, malformed tokens & wrong token order, missing \texttt{)}, \texttt{;}\\
+\bottomrule
+\end{tabularx}
+
+\smallskip
+\textbf{Tools.} \term{LEX / Flex} generates a scanner from regular-expression rules; \term{YACC / Bison}
+generates a parser from a context-free grammar with semantic actions. They are used together: LEX feeds tokens to the YACC-generated parser.
+\end{qbox}
+
+\subsection{Symbol Table — Role, Components, Hash Implementation \yr{2023 A-1c}}
+\begin{qbox}
+\textbf{Role.} A data structure that records information about every identifier (name) in the program. It is built by
+the lexer/parser and consulted by \emph{every} later phase for scope resolution, type checking, and address/code generation.
+
+\textbf{Components of an entry:}
+\begin{itemize}
+\item name (the lexeme), token/kind (variable, function, type\dots)
+\item data type and storage class / scope
+\item size and memory offset / address
+\item line of declaration; for functions: parameter list \& return type
+\end{itemize}
+\textbf{Hash-table implementation (C).} An array of buckets indexed by a hash of the name; collisions resolved by
+\emph{chaining} (each bucket is a linked list of entries). \texttt{insert} and \texttt{lookup} are $O(1)$ on average.
+\end{qbox}
+
+\subsection{Input Buffering \yr{2017 Q1b}}
+\begin{qbox}
+To read source efficiently the scanner uses a \term{two-buffer scheme}: two halves of size $N$ filled by one system read each.
+Two pointers — \texttt{lexemeBegin} (start of current lexeme) and \texttt{forward} (scans ahead). A \term{sentinel} (a
+special \texttt{eof} char) is placed at the end of each half so a \emph{single} test on \texttt{forward} detects both
+``end of buffer'' and ``end of file,'' minimising comparisons per character.
+\end{qbox}
+
+%==================== TOPIC 2 ====================
+\section{Top-Down Parsing}
+
+\subsection{Top-Down vs. Bottom-Up Parsing \yr{2024 Q4a}}
+\begin{qbox}
+\begin{tabularx}{\linewidth}{@{}l Y Y@{}}
+\toprule
+ & \textbf{Top-Down} & \textbf{Bottom-Up}\\
+\midrule
+Tree built & root $\to$ leaves & leaves $\to$ root\\
+Derivation & \emph{leftmost} & \emph{rightmost}, in reverse\\
+Technique & predictive / recursive-descent (LL) & shift-reduce (LR family)\\
+Decision & expands a nonterminal using lookahead & reduces a \emph{handle} on the stack\\
+Left recursion & not allowed (infinite loop) & no problem\\
+Grammar class & smaller (LL $\subset$ LR) & larger / more powerful\\
+\bottomrule
+\end{tabularx}
+\end{qbox}
+
+\subsection{Recursive-Descent Parsing — How It Works \yr{2024 Q4b}\,\yr{2022 A-4}\,\yr{2016 Q3a}}
+\begin{qbox}
+\begin{itemize}
+\item One \emph{procedure per nonterminal}. The procedure body mirrors the right-hand side: it \emph{matches} terminals
+against the current input and \emph{calls} the procedure of each nonterminal it meets.
+\item \term{General} recursive descent may need \emph{backtracking} (try an alternative, undo input on failure).
+\item \term{Predictive} recursive descent uses one lookahead token to choose the alternative with \emph{no} backtracking
+— it requires a grammar that is left-factored and free of left recursion.
+\item \textbf{Issue:} a left-recursive production $A\to A\alpha$ makes the procedure call itself forever — left recursion must be eliminated first.
+\end{itemize}
+A procedure typically uses helpers \texttt{match()/scan()} (consume expected token) and \texttt{error()} (report \& recover).
+\end{qbox}
+
+\subsection{Ambiguity \yr{2024 Q3d}\,\yr{2022 A-3}}
+\begin{qbox}
+A grammar is \term{ambiguous} if some string in its language has \emph{more than one} parse tree (equivalently more than
+one leftmost or more than one rightmost derivation). It is a problem because the parser cannot decide which structure —
+hence which meaning — to assign. Classic example: \(E\to E+E \mid E*E \mid (E) \mid \texttt{id}\) gives two trees for
+\texttt{id+id*id}. Fixes: rewrite with precedence/associativity levels, or impose a disambiguating rule.
+\end{qbox}
+
+\subsection{Dangling-Else Problem \yr{2023 A-4b}}
+\begin{qbox}
+The grammar
+\[ \texttt{stmt}\to \texttt{if } E \texttt{ then stmt} \mid \texttt{if } E \texttt{ then stmt else stmt}\mid \texttt{other} \]
+is ambiguous: in \texttt{if }$E_1$\texttt{ then if }$E_2$\texttt{ then }$S_1$\texttt{ else }$S_2$ the \texttt{else}
+can bind to either \texttt{if}. \textbf{Rule used in practice:} match each \texttt{else} with the \emph{nearest unmatched}
+\texttt{if}. The disambiguated grammar separates \emph{matched} and \emph{open} statements:
+\[
+\begin{aligned}
+\texttt{stmt} &\to \texttt{matched} \mid \texttt{open}\\
+\texttt{matched} &\to \texttt{if } E \texttt{ then matched else matched} \mid \texttt{other}\\
+\texttt{open} &\to \texttt{if } E \texttt{ then stmt} \mid \texttt{if } E \texttt{ then matched else open}
+\end{aligned}
+\]
+which forces every \texttt{else} onto the closest preceding \texttt{then}, removing the ambiguity.
+\end{qbox}
+
+\subsection{Error-Recovery Strategies \yr{2023 A-3b}\,\yr{2022 A-2}\,\yr{2020 Q1c}\,\yr{2018 Q1a}}
+\begin{qbox}
+\begin{itemize}
+\item \term{Panic mode:} on an error, skip input tokens until a \emph{synchronising} token (e.g.\ \texttt{;}, \texttt{)}, \texttt{end}) appears, then resume. Simple, never loops.
+\item \term{Phrase-level:} perform a local correction on the remaining input (replace/insert/delete a few symbols) to continue.
+\item \term{Error productions:} add grammar rules for common mistakes so the parser can recognise and diagnose them.
+\item \term{Global correction:} find the \emph{minimum} number of changes to turn the input into a valid string — theoretically ideal but too costly in practice.
+\end{itemize}
+\textbf{In predictive (LL) parsing:} use FOLLOW($A$) tokens to \emph{synchronise} (pop $A$ and resume) and FIRST($A$) tokens to decide what to skip.
+\end{qbox}
+
+\subsection{LL vs. LR Parser \yr{2022 B-1a}}
+\begin{qbox}
+\begin{tabularx}{\linewidth}{@{}l Y Y@{}}
+\toprule
+ & \textbf{LL} & \textbf{LR}\\
+\midrule
+Scan & \underline{L}eft-to-right & \underline{L}eft-to-right\\
+Derivation traced & \underline{L}eftmost & \underline{R}ightmost (reverse)\\
+Direction & top-down (predictive) & bottom-up (shift-reduce)\\
+Left recursion & cannot handle & handles it\\
+Power & weaker: LL(1) $\subset$ LR(1) & more grammars accepted\\
+Table & predictive parsing table & ACTION + GOTO tables\\
+\bottomrule
+\end{tabularx}
+\end{qbox}
+
+\subsection{Why Left Recursion Is Not a Problem for Bottom-Up Parsing \yr{2022 A-3}}
+\begin{qbox}
+A shift-reduce parser builds the tree from the \emph{leaves up}: it shifts terminals onto the stack and reduces a
+\emph{handle} the moment one appears on top. For $A\to A\alpha$ it simply shifts the leading symbols and reduces left-to-right,
+so the recursion terminates naturally. A top-down parser, by contrast, would re-enter $A$ before reading any input and
+loop forever. Hence left recursion is harmless (even idiomatic) for bottom-up parsers, but fatal for top-down ones.
+\end{qbox}
+
+\subsection{Suitability for Top-Down / LL(1) \yr{2023 A-2a}}
+\begin{qbox}
+A grammar is fit for predictive top-down (LL(1)) parsing iff for every nonterminal $A$ with alternatives
+$A\to\alpha\mid\beta$:
+\begin{enumerate}
+\item it has \emph{no left recursion} and is \emph{left-factored};
+\item $\text{FIRST}(\alpha)\cap\text{FIRST}(\beta)=\varnothing$; and
+\item if $\beta\Rightarrow^*\varepsilon$ then $\text{FIRST}(\alpha)\cap\text{FOLLOW}(A)=\varnothing$.
+\end{enumerate}
+These conditions guarantee a unique production choice from one lookahead token.
+\end{qbox}
+
+%==================== TOPIC 3 ====================
+\section{Bottom-Up Parsing}
+
+\subsection{LR(0) vs. SLR(1) vs. LR(1) vs. LALR(1) \yr{2024 Q6a}}
+\begin{qbox}
+\begin{tabularx}{\linewidth}{@{}l Y@{}}
+\toprule
+\textbf{Parser} & \textbf{Characteristics}\\
+\midrule
+\term{LR(0)} & no lookahead; reduces in any state holding $A\to\alpha\bullet$; weakest, most conflicts.\\
+\term{SLR(1)} & LR(0) items + reduce by $A\to\alpha$ only when next token $\in$ FOLLOW($A$); small tables, fewer conflicts.\\
+\term{LR(1)} (canonical) & items carry an explicit lookahead symbol; most powerful; largest number of states/tables.\\
+\term{LALR(1)} & merges LR(1) states with the same core; same \#states as SLR, almost as strong as LR(1); used by YACC. May add reduce–reduce conflicts but never shift–reduce.\\
+\bottomrule
+\end{tabularx}
+\smallskip
+\textbf{Power:} \(\text{LR(0)} \subset \text{SLR(1)} \subset \text{LALR(1)} \subset \text{LR(1)}\).
+\end{qbox}
+
+\subsection{Shift-Reduce Parsing Conflicts \yr{2023 B-1a}}
+\begin{qbox}
+\begin{itemize}
+\item \term{Shift-reduce conflict:} in some state the parser can neither decide to \emph{shift} the next token nor to
+\emph{reduce} a completed production (classic case: the dangling-else).
+\item \term{Reduce-reduce conflict:} two different productions are both candidates for reduction in the same state on the same lookahead.
+\end{itemize}
+Both arise from ambiguous or non-LR grammars; resolving them needs more lookahead, grammar rewriting, or a stated precedence rule.
+\end{qbox}
+
+\subsection{Which Parser Class Can Parse a Grammar \yr{2017 Q5a}}
+\begin{qbox}
+To classify a grammar, test it bottom of the hierarchy upward and report the smallest class that succeeds:
+\[ \text{LL(1)} \subset \text{SLR(1)} \subset \text{LALR(1)} \subset \text{LR(1)}. \]
+Check LL(1) by the disjoint-FIRST/FOLLOW conditions (needs no left recursion, left-factored). Check the LR family by
+building item sets and looking for shift-reduce / reduce-reduce conflicts. An ambiguous grammar belongs to \emph{none}
+of these deterministic classes.
+\end{qbox}
+
+%==================== TOPIC 4 ====================
+\section{Syntax-Directed Translation}
+
+\subsection{Synthesized vs. Inherited Attributes \yr{2024 Q6c}\,\yr{2023 B-1b}\,\yr{2022 B-1b}\,\yr{2021 Q5}\,\yr{2020 Q3b}\,\yr{2018 Q2c}\,\yr{2016 Q2c}}
+\begin{qbox}
+\begin{tabularx}{\linewidth}{@{}l Y Y@{}}
+\toprule
+ & \textbf{Synthesized} & \textbf{Inherited}\\
+\midrule
+Computed from & attributes of the node's \emph{children} (and itself) & attributes of \emph{parent} and/or \emph{siblings}\\
+Information flow & bottom-up & top-down / left-to-right\\
+Defined at & $A\to\alpha$, value of $A$ from RHS symbols & a symbol on the RHS, value from parent/left siblings\\
+Typical use & value of an expression, code of a subtree & passing a declared type down to a list of ids\\
+\bottomrule
+\end{tabularx}
+\smallskip
+A \emph{terminal} has only synthesized attributes (supplied by the lexer); the \emph{start symbol} has no inherited attributes.
+\end{qbox}
+
+\subsection{S-Attributed vs. L-Attributed Definitions \yr{2024 Q6c}\,\yr{2023 B-3a}\,\yr{2018 Q2c}\,\yr{2017 Q4c}\,\yr{2016 Q2c}}
+\begin{qbox}
+\begin{itemize}
+\item \term{S-attributed SDD:} uses \emph{only synthesized} attributes. It can be evaluated bottom-up during an LR parse
+(attributes computed on reduction).
+\item \term{L-attributed SDD:} every inherited attribute of a RHS symbol $X_j$ depends only on the inherited attributes
+of the parent and on attributes of symbols \emph{to the left} of $X_j$ (plus any synthesized attributes). It can be
+evaluated in a single left-to-right, depth-first pass — compatible with LL (predictive) parsing.
+\end{itemize}
+\textbf{Relationship:} every S-attributed definition is also L-attributed (no inherited attributes to violate the rule), so $\text{S-attributed}\subset\text{L-attributed}$.
+\end{qbox}
+
+%==================== TOPIC 5 ====================
+\section{Intermediate Code}
+
+\subsection{Quadruples vs. Triples vs. Indirect Triples vs. SSA \yr{2020 Q7c}}
+\begin{qbox}
+\begin{tabularx}{\linewidth}{@{}l Y@{}}
+\toprule
+\textbf{Form} & \textbf{Description}\\
+\midrule
+\term{Quadruple} & \((op,\ arg_1,\ arg_2,\ result)\) — results held in \emph{explicit temporary names}. Easy to move/reorder for optimization; uses most space.\\
+\term{Triple} & \((op,\ arg_1,\ arg_2)\) — a result is referenced by the \emph{position (index)} of its triple. Compact, but reordering is hard because positions are the references.\\
+\term{Indirect triple} & a separate \emph{list of pointers} to the triples. Optimization reorders only the pointer list; the triples themselves stay fixed — best of both.\\
+\term{SSA} & Static Single Assignment: every variable is assigned \emph{exactly once}; \(\phi\)-functions are inserted at control-flow merge points. Greatly simplifies data-flow optimizations.\\
+\bottomrule
+\end{tabularx}
+\end{qbox}
+
+%==================== TOPIC 6 ====================
+\section{Runtime Environments}
+
+\subsection{Activation Record \& Runtime Stack \yr{2018 Q7c}\,\yr{2018 Q8b}}
+\begin{qbox}
+An \term{activation record} (stack frame) is the storage block for \emph{one activation} of a procedure. Typical fields
+(top to bottom):
+\begin{itemize}
+\item temporaries and local data
+\item saved machine state (return address, saved registers)
+\item \term{access (static) link} — to the enclosing scope, for non-local names
+\item \term{control (dynamic) link} — to the caller's activation record
+\item actual parameters and the returned value
+\end{itemize}
+The \term{runtime stack} holds these records: one is \emph{pushed} on each call and \emph{popped} on return. Because every
+call gets a fresh record, the stack naturally supports \emph{recursion}.
+\end{qbox}
+
+\subsection{Static vs. Dynamic Storage \& Garbage Collection \yr{2023 B-4}}
+\begin{qbox}
+\begin{itemize}
+\item \term{Static allocation:} storage sizes/addresses fixed at compile time (globals, static data). No recursion, no run-time sizing.
+\item \term{Stack (dynamic) allocation:} activation records pushed/popped in LIFO order; supports recursion and block scope.
+\item \term{Heap allocation:} for data whose lifetime is unrelated to the call that created it (objects, \texttt{malloc}/\texttt{new}); allocated/freed in any order.
+\end{itemize}
+\term{Garbage collector:} reclaims heap storage that is no longer reachable from the program, automatically. Common
+techniques: \emph{reference counting}, \emph{mark-and-sweep}, and \emph{copying} collection.
+\end{qbox}
+
+\subsection{Environment, State, and Static Binding \yr{2017 Q1a}}
+\begin{qbox}
+\begin{itemize}
+\item \term{Environment:} a mapping from a \emph{name} to a \emph{storage location} (its l-value).
+\item \term{State:} a mapping from a \emph{storage location} to the \emph{value} held there (its r-value).
+\end{itemize}
+An assignment changes the \emph{state}; entering a new scope or declaring a name changes the \emph{environment}.
+\term{Static (compile-time) binding} fixes an association — such as scope or type — when the program is compiled;
+\emph{dynamic binding} fixes it at run time.
+\end{qbox}
+
+%==================== TOPIC 7 ====================
+\section{Code Optimisation}
+
+\subsection{Basic Block \& Flow Graph \yr{2024 Q7c}}
+\begin{qbox}
+\begin{itemize}
+\item \term{Basic block:} a maximal sequence of consecutive instructions with a \emph{single entry} (the first instruction)
+and a \emph{single exit} (the last) — control enters only at the top and leaves only at the bottom, no internal branching.
+\item \term{Leaders} (first instruction of each block): the first instruction of the program; any jump target; and any
+instruction immediately following a jump.
+\item \term{Flow graph (CFG):} a directed graph whose nodes are basic blocks and whose edges show possible flow of control between them.
+\end{itemize}
+\end{qbox}
+
+\subsection{Objectives of Optimization \yr{2024 B-3b}}
+\begin{qbox}
+Transform the intermediate/target code so it \emph{runs faster and/or uses less memory}, while:
+\begin{itemize}
+\item \term{preserving the program's meaning} (semantics-preserving — the output must be identical);
+\item being worthwhile \emph{on average} (the speed-up justifies compile-time cost);
+\item not degrading the common case to help a rare one.
+\end{itemize}
+\end{qbox}
+
+\subsection{Copy Propagation \yr{2023 B-2c}}
+\begin{qbox}
+After a copy statement \(x = y\), replace later \emph{uses} of \(x\) by \(y\) wherever \(x\) is not redefined in between.
+\textbf{Advantage:} it often makes the copy statement \emph{dead} (so dead-code elimination can delete it) and exposes
+further optimizations such as constant folding and common-subexpression elimination.
+\end{qbox}
+
+\subsection{Optimization Techniques (names \& meaning) \yr{2024 B-3b}\,\yr{2016 Q8}}
+\begin{qbox}
+\begin{tabularx}{\linewidth}{@{}l Y@{}}
+\toprule
+\textbf{Technique} & \textbf{What it does}\\
+\midrule
+Common-subexpression elimination & reuse a value already computed instead of recomputing it.\\
+Copy propagation & replace uses of $x$ by $y$ after $x=y$.\\
+Constant folding / propagation & evaluate constant expressions at compile time; spread known constants.\\
+Dead-code elimination & remove code whose result is never used.\\
+Strength reduction & replace a costly op by a cheaper one (e.g.\ \(x*2\to x{+}x\), multiply $\to$ add in loops).\\
+Code motion (loop-invariant hoisting) & move computations that don't change inside a loop to before the loop.\\
+Induction-variable elimination & remove redundant loop counters derived from one another.\\
+Algebraic simplification & apply identities such as $x+0=x$, $x*1=x$.\\
+\bottomrule
+\end{tabularx}
+\smallskip
+These are applied \emph{locally} (within a basic block, often via a DAG) and \emph{globally} (across the flow graph, using data-flow analysis).
+\end{qbox}
+
+%==================== TOPIC 8 ====================
+\section{Code Generation}
+
+\subsection{Stack Frames; Caller- vs. Callee-Saved Registers \yr{2021 Q7c}}
+\begin{qbox}
+\textbf{Stack frame.} The per-call region on the runtime stack holding the return address, saved registers, local
+variables and spilled temporaries; addressed via a \emph{frame pointer} (\texttt{rbp}) with the \emph{stack pointer}
+(\texttt{rsp}) at the top.
+
+\smallskip
+\begin{tabularx}{\linewidth}{@{}l Y@{}}
+\toprule
+\textbf{Register class} & \textbf{Who preserves it}\\
+\midrule
+\term{Caller-saved} (volatile) & the \emph{caller} must save them before a call if it needs the values afterward; the callee may clobber them freely. \emph{(x86-64 SysV: \texttt{rax}, \texttt{rcx}, \texttt{rdx}, \texttt{rsi}, \texttt{rdi}, \texttt{r8–r11}.)}\\
+\term{Callee-saved} (non-volatile) & the \emph{callee} must save and restore them, so the caller may assume they survive the call. \emph{(\texttt{rbx}, \texttt{rbp}, \texttt{r12–r15}.)}\\
+\bottomrule
+\end{tabularx}
+\end{qbox}
+
+\vfill
+\begin{center}\small\color{sectionblue!70!black}
+End of theory model answers — CSE 711 Compiler (2016–2024). Good luck.
+\end{center}
+
+\end{document}

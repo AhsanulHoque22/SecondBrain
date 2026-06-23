@@ -28,7 +28,7 @@
 | 2022 | A-3 | derive `aabbabbba` LMD+RMD; left recursion not a problem for bottom-up (why); eliminate left recursion; left factoring | 2+1+4+2 |
 | 2022 | A-4 | recursive-descent how it works; FIRST/FOLLOW; partial LL(1) table fill-in | 3+3+3 |
 | 2021 | Q2 | left-factor rexpr grammar; eliminate left recursion (4-step) | full Q |
-| 2021 | B-1a,b,c | LR vs LL parser diff; verify LL(1); stack/input trace on `(id)*id` | 2+4+3 |
+| 2022 | B-1a,b | LR vs LL parser diff; verify LL(1) `S→Ab$, A→(bAb)\|(Ab)\|λ` | — |
 | 2020 | Q1b,c | left-recursion elimination (multi-step); error-recovery strategies | 3+1.75 |
 | 2020 | Q2 | FIRST/FOLLOW; predictive parsing table; LL(1) check | 3+4+1.75 |
 | 2018 | Q1a | error recovery strategies | — |
@@ -40,8 +40,10 @@
 |---|---|---|---|
 | 2024 | Q6a,b | compare LR(0)/SLR/LR(1)/LALR; shift-reduce parse trace `(id+id)*id` | 1+3 |
 | 2023 | B-1a,b | shift-reduce conflict types; semantic-action grammar w/ inherited/synth attrs + parse tree + yacc program | 2+2+2+3 |
-| 2022 | (LL(1) table fill only — no full LR construction this year) | — | — |
-| 2021 | B-2a | construct LR table for `S→AA, A→aA\|b` | 5+2+2 |
+| 2022 | B-1c | stack/input trace on `(id)*id` using given LR parsing table (T→F, T→T*F, F→id, F→(T)) | — |
+| 2022 | B-2a | construct LR table for `S→AA, A→aA\|b` | 5+2+2 |
+| 2021 | Q4a,b,c | SLR sets of items + PDA/transition table + GOTO for `S→Sa\|b\|error a` | 2.75+3+3 |
+| 2021 | Q6a | shift-reduce parser execution trace on string `abbc`, grammar `X→aXc\|XX\|b` | 4.75 |
 | 2020 | Q3a | LR(0) items + states for `S→(L)\|id, L→L,S\|S` | 1.75+5 |
 | 2020 | Q4a | yacc/bison boolean-expr program | 5 |
 | 2018 | Q4 | SLR sets of items + PDA/transition table + GOTO function | 2.75+3+3 |

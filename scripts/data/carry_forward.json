@@ -1,8 +1,8 @@
 {
   "topics": [
-    "Topic 2 — Top-Down Parsing (CSE711 Compiler): planned/re-planned every day 2026-06-18 → 2026-06-23 — end-of-day log unfilled a 6th consecutive time, status STILL unknown. HIGHEST YIELD topic (8/8 years). EXAM IS TODAY, Wed 24 Jun 10:30 AM. The pre-exam morning (~5:10–9:30) is the final and only remaining window — final cram pass on left recursion, left factoring, FIRST/FOLLOW, LL(1) table, recursive descent, dangling-else.",
-    "Topic 1 (Lexical Analysis) recall pass — missed every day 06-19 → 06-23. Exam-morning quick skim only: token/pattern/lexeme (8/8 guaranteed marks), RE→CFG conversion, symbol table."
+    "CSE719 Distributed & Cloud — WEEKLY ENGINE RESET not yet done. Exam Wed 1 Jul (5 days out from 06-26). Blockers: no _Topics.md, no past papers, no syllabus, no lecture slides in 02_Courses/CSE719_Distributed/ (only README + NotebookLM_Sources placeholder). Cannot rank topics by yield or build a study plan until source materials are dropped in. FIRST action: add syllabus + past papers, then clone the AI course structure (_Syllabus, _Topics, _PastPapers) and analyze past-paper patterns.",
+    "2026-06-25 had no daily log created and no end-of-day fill — likely post-Compiler-exam (24 Jun) decompression. One day of the 5-day Distributed runway already gone; the reset must happen first thing 06-26."
   ],
-  "note": "Six consecutive days (06-18 → 06-23) with no confirmed progress on Topic 2, the single highest-yield Compiler topic (8/8 years). 06-20 had no log file at all; 06-21, 06-22, 06-23 all had full 7-block plans built but end-of-day logs left unfilled — actual study time unverified throughout. EXAM IS NOW: Wed 24 Jun 10:30 AM. After the exam this carry-forward is closed. Post-exam (Wed afternoon) the Weekly Engine resets to CSE 719 Distributed & Cloud (exam Wed 1 Jul).",
-  "last_updated": "2026-06-23"
+  "note": "Compiler carry-forward CLOSED — CSE711 exam was Wed 24 Jun, now past. Season pivoted to CSE719 Distributed & Cloud (exam Wed 1 Jul). The core blocker is that the Weekly Engine reset (skim syllabus, pull past papers, rank topics by yield) never ran — the course folder is still empty. No real study can start until Ahsanul adds source materials.",
+  "last_updated": "2026-06-25"
 }

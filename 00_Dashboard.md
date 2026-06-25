@@ -3,12 +3,12 @@
 > Living file. Claude Code updates this every session. You read this first, every day.
 
 ## Right now
-- **Active exam:** 🎯 CSE 711 — Compiler — **TODAY, Wed 24 Jun 2026, 10:30 AM**
-- **Days left:** 0 — EXAM DAY
-- **Phase:** 🔴🔴 EXAM DAY. Topic 2 (Top-Down Parsing) went unconfirmed for 6 straight days (18th–23rd) — every end-of-day log left blank, study time unverified throughout. Pre-exam morning (~5:10–9:30) is the final cram window: Topic 2 high-yield only, then a quick Topic 1 skim. No new topics. Sleep beats cramming if exhausted.
-- **Single most important thing:** Final morning pass on Topic 2 — left recursion, left factoring, FIRST/FOLLOW, LL(1) table, recursive descent, dangling-else (8/8 years). Walk in with the guaranteed marks (token/pattern/lexeme, synth-vs-inherited, basic-blocks+CFG) locked.
-- **After the exam:** Weekly Engine reset → skim CSE 719 Distributed & Cloud syllabus + past papers (next exam Wed 1 Jul).
-- **Next exam:** CSE 719 — Distributed & Cloud — Wed 1 Jul 2026 (7 days out)
+- **Active exam:** 🎯 CSE 719 — Distributed & Cloud — **Wed 1 Jul 2026, 10:30 AM**
+- **Days left:** 5 (from Fri 26 Jun)
+- **Phase:** 🟡 RESET OVERDUE. Compiler exam done (Wed 24 Jun). But the CSE719 Weekly Engine reset never ran, the 25th had no log, and the course folder is empty — no syllabus, past papers, slides, or _Topics.md. One of five runway days already gone. Can't study what isn't mapped.
+- **Single most important thing:** Get CSE719 source materials into `02_Courses/CSE719_Distributed/` (syllabus + past papers + slides), then have Claude build _Topics.md and run past-paper pattern analysis to rank topics by yield. Block 1 tomorrow = reset, no delays.
+- **After the reset:** Front-load the top 2–3 high-yield topics with active recall; Mon 29 + Tue 30 are revision-only.
+- **Next exam after this:** CSE 715 — Computer Graphics — Wed 8 Jul 2026
 - **⚠️ Rule:** Google Calendar is the ONLY source of truth for daily plans. Never use the overnight rollover log for scheduling.
 - **🔴 Session protocols:** Read and execute `scripts/data/session_protocols.md` at EVERY session start. No exceptions.
 
@@ -41,8 +41,8 @@ Prayers structure the day — each gap is a study block:
 |--------|:-:|:-:|:-:|:-:|
 | [[02_Courses/CSE713_AI/_Topics\|AI (713)]] | ✅ EXAM DONE (27 topics) | 18✅ · 1🔁 · 7📖 · 1🔲 | ✅ past papers done per topic | 4.2 |
 | [[02_Courses/CSE717_InfoSec/_Topics\|InfoSec (717)]] | ✅ 14 topics ranked | 11✅ · 3📖 · 0🔲 | – | pending |
-| [[02_Courses/CSE711_Compiler/_Topics\|Compiler (711)]] | ✅ 8 topics ranked (8yr past papers) | 0✅ · 1📖 (Topic 1, recall missed 5x) · 7🔲 — EXAM TODAY | – | pending |
-| [[02_Courses/CSE719_Distributed/README\|Distributed (719)]] | – | – | – | – |
+| [[02_Courses/CSE711_Compiler/_Topics\|Compiler (711)]] | ✅ EXAM DONE (8 topics, 8yr past papers) | sat 24 Jun | – | – |
+| [[02_Courses/CSE719_Distributed/README\|Distributed (719)]] | ⚠️ NOT MAPPED — folder empty, reset overdue | 0 | – | pending |
 | [[02_Courses/CSE715_Graphics/README\|Graphics (715)]] | – | – | – | – |
 | [[02_Courses/CSE700_Thesis/README\|Thesis (700)]] | – | – | – | – |
 

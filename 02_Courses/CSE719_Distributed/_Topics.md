@@ -17,7 +17,13 @@ Built 2026-06-26 from 3-year past-paper analysis (2020 / 2021 / 2022, Univ. of C
 | 4 | **Consistency models** | 🔲 | — | — | 5/5 · 5–9 mk | 2020·21·22 | Strong/weak/causal/release; quorum (read+write size constraints, 9-replica example). Overlaps DSM — study together. |
 | 5 | **Distributed File Systems + AFS** | 🔲 | — | — | 4/5 · 6–8 mk | 2020·21·22 | UNIX semantics difficulty, DFS design principles/requirements, cache validation, **Andrew File System** + file service architecture. |
 | 6 | **Concurrency Control & Transactions** | 🔲 | — | — | 4/5 · 6–10 mk | 2021·22 | Deadlock + locking schemes, timestamp ordering, ACID, isolation/serializability, deadlock detection in distributed sys, transaction-schedule trace. Heavy in recent papers. |
-| 7 | **Distributed System Fundamentals** | 🔲 | — | — | 4/5 · 6–10 mk | 2020·21 | Definition + examples, tightly vs loosely coupled, transparencies (location/relocation/migration), scalability + challenges, marshalling/unmarshalling, distributed vs parallel, adv/disadv. |
+| 7 | **Distributed System Fundamentals** | 📖 | — | 2026-06-26 | 4/5 · 6–10 mk | 2020·21 | Lecture-01 ingested + solutions PDF (2020/21). Definition + examples, tightly vs loosely coupled, transparencies, scalability + challenges, marshalling/unmarshalling, distributed vs parallel, adv/disadv. |
+| ↳ Definition + working definition + design goals | 📖 | — | 2026-06-26 | 5/5 · 1.75–3 mk | 2020 Q1a, 2021 Q1a | Slide-backed (Lecture-01). 9 design goals; working def: autonomous/programmable/async/failure-prone entities. |
+| ↳ Tightly vs Loosely coupled systems | 🔲 | — | — | 4/5 · 3.25 mk | 2020 Q1b | Shared vs distributed memory; needs figures. Textbook (Sinha). |
+| ↳ Transparencies (location/relocation/migration) | 🔲 | — | — | 4/5 · 3 mk | 2020 Q2a | 8 transparency types; differentiate the 3 named ones. |
+| ↳ Distributed vs Parallel processing | 🔲 | — | — | 3/5 · 2.5 mk | 2020 Q1c | Why DS better than parallel. |
+| ↳ Scalability + challenges | 🔲 | — | — | 4/5 · 2.5 mk | 2021 Q1c | Define + size/geo/admin scalability challenges. |
+| ↳ Marshalling/Unmarshalling + ACID | 🔲 | — | — | 3/5 · 2 mk | 2021 Q1d | Serialization for transmission; ACID = Atomicity/Consistency/Isolation/Durability. |
 | 8 | **MapReduce** | 🔲 | — | — | 3/5 · 4–6 mk | 2021·22 | Map-function limitations, straggler handling, job types. Recent — likely again. |
 | 9 | **Paxos** | 🔲 | — | — | 3/5 · 2.5–6 mk | 2021·22 | Leader-waits-less-than-majority counterexample; proposal-number correctness. Recent + tricky. |
 | 10 | **DSO + Parallel DB + Data Mining** | 🔲 | — | — | 3/5 · 4.5–8 mk | 2021·22 | Distributed System Overhead, scalable parallel database, hidden-pattern extraction methodologies, bitemporal relation. |

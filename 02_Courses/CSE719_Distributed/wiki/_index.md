@@ -12,9 +12,9 @@ Course: Dr. Atiqur Rahman, Univ. of Chittagong. Exam Wed 1 Jul 2026.
 | 5/5 | Consistency models | _pending_ | Lecture-09 (+ own page) |
 | 4/5 | Distributed File Systems + AFS | _pending_ | (TBD) |
 | 4/5 | Concurrency Control & Transactions | _pending_ | (TBD) |
-| 4/5 | Distributed System Fundamentals | _pending_ | Lecture-01 |
+| 4/5 | Distributed System Fundamentals | [[distributed-fundamentals]] | Lecture-01 |
 
 ## Lecture → topic map (from converted slides)
-- Lecture-01: Distributed Systems (intro/fundamentals) · Lecture-02–08: cloud + distributed topics (TBD)
+- **Lecture-01: Distributed Systems (intro/fundamentals)** ✅ ingested · Lecture-02–08: cloud + distributed topics (TBD)
 - **Lecture-09: Distributed Shared Memory** ✅ ingested
 - Lecture-10: (55 slides — TBD)

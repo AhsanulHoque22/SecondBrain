@@ -1,17 +1,25 @@
 # Study Brain — Compiled State
-_Updated: 2026-06-25 by overnight rollover_
+_Updated: 2026-06-26 — CSE719 reset executed (session)_
 
 ## Active exam
-🎯 CSE 719 — Distributed & Cloud · **Wed 1 Jul 2026, 10:30 AM** · 5 days from 2026-06-26 · Phase: 🟡 RESET OVERDUE — Compiler exam done (24 Jun), but the Weekly Engine reset never ran and the course folder is empty (no syllabus, past papers, slides, or _Topics.md). One of five runway days already lost (no log on 06-25).
+🎯 CSE 719 — Distributed & Cloud · **Wed 1 Jul 2026, 10:30 AM** · 5 days from 2026-06-26 · Phase: ✅ RESET DONE — materials are in (Lectures 1–10, Unit 3 & 4, 3-year past-paper bundle). `_Topics.md` + `_TopicQuestionMap.md` built from 2020/2021/2022 pattern analysis. Topics ranked by yield. Next: start core learning on Topic #1 (DSM).
 
-## Topics — CSE719 Distributed & Cloud
+## Topics — CSE719 Distributed & Cloud (ranked by yield)
 | # | Topic | Status | Conf | Next Recall |
 |---|---|:---:|:---:|---|
-| – | ⚠️ NOT MAPPED — no _Topics.md yet. Drop syllabus + past papers into `02_Courses/CSE719_Distributed/`, then build the tracker and run past-paper pattern analysis to rank topics by yield. | 🔲 | — | — |
+| 1 | DSM (false sharing all 3 yrs, consistency types, NRNMB strategies, invalidate/update) — yield 5/5 | 🔲 | — | — |
+| 2 | Cloud Computing (e-commerce scenario all 3 yrs, deployment vs service models, scaling, multi-tenancy) — yield 5/5 | 🔲 | — | — |
+| 3 | RPC (design issues every yr, stub, RRA, callback/lightweight) — yield 5/5 | 🔲 | — | — |
+| 4 | Consistency models (strong/weak/causal/release, quorum) — yield 5/5 | 🔲 | — | — |
+| 5 | DFS + Andrew File System — yield 4/5 | 🔲 | — | — |
+| 6 | Concurrency Control & Transactions (deadlock, ACID, timestamp) — yield 4/5 | 🔲 | — | — |
+| 7 | Distributed System Fundamentals (transparencies, scalability, coupling) — yield 4/5 | 🔲 | — | — |
+| 8–14 | MapReduce · Paxos · DSO/Parallel DB · SQL-vs-NoSQL · load balancing · heartbeating · fault recovery — yield 3/5 ↓ | 🔲 | — | — |
 
 ## Carry-forward
-- CSE719 Weekly Engine reset — not done. Blockers: empty course folder (only README + NotebookLM_Sources placeholder), no source materials. FIRST action 06-26: add syllabus + past papers, build _Topics.md, rank by yield.
-- 2026-06-25 lost — no log created, no progress (likely post-Compiler-exam decompression). Don't repeat 06-26.
+- CSE719 reset DONE 06-26. Next action: "starting block 2" → core learning on DSM (Topic #1). 4 runway days left (27,28,29,30) + exam 01 Jul.
+- Only 2020/2021/2022 past papers exist (no 2023/2024). Pattern is stable across the 3.
+- 2026-06-25 was lost (post-exam decompression) — already absorbed, don't dwell.
 
 ## Recall due 2026-06-26
 > ⚠️ All 20 items are AI (713) + InfoSec (717) topics — both exams already done. NOT priorities for the Distributed exam. Informational / long-term retention only; do not let them eat reset time.

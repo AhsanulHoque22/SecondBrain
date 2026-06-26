@@ -17,9 +17,10 @@ _Updated: 2026-06-26 — CSE719 reset executed (session)_
 | 8–14 | MapReduce · Paxos · DSO/Parallel DB · SQL-vs-NoSQL · load balancing · heartbeating · fault recovery — yield 3/5 ↓ | 🔲 | — | — |
 
 ## Carry-forward
-- CSE719 reset DONE 06-26. Next action: "starting block 2" → core learning on DSM (Topic #1). 4 runway days left (27,28,29,30) + exam 01 Jul.
-- Only 2020/2021/2022 past papers exist (no 2023/2024). Pattern is stable across the 3.
-- 2026-06-25 was lost (post-exam decompression) — already absorbed, don't dwell.
+- CSE719 reset DONE 06-26. Full lecture audit DONE → `_LecturePlan.md` (serial L1–10 question mind map, 76-part coverage assertion, orphan audit). Next action: "starting block 2" → DSM active recall, then L2 Cloud.
+- 🔴 BIGGEST GAP: **DFS + Andrew File System has NO slides** (orphan, yield 4/5, asked all 3 yrs) — must study from textbook. Likely the missing Lecture-08 (folder jumps 07→09).
+- Lectures done: L1 Fundamentals (solutions PDF + wiki), L9 DSM (wiki). High-yield TODO: L2 Cloud, L10 RPC+Concurrency.
+- Only 2020/2021/2022 past papers exist (no 2023/2024). Pattern stable across the 3.
 
 ## Recall due 2026-06-26
 > ⚠️ All 20 items are AI (713) + InfoSec (717) topics — both exams already done. NOT priorities for the Distributed exam. Informational / long-term retention only; do not let them eat reset time.

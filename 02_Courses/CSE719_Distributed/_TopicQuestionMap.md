@@ -1,9 +1,29 @@
 # CSE 719 Distributed & Cloud — Topic-Wise Question Map (2020–2022)
-> [[_Topics]] · [[00_Dashboard]]
+> [[_Topics]] · [[_LecturePlan]] · [[00_Dashboard]]
 
 > Maps each exam topic to exact question numbers + content from past papers.
 > Source PDF: `_Cloud prev.pdf` (scanned). Only 3 years available — no 2023/2024 papers in the bundle.
-> Last updated: 2026-06-26 (reset day).
+> Last updated: 2026-06-26 (reset day). **Lecture mapping + orphan audit:** see [[_LecturePlan]].
+
+## Topic → Lecture source index
+| Topic | Lecture | Slide-covered? |
+|---|---|---|
+| 1 DSM | L9 | ✅ (NRNMB strategies orphan) |
+| 2 Cloud | L2 + Unit 3/4 readings | ✅ (horiz/vert scaling, prognostic orphan) |
+| 3 RPC | L10 | ✅ (RRA, callback/lightweight orphan) |
+| 4 Consistency | L9 (+ L5) | ✅ |
+| 5 DFS + AFS | — none — | 🔴 **ORPHAN (all parts, textbook)** |
+| 6 Concurrency/Transactions | L10 + L5 | ✅ |
+| 7 Fundamentals | L1 | ✅ (coupling/transparencies textbook figs) |
+| 8 MapReduce | L3 | ✅ |
+| 9 Paxos | L7 | ✅ |
+| 10 DSO/Parallel-DB/Data-mining | — none — | 🔴 **ORPHAN (textbook)** |
+| 11 SQL vs NoSQL | — none — | 🔴 ORPHAN |
+| 12 Load balancing | L5 (partial) | ⚠️ |
+| 13 Heartbeat/Membership | L4 | ✅ |
+| 14 Fault detection | L4 | ✅ |
+> ⛔ Missing lecture file: **Lecture-08** (07→09 gap) — likely DFS. See [[_LecturePlan]] Orphan Audit.
+> Full per-lecture question mind map + 76-part coverage assertion: [[_LecturePlan]].
 
 ## PDF Navigation
 | Paper Year | Code | Pages | Marks / Time |

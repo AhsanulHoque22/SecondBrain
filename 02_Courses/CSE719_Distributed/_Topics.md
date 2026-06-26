@@ -11,7 +11,7 @@ Built 2026-06-26 from 3-year past-paper analysis (2020 / 2021 / 2022, Univ. of C
 
 | # | Topic | Status | Conf | Last Rev | Yield | Recurs | Notes / weak spots |
 |---|-------|:------:|:----:|:--------:|:-----:|:------:|--------------------|
-| 1 | **DSM (Distributed Shared Memory)** | 🔲 | — | — | 5/5 · 9–12 mk | 2020·21·22 | False sharing asked ALL 3 years. + consistency types, NRNMB/NRMB/RMB/RNMB strategies, invalidate vs update, DSM over message-passing, schematic. Highest single yield. |
+| 1 | **DSM (Distributed Shared Memory)** | 📖 | — | 2026-06-26 | 5/5 · 9–12 mk | 2020·21·22 | Wiki ingested (Lecture-09 → [[wiki/dsm]]). False sharing + Invalidate/Update + consistency covered. GAP: NRNMB strategies & LRU-fail are textbook-only — pull before exam. Next: active recall. |
 | 2 | **Cloud Computing fundamentals** | 🔲 | — | — | 5/5 · 8–12 mk | 2020·21·22 | E-commerce scenario asked ALL 3 years. + definition, deployment vs service models, horizontal/vertical scaling, multi-tenancy, EUCALYPTUS, layers, on-demand, pros/cons. |
 | 3 | **RPC (Remote Procedure Call)** | 🔲 | — | — | 5/5 · 6–9 mk | 2020·21·22 | Design issues asked every year. + stub (gen/purpose), RRA protocol steps, callback & lightweight RPC, schematic diagram. |
 | 4 | **Consistency models** | 🔲 | — | — | 5/5 · 5–9 mk | 2020·21·22 | Strong/weak/causal/release; quorum (read+write size constraints, 9-replica example). Overlaps DSM — study together. |

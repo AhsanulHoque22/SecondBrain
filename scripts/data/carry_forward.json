@@ -1,8 +1,10 @@
 {
   "topics": [
-    "CSE719 Distributed & Cloud — WEEKLY ENGINE RESET not yet done. Exam Wed 1 Jul (5 days out from 06-26). Blockers: no _Topics.md, no past papers, no syllabus, no lecture slides in 02_Courses/CSE719_Distributed/ (only README + NotebookLM_Sources placeholder). Cannot rank topics by yield or build a study plan until source materials are dropped in. FIRST action: add syllabus + past papers, then clone the AI course structure (_Syllabus, _Topics, _PastPapers) and analyze past-paper patterns.",
-    "2026-06-25 had no daily log created and no end-of-day fill — likely post-Compiler-exam (24 Jun) decompression. One day of the 5-day Distributed runway already gone; the reset must happen first thing 06-26."
+    "CSE719 Topic #1 DSM — wiki ingested (false sharing, Invalidate/Update, consistency). Reached 📖 but NOT yet active-recalled. Next: active recall pass, then pull NRNMB strategies + LRU-fail from textbook (slide gap).",
+    "CSE719 Topics #2 Cloud, #3 RPC, #4 Consistency (the high-yield spine) — NOT started. Core learning still owed. These three + DSM cover 3 strong answers per section.",
+    "CSE719 Topic #5 DFS + Andrew File System — 🔴 NO SLIDES (orphan, asked all 3 yrs, yield 4/5). Must study from textbook (likely missing Lecture-08). Schedule before exam.",
+    "End-of-day log for 2026-06-26 left unfilled — reset + Fundamentals/DSM wiki done in session, but blocks 2-7 (core learning) unconfirmed. Treat DSM/Fundamentals as 📖, spine topics as not started."
   ],
-  "note": "Compiler carry-forward CLOSED — CSE711 exam was Wed 24 Jun, now past. Season pivoted to CSE719 Distributed & Cloud (exam Wed 1 Jul). The core blocker is that the Weekly Engine reset (skim syllabus, pull past papers, rank topics by yield) never ran — the course folder is still empty. No real study can start until Ahsanul adds source materials.",
-  "last_updated": "2026-06-25"
+  "note": "CSE719 Weekly Engine RESET is DONE (06-26): materials in (Lectures 1-10, Unit 3&4, 3-yr past papers), _Topics.md + _TopicQuestionMap.md + _LecturePlan.md built, 14 topics ranked by yield. Exam Wed 1 Jul (4 days out from 06-27). Phase = core learning (Thu-Sun). Spine = DSM, Cloud, RPC, Consistency. Mon 29 + Tue 30 are revision-only.",
+  "last_updated": "2026-06-26"
 }

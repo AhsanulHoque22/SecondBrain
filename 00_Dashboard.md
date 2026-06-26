@@ -4,10 +4,10 @@
 
 ## Right now
 - **Active exam:** 🎯 CSE 719 — Distributed & Cloud — **Wed 1 Jul 2026, 10:30 AM**
-- **Days left:** 5 (from Fri 26 Jun)
-- **Phase:** 🟡 RESET OVERDUE. Compiler exam done (Wed 24 Jun). But the CSE719 Weekly Engine reset never ran, the 25th had no log, and the course folder is empty — no syllabus, past papers, slides, or _Topics.md. One of five runway days already gone. Can't study what isn't mapped.
-- **Single most important thing:** Get CSE719 source materials into `02_Courses/CSE719_Distributed/` (syllabus + past papers + slides), then have Claude build _Topics.md and run past-paper pattern analysis to rank topics by yield. Block 1 tomorrow = reset, no delays.
-- **After the reset:** Front-load the top 2–3 high-yield topics with active recall; Mon 29 + Tue 30 are revision-only.
+- **Days left:** 4 (from Sat 27 Jun)
+- **Phase:** 🟢 CORE LEARNING (Thu–Sun window). Reset DONE 06-26 — materials in (Lectures 1–10, Unit 3&4, 3-yr past papers), _Topics.md + _TopicQuestionMap.md + _LecturePlan.md built, 14 topics ranked. DSM + Fundamentals at 📖 (wiki ingested). Now front-load the spine.
+- **Single most important thing:** Master the **spine cold** — DSM → Cloud → RPC → Consistency. They appear every year and alone cover 3 strong answers per section. Block 1 Sat = DSM active recall (it's 📖 but not recalled yet). 🔴 DFS+AFS has NO slides — textbook before exam.
+- **After the spine:** Add Topics #5–7 (DFS/AFS, Concurrency, Fundamentals); Mon 29 + Tue 30 are revision-only.
 - **Next exam after this:** CSE 715 — Computer Graphics — Wed 8 Jul 2026
 - **⚠️ Rule:** Google Calendar is the ONLY source of truth for daily plans. Never use the overnight rollover log for scheduling.
 - **🔴 Session protocols:** Read and execute `scripts/data/session_protocols.md` at EVERY session start. No exceptions.
@@ -42,7 +42,7 @@ Prayers structure the day — each gap is a study block:
 | [[02_Courses/CSE713_AI/_Topics\|AI (713)]] | ✅ EXAM DONE (27 topics) | 18✅ · 1🔁 · 7📖 · 1🔲 | ✅ past papers done per topic | 4.2 |
 | [[02_Courses/CSE717_InfoSec/_Topics\|InfoSec (717)]] | ✅ 14 topics ranked | 11✅ · 3📖 · 0🔲 | – | pending |
 | [[02_Courses/CSE711_Compiler/_Topics\|Compiler (711)]] | ✅ EXAM DONE (8 topics, 8yr past papers) | sat 24 Jun | – | – |
-| [[02_Courses/CSE719_Distributed/README\|Distributed (719)]] | ⚠️ NOT MAPPED — folder empty, reset overdue | 0 | – | pending |
+| [[02_Courses/CSE719_Distributed/_Topics\|Distributed (719)]] | ✅ 14 topics ranked (3-yr analysis) | 2📖 (DSM, Fundamentals) · 12🔲 | – | pending |
 | [[02_Courses/CSE715_Graphics/README\|Graphics (715)]] | – | – | – | – |
 | [[02_Courses/CSE700_Thesis/README\|Thesis (700)]] | – | – | – | – |
 

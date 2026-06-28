@@ -4,10 +4,10 @@
 
 ## Right now
 - **Active exam:** 🎯 CSE 719 — Distributed & Cloud — **Wed 1 Jul 2026, 10:30 AM**
-- **Days left:** 4 (from Sat 27 Jun)
-- **Phase:** 🟢 CORE LEARNING (Thu–Sun window). Reset DONE 06-26 — materials in (Lectures 1–10, Unit 3&4, 3-yr past papers), _Topics.md + _TopicQuestionMap.md + _LecturePlan.md built, 14 topics ranked. DSM + Fundamentals at 📖 (wiki ingested). Now front-load the spine.
-- **Single most important thing:** Master the **spine cold** — DSM → Cloud → RPC → Consistency. They appear every year and alone cover 3 strong answers per section. Block 1 Sat = DSM active recall (it's 📖 but not recalled yet). 🔴 DFS+AFS has NO slides — textbook before exam.
-- **After the spine:** Add Topics #5–7 (DFS/AFS, Concurrency, Fundamentals); Mon 29 + Tue 30 are revision-only.
+- **Days left:** 2 (from Mon 29 Jun)
+- **Phase:** 🔴 EMERGENCY SPINE DAY. 06-27 and 06-28 logs show no confirmed progress — Cloud/RPC/Consistency still 🔲, DSM + Fundamentals still 📖 (not recalled/✅). Normally Mon+Tue = pure revision, but there's nothing yet to revise. Mon 29 = compressed core learning on the full spine, Tue 30 = pure revision + timed papers on whatever got covered.
+- **Single most important thing:** Close the **spine** TODAY — DSM (recall) → Cloud → RPC → Consistency (core learning). No Livora today. 🔴 DFS+AFS has NO slides — squeeze in if spine closes early, else Tuesday morning.
+- **After the spine:** Tue 30 is pure revision + timed past papers — zero room left for new topics after today.
 - **Next exam after this:** CSE 715 — Computer Graphics — Wed 8 Jul 2026
 - **⚠️ Rule:** Google Calendar is the ONLY source of truth for daily plans. Never use the overnight rollover log for scheduling.
 - **🔴 Session protocols:** Read and execute `scripts/data/session_protocols.md` at EVERY session start. No exceptions.

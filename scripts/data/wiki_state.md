@@ -1,31 +1,31 @@
 # Study Brain — Compiled State
-_Updated: 2026-06-26 by overnight rollover_
+_Updated: 2026-06-28 by overnight rollover_
 
 ## Active exam
-🎯 CSE 719 — Distributed & Cloud · **Wed 1 Jul 2026, 10:30 AM** · 4 days from 2026-06-27 · Phase: 🟢 CORE LEARNING (Thu–Sun). Reset DONE. Front-load the spine (DSM → Cloud → RPC → Consistency). Mon 29 + Tue 30 = revision-only.
+🎯 CSE 719 — Distributed & Cloud · **Wed 1 Jul 2026, 10:30 AM** · 2 days from 2026-06-29 · Phase: 🔴 EMERGENCY SPINE DAY. 06-27 and 06-28 logs show no confirmed progress. Cloud/RPC/Consistency still 🔲, DSM/Fundamentals still 📖 (not recalled/✅). Mon 29 = compressed core learning on full spine (no slack left). Tue 30 = pure revision + timed papers only.
 
-## Topics — CSE719 Distributed & Cloud (ranked by yield)
+## Topics — CSE719 Distributed & Cloud
 | Topic | Status | Conf | Next Recall |
 |---|:---:|:---:|---|
 | 1. DSM (false sharing, Invalidate/Update, consistency; NRNMB textbook gap) | 📖 | — | active recall due |
-| 2. Cloud Computing (e-commerce scenario all 3 yrs, deploy/service models, scaling, multi-tenancy) | 🔲 | — | — |
-| 3. RPC (design issues every yr, stub, RRA, callback/lightweight) | 🔲 | — | — |
+| 2. Cloud Computing (e-commerce scenario, deploy/service models, scaling, multi-tenancy) | 🔲 | — | — |
+| 3. RPC (design issues, stub, RRA, callback/lightweight) | 🔲 | — | — |
 | 4. Consistency models (strong/weak/causal/release, quorum) | 🔲 | — | — |
 | 5. DFS + Andrew File System — 🔴 NO SLIDES, textbook-only | 🔲 | — | — |
-| 6. Concurrency Control & Transactions (deadlock, ACID, timestamp) | 🔲 | — | — |
-| 7. Distributed System Fundamentals (transparencies, scalability, coupling) | 📖 | — | active recall due |
+| 6. Concurrency Control & Transactions | 🔲 | — | — |
+| 7. Distributed System Fundamentals | 📖 | — | active recall due |
 | 8–14. MapReduce · Paxos · DSO/Parallel DB · SQL-vs-NoSQL · load balancing · heartbeating · fault recovery | 🔲 | — | — |
 
 ## Carry-forward
-- DSM (Topic #1): wiki ingested 📖 but NOT active-recalled yet. Next: recall pass + textbook patch (NRNMB strategies, LRU-fail).
-- Spine Topics #2 Cloud, #3 RPC, #4 Consistency: NOT started — core learning owed. These + DSM = 3 strong answers/section.
-- 🔴 DFS + Andrew File System (#5): NO slides, asked all 3 yrs. Textbook-only (likely missing Lecture-08). Schedule before exam.
-- 06-26 end-of-day log left unfilled — reset + DSM/Fundamentals wiki done in session; spine unconfirmed/not started.
+- 🔴 CRITICAL: 06-27 log had no confirmed completions; 06-28 daily log was never created — two days of CSE719 progress unverified. Exam now 2 days out.
+- DSM (#1): 📖 but not confirmed active-recalled. Next: recall pass + NRNMB/LRU-fail textbook patch.
+- Spine #2 Cloud, #3 RPC, #4 Consistency: still NOT started — must close out Monday.
+- 🔴 DFS + AFS (#5): NO slides, asked all 3 yrs. Squeeze in Monday if spine closes early, else Tuesday AM.
+- Fundamentals (#7): 📖, not yet ✅.
 
-## Recall due 2026-06-27
-> ⚠️ All 20 items are AI (713) + InfoSec (717) topics — both exams already done. NOT priorities for the Distributed exam. Informational / long-term retention only; do not let them eat core-learning time.
+## Recall due 2026-06-29
+> ⚠️ All 20 items are AI (713) + InfoSec (717) — both exams already done. Informational only, do not let them eat spine time.
 
-**20 topics due:**
 - 🔁 Intelligent Agents + Environments (PAGE) `CSE713_AI` | conf 4/5
 - 🔁 Search: UCS, Greedy, A, IDDFS — trace on graph `CSE713_AI` | conf 4/5
 - 🔁 Forward + Backward Chaining + Rule-Based System `CSE713_AI` | conf 5/5
@@ -48,6 +48,6 @@ _Updated: 2026-06-26 by overnight rollover_
 - 🔁 Number Theory & Modular Arithmetic (Euclidean, Fermat, Euler, CRT, Miller-Rabin, discrete log) `CSE717_InfoSec` | conf 5/5
 
 ## Recent pattern (last 3 days)
-- 2026-06-24: CSE711 Compiler EXAM DAY (10:30 AM). Exam now behind. End-of-day log not filled.
-- 2026-06-25: No daily log, no progress — post-exam decompression. Distributed reset (due) slipped.
-- 2026-06-26: CSE719 reset EXECUTED — materials in, _Topics/_TopicQuestionMap/_LecturePlan built, 14 topics ranked, DSM + Fundamentals wiki ingested (📖). End-of-day log left unfilled; spine core-learning not yet started.
+- 2026-06-26: Reset done — _Topics.md/_TopicQuestionMap.md/_LecturePlan.md built, DSM + Fundamentals wiki ingested (📖). End-of-day log unfilled.
+- 2026-06-27: Plan called for spine core learning (Cloud→RPC→Consistency); end-of-day log left unfilled, no completions confirmed.
+- 2026-06-28: No daily log created at all — rollover gap, zero confirmed progress on record.

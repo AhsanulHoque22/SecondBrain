@@ -1,8 +1,8 @@
 % CSE 719 — Distributed & Cloud Computing
-% Topic 7: Distributed System Fundamentals — Complete Model Answers (2020–2022)
+% Lecture 1: Distributed System Fundamentals — Model Answers (2020–2021)
 % University of Chittagong, 8th Semester B.Sc. Engineering
-% Source: Lecture-01 (Distributed Systems intro) + standard DS textbook (Tanenbaum / Sinha)
-% Compile with: pdflatex Fundamentals_Solutions.tex (run twice for TOC)
+% Note: 2022 and 2024 papers contain no Lecture-1 questions.
+% Compile: pdflatex Fundamentals_Solutions.tex (twice for TOC)
 
 \documentclass[12pt, a4paper]{article}
 
@@ -23,7 +23,6 @@
 \definecolor{boxbg}{RGB}{255,248,240}
 \definecolor{answerbg}{RGB}{240,247,255}
 \definecolor{notesbg}{RGB}{255,250,230}
-\definecolor{keyblue}{RGB}{0,80,160}
 
 %----- Box environments -----
 \mdfdefinestyle{qframe}{linecolor=orange!75!black, backgroundcolor=boxbg, roundcorner=4pt, linewidth=1.3pt, innertopmargin=6pt, innerbottommargin=6pt, innerleftmargin=9pt, innerrightmargin=9pt}
@@ -36,7 +35,7 @@
 %----- Page style -----
 \pagestyle{fancy}
 \fancyhf{}
-\lhead{\small\color{sectionblue} CSE 719 — Topic 7: Distributed System Fundamentals}
+\lhead{\small\color{sectionblue} CSE 719 — Lecture 1: Distributed System Fundamentals}
 \rhead{\small\color{sectionblue} Model Solutions}
 \cfoot{\small\thepage}
 \renewcommand{\headrulewidth}{0.5pt}
@@ -45,17 +44,16 @@
 \titleformat{\section}{\Large\bfseries\color{sectionblue}}{}{0em}{}[\vspace{-2pt}\color{sectionblue}\rule{\linewidth}{0.8pt}]
 \titleformat{\subsection}{\large\bfseries\color{sectionblue!85!black}}{}{0em}{}
 
-\newcommand{\qmarks}[1]{\hfill\textbf{\color{orange!70!black}[#1]}}
+\newcommand{\qmarks}[1]{\hfill\textbf{\color{orange!70!black}[#1 marks]}}
 
 %=====================================================================
 \begin{document}
 %=====================================================================
 \begin{center}
-  {\LARGE\bfseries\color{sectionblue} CSE 719: Distributed \& Cloud Computing}\\[0.6em]
-  {\Large\bfseries Topic 7 — Distributed System Fundamentals}\\[0.3em]
-  {\large Complete Model Answers (2020--2022)}\\[0.2em]
-  {\normalsize University of Chittagong \quad|\quad 8\textsuperscript{th} Semester B.Sc.\ (Engg.) Examination}\\[0.3em]
-  {\small Source: Lecture-01 (Distributed Systems intro) + standard DS textbook}
+  {\LARGE\bfseries\color{sectionblue} CSE 719: Distributed \& Cloud Computing}\\[0.5em]
+  {\Large\bfseries Lecture 1 — Distributed System Fundamentals}\\[0.3em]
+  {\large Model Answers: 2020 \& 2021 Papers}\\[0.2em]
+  {\small University of Chittagong \quad|\quad 8\textsuperscript{th} Sem B.Sc.\ (Engg.) \quad|\quad Source: Lecture-01 + Tanenbaum/Sinha}
 \end{center}
 
 \vspace{0.3em}\noindent\rule{\linewidth}{1pt}\vspace{0.5em}
@@ -63,196 +61,186 @@
 \newpage
 
 %=====================================================================
-\section{Core Theory — Reusable Across Years}
-%=====================================================================
-
-\subsection{Defining a Distributed System}
-\begin{solbox}
-\textbf{Tanenbaum:} ``A distributed system is a collection of independent computers that appear to its users as a single coherent system.''\\[3pt]
-\textbf{Working definition (Lecture-01):} a collection of \textbf{entities}, each \textbf{autonomous, programmable, asynchronous and failure-prone}, that communicate through an \textbf{unreliable communication medium}.
-\begin{itemize}[leftmargin=1.4cm, itemsep=1pt]
-  \item \textbf{Entity} = a process on a device (PC, PDA, server).
-  \item \textbf{Communication medium} = wired or wireless network.
-\end{itemize}
-\textbf{Examples:} Client--Server (NFS), the Web, the Internet, DNS, P2P overlays (BitTorrent), a cloud (Amazon EC2/S3, Azure), a datacenter (Google).
-\end{solbox}
-
-\subsection{The 9 Design Goals (Lecture-01)}
-\begin{center}\renewcommand{\arraystretch}{1.25}
-\begin{tabularx}{\linewidth}{l X}
-\toprule
-\textbf{Goal} & \textbf{Question it answers} \\
-\midrule
-Heterogeneity & Can it handle many types of PCs/devices? \\
-Robustness & Is it resilient to host crashes, failures, dropped messages? \\
-Availability & Are data + services always there for clients? \\
-Transparency & Can it hide internal workings from users? \\
-Concurrency & Can the server handle many clients at once? \\
-Efficiency & Is the service fast; does it use resources fully? \\
-Scalability & Can it grow to millions of nodes without degrading? \\
-Security & Can it withstand attacks? \\
-Openness & Is the system extensible? \\
-\bottomrule
-\end{tabularx}\end{center}
-
-\subsection{Key ``Hard'' Issues of Distributed Systems}
-\begin{itemize}[leftmargin=1.4cm, itemsep=1pt]
-  \item \textbf{No global clock} — no single correct notion of time (\textbf{asynchrony}).
-  \item \textbf{Unpredictable failures} — a missing response may be a crashed node, a down network path, or a slow link (\textbf{failure-prone, unreliable}).
-  \item \textbf{Highly variable bandwidth} (Kbps $\to$ Tbps) and \textbf{variable latency} (ms $\to$ seconds).
-  \item \textbf{Large, variable scale} — from 2 to several million hosts.
-\end{itemize}
-
-%=====================================================================
-\section{2020 Examination (CSE-813)}
+\section{2020 Examination (CSE-813, 52.5 marks)}
 %=====================================================================
 
 \subsection{Q1(a) — Define distributed and cloud systems; give examples \texorpdfstring{\qmarks{2+1}}{}}
 \begin{qbox}Define distributed and cloud systems. Give appropriate examples.\end{qbox}
 \begin{solbox}
-\textbf{Distributed system:} a collection of independent computers that appears to users as a single coherent system; entities are autonomous, asynchronous and failure-prone, communicating over an unreliable network. \emph{Examples:} the Web, NFS, DNS, BitTorrent.\\[3pt]
-\textbf{Cloud system:} a model for \textbf{on-demand, network access to a shared pool of configurable computing resources} (servers, storage, applications) that are rapidly provisioned and released, billed by consumption. \emph{Examples:} Amazon EC2/S3, Microsoft Azure, Google Cloud.\\[3pt]
-\textbf{Link:} a cloud is a large-scale distributed system offered as a metered utility.
+\textbf{Distributed System (Tanenbaum):}
+``A collection of independent computers that appears to its users as a single coherent system.''
+\begin{itemize}[leftmargin=1.4cm, itemsep=1pt]
+  \item Each node is \textbf{autonomous, asynchronous, and failure-prone}; they communicate via an \textbf{unreliable network}.
+  \item \textit{Examples:} the World Wide Web, DNS, NFS (file system), BitTorrent (P2P), Google Search.
+\end{itemize}
+
+\textbf{Cloud System:}
+A model for \textbf{on-demand, network access to a shared pool of configurable computing resources} (servers, storage, applications) that are rapidly provisioned and released, billed per use.
+\begin{itemize}[leftmargin=1.4cm, itemsep=1pt]
+  \item \textit{Examples:} Amazon EC2/S3 (IaaS), Google App Engine (PaaS), Microsoft Office 365 (SaaS).
+\end{itemize}
+
+\textbf{Relationship:} A cloud is a large-scale distributed system delivered as a metered utility over the internet.
 \end{solbox}
 
+%-------
 \subsection{Q1(b) — Tightly vs loosely coupled systems \texorpdfstring{\qmarks{3.25}}{}}
 \begin{qbox}Differentiate tightly and loosely coupled systems with appropriate figures.\end{qbox}
 \begin{solbox}
 \begin{center}\renewcommand{\arraystretch}{1.3}
 \begin{tabularx}{\linewidth}{l X X}
 \toprule
- & \textbf{Tightly coupled} & \textbf{Loosely coupled} \\
+\textbf{Criterion} & \textbf{Tightly Coupled} & \textbf{Loosely Coupled} \\
 \midrule
-Memory & \textbf{Shared} common memory (multiprocessor) & \textbf{Private} local memory each node (multicomputer) \\
-Communication & Through shared memory & By \textbf{message passing} over network \\
-Clock & Often common clock & Independent clocks \\
-Coupling & High; fast, low-latency & Low; slower, scalable \\
-Example & SMP / parallel machine & Distributed system / cluster \\
+Memory & \textbf{Shared} global memory & \textbf{Private} local memory per node \\
+Communication & Via shared memory reads/writes & Via \textbf{message passing} over network \\
+Clock & Common/synchronised clock & Independent clocks \\
+Coupling & High — fast, low-latency & Low — scalable, geo-distributed \\
+Failure model & One failure can affect all & Nodes fail independently \\
+Example & SMP multiprocessor & Distributed system / cluster \\
 \bottomrule
 \end{tabularx}\end{center}
-\textbf{Figure (describe in exam):}
-\begin{itemize}[leftmargin=1.4cm, itemsep=1pt]
-  \item Tightly coupled: several CPUs $\to$ one shared memory block via a common bus.
-  \item Loosely coupled: each CPU has its \emph{own} memory; CPUs connected by a network/communication link.
+
+\textbf{Figures (draw in exam):}
+\begin{itemize}[leftmargin=1.4cm, itemsep=2pt]
+  \item \textbf{Tightly coupled:} CPU$_1$, CPU$_2$, CPU$_3$ all connected via a \underline{common bus} to \underline{one shared memory block}.
+  \item \textbf{Loosely coupled:} Each node has CPU + its \underline{own memory}; nodes linked by a \underline{communication network} (LAN/WAN).
 \end{itemize}
 \end{solbox}
 
+%-------
 \subsection{Q1(c) — Distributed vs parallel processing \texorpdfstring{\qmarks{2.5}}{}}
 \begin{qbox}In what respect are distributed computing systems better than parallel processing systems?\end{qbox}
 \begin{solbox}
-\begin{itemize}[leftmargin=1.4cm, itemsep=2pt]
-  \item \textbf{Scalability} — distributed systems scale to geographically dispersed, virtually unlimited nodes; parallel systems are limited by a single machine's bus/memory.
-  \item \textbf{Resource \& information sharing} — remote resources (files, printers, data) shared across sites; parallel systems share only local resources.
-  \item \textbf{Reliability / fault tolerance} — no single point of failure; a crashed node need not stop the system. Parallel systems share memory, so a fault is more likely to be fatal.
-  \item \textbf{Cost-effectiveness} — built from commodity machines vs. expensive tightly-coupled hardware.
-  \item \textbf{Geographic distribution} — services located near users (lower latency); parallel processing is co-located.
+\begin{itemize}[leftmargin=1.4cm, itemsep=3pt]
+  \item \textbf{Scalability} — can scale to geographically dispersed, virtually unlimited nodes; parallel systems are bounded by a single machine's memory bus.
+  \item \textbf{Fault tolerance} — no single point of failure; a node crash need not halt the system. In shared-memory parallel systems a fault is often fatal.
+  \item \textbf{Resource \& information sharing} — remote files, printers, and databases shared across sites.
+  \item \textbf{Cost-effectiveness} — built from cheap commodity machines instead of expensive tightly-coupled hardware.
+  \item \textbf{Geographic distribution} — services placed near users, reducing latency; parallel processing is always co-located.
 \end{itemize}
 \end{solbox}
 
-\subsection{Q2(a) — Location vs relocation vs migration transparency \texorpdfstring{\qmarks{3}}{}}
+%-------
+\subsection{Q2(a) — Location, relocation, and migration transparency \texorpdfstring{\qmarks{3}}{}}
 \begin{qbox}How are location, relocation, and migration transparencies different from each other in distributed computing? Explain with examples.\end{qbox}
 \begin{solbox}
-\begin{center}\renewcommand{\arraystretch}{1.3}
+\begin{center}\renewcommand{\arraystretch}{1.35}
 \begin{tabularx}{\linewidth}{l X X}
 \toprule
-\textbf{Type} & \textbf{Hides} & \textbf{Example} \\
+\textbf{Type} & \textbf{What it hides} & \textbf{Example} \\
 \midrule
-\textbf{Location} & \emph{Where} a resource is physically located & A URL/DNS name gives no hint of the server's physical site. \\
-\textbf{Relocation} & That a resource \emph{moved} to another place \textbf{while in use} & A mobile user keeps a connection while the service is moved between servers. \\
-\textbf{Migration} & That a resource has \emph{moved} to another location (between accesses) & A file moved to another server; clients still use the same name. \\
+\textbf{Location} & \textit{Where} a resource physically resides & A URL/DNS name gives no hint of the server's geographic site. \\[4pt]
+\textbf{Migration} & That a resource has \textit{moved} to a new location (between client accesses) — name is unchanged & A file is silently migrated to another server; clients use the same path. \\[4pt]
+\textbf{Relocation} & That a resource \textit{moved while actively in use} & A mobile user's session continues uninterrupted while the backend server changes. \\
 \bottomrule
 \end{tabularx}\end{center}
-\textbf{Key distinction:} migration = resource can move (name unchanged); relocation = resource moves \emph{even while being accessed}; location = you cannot tell where it is at all.
+
+\textbf{Key distinction:} \textbf{Location} = you cannot see where it is. \textbf{Migration} = it moved between your accesses (name unchanged). \textbf{Relocation} = it moved \emph{during} your active connection.
 \end{solbox}
 
+%-------
 \subsection{Q2(c) — Design principles for better performance \texorpdfstring{\qmarks{3}}{}}
 \begin{qbox}What are the design principles considered useful for better performance in a distributed system?\end{qbox}
 \begin{solbox}
-\begin{itemize}[leftmargin=1.4cm, itemsep=2pt]
-  \item \textbf{Minimise network traffic / communication} — fewer, batched messages; exploit locality.
-  \item \textbf{Caching \& replication} — keep data near where it is used; reduce remote access.
-  \item \textbf{Exploit parallelism / concurrency} — overlap computation and communication.
-  \item \textbf{Reduce remote-access overhead} — move computation to data when cheaper.
-  \item \textbf{Load balancing} — distribute work evenly across nodes.
-  \item \textbf{Avoid centralised bottlenecks} — no single server/coordinator that all requests pass through.
-\end{itemize}
+\begin{enumerate}[leftmargin=1.6cm, itemsep=3pt]
+  \item \textbf{Minimise communication} — batch messages, reduce round trips; exploit data locality.
+  \item \textbf{Caching and replication} — keep frequently accessed data close to the consumer to reduce remote reads.
+  \item \textbf{Exploit parallelism / concurrency} — overlap I/O and computation; use pipelining.
+  \item \textbf{Move computation to data} — when data is large, send the program to the data node rather than the reverse.
+  \item \textbf{Avoid centralised bottlenecks} — no single server or coordinator that every request must pass through; use decentralised/peer algorithms.
+  \item \textbf{Load balancing} — distribute work evenly so no node is idle while others are saturated.
+\end{enumerate}
 \end{solbox}
 
 %=====================================================================
-\section{2021 Examination (CSE 813)}
+\section{2021 Examination (CSE 813, 52.5 marks)}
 %=====================================================================
 
 \subsection{Q1(a) — Define a distributed system; real-time examples \texorpdfstring{\qmarks{1.75}}{}}
 \begin{qbox}Define a distributed system. Mention a few real-time examples of distributed systems.\end{qbox}
 \begin{solbox}
-\textbf{Definition:} a collection of independent computers that appears to its users as a single coherent system, communicating by message passing over an unreliable network.\\[3pt]
-\textbf{Real-time examples:} air-traffic control, ATM / banking networks, telecom switching, multiplayer online games, sensor networks, the World Wide Web, Google search infrastructure.
+\textbf{Definition:} A collection of independent computers that appears to its users as \textbf{a single coherent system}, where entities communicate by message passing over an unreliable network.\\[4pt]
+\textbf{Real-time examples:}
+\begin{itemize}[leftmargin=1.4cm, itemsep=1pt]
+  \item Air-traffic control systems
+  \item ATM / inter-bank banking networks
+  \item Online multiplayer games
+  \item Sensor networks (IoT)
+  \item Telecom switching networks
+\end{itemize}
 \end{solbox}
 
+%-------
 \subsection{Q1(b) — Advantages over standalone; disadvantages \texorpdfstring{\qmarks{2.5}}{}}
 \begin{qbox}Mention the advantages of a distributed computing environment over standalone applications. What are the disadvantages of distributed systems?\end{qbox}
 \begin{solbox}
 \textbf{Advantages:}
-\begin{itemize}[leftmargin=1.4cm, itemsep=1pt]
-  \item Resource \& information sharing across sites.
-  \item Higher reliability / fault tolerance (no single point of failure).
-  \item Better price/performance via commodity hardware.
-  \item Scalability and incremental growth.
-  \item Geographic distribution $\Rightarrow$ lower latency to users.
+\begin{itemize}[leftmargin=1.4cm, itemsep=2pt]
+  \item \textbf{Resource sharing} — hardware, software, and data shared across sites.
+  \item \textbf{High reliability / fault tolerance} — redundancy; no single point of failure.
+  \item \textbf{Scalability} — add nodes incrementally without replacing the whole system.
+  \item \textbf{Cost-effective} — commodity hardware + shared infrastructure.
+  \item \textbf{Geographic distribution} — services closer to users $\Rightarrow$ lower latency.
 \end{itemize}
 \textbf{Disadvantages:}
-\begin{itemize}[leftmargin=1.4cm, itemsep=1pt]
-  \item \textbf{Complexity} — harder to design, debug, and reason about (no global clock).
-  \item \textbf{Network dependence} — failures/congestion degrade or stop the system.
-  \item \textbf{Security} — more attack surface; data crosses public links.
-  \item \textbf{Concurrency \& consistency} problems from shared data.
-  \item Troubleshooting and management overhead.
+\begin{itemize}[leftmargin=1.4cm, itemsep=2pt]
+  \item \textbf{Complexity} — no global clock; harder to design, test, and debug.
+  \item \textbf{Network dependence} — congestion/failure degrades or stops the system.
+  \item \textbf{Security} — larger attack surface; data transits public/untrusted networks.
+  \item \textbf{Consistency problems} — concurrent access to shared data requires synchronisation.
 \end{itemize}
 \end{solbox}
 
+%-------
 \subsection{Q1(c) — Scalability + challenges \texorpdfstring{\qmarks{2.5}}{}}
 \begin{qbox}Define scalability. What are the challenges involved in designing scalable distributed systems?\end{qbox}
 \begin{solbox}
-\textbf{Scalability:} the ability of a system to handle a growing amount of work (more nodes, users, or geographic spread) \textbf{without significant loss of performance}. Three dimensions: \textbf{size}, \textbf{geographic}, \textbf{administrative}.\\[3pt]
+\textbf{Scalability:} The ability of a system to \textbf{handle increasing load} (more nodes, users, or geographic spread) \textbf{without significant loss of performance}.\\
+Three dimensions: \textbf{size scalability} (more nodes/users), \textbf{geographic scalability} (wider area), \textbf{administrative scalability} (more organisations).\\[4pt]
 \textbf{Challenges:}
-\begin{itemize}[leftmargin=1.4cm, itemsep=1pt]
-  \item \textbf{Centralised components} (single server), \textbf{centralised data} (single DB), \textbf{centralised algorithms} (global state) all become bottlenecks $\Rightarrow$ avoid them.
-  \item \textbf{Communication latency} grows over wide-area distances.
-  \item \textbf{Keeping replicas consistent} as the system grows.
-  \item \textbf{Multiple administrative domains} — conflicting policies, security, trust.
+\begin{itemize}[leftmargin=1.4cm, itemsep=2pt]
+  \item \textbf{Centralised components} — a single server becomes a bottleneck under high load.
+  \item \textbf{Centralised data} — a single database cannot serve billions of requests.
+  \item \textbf{Centralised algorithms} — any algorithm requiring global state cannot scale.
+  \item \textbf{Communication latency} — grows as nodes spread across WAN distances.
+  \item \textbf{Replica consistency} — keeping distributed copies in sync is harder at scale.
 \end{itemize}
-\textbf{Techniques:} hiding latency (async/caching), distribution (partitioning), replication.
+\textbf{Solutions:} hiding latency (async/caching), partitioning (sharding), replication.
 \end{solbox}
 
-\subsection{Q1(d) — Marshalling/Unmarshalling; ACID \texorpdfstring{\qmarks{2}}{}}
+%-------
+\subsection{Q1(d) — Marshalling / Unmarshalling; ACID properties \texorpdfstring{\qmarks{2}}{}}
 \begin{qbox}Define Marshalling and Unmarshalling. What are the ACID properties?\end{qbox}
 \begin{solbox}
-\textbf{Marshalling:} packing a collection of data items into a form (a flat byte stream / external representation) suitable for transmission across a network — i.e.\ \textbf{serialization} of parameters/objects before sending.\\
-\textbf{Unmarshalling:} the inverse — \textbf{disassembling} the received stream back into the original data structures at the destination.\\[3pt]
-\textbf{ACID properties (transactions):}
-\begin{center}\renewcommand{\arraystretch}{1.2}
-\begin{tabularx}{\linewidth}{l X}
+\textbf{Marshalling:} The process of \textbf{packing data items into a flat byte stream} (external representation) suitable for transmission across a network. (Also called \emph{serialisation}.)\\[3pt]
+\textbf{Unmarshalling:} The inverse — \textbf{disassembling the received byte stream} back into the original data structures at the destination.\\[6pt]
+\textbf{ACID Properties (transactions):}
+\begin{center}\renewcommand{\arraystretch}{1.25}
+\begin{tabularx}{\linewidth}{l l X}
 \toprule
-\textbf{Atomicity} & All-or-nothing: a transaction either completes fully or has no effect. \\
-\textbf{Consistency} & Takes the database from one valid state to another (invariants preserved). \\
-\textbf{Isolation} & Concurrent transactions do not interfere; result equals some serial order. \\
-\textbf{Durability} & Once committed, effects survive crashes (persisted). \\
+\textbf{Letter} & \textbf{Property} & \textbf{Meaning} \\
+\midrule
+A & Atomicity & All-or-nothing: a transaction either completes fully or leaves no trace. \\
+C & Consistency & Takes the database from one \textbf{valid state} to another (no invariant is broken). \\
+I & Isolation & Concurrent transactions do not interfere; result equals some \textbf{serial} execution. \\
+D & Durability & Once committed, changes \textbf{survive crashes} (written to persistent storage). \\
 \bottomrule
 \end{tabularx}\end{center}
 \end{solbox}
 
 %=====================================================================
-\section{Quick Summary — Exam Patterns}
+\section{Quick Summary — Exam Patterns \& Must-Know}
 %=====================================================================
 \begin{notesbox}
-\begin{itemize}[leftmargin=1.3cm, itemsep=2pt]
-  \item \textbf{Q1 of Section A is almost always fundamentals} (2020 \& 2021). Have the \textbf{definition + examples} ready cold — it opens both papers.
-  \item \textbf{Definition} (Tanenbaum one-liner + working definition) and \textbf{examples} recur every year — guaranteed easy marks.
-  \item \textbf{Transparencies} (2020 Q2a): know all named ones but be ready to \emph{differentiate} location / relocation / migration specifically.
-  \item \textbf{Coupling} (2020 Q1b): always asks for \textbf{figures} — draw shared-memory vs private-memory diagrams.
-  \item \textbf{Scalability} (2021 Q1c): define + the 3 centralisation pitfalls.
-  \item \textbf{Marshalling + ACID} (2021 Q1d): two-part; keep each crisp — serialization + the 4 ACID terms.
-  \item \emph{Note:} only Lecture-01's definition/design-goals/issues are slide-backed; coupling, transparencies, ACID come from the textbook — confirm figures from Sinha before the exam.
+\begin{itemize}[leftmargin=1.3cm, itemsep=3pt]
+  \item \textbf{Q1 of Section A = Fundamentals (2020 \& 2021).} Definition + examples open both papers — have them memorised cold.
+  \item \textbf{2022 \& 2024 papers have no Lecture-1 questions.} All coverage is from 2020 and 2021.
+  \item \textbf{Transparencies (2020 Q2a):} distinguish \textit{Location} vs \textit{Migration} vs \textit{Relocation} clearly — the examiner tests the differences, not just names.
+  \item \textbf{Coupling (2020 Q1b):} question always says ``with appropriate figures'' — draw shared-memory vs private-memory diagrams explicitly.
+  \item \textbf{Scalability (2021 Q1c):} three dimensions + the three centralisation pitfalls (component, data, algorithm) $\Rightarrow$ 5 marks in this style.
+  \item \textbf{Marshalling + ACID (2021 Q1d):} two-parter for only 2 marks — keep each part to 2–3 lines.
+  \item \textbf{Slide vs textbook:} DS definition/design-goals/hard-issues = Lecture-01 slides. Coupling, transparencies, ACID = Tanenbaum/Sinha textbook.
 \end{itemize}
 \end{notesbox}
 

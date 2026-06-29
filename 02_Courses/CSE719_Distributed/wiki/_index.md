@@ -7,7 +7,7 @@ Course: Dr. Atiqur Rahman, Univ. of Chittagong. Exam Wed 1 Jul 2026.
 | Yield | Topic | Page | Lecture source |
 |:-----:|-------|------|----------------|
 | 5/5 | DSM (Distributed Shared Memory) | [[dsm]] | Lecture-09 |
-| 5/5 | Cloud Computing fundamentals | _pending_ | Lecture-01/02, Unit 3/4 |
+| 5/5 | Cloud Computing fundamentals | [[cloud-computing]] | Lecture-02 + Unit 3/4 |
 | 5/5 | RPC | _pending_ | (TBD lecture) |
 | 5/5 | Consistency models | _pending_ | Lecture-09 (+ own page) |
 | 4/5 | Distributed File Systems + AFS | _pending_ | (TBD) |
@@ -18,7 +18,7 @@ Course: Dr. Atiqur Rahman, Univ. of Chittagong. Exam Wed 1 Jul 2026.
 | L | Title | Topic | Yield |
 |---|---|---|:---:|
 | 1 | Distributed Systems intro | Fundamentals (#7) ✅ ingested | 4/5 |
-| 2 | Intro to Cloud Computing | Cloud (#2) | 5/5 ⭐ |
+| 2 | Intro to Cloud Computing | Cloud (#2) ✅ ingested | 5/5 ⭐ |
 | 3 | MapReduce & Hadoop | MapReduce (#8) | 3/5 |
 | 4 | Failure Detection & Membership | Heartbeat/Fault (#13/#14) | 2/5 |
 | 5 | Replication Control | Replication/Transactions (#4/#6) | 4/5 |

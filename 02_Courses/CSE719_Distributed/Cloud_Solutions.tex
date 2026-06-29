@@ -1,0 +1,594 @@
+% CSE 719 — Distributed & Cloud Computing
+% Lecture 2: Cloud Computing — Model Answers (2020–2024)
+% University of Chittagong, 8th Semester B.Sc. Engineering
+% Note: 2020 Q1a (cloud+distributed definition) answered in Fundamentals_Solutions.pdf
+% Compile: pdflatex Cloud_Solutions.tex (twice for TOC)
+
+\documentclass[12pt, a4paper]{article}
+
+\usepackage[left=2.5cm, right=2.5cm, top=2.8cm, bottom=2.8cm, headheight=15pt]{geometry}
+\usepackage{amsmath, amssymb}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{xcolor}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{mdframed}
+\usepackage{tabularx}
+\usepackage{hyperref}
+
+%----- Colours -----
+\definecolor{sectionblue}{RGB}{10,60,110}
+\definecolor{boxbg}{RGB}{255,248,240}
+\definecolor{answerbg}{RGB}{240,247,255}
+\definecolor{notesbg}{RGB}{255,250,230}
+
+%----- Box environments -----
+\mdfdefinestyle{qframe}{linecolor=orange!75!black, backgroundcolor=boxbg, roundcorner=4pt, linewidth=1.3pt, innertopmargin=6pt, innerbottommargin=6pt, innerleftmargin=9pt, innerrightmargin=9pt}
+\mdfdefinestyle{solframe}{linecolor=sectionblue, backgroundcolor=answerbg, roundcorner=4pt, linewidth=1.3pt, innertopmargin=7pt, innerbottommargin=7pt, innerleftmargin=9pt, innerrightmargin=9pt}
+\mdfdefinestyle{notesframe}{linecolor=orange!70!black, backgroundcolor=notesbg, roundcorner=4pt, linewidth=1pt, innertopmargin=5pt, innerbottommargin=5pt, innerleftmargin=8pt, innerrightmargin=8pt}
+\newenvironment{qbox}{\begin{mdframed}[style=qframe]}{\end{mdframed}}
+\newenvironment{solbox}{\begin{mdframed}[style=solframe]}{\end{mdframed}}
+\newenvironment{notesbox}{\begin{mdframed}[style=notesframe]}{\end{mdframed}}
+
+%----- Page style -----
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{\small\color{sectionblue} CSE 719 --- Lecture 2: Cloud Computing}
+\rhead{\small\color{sectionblue} Model Solutions}
+\cfoot{\small\thepage}
+\renewcommand{\headrulewidth}{0.5pt}
+
+%----- Section formatting -----
+\titleformat{\section}{\Large\bfseries\color{sectionblue}}{}{0em}{}[\vspace{-2pt}\color{sectionblue}\rule{\linewidth}{0.8pt}]
+\titleformat{\subsection}{\large\bfseries\color{sectionblue!85!black}}{}{0em}{}
+
+\newcommand{\qmarks}[1]{\hfill\textbf{\color{orange!70!black}[#1 marks]}}
+
+%=====================================================================
+\begin{document}
+%=====================================================================
+\begin{center}
+  {\LARGE\bfseries\color{sectionblue} CSE 719: Distributed \& Cloud Computing}\\[0.5em]
+  {\Large\bfseries Lecture 2 --- Cloud Computing}\\[0.3em]
+  {\large Model Answers: 2020, 2021, 2022 \& 2024 Papers}\\[0.2em]
+  {\small University of Chittagong \quad|\quad 8\textsuperscript{th} Sem B.Sc.\ (Engg.)
+  \quad|\quad Sources: Lecture-02 + Unit~3/4 Readings}
+\end{center}
+\vspace{0.3em}\noindent\rule{\linewidth}{1pt}\vspace{0.5em}
+\tableofcontents
+\newpage
+
+%=====================================================================
+\section{2020 Examination (CSE-813, 52.5 marks)}
+%=====================================================================
+
+\textit{Note: 2020 Q1(a) ``Define distributed and cloud systems'' is answered in
+\textbf{Fundamentals\_Solutions.pdf} (shared question, see that file).}
+
+%-------
+\subsection{Q8(a) --- Define cloud computing; advantages and disadvantages
+  \texorpdfstring{\qmarks{2}}{}}
+\begin{qbox}Define cloud computing with its advantages and disadvantages.\end{qbox}
+\begin{solbox}
+\textbf{Definition (NIST):} Cloud computing is a model for enabling \textbf{convenient,
+on-demand network access to a shared pool of configurable computing resources} (networks,
+servers, storage, applications, services) that can be \textbf{rapidly provisioned and released}
+with minimal management effort or service-provider interaction.\\[4pt]
+
+\textbf{Advantages:}
+\begin{itemize}[leftmargin=1.4cm, itemsep=1pt]
+  \item \textbf{Scalability / Flexibility} --- instantly scale resources up or down; access from
+    any internet-connected device.
+  \item \textbf{Cost reduction} --- pay-as-you-go; no upfront capital expenditure on hardware.
+  \item \textbf{Maintenance offloaded} --- vendor handles patches, updates, monitoring, and
+    backups.
+  \item \textbf{High availability} --- provider manages fault tolerance; 99.9\%+ SLA uptime
+    guaranteed.
+\end{itemize}
+
+\textbf{Disadvantages:}
+\begin{itemize}[leftmargin=1.4cm, itemsep=1pt]
+  \item \textbf{Security \& Privacy} --- sensitive data resides on third-party shared
+    infrastructure.
+  \item \textbf{Vendor lock-in} --- proprietary APIs make migration to another provider
+    costly.
+  \item \textbf{Network dependency} --- no internet $\Rightarrow$ no access to applications
+    or data.
+  \item \textbf{Data migration} --- moving large datasets in/out of a provider is slow and
+    expensive.
+\end{itemize}
+\end{solbox}
+
+%-------
+\subsection{Q8(b) --- E-commerce website: cloud services and deployment models
+  \texorpdfstring{\qmarks{4}}{}}
+\begin{qbox}What cloud services and deployment models would you choose for building an
+e-commerce website? Justify your choices.\end{qbox}
+\begin{solbox}
+\textbf{Cloud Services (by layer):}
+\begin{center}\renewcommand{\arraystretch}{1.3}
+\begin{tabularx}{\linewidth}{l l X}
+\toprule
+\textbf{Need} & \textbf{Service Model} & \textbf{Justification} \\
+\midrule
+Web app hosting & \textbf{PaaS} & Runtime + middleware pre-configured; no OS management; auto-scaling built in (e.g.\ Google App Engine, Heroku). \\
+Database / Storage & \textbf{IaaS} & Full control over DB config, replication, and storage volumes (e.g.\ AWS EC2 + EBS). \\
+Payment / CRM / Email & \textbf{SaaS} & Off-the-shelf, no custom build --- Stripe (payments), Salesforce (CRM), SendGrid (email). \\
+\bottomrule
+\end{tabularx}\end{center}
+
+\textbf{Deployment Model:}
+\begin{itemize}[leftmargin=1.4cm, itemsep=3pt]
+  \item \textbf{Public cloud} (e.g.\ AWS, Azure) for product catalog, storefront, CDN ---
+    globally distributed, cost-effective, handles traffic spikes.
+  \item \textbf{Private cloud} for payment processing and customer PII ---
+    required for regulatory compliance (PCI-DSS, GDPR).
+  \item \textbf{Hybrid cloud} overall: routine traffic on public; sensitive data on private;
+    \textbf{cloud bursting} to public during sales peaks.
+\end{itemize}
+
+\textbf{Justification:} Hybrid maximises cost efficiency while satisfying compliance.
+PaaS accelerates development; SaaS avoids reinventing commodity services.
+\end{solbox}
+
+%-------
+\subsection{Q8(c) --- Cloud aspects for prognostic health management
+  \texorpdfstring{\qmarks{2.75}}{}}
+\begin{qbox}What aspects of cloud computing are useful for prognostic health management
+applications?\end{qbox}
+\begin{solbox}
+\begin{itemize}[leftmargin=1.4cm, itemsep=3pt]
+  \item \textbf{Elastic scalability} --- health sensor data volume is unpredictable; cloud
+    elastically provisions compute for ML inference and analytics bursts on demand.
+  \item \textbf{Storage elasticity} --- continuous streams of patient/sensor data require
+    virtually unlimited storage (e.g.\ Amazon S3, Azure Blob); no pre-purchase.
+  \item \textbf{High availability / Reliability} --- provider-managed fault tolerance ensures
+    24/7 uptime; critical for real-time health monitoring alerts.
+  \item \textbf{Pay-per-use} --- health analytics is batch-heavy; pay only during computation
+    phases, not for idle hardware.
+  \item \textbf{Security controls} --- encryption at rest/in transit, role-based access control,
+    and audit logs required under HIPAA/health regulations.
+\end{itemize}
+\end{solbox}
+
+%=====================================================================
+\section{2021 Examination (CSE 813, 52.5 marks)}
+%=====================================================================
+
+%-------
+\subsection{Q3(a) --- E-commerce: cloud services and deployment models
+  \texorpdfstring{\qmarks{2.75}}{}}
+\begin{qbox}Which cloud services and deployment models would you adopt for building an
+e-commerce website?\end{qbox}
+\begin{solbox}
+\textbf{Cloud services:}
+\begin{itemize}[leftmargin=1.4cm, itemsep=1pt]
+  \item \textbf{IaaS} --- virtual servers for databases; object storage for product images.
+  \item \textbf{PaaS} --- web application hosting platform: runtime, middleware, and
+    auto-scaling.
+  \item \textbf{SaaS} --- payment gateway, email, CRM (no custom build needed).
+\end{itemize}
+\textbf{Deployment model:}
+\begin{itemize}[leftmargin=1.4cm, itemsep=1pt]
+  \item \textbf{Hybrid} = Public cloud for storefront and CDN (scalable, low cost) +
+    Private cloud for payment/customer PII (regulatory compliance).
+  \item Cloud \textbf{bursting}: overflow peak-season traffic to public cloud automatically.
+\end{itemize}
+\end{solbox}
+
+%-------
+\subsection{Q4(c) --- Phases in cloud architecture \texorpdfstring{\qmarks{1}}{}}
+\begin{qbox}What are the phases involved in cloud architecture?\end{qbox}
+\begin{solbox}
+Cloud architecture is built in three successive phases:
+\begin{enumerate}[leftmargin=1.6cm, itemsep=2pt]
+  \item \textbf{Infrastructure phase (IaaS)} --- physical hardware (servers, storage, network)
+    is abstracted via \textbf{virtualization (hypervisor)} into on-demand virtual resources.
+  \item \textbf{Platform phase (PaaS)} --- runtime environment, middleware, databases, and
+    dev/deployment tools are provisioned on top of the virtual infrastructure.
+  \item \textbf{Application phase (SaaS)} --- end-user software is delivered over the internet;
+    fully managed by the provider with no user infrastructure responsibility.
+\end{enumerate}
+\end{solbox}
+
+%-------
+\subsection{Q5(a) --- On-demand functionality in cloud
+  \texorpdfstring{\qmarks{1.75}}{}}
+\begin{qbox}What is on-demand functionality? How is it provided in cloud computing?\end{qbox}
+\begin{solbox}
+\textbf{On-demand:} Computing resources (compute, storage, bandwidth) are
+\textbf{provisioned automatically and immediately} as the user requests them,
+\textbf{without any human intervention} from the provider's side.\\[4pt]
+
+\textbf{How it is provided:}
+\begin{enumerate}[leftmargin=1.6cm, itemsep=2pt]
+  \item Provider maintains \textbf{large shared resource pools} (CPU, RAM, disk, bandwidth).
+  \item User requests resources via a \textbf{self-service portal or API} (no phone call to
+    provider needed).
+  \item The \textbf{hypervisor / orchestration layer} allocates a VM or container within
+    seconds.
+  \item \textbf{Auto-scaling} monitors load and adds/removes instances dynamically.
+  \item \textbf{Metering} tracks consumption; billing reflects actual usage only.
+\end{enumerate}
+\textit{Key idea:} the user perceives an \textbf{illusion of infinite resources} available
+instantly on demand.
+\end{solbox}
+
+%-------
+\subsection{Q5(b) --- What is a cloud? Large-scale cloud platforms
+  \texorpdfstring{\qmarks{1}}{}}
+\begin{qbox}What is a cloud? Name some platforms used for large-scale cloud computing.\end{qbox}
+\begin{solbox}
+\textbf{Cloud (Vaquero et al.):} ``A large pool of easily usable and accessible
+\textbf{virtualised resources} (hardware, development platforms, services), dynamically
+reconfigured to adjust to a variable load, allowing for optimum resource utilisation via a
+\textbf{pay-per-use} model where guarantees are offered by the provider via SLAs.''\\[4pt]
+
+\textbf{Large-scale cloud platforms:}
+\begin{itemize}[leftmargin=1.4cm, itemsep=1pt]
+  \item \textbf{Amazon EC2 / S3} (AWS) --- dominant public IaaS; virtual machines + object
+    storage.
+  \item \textbf{Microsoft Azure} --- enterprise-focused public cloud; strong hybrid
+    integration.
+  \item \textbf{Google Cloud / GCE} --- strong in big data analytics and Kubernetes.
+  \item \textbf{EUCALYPTUS} --- open-source \textbf{private} cloud platform, AWS-compatible
+    API.
+\end{itemize}
+\end{solbox}
+
+%-------
+\subsection{Q5(c) --- Layers in cloud; cloud vs.\ distributed computing
+  \texorpdfstring{\qmarks{3}}{}}
+\begin{qbox}Explain the layers in cloud computing and how they work. Differentiate between
+cloud and distributed computing.\end{qbox}
+\begin{solbox}
+\textbf{Layers in cloud (bottom to top):}
+\begin{center}\renewcommand{\arraystretch}{1.3}
+\begin{tabularx}{\linewidth}{l l X}
+\toprule
+\textbf{Layer} & \textbf{Model} & \textbf{What it provides} \\
+\midrule
+1. Physical       & Datacenter    & Servers, switches, power, cooling --- owned by provider. \\
+2. Virtualization & Hypervisor    & Abstracts physical hardware into isolated VMs. \\
+3. Infrastructure & IaaS          & On-demand VMs, virtual storage, virtual networking. \\
+4. Platform       & PaaS          & Runtime, DB, dev tools on top of IaaS. \\
+5. Application    & SaaS          & End-user apps delivered via browser; zero local install. \\
+\bottomrule
+\end{tabularx}\end{center}
+\textit{How it works:} User code runs in SaaS; SaaS is built on PaaS (execution environment);
+PaaS runs on IaaS (virtual servers); IaaS sits on the physical datacenter.\\[6pt]
+
+\textbf{Cloud vs.\ Distributed Computing:}
+\begin{center}\renewcommand{\arraystretch}{1.25}
+\begin{tabularx}{\linewidth}{l X X}
+\toprule
+\textbf{Criterion} & \textbf{Distributed Computing} & \textbf{Cloud Computing} \\
+\midrule
+Scope        & General model: independent nodes cooperating over a network & Specific implementation delivered as a \textbf{metered utility service} \\
+Business model & None inherent & \textbf{Pay-per-use} (OPEX, not CAPEX) \\
+Provisioning & Static / pre-allocated by admin & \textbf{Elastic, self-service, on-demand} \\
+Management   & User/admin manages nodes & \textbf{Provider} manages all infrastructure \\
+Multi-tenancy & Rare & \textbf{Core feature} (shared physical resources) \\
+Examples     & DNS, P2P networks, MPI cluster & AWS EC2, Azure, Google Cloud \\
+\bottomrule
+\end{tabularx}\end{center}
+\textbf{Key:} Every cloud is a distributed system, but not every distributed system is a
+cloud.
+\end{solbox}
+
+%-------
+\subsection{Q5(d) --- EUCALYPTUS: what it is, why used, deployment models
+  \texorpdfstring{\qmarks{3}}{}}
+\begin{qbox}What is EUCALYPTUS? Why is it used? Explain the cloud deployment models.\end{qbox}
+\begin{solbox}
+\textbf{EUCALYPTUS} (\textit{Elastic Utility Computing Architecture for Linking Your
+Programs To Useful Systems}):
+\begin{itemize}[leftmargin=1.4cm, itemsep=2pt]
+  \item Open-source software framework for building \textbf{private cloud environments} on
+    an organisation's existing on-premises hardware.
+  \item Implements an \textbf{AWS-compatible API}: tools and scripts written for Amazon EC2
+    work on EUCALYPTUS without modification.
+  \item Provides IaaS capabilities: VM provisioning, virtual networking, elastic storage ---
+    all behind the organisation's firewall.
+\end{itemize}
+
+\textbf{Why used:}
+\begin{itemize}[leftmargin=1.4cm, itemsep=2pt]
+  \item Organisations want cloud elasticity and self-service but \textbf{cannot put data in a
+    public cloud} (security policy, data sovereignty regulations, low-latency requirements).
+  \item Virtualises in-house servers to reduce idle capacity and hardware sprawl.
+  \item AWS-compatible API provides a \textbf{future migration path} to public cloud.
+\end{itemize}
+
+\textbf{Cloud Deployment Models:}
+\begin{center}\renewcommand{\arraystretch}{1.3}
+\begin{tabularx}{\linewidth}{l X}
+\toprule
+\textbf{Model} & \textbf{Description} \\
+\midrule
+\textbf{Public}    & Infrastructure owned by a provider (IBM, Google, Amazon); open to paying
+                     customers over the internet. \\
+\textbf{Private}   & Infrastructure dedicated to a single organisation; may be on-premises
+                     (EUCALYPTUS) or hosted exclusively. \\
+\textbf{Hybrid}    & Combination of public + private; private for sensitive/regulated workloads,
+                     public for elastic bursting. \\
+\textbf{Community} & Shared by a consortium of organisations with common concerns (e.g.\ research
+                     universities, government agencies). \\
+\bottomrule
+\end{tabularx}\end{center}
+\end{solbox}
+
+%=====================================================================
+\section{2022 Examination (CSE 513, 54 marks)}
+%=====================================================================
+
+%-------
+\subsection{Q1(a) --- Define cloud computing; horizontal vs.\ vertical scaling
+  \texorpdfstring{\qmarks{5}}{}}
+\begin{qbox}Define cloud computing. Explain horizontal and vertical scaling with suitable
+scenarios.\end{qbox}
+\begin{solbox}
+\textbf{Definition (NIST):} Cloud computing is a model for enabling \textbf{convenient,
+on-demand network access to a shared pool of configurable computing resources} that can be
+\textbf{rapidly provisioned and released} with minimal management effort or service provider
+interaction.\\[6pt]
+
+\textbf{Scaling strategies:}
+\begin{center}\renewcommand{\arraystretch}{1.3}
+\begin{tabularx}{\linewidth}{l X X}
+\toprule
+\textbf{Criterion} & \textbf{Vertical Scaling (Scale Up)} & \textbf{Horizontal Scaling (Scale Out)} \\
+\midrule
+Method           & Add more CPU/RAM/disk to the \textbf{same machine} & Add \textbf{more machines} to the pool \\
+Upper limit      & Hardware ceiling of one server & Virtually unlimited (commodity nodes) \\
+Downtime         & Often requires restart & None (add/remove nodes live) \\
+App changes      & Usually none & May need load balancer, stateless design \\
+Fault tolerance  & Single point of failure & No single point of failure \\
+Cost             & Expensive (enterprise hardware) & Cheap (commodity servers) \\
+\bottomrule
+\end{tabularx}\end{center}
+
+\textbf{Scenarios:}
+\begin{itemize}[leftmargin=1.4cm, itemsep=3pt]
+  \item \textbf{Vertical} --- a legacy monolithic relational database (Oracle) that cannot be
+    sharded: give it more RAM/CPU cores. Also suitable as a short-term emergency fix.
+  \item \textbf{Horizontal} --- a stateless web/application server tier: add instances behind a
+    load balancer. Cloud auto-scaling groups exploit this model for variable traffic.
+\end{itemize}
+\textbf{Cloud preference:} Horizontal scaling aligns with cloud economics --- use many cheap
+VMs; add and remove them elastically.
+\end{solbox}
+
+%-------
+\subsection{Q1(b) --- E-commerce: cloud services and deployment model
+  \texorpdfstring{\qmarks{2}}{}}
+\begin{qbox}Which cloud services and deployment model would you suggest for an e-commerce
+website?\end{qbox}
+\begin{solbox}
+\begin{itemize}[leftmargin=1.4cm, itemsep=1pt]
+  \item \textbf{IaaS} for database VMs and object storage (product images, order logs).
+  \item \textbf{PaaS} for web application tier --- auto-scaled runtime, no OS management.
+  \item \textbf{SaaS} for payment gateway, email service, and analytics.
+  \item \textbf{Hybrid deployment:} public cloud for storefront and CDN (scalable, cheap);
+    private cloud for payment/customer PII (compliance); cloud burst to public at peak sales.
+\end{itemize}
+\end{solbox}
+
+%-------
+\subsection{Q1(c) --- What is multi-tenancy? \texorpdfstring{\qmarks{2}}{}}
+\begin{qbox}What is multi-tenancy in cloud computing?\end{qbox}
+\begin{solbox}
+\textbf{Multi-tenancy:} Multiple customers (\emph{tenants}) share the \textbf{same physical
+infrastructure and software instances}, while each tenant's data and configuration remain
+\textbf{logically isolated} from every other tenant.\\[4pt]
+
+\textbf{Why it matters:}
+\begin{itemize}[leftmargin=1.4cm, itemsep=2pt]
+  \item \textbf{Economic model:} provider spreads fixed infrastructure costs across many
+    tenants $\Rightarrow$ lower per-customer price.
+  \item \textbf{High server utilisation:} shared servers are rarely idle; CPU cycles are sold
+    continuously.
+\end{itemize}
+
+\textbf{Risks:}
+\begin{itemize}[leftmargin=1.4cm, itemsep=1pt]
+  \item \textbf{Data leakage} between tenants if VM isolation is misconfigured.
+  \item \textbf{Noisy neighbour} effect: one tenant's heavy workload degrades another's
+    performance on the same physical host.
+\end{itemize}
+
+\textbf{SaaS maturity (Levels 1--4):} Level~1 = separate instance per tenant (weakest, no
+sharing). Level~4 = single instance, single database, configurable per-tenant views (most
+efficient multi-tenancy).
+\end{solbox}
+
+%-------
+\subsection{Q2(a) --- EC2 VMs vs.\ physical machines: three benefits to Amazon
+  \texorpdfstring{\qmarks{3}}{}}
+\begin{qbox}Compare EC2 virtual machines with physical machines. State three benefits Amazon
+gains by offering VMs instead of leasing physical machines. What motivated Amazon to start
+EC2?\end{qbox}
+\begin{solbox}
+\textbf{Three benefits to Amazon of VMs over physical machine leasing:}
+\begin{enumerate}[leftmargin=1.6cm, itemsep=3pt]
+  \item \textbf{Higher server utilisation} --- multiple VMs packed on one physical server
+    raise utilisation from $\sim$10--20\% to $>$80\%. More revenue per rack, same power
+    and cooling cost.
+  \item \textbf{Flexible, fine-grained billing} --- sell fractional capacity (micro, small,
+    large, GPU instances) at different price points; maximise yield from each physical
+    machine. Physical leasing is coarse-grained (whole server).
+  \item \textbf{Strong isolation and safe multi-tenancy} --- hypervisor provides
+    hardware-level memory and I/O isolation between tenants; one customer's VM cannot read
+    another's memory. Enables renting the same physical server to many customers
+    simultaneously.
+\end{enumerate}
+
+\textbf{Motivation for EC2:} Amazon sized its datacenters for \textbf{peak holiday shopping
+traffic}. During 99\% of the year that capacity was idle. EC2 was launched in 2006 to
+\textbf{monetise excess capacity} --- what began as internal infrastructure became the
+world's dominant public IaaS platform.
+\end{solbox}
+
+%=====================================================================
+\section{2024 Examination (CSE-813, 54 marks)}
+%=====================================================================
+
+%-------
+\subsection{Q5(a) --- Two benefits and two drawbacks of cloud for enterprises
+  \texorpdfstring{\qmarks{2.5}}{}}
+\begin{qbox}State two benefits and two drawbacks of cloud computing for enterprises.\end{qbox}
+\begin{solbox}
+\textbf{Benefits:}
+\begin{enumerate}[leftmargin=1.6cm, itemsep=3pt]
+  \item \textbf{Reduced capital expenditure} --- pay-as-you-go converts server buying (CAPEX)
+    into a monthly utility bill (OPEX); small and medium enterprises access the infrastructure
+    of corporate giants with no upfront investment.
+  \item \textbf{Elastic scalability on demand} --- instantly provision extra compute for
+    demand spikes (product launches, end-of-quarter runs) without buying hardware that sits
+    idle the rest of the year.
+\end{enumerate}
+
+\textbf{Drawbacks:}
+\begin{enumerate}[leftmargin=1.6cm, itemsep=3pt]
+  \item \textbf{Security and privacy risk} --- sensitive corporate data (IP, financials,
+    customer records) resides on third-party shared infrastructure; data breaches or
+    regulatory non-compliance (GDPR) expose the enterprise to liability.
+  \item \textbf{Vendor lock-in} --- heavy use of provider-specific services (AWS Lambda,
+    Azure Cosmos DB, Google BigQuery) makes migration to a competitor slow and expensive;
+    the enterprise loses negotiating leverage over pricing and SLAs.
+\end{enumerate}
+\end{solbox}
+
+%-------
+\subsection{Q5(b) --- Virtualization in cloud; two benefits to providers
+  \texorpdfstring{\qmarks{2.5}}{}}
+\begin{qbox}Explain the fundamental concept of virtualization in cloud computing. State two
+benefits of virtualization to cloud providers for resource management.\end{qbox}
+\begin{solbox}
+\textbf{Virtualization in cloud:}
+\begin{itemize}[leftmargin=1.4cm, itemsep=2pt]
+  \item A \textbf{hypervisor} (Virtual Machine Monitor) runs directly on physical hardware
+    and \textbf{abstracts hardware resources} into multiple independent \textbf{Virtual
+    Machines (VMs)}.
+  \item Each VM has its own OS, CPU allocation, memory, and disk --- fully \textbf{isolated}
+    from other VMs on the same physical server.
+  \item The stack: \textbf{Physical hardware}
+    $\rightarrow$ \textbf{Hypervisor}
+    $\rightarrow$ \textbf{VMs (Guest OS + Applications)}.
+  \item Types: \textit{Full virtualisation} (Type-1 bare-metal: VMware ESXi, Xen, KVM) and
+    \textit{para-virtualisation} (guest OS is aware of the hypervisor, lower overhead).
+\end{itemize}
+
+\textbf{Two benefits to cloud providers:}
+\begin{enumerate}[leftmargin=1.6cm, itemsep=3pt]
+  \item \textbf{Dramatically higher server utilisation} --- packing multiple VMs on one
+    physical server raises utilisation from $\sim$20\% to $>$80\%, reducing the number of
+    physical machines (and their power/cooling cost) for a given workload.
+  \item \textbf{Rapid, flexible provisioning} --- a new VM is created in seconds from a
+    template; the provider scales customer capacity instantly without shipping or installing
+    new hardware, enabling true on-demand elasticity.
+\end{enumerate}
+\end{solbox}
+
+%-------
+\subsection{Q6(b) --- IaaS vs.\ PaaS trade-offs for e-commerce migration
+  \texorpdfstring{\qmarks{3}}{}}
+\begin{qbox}An e-commerce company is migrating to the cloud. Compare IaaS and PaaS on:
+development speed, operational overhead, vendor lock-in, and scalability.\end{qbox}
+\begin{solbox}
+\begin{center}\renewcommand{\arraystretch}{1.35}
+\begin{tabularx}{\linewidth}{l X X}
+\toprule
+\textbf{Criterion} & \textbf{IaaS} & \textbf{PaaS} \\
+\midrule
+\textbf{Dev speed}  & Slow --- team must install and configure OS, web server, runtime,
+                      middleware & Fast --- platform pre-configured; developer deploys code directly \\[4pt]
+\textbf{Op.\ overhead} & High --- team manages OS patches, security hardening, scaling
+                      configuration & Low --- provider manages OS, middleware, runtime updates \\[4pt]
+\textbf{Vendor lock-in} & Low --- VMs are portable; standard OS (Linux/Windows) is the only
+                      dependency & High --- proprietary runtimes, build APIs (e.g.\ AWS Elastic
+                      Beanstalk, Heroku) \\[4pt]
+\textbf{Scalability} & Manual --- team configures auto-scaling rules and load balancers
+                      explicitly & Automatic --- built-in horizontal scaling with no extra
+                      configuration \\[4pt]
+\midrule
+\textbf{Best for} & Database servers, legacy apps, custom network topologies & Stateless web/app
+                    tier, rapid prototyping, microservices \\
+\bottomrule
+\end{tabularx}\end{center}
+
+\textbf{Recommendation for e-commerce:} Use \textbf{PaaS for the application tier} (fast
+deployment, auto-scaling handles traffic spikes) and \textbf{IaaS for the database layer}
+(full control over DB configuration and storage volumes; lower lock-in risk for critical
+data).
+\end{solbox}
+
+%-------
+\subsection{Q6(c) --- IaaS cost calculation: reserved vs.\ on-demand instances
+  \texorpdfstring{\qmarks{3}}{}}
+\begin{qbox}Explain reserved instances vs.\ on-demand instances in IaaS pricing. Calculate
+the cost for a predictable base load and a variable peak workload.\end{qbox}
+\begin{solbox}
+\textbf{Reserved instances:} Pay an upfront commitment (1-year or 3-year term) in exchange
+for a \textbf{discounted hourly rate} (typically 30--70\% cheaper than on-demand). Best for
+\textbf{predictable, always-on} workloads.\\[4pt]
+
+\textbf{On-demand instances:} Pay the full hourly rate with \textbf{no commitment}; terminate
+any time. Best for \textbf{variable, unpredictable} workloads, testing, or seasonal
+peaks.\\[6pt]
+
+\textbf{Cost calculation example (monthly):}
+\begin{center}\renewcommand{\arraystretch}{1.3}
+\begin{tabularx}{0.92\linewidth}{l X r}
+\toprule
+\textbf{Workload} & \textbf{Detail} & \textbf{Monthly cost} \\
+\midrule
+Base load (reserved)  & 10 instances $\times$ 720 hr $\times$ \$0.05/hr & \$360 \\
+Peak load (on-demand) & 5 extra instances $\times$ 100 hr $\times$ \$0.10/hr & \$50 \\
+\midrule
+\textbf{Total} & & \textbf{\$410} \\
+\bottomrule
+\end{tabularx}\end{center}
+
+\textbf{Decision rule:}
+\begin{itemize}[leftmargin=1.4cm, itemsep=1pt]
+  \item Instance runs $>$~50\% of the time $\Rightarrow$ \textbf{reserved is cheaper}.
+  \item Instance runs $<$~50\% of the time $\Rightarrow$ \textbf{on-demand is cheaper}.
+  \item Optimal strategy: \textbf{reserve the predictable base load}; use on-demand for
+    traffic spikes.
+\end{itemize}
+\end{solbox}
+
+%=====================================================================
+\section{Quick Summary --- Exam Patterns \& Must-Know}
+%=====================================================================
+\begin{notesbox}
+\begin{itemize}[leftmargin=1.3cm, itemsep=3pt]
+  \item \textbf{Two definitions to memorise:} NIST (``on-demand, shared pool, rapidly
+    provisioned'') + Vaquero (``large pool of virtualised resources, pay-per-use, SLA'').
+  \item \textbf{E-commerce deployment (2020 Q8b, 2021 Q3a, 2022 Q1b) --- verbatim 3 years.}
+    Lock in: IaaS (DB/storage) + PaaS (app tier) + SaaS (payment/email); Hybrid model (public
+    storefront + private PII data). Prepare a 2-minute mental rehearsal.
+  \item \textbf{Pros/cons} (2020 Q8a, 2024 Q5a): Pros = Flexibility, Scalability, Cost, Maintenance
+    offloaded, Utilisation, Availability. Cons = Security, Privacy, Vendor lock-in, Network
+    dependency, Migration.
+  \item \textbf{Horizontal vs vertical scaling (2022 Q1a):} Vertical = one big machine; Horizontal
+    = many small machines. Cloud favours horizontal. Know the 6-row comparison table.
+  \item \textbf{Multi-tenancy (2022 Q1c):} Shared physical infra + logical isolation. Risks:
+    data leakage, noisy neighbour.
+  \item \textbf{Virtualization (2024 Q5b):} Physical $\rightarrow$ Hypervisor $\rightarrow$
+    VMs. Two provider benefits: utilisation + rapid provisioning.
+  \item \textbf{IaaS vs PaaS (2024 Q6b):} Dev speed / overhead / lock-in / scalability ---
+    know the 4-row comparison table cold.
+  \item \textbf{EUCALYPTUS (2021 Q5d):} Open-source private cloud, AWS-compatible API. Used
+    when data cannot leave on-premises for security/compliance reasons.
+  \item \textbf{Cloud vs Distributed (2021 Q5c):} Cloud IS a distributed system but adds
+    pay-per-use, elasticity, multi-tenancy, provider-managed infrastructure.
+  \item \textbf{EC2 motivation (2022 Q2a):} Amazon had excess capacity from holiday peaks ---
+    monetised it. Three VM benefits: utilisation + fine-grained billing + isolation.
+\end{itemize}
+\end{notesbox}
+
+\end{document}

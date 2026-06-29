@@ -1,11 +1,11 @@
 {
   "topics": [
-    "🔴 CRITICAL: 06-27 log left 'Topics completed' empty (blocks unconfirmed) AND 06-28 daily log was never created at all — no rollover ran 06-27→06-28. Two days of confirmed CSE719 progress are missing. Exam is now 2 days out (Wed 1 Jul). Cannot verify if Cloud/RPC/Consistency core learning actually happened.",
-    "CSE719 Topic #1 DSM — still shown as 📖 (wiki ingested: false sharing, Invalidate/Update, consistency), NOT yet confirmed active-recalled or ✅. Next: active recall pass, then pull NRNMB strategies + LRU-fail from textbook (slide gap).",
-    "CSE719 Topics #2 Cloud, #3 RPC, #4 Consistency (the high-yield spine) — still shown 🔲 NOT started in _Topics.md. These three + DSM cover 3 strong answers per section and MUST be covered before Wed's exam.",
-    "CSE719 Topic #5 DFS + Andrew File System — 🔴 NO SLIDES (orphan, asked all 3 yrs, yield 4/5). Must study from textbook. Now urgent — only 2 days left.",
-    "CSE719 Topic #7 Distributed System Fundamentals — 📖 (Lecture-01 ingested), not yet ✅."
+    "🔴 CRITICAL: THREE consecutive days (06-27, 06-28, 06-29) with zero confirmed CSE719 progress. End-of-day log empty again on 06-29. Exam is Wed 1 Jul 10:30 AM — tomorrow (06-30) is now the literal last day before the exam.",
+    "CSE719 Topic #1 DSM — still 📖, NOT confirmed active-recalled. Textbook gap (NRNMB, LRU-fail) still unpulled.",
+    "CSE719 Topics #2 Cloud, #3 RPC, #4 Consistency (the high-yield spine, 3 strong answers per section) — still 🔲 NOT started, zero slides covered.",
+    "CSE719 Topic #5 DFS + Andrew File System — 🔴 NO SLIDES, textbook-only, still untouched. Likely has to be skipped or skimmed only.",
+    "CSE719 Topic #7 Distributed System Fundamentals — still 📖, not ✅."
   ],
-  "note": "URGENT RE-PLAN NEEDED for Monday 06-29: per Weekly Engine, Mon+Tue should be 'pure revision + timed past papers, nothing else' (last 2 days before Wed 1 Jul exam). But spine (Cloud/RPC/Consistency) is still unstarted and DSM/Fundamentals aren't confirmed recalled — there isn't yet material to 'revise.' Monday must be a hybrid: emergency core learning on the spine (compressed) + recall on DSM/Fundamentals, then push as much timed past-paper practice as the day allows. Tuesday should be pure revision/timed papers on whatever got covered. Flag this honestly to Ahsanul — the plan slipped for two days.",
-  "last_updated": "2026-06-28"
+  "note": "06-30 is the actual last day before the Wed 1 Jul exam. The spine (Cloud/RPC/Consistency) has NEVER been opened despite being planned for three straight days. There is no more slack — 06-30 cannot be 'pure revision' per the Weekly Engine because there's still nothing learned to revise on 3 of 7 core topics. Plan must be: compressed core learning on Cloud→RPC→Consistency (non-negotiable, these alone are 3 answers), DSM+Fundamentals recall pass, then whatever time is left goes to timed past papers and a final brain-dump the night before. DFS/AFS and tail topics (8-14) should be explicitly cut — there is not enough runway. Flag honestly: if 06-30 also slips, he walks into the exam with 3-4 of 7 spine topics never opened.",
+  "last_updated": "2026-06-29"
 }

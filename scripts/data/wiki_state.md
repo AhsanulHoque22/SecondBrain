@@ -1,8 +1,8 @@
 # Study Brain — Compiled State
-_Updated: 2026-06-28 by overnight rollover_
+_Updated: 2026-06-29 by overnight rollover_
 
 ## Active exam
-🎯 CSE 719 — Distributed & Cloud · **Wed 1 Jul 2026, 10:30 AM** · 2 days from 2026-06-29 · Phase: 🔴 EMERGENCY SPINE DAY. 06-27 and 06-28 logs show no confirmed progress. Cloud/RPC/Consistency still 🔲, DSM/Fundamentals still 📖 (not recalled/✅). Mon 29 = compressed core learning on full spine (no slack left). Tue 30 = pure revision + timed papers only.
+🎯 CSE 719 — Distributed & Cloud · **Wed 1 Jul 2026, 10:30 AM** · 1 day from 2026-06-30 · Phase: 🔴 LAST DAY, SPINE STILL UNOPENED. Three straight days (06-27/28/29) closed with zero confirmed progress. Cloud/RPC/Consistency never opened, DSM/Fundamentals still 📖. Tue 30 must be compressed core learning on the spine FIRST (non-negotiable), then recall, then whatever timed practice the day allows. DFS/AFS and tail topics (8-14) are cut for this cycle.
 
 ## Topics — CSE719 Distributed & Cloud
 | Topic | Status | Conf | Next Recall |
@@ -11,19 +11,19 @@ _Updated: 2026-06-28 by overnight rollover_
 | 2. Cloud Computing (e-commerce scenario, deploy/service models, scaling, multi-tenancy) | 🔲 | — | — |
 | 3. RPC (design issues, stub, RRA, callback/lightweight) | 🔲 | — | — |
 | 4. Consistency models (strong/weak/causal/release, quorum) | 🔲 | — | — |
-| 5. DFS + Andrew File System — 🔴 NO SLIDES, textbook-only | 🔲 | — | — |
-| 6. Concurrency Control & Transactions | 🔲 | — | — |
+| 5. DFS + Andrew File System — ✂️ CUT, no runway left | 🔲 | — | — |
+| 6. Concurrency Control & Transactions — ✂️ CUT | 🔲 | — | — |
 | 7. Distributed System Fundamentals | 📖 | — | active recall due |
-| 8–14. MapReduce · Paxos · DSO/Parallel DB · SQL-vs-NoSQL · load balancing · heartbeating · fault recovery | 🔲 | — | — |
+| 8–14. MapReduce · Paxos · DSO/Parallel DB · SQL-vs-NoSQL · load balancing · heartbeating · fault recovery — ✂️ CUT | 🔲 | — | — |
 
 ## Carry-forward
-- 🔴 CRITICAL: 06-27 log had no confirmed completions; 06-28 daily log was never created — two days of CSE719 progress unverified. Exam now 2 days out.
-- DSM (#1): 📖 but not confirmed active-recalled. Next: recall pass + NRNMB/LRU-fail textbook patch.
-- Spine #2 Cloud, #3 RPC, #4 Consistency: still NOT started — must close out Monday.
-- 🔴 DFS + AFS (#5): NO slides, asked all 3 yrs. Squeeze in Monday if spine closes early, else Tuesday AM.
+- 🔴 CRITICAL: 3rd consecutive day (06-27, 06-28, 06-29) with zero confirmed CSE719 progress. Tomorrow is the actual last day before the exam.
+- DSM (#1): 📖 but not confirmed active-recalled.
+- Spine #2 Cloud, #3 RPC, #4 Consistency: still NOT started — must close out tomorrow, no day left after.
 - Fundamentals (#7): 📖, not yet ✅.
+- DFS/AFS (#5) and tail topics (#6, #8-14): cut for this exam cycle, no runway.
 
-## Recall due 2026-06-29
+## Recall due 2026-06-30
 > ⚠️ All 20 items are AI (713) + InfoSec (717) — both exams already done. Informational only, do not let them eat spine time.
 
 - 🔁 Intelligent Agents + Environments (PAGE) `CSE713_AI` | conf 4/5
@@ -48,6 +48,6 @@ _Updated: 2026-06-28 by overnight rollover_
 - 🔁 Number Theory & Modular Arithmetic (Euclidean, Fermat, Euler, CRT, Miller-Rabin, discrete log) `CSE717_InfoSec` | conf 5/5
 
 ## Recent pattern (last 3 days)
-- 2026-06-26: Reset done — _Topics.md/_TopicQuestionMap.md/_LecturePlan.md built, DSM + Fundamentals wiki ingested (📖). End-of-day log unfilled.
 - 2026-06-27: Plan called for spine core learning (Cloud→RPC→Consistency); end-of-day log left unfilled, no completions confirmed.
 - 2026-06-28: No daily log created at all — rollover gap, zero confirmed progress on record.
+- 2026-06-29: Daily log existed with emergency spine plan; end-of-day log left unfilled again, no completions confirmed. Spine still entirely 🔲.

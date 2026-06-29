@@ -1,0 +1,527 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[margin=2cm]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage[dvipsnames]{xcolor}
+\usepackage{mdframed}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{enumitem}
+\usepackage{hyperref}
+\usepackage{parskip}
+\usepackage{titlesec}
+
+\titleformat{\section}{\large\bfseries}{}{0em}{}[\titlerule]
+\titleformat{\subsection}{\normalsize\bfseries}{}{0em}{}
+
+\setlist[itemize]{topsep=2pt,itemsep=1pt,parsep=0pt}
+\setlist[enumerate]{topsep=2pt,itemsep=1pt,parsep=0pt}
+
+\newmdenv[
+  backgroundcolor=orange!15,linecolor=orange!70,linewidth=1.5pt,
+  innerleftmargin=8pt,innerrightmargin=8pt,innertopmargin=6pt,innerbottommargin=6pt,
+  skipabove=8pt,skipbelow=4pt]{qbox}
+
+\newmdenv[
+  backgroundcolor=blue!8,linecolor=blue!50,linewidth=1.5pt,
+  innerleftmargin=8pt,innerrightmargin=8pt,innertopmargin=6pt,innerbottommargin=6pt,
+  skipabove=4pt,skipbelow=8pt]{solbox}
+
+\newmdenv[
+  backgroundcolor=yellow!20,linecolor=orange!60,linewidth=1pt,
+  innerleftmargin=8pt,innerrightmargin=8pt,innertopmargin=5pt,innerbottommargin=5pt,
+  skipabove=4pt,skipbelow=8pt]{notesbox}
+
+\hypersetup{colorlinks=true,linkcolor=blue!70!black}
+
+\title{\textbf{CSE 719 — Distributed \& Cloud Computing}\\
+\large Lecture 5: Replication Control, 2PC \& Multicast Ordering\\
+\normalsize Question Analysis \& Precise Solutions (2022–2024)}
+\author{Dr.\ Atiqur Rahman · University of Chittagong}
+\date{Exam: 1 July 2026}
+
+\begin{document}
+\maketitle
+\tableofcontents
+\newpage
+
+%----------------------------------------------------------------------
+\section{Reference: Core Concepts}
+%----------------------------------------------------------------------
+
+\subsection{Replication}
+\textbf{Definition:} An object has identical copies (replicas), each maintained by a separate server.
+
+\textbf{Why replication?}
+\begin{itemize}
+  \item \textbf{Fault-tolerance:} $k$ replicas $\Rightarrow$ tolerate failure of any $(k-1)$ servers.
+  \item \textbf{Load balancing:} read/write load spread across $k$ replicas $\Rightarrow$ load reduced by factor $k$.
+  \item \textbf{Availability:} $1 - f^k$ vs $(1-f)$ with no replication
+        (where $f$ = per-server failure probability).
+\end{itemize}
+
+\textbf{Availability table:}
+\begin{center}
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{cccc}
+\toprule
+$f$ & No replication & $k=3$ & $k=5$ \\
+\midrule
+0.1 & 90\% & 99.9\% & 99.999\% \\
+0.05 & 95\% & 99.9875\% & 7 Nines \\
+0.01 & 99\% & 99.9999\% & 10 Nines \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\textbf{Two challenges:}
+\begin{enumerate}
+  \item \textbf{Replication transparency:} clients should not know multiple replicas exist.
+        Achieved via \emph{front-end} servers that route requests.
+  \item \textbf{Replication consistency (one-copy serializability):}
+        concurrent transactions on replicated objects must behave as if executed serially
+        on a single logical copy.
+\end{enumerate}
+
+\subsection{Passive vs Active Replication}
+\begin{center}
+\renewcommand{\arraystretch}{1.25}
+\begin{tabular}{lll}
+\toprule
+& \textbf{Passive (Primary-Backup)} & \textbf{Active} \\
+\midrule
+Update path & All writes $\to$ primary $\to$ backups & All FEs multicast to all replicas \\
+Ordering & Primary provides total order & Requires ordered multicast \\
+Failure & Run election if primary fails & Continue — no single point \\
+Correctness & Primary enforces serial order & Total-order multicast + replicated state machine \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Active replication requires each FE to multicast to the entire replica group.
+Ordering choices: FIFO, Causal, Total, or Hybrid.
+For strong consistency: Total-order (or Hybrid-Total) + Replicated State Machine.
+For fault handling: Virtual synchrony (reliable ordered multicast over changing membership).
+
+\subsection{Multicast Ordering Types (for 2024 Q4c)}
+\begin{center}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{lp{6cm}p{5cm}}
+\toprule
+\textbf{Ordering} & \textbf{Guarantee} & \textbf{Use case} \\
+\midrule
+\textbf{FIFO} & Messages from \emph{same sender} delivered in send order at all receivers & Best-effort; sender-local order only \\
+\textbf{Causal} & If $M_1$ causally precedes $M_2$, all receivers deliver $M_1$ before $M_2$ & Collaborative editing, social feeds \\
+\textbf{Total (Atomic)} & All receivers deliver \emph{all} messages in the same order & Replicated state machines; requires coordinator or token \\
+\textbf{Hybrid (*-Total)} & Total ordering combined with FIFO or Causal (e.g., FIFO-Total) & Active replication with causality \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\textbf{Why ordering matters for overlapping groups:}
+Two groups $G_1 = \{A, B\}$ and $G_2 = \{B, C\}$ both receive messages.
+Without total ordering, node $B$ (in both groups) may see messages in a different order
+from $A$ or $C$, causing inconsistency. Total ordering ensures all nodes — including
+those in multiple overlapping groups — agree on delivery order.
+
+\subsection{Two-Phase Commit (2PC)}
+\textbf{Problem:} A transaction $T$ touches objects on servers $S_1 \ldots S_n$.
+Must ensure atomicity: \textbf{all} commit or \textbf{none} commit (= Atomic Commit problem = Consensus).
+
+\textbf{Phase 1 — Prepare:}
+\begin{enumerate}
+  \item Coordinator sends \texttt{PREPARE} to all participating servers.
+  \item Each server writes tentative updates to \textbf{stable storage} (disk) — right before voting.
+  \item Each server responds \texttt{YES} (can commit) or \texttt{NO} (cannot commit).
+\end{enumerate}
+
+\textbf{Phase 2 — Commit or Abort:}
+\begin{enumerate}
+  \item If coordinator receives \texttt{YES} from \emph{all} servers within timeout:
+        send \texttt{COMMIT}; each server applies updates from disk to store; replies \texttt{OK}.
+  \item If any \texttt{NO} vote \emph{or} timeout before all votes:
+        send \texttt{ABORT}; each server discards tentative updates.
+\end{enumerate}
+
+\textbf{Key invariants:}
+\begin{itemize}
+  \item A server that voted \texttt{YES} \emph{cannot} commit or abort unilaterally
+        — it must wait for the coordinator's decision.
+  \item A server that voted \texttt{NO} can abort immediately (it knows the transaction will abort).
+  \item Saves before voting $\Rightarrow$ crash-safe: updates survive a server crash and
+        can be applied (or rolled back) after coordinator sends Phase 2 decision.
+\end{itemize}
+
+\textbf{Failure handling in 2PC:}
+\begin{center}
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{ll}
+\toprule
+\textbf{Failure type} & \textbf{Response} \\
+\midrule
+Server crash (before voting) & Server aborts on restart (no vote committed) \\
+Server crash (after YES vote) & On restart: wait for coordinator or query its decision \\
+Prepare message lost & Server timeouts $\Rightarrow$ votes NO $\Rightarrow$ coordinator aborts \\
+YES/NO message lost & Coordinator timeouts $\Rightarrow$ aborts (pessimistic) \\
+Commit/Abort message lost & Server polls coordinator repeatedly until answer received \\
+Coordinator crash & Logs all decisions on disk; new coordinator (re-elected) takes over \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsection{2PC vs 1PC}
+\textbf{One-phase commit shortcomings:}
+\begin{itemize}
+  \item Server with the object has no say in whether to commit or abort.
+        If data is corrupted, the server cannot commit — but other servers already did.
+  \item A server may crash before receiving the commit message, leaving its updates in memory (lost).
+\end{itemize}
+2PC fixes both: Phase 1 gives every server a vote; data is persisted to disk before voting.
+
+\newpage
+%======================================================================
+\section{2024 — Q2a (1.5 marks, partial — consensus definition)}
+%======================================================================
+
+\begin{qbox}
+\textbf{Q2(a):} Define consensus algorithms. Differentiate between logical concurrency
+and physical concurrency. \hfill \textit{[1.5 marks]}
+\end{qbox}
+
+\begin{solbox}
+\textbf{Consensus Algorithm.}
+A consensus algorithm allows a set of distributed processes to \textbf{agree on a single value}
+(or decision), even when some processes may fail or messages may be lost.
+All non-faulty processes must eventually decide the same value, and the decided value
+must have been proposed by at least one process.
+\textit{Example:} Paxos, Raft, 2PC (for atomic commit).
+
+\medskip
+\textbf{Logical Concurrency.}
+Multiple tasks (threads, coroutines) are \emph{logically active at the same time} but
+may be time-multiplexed on a single CPU.
+The OS scheduler switches between them; no true simultaneous execution is required.
+\textit{Example:} 100 threads on a single-core CPU.
+
+\medskip
+\textbf{Physical Concurrency.}
+Multiple tasks execute on \emph{truly separate hardware units} (multi-core, multi-CPU,
+multi-machine) simultaneously.
+\textit{Example:} MapReduce running 1000 Map tasks in parallel across 1000 machines.
+
+\medskip
+\textbf{Key difference:}
+Logical concurrency is about the \emph{appearance} of simultaneous progress (interleaving);
+physical concurrency is \emph{actual} simultaneous execution.
+In distributed systems, the combination of both (logical scheduling + physical parallelism)
+is what makes consistency control non-trivial: even logically sequential operations can
+arrive at servers out of order.
+\end{solbox}
+
+\begin{notesbox}
+\textbf{Exam pattern:} 2024 Q2a (1.5 marks). Very short answer expected.
+Name consensus, give one-line definition, one-line example. Then 2 sentences on
+logical vs physical. Do not over-explain.
+\end{notesbox}
+
+\newpage
+%======================================================================
+\section{2022 — Q3a, Q3b, Q3c (3+3+3 = 9 marks)}
+%======================================================================
+
+\begin{qbox}
+\textbf{Q3:} Consider a scenario where a system handles ACID transactions.
+Discuss the shortcoming of each of the following approaches when a crash occurs:\\
+\textbf{(a)} Writing updates directly to disk for every transaction. \hfill\textit{[3 marks]}\\
+\textbf{(b)} Buffering updates in memory and flushing to disk every 50 transactions. \hfill\textit{[3 marks]}\\
+\textbf{(c)} Keeping data in memory and maintaining a separate log file on disk. \hfill\textit{[3 marks]}
+\end{qbox}
+
+\begin{solbox}
+\textbf{(a) Direct-to-Disk Write Per Transaction.}
+
+Each transaction writes its updates immediately and directly to disk before committing.
+
+\textbf{Shortcomings:}
+\begin{enumerate}
+  \item \textbf{Extremely slow performance.}
+        Disk I/O is $\sim\!100{,}000\times$ slower than memory access.
+        Every write operation blocks until the disk controller confirms the write.
+        For high-throughput systems this makes each transaction take milliseconds instead
+        of microseconds.
+
+  \item \textbf{No atomicity on partial writes.}
+        A transaction that touches multiple objects writes them one at a time.
+        If a crash occurs after some objects are written but before all are, the database
+        is left in a \emph{partial state}: some updates are on disk and others are lost.
+        There is no mechanism to undo the already-written objects.
+
+  \item \textbf{No rollback capability.}
+        There is no journal or undo log. If the transaction must be aborted (e.g., due to
+        a conflict), the already-committed disk writes cannot be rolled back.
+\end{enumerate}
+\end{solbox}
+
+\begin{solbox}
+\textbf{(b) Memory Buffer — Flush to Disk Every 50 Transactions.}
+
+Updates are held in main memory and written to disk only after every 50 transactions complete.
+
+\textbf{Shortcomings:}
+\begin{enumerate}
+  \item \textbf{Durability violation (violates D in ACID).}
+        If the system crashes before the batch flush, all up to 50 buffered transactions
+        are lost entirely, even if they had already returned "committed" to the client.
+        Clients believe their data is safe; it is not.
+
+  \item \textbf{Large inconsistency window.}
+        The gap between the last flush and the current time represents a window of lost
+        work. The larger the batch size, the more data is at risk.
+
+  \item \textbf{State after crash is inconsistent.}
+        On restart, the system knows the state as of the last flush point, but that state
+        may not reflect all committed transactions — creating a mismatch between what
+        clients were told (committed) and what actually persists.
+
+  \item \textbf{Unfair: slow transactions penalise fast ones.}
+        Transactions 1–49 cannot be considered durable until transaction 50 triggers the
+        flush — their durability window depends on the timing of the 50th transaction.
+\end{enumerate}
+\end{solbox}
+
+\begin{solbox}
+\textbf{(c) Memory Data + Disk Log File (Write-Ahead Log).}
+
+All active data lives in memory; every update is first appended to a durable log file
+on disk before being applied to in-memory state (write-ahead logging, WAL).
+
+\textbf{Shortcomings:}
+\begin{enumerate}
+  \item \textbf{Long recovery time after crash.}
+        On restart, the system must \emph{replay} all log entries from the last checkpoint
+        to reconstruct in-memory state. For large or busy systems, this log replay can take
+        minutes or longer, causing extended downtime.
+
+  \item \textbf{Log file grows unboundedly.}
+        Without periodic compaction (checkpointing), the log grows without limit.
+        Checkpointing itself is expensive: it requires flushing in-memory state to disk
+        and may block operations.
+
+  \item \textbf{Double-write overhead.}
+        Every write incurs two disk operations: one to the log and one to eventually
+        persist the data itself. This doubles disk I/O under write-heavy workloads.
+
+  \item \textbf{Single log file is a bottleneck / single point of failure.}
+        If the log disk fails, all in-memory state since the last checkpoint is
+        unrecoverable. The log must reside on reliable (possibly replicated) storage,
+        increasing complexity and cost.
+\end{enumerate}
+
+\textbf{Why WAL is still the best of the three:}
+Despite its shortcomings, WAL (approach c) is superior to (a) and (b) because it
+provides \emph{durability} (log is on disk) and \emph{atomicity} (can replay or undo
+from log) while keeping active data operations fast (in-memory). The shortcomings of
+(a) and (b) are more fundamental.
+\end{solbox}
+
+\begin{notesbox}
+\textbf{Exam pattern:} 2022 Q3a–c (3 marks each). Each part expects $\sim$2–3 distinct
+shortcomings with brief explanations. The examiner is testing understanding of the
+ACID Durability property and why naive persistence approaches fail.
+Use terms: \textbf{ACID, Durability, atomicity, rollback, write-ahead log, checkpoint,
+inconsistency window}.
+\end{notesbox}
+
+\newpage
+%======================================================================
+\section{2024 — Q2c (3 marks)}
+%======================================================================
+
+\begin{qbox}
+\textbf{Q2(c):} What is the atomic commit protocol? Explain the two-phase commit protocol
+for nested transactions. \hfill \textit{[3 marks]}
+\end{qbox}
+
+\begin{solbox}
+\textbf{Atomic Commit Protocol.}
+An atomic commit protocol ensures that a distributed transaction that spans multiple
+servers either \textbf{commits at all servers} or \textbf{aborts at all servers}.
+No partial commit is allowed (= the Atomicity property of ACID in a distributed setting).
+This is an instance of the \textbf{consensus problem}: all participating servers must
+agree on one decision (commit or abort) despite possible message losses and crashes.
+
+\medskip
+\textbf{Two-Phase Commit (2PC).}
+
+\textbf{Phase 1 — Prepare/Voting:}
+\begin{enumerate}
+  \item The \textbf{coordinator} sends a \texttt{PREPARE} message to all participating servers.
+  \item Each server:
+        \begin{enumerate}
+          \item Writes its tentative updates to \textbf{stable storage} (disk) — before voting.
+          \item Sends \texttt{YES} (ready to commit) or \texttt{NO} (cannot commit, e.g.,
+                data corrupted or constraint violated) back to the coordinator.
+        \end{enumerate}
+\end{enumerate}
+
+\textbf{Phase 2 — Decision:}
+\begin{enumerate}
+  \item \textbf{All YES received within timeout:}
+        coordinator sends \texttt{COMMIT}; all servers apply updates from disk to permanent
+        store and reply \texttt{OK}.
+  \item \textbf{Any NO or timeout:}
+        coordinator sends \texttt{ABORT}; all servers discard their tentative updates.
+\end{enumerate}
+
+\medskip
+\textbf{2PC for Nested Transactions.}
+
+A nested (or sub-) transaction is a transaction launched within the scope of a parent
+transaction. The key property: a sub-transaction may commit locally, but its commit
+is \emph{tentative} — if the parent transaction aborts, all sub-transactions are also
+rolled back.
+
+Protocol:
+\begin{enumerate}
+  \item \textbf{Phase 1 — Prepare (top-down):}
+        The top-level coordinator sends \texttt{PREPARE} to each participating server.
+        Each server that has running sub-transactions must first \emph{complete all
+        sub-transactions locally}: committed sub-transactions are held as tentative;
+        any failed sub-transaction triggers a local \texttt{NO} vote.
+        Each server then votes \texttt{YES} (all sub-transactions succeeded and data is
+        on stable storage) or \texttt{NO} (at least one sub-transaction failed).
+
+  \item \textbf{Phase 2 — Commit or Abort (top-down):}
+        \begin{itemize}
+          \item If all servers vote \texttt{YES}: coordinator broadcasts \texttt{COMMIT};
+                all servers make their tentative sub-transaction results permanent.
+          \item If any server votes \texttt{NO}: coordinator broadcasts \texttt{ABORT};
+                all servers roll back \emph{all} sub-transactions, including those that had
+                committed locally.
+        \end{itemize}
+\end{enumerate}
+
+\textbf{Key rule:} A locally-committed sub-transaction is \emph{not} final until the
+parent transaction commits. The outer 2PC provides the global atomicity guarantee across
+all participating servers and their nested sub-transactions.
+\end{solbox}
+
+\begin{notesbox}
+\textbf{Exam pattern:} 2024 Q2c (3 marks).
+Breakdown: $\sim$0.5 marks for atomic commit definition, $\sim$1 mark for basic 2PC
+(Phase 1 + Phase 2), $\sim$1.5 marks for the nested-transaction extension.
+Key point the examiner wants: locally-committed sub-transactions can still be rolled
+back if the parent aborts — that's what makes 2PC for nested transactions distinct.
+\end{notesbox}
+
+\newpage
+%======================================================================
+\section{2024 — Q4c (3 marks)}
+%======================================================================
+
+\begin{qbox}
+\textbf{Q4(c):} Briefly explain the different types of ordering of multicast messages
+in overlapping groups. \hfill \textit{[3 marks]}
+\end{qbox}
+
+\begin{solbox}
+In a distributed system with \textbf{overlapping process groups} (a process may belong to
+more than one group simultaneously), multicast messages must be delivered in a consistent
+order to prevent replicas in multiple groups from diverging.
+
+\medskip
+\textbf{1. FIFO Ordering.}
+Messages sent by the \emph{same sender} are delivered at all receivers in the order
+they were sent.
+\begin{itemize}
+  \item If process $P$ sends $M_1$ then $M_2$, all group members deliver $M_1$ before $M_2$.
+  \item Messages from \emph{different senders} may arrive in any order.
+  \item Problem for overlapping groups: process $B$ in both $G_1$ and $G_2$ sees
+        messages from each group in sender order, but cannot guarantee global ordering
+        across different senders.
+\end{itemize}
+
+\textbf{2. Causal Ordering.}
+If message $M_1$ \emph{causally precedes} $M_2$ (i.e., $M_2$ was sent after $M_1$ was
+received, or they share a causal chain), then all receivers deliver $M_1$ before $M_2$.
+\begin{itemize}
+  \item Stronger than FIFO: captures happen-before relationships across senders.
+  \item Implemented using vector clocks.
+  \item Still allows concurrent messages (not causally related) to be delivered in
+        different orders at different nodes.
+\end{itemize}
+
+\textbf{3. Total Ordering (Atomic Broadcast).}
+All processes in the group deliver \emph{all} messages in \textbf{exactly the same order},
+regardless of sender or causal relationship.
+\begin{itemize}
+  \item Achieved via a sequencer (central token), consensus (Paxos/Raft), or
+        a group ordering protocol.
+  \item Critical for overlapping groups: a process $B$ in two groups $G_1$ and $G_2$
+        will apply all updates in the same sequence as every other member of both groups.
+  \item Required for active replication with Replicated State Machines — all replicas
+        receive the same sequence of updates $\Rightarrow$ arrive at the same state.
+\end{itemize}
+
+\textbf{4. Hybrid Ordering (e.g., FIFO-Total or Causal-Total).}
+Combines total ordering with FIFO or causal ordering.
+Ensures both sender-order preservation \emph{and} global agreement on delivery sequence.
+Used in active replication systems that also need causal consistency.
+
+\medskip
+\textbf{Why ordering matters for overlapping groups:}
+Consider $G_1 = \{A, B\}$ and $G_2 = \{B, C\}$. Node $B$ belongs to both.
+Without total ordering, $B$ may deliver a write to object $X$ from $G_1$ after $C$ has
+already processed a read from $G_2$ that should have seen the update, causing
+inconsistency. Total ordering ensures all nodes — including those in multiple overlapping
+groups — agree on the same global delivery sequence.
+\end{solbox}
+
+\begin{notesbox}
+\textbf{Exam pattern:} 2024 Q4c (3 marks).
+The examiner wants: (1) FIFO — same sender, send order; (2) Causal — happen-before
+preserved; (3) Total — same order at all receivers; and the overlapping-groups motivation.
+3 marks → roughly 1 mark per ordering type. Keep definitions one sentence each, then
+explain the relevance to overlapping groups.
+\end{notesbox}
+
+\newpage
+%======================================================================
+\section{Summary Table}
+%======================================================================
+
+\begin{center}
+\renewcommand{\arraystretch}{1.35}
+\begin{tabular}{lllll}
+\toprule
+\textbf{Year} & \textbf{Q} & \textbf{Marks} & \textbf{Topic} & \textbf{Key answer} \\
+\midrule
+2022 & Q3a & 3 & ACID crash: direct-to-disk & Slow I/O + partial write + no rollback \\
+2022 & Q3b & 3 & ACID crash: batch-50-memory & Durability violated; crash loses 50 txns \\
+2022 & Q3c & 3 & ACID crash: memory + log & Log grows; slow recovery; double-write \\
+2024 & Q2a & 1.5 & Consensus + logical/physical & Agree on one value; logical=interleaved, physical=parallel \\
+2024 & Q2c & 3 & Atomic commit + 2PC nested & Phase 1: prepare+vote; Phase 2: commit/abort; nested=local tentative \\
+2024 & Q4c & 3 & Multicast ordering types & FIFO / Causal / Total / Hybrid; overlapping-group problem \\
+\midrule
+\multicolumn{3}{l}{\textbf{Total covered this PDF}} & \multicolumn{2}{l}{\textbf{16.5 marks}} \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{notesbox}
+\textbf{Pending (answered in L9 / L10 solutions):}
+\begin{itemize}
+  \item \textbf{Consistency models} (weak/causal/release/strong, quorums, linearizability):
+        2020 Q4a/b, 2021 Q2a–c, 2022 Q4d, 2024 Q2b
+        $\Rightarrow$ Covered in DSM (Lecture-09) wiki page and solutions.
+  \item \textbf{ACID definition + deadlock + locking + WFG + timestamp ordering}:
+        2021 Q1d, 2021 Q6a/b, 2022 Q6a, 2022 Q7a/b/c, 2024 Q3c, 2024 Q6a, 2024 Q8a/b
+        $\Rightarrow$ Covered in RPC \& Concurrency (Lecture-10) solutions.
+\end{itemize}
+
+\textbf{Key terms for this lecture in exam:}
+replication transparency, one-copy serializability, passive/active replication,
+FIFO/Causal/Total ordering, virtual synchrony, atomic commit, Two-Phase Commit,
+coordinator, prepare, voting, one-phase-commit shortcomings, write-ahead log.
+\end{notesbox}
+
+\end{document}

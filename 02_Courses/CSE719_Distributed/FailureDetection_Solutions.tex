@@ -1,0 +1,544 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[margin=2cm]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage[dvipsnames]{xcolor}
+\usepackage{mdframed}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{enumitem}
+\usepackage{hyperref}
+\usepackage{parskip}
+\usepackage{titlesec}
+
+\titleformat{\section}{\large\bfseries}{}{0em}{}[\titlerule]
+\titleformat{\subsection}{\normalsize\bfseries}{}{0em}{}
+
+\setlist[itemize]{topsep=2pt,itemsep=1pt,parsep=0pt}
+\setlist[enumerate]{topsep=2pt,itemsep=1pt,parsep=0pt}
+
+% Question box (orange)
+\newmdenv[
+  backgroundcolor=orange!15,
+  linecolor=orange!70,
+  linewidth=1.5pt,
+  innerleftmargin=8pt,
+  innerrightmargin=8pt,
+  innertopmargin=6pt,
+  innerbottommargin=6pt,
+  skipabove=8pt,
+  skipbelow=4pt
+]{qbox}
+
+% Solution box (blue)
+\newmdenv[
+  backgroundcolor=blue!8,
+  linecolor=blue!50,
+  linewidth=1.5pt,
+  innerleftmargin=8pt,
+  innerrightmargin=8pt,
+  innertopmargin=6pt,
+  innerbottommargin=6pt,
+  skipabove=4pt,
+  skipbelow=8pt
+]{solbox}
+
+% Exam pattern / notes box (yellow)
+\newmdenv[
+  backgroundcolor=yellow!20,
+  linecolor=orange!60,
+  linewidth=1pt,
+  innerleftmargin=8pt,
+  innerrightmargin=8pt,
+  innertopmargin=5pt,
+  innerbottommargin=5pt,
+  skipabove=4pt,
+  skipbelow=8pt
+]{notesbox}
+
+\hypersetup{colorlinks=true,linkcolor=blue!70!black}
+
+\title{\textbf{CSE 719 — Distributed \& Cloud Computing}\\
+\large Lecture 4: Failure Detection \& Group Membership\\
+\normalsize Question Analysis \& Precise Solutions (2020–2024)}
+\author{Dr.\ Atiqur Rahman · University of Chittagong}
+\date{Exam: 1 July 2026}
+
+\begin{document}
+\maketitle
+\tableofcontents
+\newpage
+
+%----------------------------------------------------------------------
+\section{Reference: Core Concepts}
+%----------------------------------------------------------------------
+
+\subsection{Failures are the Norm}
+In a 12,000-server datacenter (each fails once per 10 years on average), the
+\textbf{Mean Time To Failure (MTTF)} of the next machine is $\approx\!7.2$ hours.
+Every distributed system must therefore include a failure detector.
+
+\subsection{Two Sub-Protocols in Group Membership}
+\begin{enumerate}
+  \item \textbf{Failure Detector (FD):} detects which processes have crashed.
+  \item \textbf{Dissemination:} spreads failure/join/leave notifications to all members.
+\end{enumerate}
+
+\subsection{Desirable Properties of a Failure Detector}
+\begin{itemize}
+  \item \textbf{Completeness} — every failure is eventually detected (guaranteed).
+  \item \textbf{Accuracy} — no mistaken (false-positive) detection.
+        In practice: only probabilistic accuracy $PM(T)$.
+  \item \textbf{Speed} — time until \emph{some} process detects the failure.
+  \item \textbf{Scale} — no bottlenecks; equal load per member; O(1) per-node
+        message load independent of group size $N$.
+\end{itemize}
+
+\begin{notesbox}
+\textbf{Key theorem [Chandra \& Toueg 1996]:} Completeness and Accuracy are
+\emph{impossible to achieve simultaneously} in asynchronous, lossy networks.
+A perfect failure detector would solve the consensus problem —
+but FLP impossibility proves consensus is impossible in asynchronous networks
+with even one faulty process.
+\end{notesbox}
+
+\subsection{Heartbeating Variants}
+\begin{center}
+\renewcommand{\arraystretch}{1.25}
+\begin{tabular}{lll}
+\toprule
+\textbf{Variant} & \textbf{Mechanism} & \textbf{Problem} \\
+\midrule
+Centralized & All $\to$ one central monitor & Hotspot / single point of failure \\
+Ring & Each node monitors its ring successor & Unpredictable with simultaneous failures \\
+All-to-All & Every node $\to$ every other node & O($N$) message load per node per period \\
+Gossip-style & Random subset gossip; merge lists & Good accuracy; O($N\log N/T$) load \\
+SWIM & Ping; indirect via $K$ nodes if no ack & Constant detection time; O(1) load \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsection{SWIM Protocol (Scalable Weakly-consistent Infection-style Membership)}
+\begin{enumerate}
+  \item Process $p_i$ picks a random target $p_j$ and sends a \texttt{ping}.
+  \item If no \texttt{ack} within protocol period $T'$, send \texttt{ping-req} to $K$ random processes.
+  \item Those $K$ processes each send a \texttt{ping} to $p_j$ and relay any \texttt{ack} back to $p_i$.
+  \item If $p_i$ still receives no ack after the full period: mark $p_j$ as \textbf{Suspected}.
+  \item After timeout $T_{\text{cleanup}}$: declare $p_j$ \textbf{Failed}.
+\end{enumerate}
+SWIM properties: first detection time $= T' \cdot \lceil e/(e-1) \rceil$ (constant, independent of $N$);
+process load $=$ O(1) per period; false positive rate tunable via $K$.
+
+\subsection{Gossip-Style Failure Detection Protocol}
+\begin{enumerate}
+  \item Each member maintains a \textbf{membership list}: array of
+        $\langle$address, heartbeat-counter, local-time$\rangle$ for each known member.
+  \item Periodically (every gossip period $t_g$), each member picks $b$ random targets
+        and sends its full membership list to them.
+  \item On receipt, lists are \textbf{merged} (keep the higher heartbeat counter for each entry).
+  \item If a member's heartbeat counter has not increased for more than $T_{\text{fail}}$ seconds
+        $\Rightarrow$ mark as \textbf{failed}.
+  \item After $T_{\text{cleanup}}$ seconds, delete the entry to prevent re-introduction
+        of the stale (failed) entry from other nodes.
+\end{enumerate}
+
+\subsection{Suspicion Mechanism}
+To reduce false positives, a process is first \emph{suspected} before being declared failed.
+\[
+\text{Alive} \xrightarrow{\text{FD ping fails}} \text{Suspected}
+            \xrightarrow{\text{timeout}} \text{Failed}
+\quad
+\text{Suspected} \xrightarrow{\text{FD ping succeeds}} \text{Alive}
+\]
+Each process has a per-process \textbf{incarnation number} (incremented only by itself
+when it receives a Suspect message about itself).
+Priority rule: $(\text{Failed},\,\text{inc\#})$ overrides everything;
+within the same inc\#: $(\text{Suspect}) > (\text{Alive})$.
+
+\subsection{Dissemination Options}
+\begin{itemize}
+  \item \textbf{Multicast (IP):} unreliable; multiple simultaneous multicasts.
+  \item \textbf{Point-to-point (TCP/UDP):} reliable but expensive.
+  \item \textbf{Infection-style (best):} piggyback membership updates on existing FD messages
+        (pings and acks) — zero extra messages.
+\end{itemize}
+
+\newpage
+%======================================================================
+\section{2020 — Q2b (2.75 marks)}
+%======================================================================
+
+\begin{qbox}
+\textbf{Q2(b):} What are the techniques for fault detection and recovery in a distributed
+operating system? \hfill \textit{[2.75 marks]}
+\end{qbox}
+
+\begin{solbox}
+\textbf{Part 1: Fault Detection Techniques}
+
+In a distributed OS, every process periodically broadcasts a \emph{heartbeat} signal
+so that other processes can detect its failure if the heartbeat stops.
+Four main techniques exist:
+
+\medskip
+\begin{enumerate}
+  \item \textbf{Centralized Heartbeating.}
+        All $N$ nodes send periodic heartbeats to one designated monitor process $p_j$.
+        If $p_j$ does not receive a heartbeat from $p_i$ within a timeout, it marks $p_i$
+        as failed.
+        \textit{Problem:} $p_j$ is a hotspot (single point of failure; O($N$) load).
+
+  \item \textbf{Ring Heartbeating.}
+        Nodes are arranged in a logical ring; each node monitors only its immediate
+        successor.
+        \textit{Problem:} unpredictable behavior when multiple nodes fail simultaneously
+        — successor and predecessor can both be failed.
+
+  \item \textbf{All-to-All Heartbeating.}
+        Every node sends heartbeats to every other node.
+        Benefit: equal load per member; no single point of failure.
+        \textit{Problem:} O($N$) messages per member per period — does not scale.
+
+  \item \textbf{Gossip-Style Heartbeating (robustness improvement over all-to-all).}
+        Each node maintains a membership list with a heartbeat counter per member.
+        Periodically, each node selects a random subset of members and sends the entire
+        list (gossip). Recipients merge received lists with their own.
+        A member whose counter has not increased for $T_{\text{fail}}$ seconds is marked
+        as failed; after $T_{\text{cleanup}}$, the entry is deleted.
+        Benefit: failure information propagates along multiple independent random paths,
+        so packet loss on one path does not prevent detection.
+        \textit{Real use:} Amazon EC2/S3 (rumored).
+\end{enumerate}
+
+\medskip
+\textbf{Part 2: Recovery Techniques}
+
+Once a failure is detected, recovery involves two steps:
+
+\begin{enumerate}
+  \item \textbf{Dissemination.}
+        The detecting process spreads the failure notification to all group members via:
+        \begin{itemize}
+          \item Multicast (fast but unreliable), or
+          \item Infection-style: membership updates piggybacked onto existing heartbeat/ping
+                messages (zero additional network cost).
+        \end{itemize}
+
+  \item \textbf{Recovery actions by the application.}
+        After all members update their membership lists:
+        \begin{itemize}
+          \item Re-assign the failed process's tasks to surviving processes.
+          \item Re-replicate any data blocks held by the failed node to restore redundancy.
+          \item Update routing tables, load-balancer entries, or Paxos leader election
+                as appropriate for the system.
+        \end{itemize}
+\end{enumerate}
+
+\medskip
+\textbf{False-Positive Reduction (Suspicion Mechanism).}
+Before declaring a process definitively failed, a process is first \emph{suspected}
+(Alive $\to$ Suspected $\to$ Failed) with a grace period for the node to refute the
+suspicion by incrementing its incarnation number.
+This prevents unnecessary re-assignment caused by transient network congestion.
+\end{solbox}
+
+\begin{notesbox}
+\textbf{Exam pattern:} 2020 Q2b (2.75 marks) is the only direct "techniques for FD
+and recovery" question in the set. Expect $\sim$1 mark for detection techniques,
+$\sim$1 mark for recovery actions, $\sim$0.75 mark for the improvement/suspicion point.
+\end{notesbox}
+
+\newpage
+%======================================================================
+\section{2022 — Q6b (2 marks)}
+%======================================================================
+
+\begin{qbox}
+\textbf{Q6(b):} How to increase the robustness of all-to-all heartbeating?
+\hfill \textit{[2 marks]}
+\end{qbox}
+
+\begin{solbox}
+\textbf{Problem with All-to-All Heartbeating.}
+In all-to-all heartbeating, each of $N$ members sends heartbeats directly to all
+$N-1$ other members every period $T$, giving a per-member message load $L = N/T$.
+A single dropped heartbeat can cause a false-positive failure detection, and the
+O($N$) per-node load makes this scheme hard to scale.
+
+\medskip
+\textbf{Solution: Switch to Gossip-Style Heartbeating.}
+
+\begin{enumerate}
+  \item Each member maintains a \textbf{membership list}:
+        an array of $\langle$address,\, heartbeat-counter$\rangle$ for all known members.
+  \item Periodically, each member picks a \textbf{random subset} of members
+        and sends the entire list to that subset (gossip message).
+  \item Recipients \textbf{merge} the incoming list with their own
+        (keep the higher heartbeat counter for each entry).
+  \item A member whose counter has not increased for $T_{\text{fail}}$ seconds is marked
+        \textbf{failed}; after $T_{\text{cleanup}}$ it is removed.
+\end{enumerate}
+
+\textbf{Why this increases robustness:}
+\begin{itemize}
+  \item Failure information propagates through \emph{multiple independent random paths}.
+        Even if some gossip messages are lost, the information still reaches all nodes
+        via other paths (infection-style spreading).
+  \item No single link failure can prevent detection of a crashed node.
+  \item Provides \emph{good accuracy properties}: the heartbeat counter approach is
+        tolerant of occasional packet loss without falsely declaring nodes failed.
+  \item Message load: O($N \log N / T$) — higher than all-to-all per round but
+        far more robust, and the gossip period can be tuned.
+\end{itemize}
+\end{solbox}
+
+\begin{notesbox}
+\textbf{Exam pattern:} 2022 Q6b (2 marks). Answer must name \textbf{gossip-style heartbeating}
+as the solution and explain \emph{why} it is more robust (multiple paths, merge-on-receipt).
+Two sentences on the protocol + two on the robustness justification = full marks.
+\end{notesbox}
+
+\newpage
+%======================================================================
+\section{2022 — Q6d (2 marks)}
+%======================================================================
+
+\begin{qbox}
+\textbf{Q6(d):} How do you design a group membership protocol?
+\hfill \textit{[2 marks]}
+\end{qbox}
+
+\begin{solbox}
+A group membership protocol must maintain a consistent (or almost-consistent) view of
+which processes are currently alive. It is built from \textbf{two separated sub-protocols}:
+
+\medskip
+\textbf{Sub-protocol I — Failure Detector}
+\begin{itemize}
+  \item Detects which members have crashed.
+  \item Best-practice choice: \textbf{SWIM} (Scalable Weakly-consistent Infection-style
+        Membership):
+        \begin{enumerate}
+          \item Send a direct \texttt{ping} to a random target $p_j$.
+          \item If no \texttt{ack} arrives within period $T'$, send \texttt{ping-req}
+                to $K$ random other members, asking each to \texttt{ping} $p_j$ on
+                your behalf.
+          \item If no indirect \texttt{ack} arrives either: mark $p_j$ as
+                \textbf{Suspected}.
+          \item After timeout $T_{\text{cleanup}}$: declare $p_j$ \textbf{Failed}.
+        \end{enumerate}
+  \item SWIM achieves \emph{constant} detection time (independent of group size $N$)
+        and O(1) per-member message load.
+\end{itemize}
+
+\medskip
+\textbf{Sub-protocol II — Dissemination}
+\begin{itemize}
+  \item Spreads Suspected/Failed/Join notifications to every member.
+  \item Best-practice: \textbf{Infection-style (zero extra messages)}:
+        piggyback membership updates (join/fail/suspect events) onto existing
+        SWIM \texttt{ping} and \texttt{ack} messages.
+        Updates spread in O($\log N$) rounds (epidemic propagation).
+\end{itemize}
+
+\medskip
+\textbf{Additional Design Elements}
+\begin{itemize}
+  \item \textbf{Suspicion mechanism:}
+        Alive $\to$ Suspected $\to$ Failed state machine reduces false positives from
+        transient packet loss.
+  \item \textbf{Incarnation numbers:}
+        Each process holds a counter incremented only by itself (e.g., on receiving a
+        Suspect message about itself).
+        Higher incarnation number overrides lower; (Failed, inc\#) overrides everything.
+        Prevents stale gossip from re-introducing a failed entry.
+\end{itemize}
+\end{solbox}
+
+\begin{notesbox}
+\textbf{Exam pattern:} 2022 Q6d (2 marks). Key structure: name the two sub-protocols
+(Failure Detector + Dissemination), give a concrete mechanism for each (SWIM + infection-style),
+and mention the suspicion mechanism. That is the complete answer.
+\end{notesbox}
+
+\newpage
+%======================================================================
+\section{2024 — Q2d (3 marks)}
+%======================================================================
+
+\begin{qbox}
+\textbf{Q2(d):} What is the primary goal of failure detection in distributed systems?
+Why is perfect and instantaneous failure detection practically impossible in asynchronous
+networks? \hfill \textit{[3 marks]}
+\end{qbox}
+
+\begin{solbox}
+\textbf{Primary Goal — Completeness.}
+The primary goal of failure detection is \textbf{Completeness}: every process failure
+must eventually be detected by at least one non-faulty process, so the system can
+take recovery actions (re-assign tasks, re-replicate data, trigger a new leader
+election). Without completeness, a silent crashed process may block the entire system
+indefinitely.
+
+\medskip
+\textbf{Why Perfect and Instantaneous Detection is Impossible.}
+
+A \emph{perfect} failure detector would satisfy both:
+\begin{itemize}
+  \item \textbf{Completeness:} every failure is detected.
+  \item \textbf{Accuracy:} no alive process is ever mistakenly declared failed.
+\end{itemize}
+
+In an \textbf{asynchronous network}, message delivery delay is \emph{unbounded} and
+messages may be lost. This creates a fundamental impossibility:
+
+\begin{enumerate}
+  \item Process $p_i$ sends a heartbeat/ping to $p_j$ and waits for a response.
+  \item $p_i$ cannot distinguish between two scenarios:
+        \begin{itemize}
+          \item $p_j$ has \emph{crashed} (no response ever), or
+          \item $p_j$ is \emph{alive} but the message is \emph{delayed or lost}.
+        \end{itemize}
+  \item If $p_i$ sets a timeout $T_{\text{fail}}$ and declares $p_j$ failed on expiry:
+        \begin{itemize}
+          \item A too-short timeout triggers on a slow-but-alive $p_j$
+                $\Rightarrow$ false positive $\Rightarrow$ \textbf{violates Accuracy}.
+          \item A too-long timeout delays detection $\Rightarrow$ \textbf{violates instantaneousness}.
+          \item Any fixed timeout can be exceeded by a sufficiently large (but finite)
+                network delay $\Rightarrow$ no timeout can be simultaneously correct and fast.
+        \end{itemize}
+\end{enumerate}
+
+\textbf{Formal result [Chandra \& Toueg, 1996]:}
+Completeness and Accuracy \emph{cannot be achieved simultaneously} in asynchronous
+lossy networks. A perfect failure detector would enable solving the consensus problem,
+but the \textbf{FLP impossibility theorem} proves consensus is impossible in asynchronous
+networks with even one possible faulty process.
+
+\medskip
+\textbf{Practical compromise:}
+Real systems guarantee \textbf{Completeness} (every failure detected) but offer only
+\textbf{probabilistic Accuracy} ($PM(T)$ = probability of a mistaken detection within
+time $T$). The false-positive rate and detection time are tunable via timeouts and
+redundancy parameters (e.g., SWIM's $K$ indirect pingers).
+\end{solbox}
+
+\begin{notesbox}
+\textbf{Exam pattern:} 2024 Q2d (3 marks).
+Award breakdown: $\sim$1 mark for Completeness definition, $\sim$1 mark for the
+distinguish-crash-vs-delay argument, $\sim$1 mark for the Chandra \& Toueg impossibility
+result + practical implication.
+Keyword the examiner wants: \textbf{asynchronous network, unbounded delay,
+Completeness + Accuracy impossible, probabilistic accuracy}.
+\end{notesbox}
+
+\newpage
+%======================================================================
+\section{2024 — Q3a (3 marks)}
+%======================================================================
+
+\begin{qbox}
+\textbf{Q3(a):} A server is carrying out requests from many clients. In some situations
+a server cannot bound the time that it will take to execute a request. Why? What should
+it do in order to execute the request within a bounded time?
+\hfill \textit{[3 marks]}
+\end{qbox}
+
+\begin{solbox}
+\textbf{Part 1: Why the Server Cannot Bound Response Time.}
+
+In a distributed system that uses an \textbf{asynchronous network model}, several
+factors make it impossible to bound execution time:
+
+\begin{enumerate}
+  \item \textbf{Unbounded network delay.}
+        There is no fixed upper bound on message transmission time.
+        A request from a remote client can be arbitrarily delayed before arriving
+        at the server, or a response can be delayed before reaching the client.
+
+  \item \textbf{Message loss.}
+        Packets can be dropped (network congestion, hardware fault).
+        The server (or client) cannot know whether to wait longer or retry.
+
+  \item \textbf{OS scheduling non-determinism.}
+        The server process can be preempted by the OS scheduler at any time.
+        CPU time is shared with other processes, so execution time is not deterministic.
+
+  \item \textbf{No global clock.}
+        In an asynchronous system, clocks are not synchronized.
+        The server cannot measure how much "wall-clock time" a client has been waiting
+        without a shared reference.
+\end{enumerate}
+
+\medskip
+\textbf{Part 2: What the Server Should Do to Execute Within Bounded Time.}
+
+Since perfect bounded response time is impossible in an asynchronous network,
+the server should adopt \emph{timeout-based} and \emph{probabilistic} mechanisms:
+
+\begin{enumerate}
+  \item \textbf{Set a timeout $T_{\text{fail}}$.}
+        If no response (or no heartbeat from the client) is received within
+        $T_{\text{fail}}$, \emph{suspect} the client or the pending request.
+        This is the only practical way to bound waiting time.
+
+  \item \textbf{Use indirect detection (SWIM-style).}
+        Before declaring the client failed, ask $K$ other nodes to contact the client
+        on the server's behalf. Confirmation from multiple paths reduces false positives
+        caused by a single congested link.
+
+  \item \textbf{Adopt the Suspicion Mechanism.}
+        Transition through states: Alive $\to$ Suspected $\to$ Failed, with
+        $T_{\text{cleanup}} > T_{\text{fail}}$.
+        This buffers against transient delays causing premature failure declarations.
+
+  \item \textbf{Accept probabilistic accuracy.}
+        The server should acknowledge that any timeout may occasionally fire on a
+        slow-but-alive client (false positive) and design recovery actions
+        (idempotent request re-execution, exactly-once semantics) accordingly.
+\end{enumerate}
+
+\textbf{Key principle:} The server trades \emph{perfect accuracy} for
+\emph{guaranteed completeness and bounded waiting time}, tuning $T_{\text{fail}}$
+to achieve an acceptable false-positive rate $PM(T)$.
+\end{solbox}
+
+\begin{notesbox}
+\textbf{Exam pattern:} 2024 Q3a (3 marks). Two clear parts — examiner expects:
+(1) at least 2 concrete reasons for unbounded time (async delay + message loss are
+the core ones), (2) timeout-based approach as the answer, with mention of
+suspicion mechanism and probabilistic accuracy.
+This question is directly about the FLP/async impossibility applied to the server side.
+\end{notesbox}
+
+\newpage
+%======================================================================
+\section{Summary Table}
+%======================================================================
+
+\begin{center}
+\renewcommand{\arraystretch}{1.35}
+\begin{tabular}{lllll}
+\toprule
+\textbf{Year} & \textbf{Q} & \textbf{Marks} & \textbf{Topic} & \textbf{Key answer} \\
+\midrule
+2020 & Q2b & 2.75 & FD techniques + recovery & 4 heartbeat variants + dissemination + suspicion \\
+2022 & Q6b & 2 & All-to-all robustness & Gossip-style: random subset + merge \\
+2022 & Q6d & 2 & Group membership design & SWIM (FD) + infection-style (dissemination) \\
+2024 & Q2d & 3 & FD goal + impossibility & Completeness goal; async $\Rightarrow$ C+A impossible \\
+2024 & Q3a & 3 & Server bounded time & Async delays; timeout + suspect + probabilistic \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{notesbox}
+\textbf{Yield 3/5.} With 2024 adding two questions, this topic is \emph{low-risk skip only
+if time is very tight}. The 2024 Q2d and Q3a answers share the same core argument
+(async impossibility, timeout-based approach) — learn once, answer twice.
+
+\textbf{Key terms to write in exam:}
+Completeness, Accuracy, asynchronous network, unbounded delay, gossip-style,
+Chandra \& Toueg, SWIM, $T_{\text{fail}}$, $T_{\text{cleanup}}$, suspicion mechanism,
+incarnation number, infection-style dissemination.
+\end{notesbox}
+
+\end{document}

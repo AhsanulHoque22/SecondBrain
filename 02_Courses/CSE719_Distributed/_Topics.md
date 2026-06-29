@@ -29,8 +29,8 @@ Built 2026-06-26 from 3-year past-paper analysis (2020 / 2021 / 2022, Univ. of C
 | 10 | **DSO + Parallel DB + Data Mining** | 🔲 | — | — | 3/5 · 4.5–8 mk | 2021·22 | Distributed System Overhead, scalable parallel database, hidden-pattern extraction methodologies, bitemporal relation. |
 | 11 | SQL vs NoSQL | 🔲 | — | — | 2/5 · ~5 mk | 2021 | Comparative analysis. Single appearance but high marks (4.75). |
 | 12 | Load balancing (round robin) | 🔲 | — | — | 2/5 · 2 mk | 2021 | Short definition-style. |
-| 13 | Heartbeating + Group Membership | 🔲 | — | — | 2/5 · ~4 mk | 2022 | All-to-all heartbeat robustness, group membership protocol design. Recent. |
-| 14 | Fault detection & recovery | 🔲 | — | — | 2/5 · ~3 mk | 2020 | Techniques in distributed OS. |
+| 13 | Heartbeating + Group Membership | 📖 | — | 2026-06-30 | 2/5 · ~4 mk | 2022 | Wiki ingested (→ [[wiki/failure-detection]]). All-to-all robustness = gossip-style; group membership = SWIM + infection dissemination. Solutions: FailureDetection_Solutions.pdf. |
+| 14 | Fault detection & recovery | 📖 | — | 2026-06-30 | 3/5 · ~9 mk | 2020·24 | 2024 adds 2 questions. Wiki ingested. Core: completeness goal; async impossibility [Chandra & Toueg]; timeout + suspicion mechanism. Solutions: FailureDetection_Solutions.pdf. |
 
 ---
 

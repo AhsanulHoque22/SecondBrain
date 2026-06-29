@@ -1,0 +1,341 @@
+% CSE 719 — Distributed & Cloud Computing
+% Lecture 3: MapReduce & Hadoop — Model Answers (2021–2024)
+% University of Chittagong, 8th Semester B.Sc. Engineering
+% Note: 2020 paper has no MapReduce questions.
+% Compile: pdflatex MapReduce_Solutions.tex (twice for TOC)
+
+\documentclass[12pt, a4paper]{article}
+
+\usepackage[left=2.5cm, right=2.5cm, top=2.8cm, bottom=2.8cm, headheight=15pt]{geometry}
+\usepackage{amsmath, amssymb}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{xcolor}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{mdframed}
+\usepackage{tabularx}
+\usepackage{hyperref}
+
+%----- Colours -----
+\definecolor{sectionblue}{RGB}{10,60,110}
+\definecolor{boxbg}{RGB}{255,248,240}
+\definecolor{answerbg}{RGB}{240,247,255}
+\definecolor{notesbg}{RGB}{255,250,230}
+
+%----- Box environments -----
+\mdfdefinestyle{qframe}{linecolor=orange!75!black, backgroundcolor=boxbg, roundcorner=4pt, linewidth=1.3pt, innertopmargin=6pt, innerbottommargin=6pt, innerleftmargin=9pt, innerrightmargin=9pt}
+\mdfdefinestyle{solframe}{linecolor=sectionblue, backgroundcolor=answerbg, roundcorner=4pt, linewidth=1.3pt, innertopmargin=7pt, innerbottommargin=7pt, innerleftmargin=9pt, innerrightmargin=9pt}
+\mdfdefinestyle{notesframe}{linecolor=orange!70!black, backgroundcolor=notesbg, roundcorner=4pt, linewidth=1pt, innertopmargin=5pt, innerbottommargin=5pt, innerleftmargin=8pt, innerrightmargin=8pt}
+\newenvironment{qbox}{\begin{mdframed}[style=qframe]}{\end{mdframed}}
+\newenvironment{solbox}{\begin{mdframed}[style=solframe]}{\end{mdframed}}
+\newenvironment{notesbox}{\begin{mdframed}[style=notesframe]}{\end{mdframed}}
+
+%----- Page style -----
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{\small\color{sectionblue} CSE 719 --- Lecture 3: MapReduce \& Hadoop}
+\rhead{\small\color{sectionblue} Model Solutions}
+\cfoot{\small\thepage}
+\renewcommand{\headrulewidth}{0.5pt}
+
+%----- Section formatting -----
+\titleformat{\section}{\Large\bfseries\color{sectionblue}}{}{0em}{}[\vspace{-2pt}\color{sectionblue}\rule{\linewidth}{0.8pt}]
+\titleformat{\subsection}{\large\bfseries\color{sectionblue!85!black}}{}{0em}{}
+
+\newcommand{\qmarks}[1]{\hfill\textbf{\color{orange!70!black}[#1 marks]}}
+
+%=====================================================================
+\begin{document}
+%=====================================================================
+\begin{center}
+  {\LARGE\bfseries\color{sectionblue} CSE 719: Distributed \& Cloud Computing}\\[0.5em]
+  {\Large\bfseries Lecture 3 --- MapReduce \& Hadoop}\\[0.3em]
+  {\large Model Answers: 2021, 2022 \& 2024 Papers}\\[0.2em]
+  {\small University of Chittagong \quad|\quad 8\textsuperscript{th} Sem B.Sc.\ (Engg.)
+  \quad|\quad Source: Lecture-03 slides}
+\end{center}
+\vspace{0.3em}\noindent\rule{\linewidth}{1pt}\vspace{0.5em}
+
+\noindent\textit{Note: 2020 paper has no MapReduce questions.
+In 2024, all four parts of Q1 (Section A) are MapReduce --- treat this as a core topic.}
+
+\tableofcontents
+\newpage
+
+%=====================================================================
+\section{MapReduce Essentials (Reference)}
+%=====================================================================
+
+\begin{solbox}
+\textbf{MapReduce:} A programming framework for \textbf{distributed and parallel processing on
+large datasets}. Consists of two phases: \textbf{Map} and \textbf{Reduce} (barrier between them:
+no Reduce starts until all Maps complete). Terms borrowed from functional programming (Lisp).\\[6pt]
+
+\textbf{Execution pipeline:}
+\[
+\text{Input (DFS)} \;\xrightarrow{\text{Map}}\; \text{(key,value) pairs (local disk)}
+\;\xrightarrow{\text{Shuffle/Sort}}\; \text{Reduce tasks (group by key)}
+\;\xrightarrow{\text{Reduce}}\; \text{Output (DFS)}
+\]
+
+\textbf{Map:} Called once per input record. Emits zero or more \textbf{intermediate (key, value)}
+pairs. Each Map task is \textbf{completely independent} of every other Map task.\\
+\textbf{Shuffle:} Framework groups all intermediate values with the same key and routes them to
+one Reduce task. \textbf{Hash partitioning:} key $\rightarrow$ reduce\# = hash(key) \% $R$
+(number of reducers).\\
+\textbf{Reduce:} Receives all values for one key; merges them into output. Each Reduce task
+operates independently.\\[6pt]
+
+\textbf{Storage during execution:}
+\begin{itemize}[leftmargin=1.4cm, itemsep=1pt]
+  \item Map input: \textbf{from distributed FS} (GFS/HDFS).
+  \item Map output: \textbf{to local disk} of the Map node.
+  \item Reduce input: \textbf{pulled from local disks of Map nodes} (network read).
+  \item Reduce output: \textbf{to distributed FS}.
+\end{itemize}
+
+\textbf{WordCount (running example):} Input \texttt{<filename, "Welcome Everyone Hello Everyone">}
+$\xrightarrow{\text{Map}}$ \texttt{(Welcome,1),(Everyone,1),(Hello,1),(Everyone,1)}
+$\xrightarrow{\text{Reduce}}$ \texttt{(Everyone,2),(Hello,1),(Welcome,1)}.
+\end{solbox}
+
+%=====================================================================
+\section{2021 Examination (CSE 813, 52.5 marks)}
+%=====================================================================
+
+%-------
+\subsection{Q7(c) --- Various types of MapReduce jobs
+  \texorpdfstring{\qmarks{2}}{}}
+\begin{qbox}What are the various types of MapReduce jobs?\end{qbox}
+\begin{solbox}
+The following are standard types of jobs that naturally fit the MapReduce model:
+
+\begin{center}\renewcommand{\arraystretch}{1.3}
+\begin{tabularx}{\linewidth}{l X X}
+\toprule
+\textbf{Job type} & \textbf{Map phase} & \textbf{Reduce phase} \\
+\midrule
+\textbf{Word count} & Emit \texttt{(word, 1)} for each word & Sum counts per word \\
+\textbf{Distributed grep} & Emit line if it matches the pattern & Copy to output (identity) \\
+\textbf{Reverse web-link graph} & For each link $a\!\to\!b$, emit \texttt{(b, a)} & Emit \texttt{(b, list(a))} per target page \\
+\textbf{URL access frequency} & Emit \texttt{(URL, 1)} per log entry & Sum per URL; chain 2\textsuperscript{nd} MR job for \% \\
+\textbf{Distributed sort} & Emit \texttt{(value, \_)} identity & Identity; range partitioning across reducers \\
+\textbf{Inverted index} & Emit \texttt{(word, docID)} & Emit \texttt{(word, [docID list])} for search index \\
+\bottomrule
+\end{tabularx}\end{center}
+
+\textbf{Common characteristics:} large-scale data-intensive, embarrassingly parallel at the record
+level, naturally split into independent Map tasks. Particularly suited for \textbf{log processing,
+web search indexing}, and \textbf{ad-hoc queries}.
+\end{solbox}
+
+%=====================================================================
+\section{2022 Examination (CSE 513, 54 marks)}
+%=====================================================================
+
+%-------
+\subsection{Q4(a) --- Two limitations on the Map function
+  \texorpdfstring{\qmarks{2}}{}}
+\begin{qbox}What are the two important limitations MapReduce places on the Map function?\end{qbox}
+\begin{solbox}
+\begin{enumerate}[leftmargin=1.6cm, itemsep=5pt]
+  \item \textbf{No side effects / Must be a pure function.}\\
+    The Map function must be \textbf{deterministic}: given the same input record, it must always
+    produce the same output. It cannot write to any \textbf{shared external state} (databases,
+    counters, files) or communicate with other Map tasks during execution.\\
+    \textit{Why:} Failed Map tasks are silently \textbf{re-executed} on another worker. If Map had
+    side effects, re-execution would corrupt external state (e.g., a database counter would be
+    incremented twice). Determinism also enables \textbf{speculative execution} (two copies of the
+    same task; use whichever finishes first).
+
+  \item \textbf{No communication between Map tasks / Each record processed independently.}\\
+    A Map function sees \textbf{exactly one input record at a time}. It cannot read the outputs of
+    other Map tasks, access sibling records, or maintain state across multiple Map invocations.
+    Each Map task operates on its own input split in complete \textbf{isolation}.\\
+    \textit{Why:} This independence is what makes MapReduce \textbf{trivially parallelisable} ---
+    all Map tasks can run simultaneously with no synchronisation overhead.
+\end{enumerate}
+\end{solbox}
+
+%-------
+\subsection{Q4(b) --- How MapReduce handles straggler tasks
+  \texorpdfstring{\qmarks{2}}{}}
+\begin{qbox}How does MapReduce handle straggler tasks?\end{qbox}
+\begin{solbox}
+\textbf{Straggler:} A task that runs significantly slower than its peers, delaying the entire job.
+Caused by: bad disk, network congestion, CPU throttling, or memory pressure on that node. Because
+of the \textbf{barrier} between Map and Reduce phases (no Reduce starts until all Maps finish),
+even one slow Map task stalls the whole job.\\[6pt]
+
+\textbf{Solution: Speculative Execution (Backup Tasks)}
+\begin{enumerate}[leftmargin=1.6cm, itemsep=3pt]
+  \item The framework \textbf{tracks the progress} of each task (percentage complete).
+  \item When a job is \textbf{near completion} and some tasks are progressing abnormally slowly,
+    the master launches \textbf{backup copies} of those straggler tasks on other available workers.
+  \item \textbf{Whichever instance finishes first} (original or backup) has its output accepted;
+    the other is killed.
+  \item Result: tail latency is greatly reduced at the cost of a small increase in cluster
+    resource usage ($\sim$a few percent extra tasks).
+\end{enumerate}
+
+\textit{Key insight:} Because Map functions are deterministic and have no side effects, running two
+copies of the same task is \textbf{always safe} --- both will produce identical output.
+\end{solbox}
+
+%=====================================================================
+\section{2024 Examination (CSE-813, 54 marks)}
+%=====================================================================
+
+%-------
+\subsection{Q1(a) --- HPC fault tolerance using message passing
+  \texorpdfstring{\qmarks{2.5}}{}}
+\begin{qbox}Describe the fault tolerance technique used in High Performance Computing (HPC)
+systems that use message passing.\end{qbox}
+\begin{solbox}
+Traditional HPC systems (using \textbf{MPI} --- Message Passing Interface) rely on
+\textbf{Checkpoint/Restart} for fault tolerance:
+
+\begin{enumerate}[leftmargin=1.6cm, itemsep=3pt]
+  \item \textbf{Periodic global checkpointing:} At regular intervals, \textbf{all} MPI processes
+    synchronously \textbf{save their entire memory state} (variables, buffers, message queues) to
+    stable storage (parallel file system).
+  \item \textbf{Restart on failure:} When any process fails, the \textbf{entire application}
+    (all processes) rolls back to the last checkpoint and resumes from that saved state.
+  \item \textbf{Coordinated recovery:} All processes restart together to ensure a
+    \textbf{consistent global state} (no dangling messages, no inconsistency between processes).
+\end{enumerate}
+
+\textbf{Limitations at scale:}
+\begin{itemize}[leftmargin=1.4cm, itemsep=1pt]
+  \item \textbf{Stop-the-world checkpointing} imposes regular pauses on all processes.
+  \item \textbf{Checkpoint overhead} grows with application size; writing 100s of GB is
+    slow.
+  \item \textbf{Wasted work:} on failure, all processes restart even those that did not fail;
+    all computation since the last checkpoint is lost.
+  \item \textbf{Scalability crisis:} in a 10,000-node system where each node fails once
+    per year, a failure occurs roughly every \textbf{53 minutes} --- far shorter than a
+    typical checkpoint interval, making the system permanently stalled.
+\end{itemize}
+\end{solbox}
+
+%-------
+\subsection{Q1(b) --- MapReduce advantage over MPI for failure handling
+  \texorpdfstring{\qmarks{2}}{}}
+\begin{qbox}What advantage does MapReduce have over MPI-based systems for failure handling and
+recovery?\end{qbox}
+\begin{solbox}
+\begin{enumerate}[leftmargin=1.6cm, itemsep=5pt]
+  \item \textbf{Task-level re-execution, not global restart.}\\
+    When a MapReduce worker fails, only the \textbf{specific Map or Reduce tasks} running on that
+    worker are re-scheduled on another available node. All other in-progress and completed tasks
+    continue unaffected. Contrast with MPI: \textbf{all} processes restart from checkpoint.
+
+  \item \textbf{No application-level checkpointing needed.}\\
+    Map/Reduce tasks are \textbf{stateless and deterministic}: their output depends only on their
+    input (read from the replicated distributed FS). Any failed task can be re-run from the
+    original DFS input --- which is still available because GFS/HDFS keeps \textbf{3 replicas}.
+    There is no global state to save or restore.
+
+  \item \textbf{Failure handling is transparent to the programmer.}\\
+    The framework (master + YARN) detects failures via \textbf{heartbeats} and automatically
+    re-queues tasks. The developer writes zero fault-tolerance code.
+\end{enumerate}
+
+\textbf{Summary:} MPI requires saving and restoring the \textit{entire global state}; MapReduce
+re-runs only the \textit{individual failed tasks} --- a fundamentally more scalable fault model.
+\end{solbox}
+
+%-------
+\subsection{Q1(c) --- GFS replica location API: MapReduce optimization enabled
+  \texorpdfstring{\qmarks{2.5}}{}}
+\begin{qbox}GFS exposes the locations of block replicas to clients via an API. What important
+MapReduce optimization does this enable?\end{qbox}
+\begin{solbox}
+The optimization enabled is \textbf{Data Locality} (also called
+\textit{moving computation to data} or \textit{locality-aware scheduling}).\\[6pt]
+
+\textbf{How it works:}
+\begin{enumerate}[leftmargin=1.6cm, itemsep=3pt]
+  \item The MapReduce master \textbf{queries the GFS API} to learn which servers hold each
+    input block's replicas.
+  \item It then \textbf{schedules each Map task preferentially} on:
+    \begin{enumerate}[leftmargin=1.2cm, itemsep=1pt]
+      \item[1.] A server that already holds a replica of that block (\textbf{local disk read}), or
+      \item[2.] A server on the \textbf{same rack} as one holding a replica (intra-rack read), or
+      \item[3.] Any server anywhere (fallback --- full cross-rack network read).
+    \end{enumerate}
+  \item Most Map tasks read their input data \textbf{from local disk} instead of over the network.
+\end{enumerate}
+
+\textbf{Why it matters:}
+\begin{itemize}[leftmargin=1.4cm, itemsep=1pt]
+  \item Eliminates network bandwidth as a bottleneck for the Map phase (which reads the entire
+    input dataset).
+  \item In a large cluster, \textbf{network cross-section bandwidth} is the scarcest resource;
+    local reads conserve it for the shuffle phase (which must traverse the network).
+  \item Measured speedup: significantly faster job completion at scale (often the dominant
+    optimisation in MapReduce performance).
+\end{itemize}
+\end{solbox}
+
+%-------
+\subsection{Q1(d) --- Two limitations on the Map function (repeat)
+  \texorpdfstring{\qmarks{2}}{}}
+\begin{qbox}What are two important limitations that MapReduce places on the Map function?\end{qbox}
+\begin{solbox}
+\textit{(Same question as 2022 Q4(a) --- see full answer there.)}\\[4pt]
+
+\textbf{Summary (two limitations):}
+\begin{enumerate}[leftmargin=1.6cm, itemsep=4pt]
+  \item \textbf{No side effects --- must be a pure/deterministic function.}
+    Map must produce the same output for the same input; it cannot write to shared external state.
+    This is required for safe re-execution on failure and for speculative execution.
+  \item \textbf{No inter-task communication --- each record processed independently.}
+    A Map function sees only one input record at a time; it cannot access other records or the
+    outputs of sibling Map tasks. This is what makes MapReduce trivially parallelisable.
+\end{enumerate}
+\end{solbox}
+
+%=====================================================================
+\section{Quick Summary --- Exam Patterns \& Must-Know}
+%=====================================================================
+\begin{notesbox}
+\begin{itemize}[leftmargin=1.3cm, itemsep=3pt]
+  \item \textbf{2024 entire Q1 = MapReduce} (4 parts, 9 marks of Section A).
+    Trend: MapReduce yield has jumped from 3/5 to 4/5. Treat it as a primary topic.
+
+  \item \textbf{Two Map limitations (2022 Q4a = 2024 Q1d, verbatim repeat):}
+    (1) No side effects / deterministic.
+    (2) No inter-task communication / independent records.
+    Know both with the WHY (re-execution + parallelism).
+
+  \item \textbf{Straggler / Speculative Execution (2022 Q4b):}
+    Define straggler $\rightarrow$ barrier problem $\rightarrow$ track progress \%
+    $\rightarrow$ launch backup copy $\rightarrow$ use whichever finishes first.
+
+  \item \textbf{MPI vs.\ MapReduce fault tolerance (2024 Q1a + Q1b):}
+    MPI = global checkpoint/restart (all processes stop and roll back).
+    MapReduce = re-run only failed task (task-level, stateless, DFS replicas survive node death).
+
+  \item \textbf{GFS locality (2024 Q1c):}
+    GFS API reveals replica locations $\rightarrow$ master schedules Map tasks co-located with data
+    $\rightarrow$ eliminates network reads in Map phase $\rightarrow$ major performance gain.
+    Priority: same node $\to$ same rack $\to$ anywhere.
+
+  \item \textbf{Types of MapReduce jobs (2021 Q7c):}
+    Word count, distributed grep, reverse web-link graph, URL frequency, distributed sort,
+    inverted index. Know Map/Reduce steps for at least word count and grep cold.
+
+  \item \textbf{YARN (not directly examined yet, but know components):}
+    Resource Manager (global scheduler) + Node Manager (per-server daemon)
+    + Application Master (per-job; detects task failures).
+
+  \item \textbf{Key pipeline to draw:}
+    Input (DFS) $\to$ Map (local disk output) $\to$ Shuffle/hash-partition
+    $\to$ Reduce (DFS output). Barrier: all Maps must finish before Reduce starts.
+\end{itemize}
+\end{notesbox}
+
+\end{document}

@@ -8,7 +8,7 @@ Course: Dr. Atiqur Rahman, Univ. of Chittagong. Exam Wed 1 Jul 2026.
 |:-----:|-------|------|----------------|
 | 5/5 | DSM (Distributed Shared Memory) | [[dsm]] | Lecture-09 |
 | 5/5 | Cloud Computing fundamentals | [[cloud-computing]] | Lecture-02 + Unit 3/4 |
-| 5/5 | RPC | _pending_ | (TBD lecture) |
+| 5/5 | RPC & Concurrency Control | [[rpc-concurrency]] | Lecture-10 |
 | 5/5 | Consistency models | [[consistency-models]] | Lecture-09 |
 | 4/5 | MapReduce & Hadoop | [[mapreduce]] | Lecture-03 |
 | 5/5 | Distributed File Systems + AFS | [[dfs-afs]] | Lecture-08 |
@@ -29,6 +29,6 @@ Course: Dr. Atiqur Rahman, Univ. of Chittagong. Exam Wed 1 Jul 2026.
 | 7 | Paxos | Paxos (#9) ✅ ingested | 4/5 |
 | 8 | Distributed File Systems | DFS+AFS (#5) ✅ ingested | 5/5 ⭐ |
 | 9 | Distributed Shared Memory | DSM (#1) + Consistency (#4) ✅ ingested | 5/5 ⭐ |
-| 10 | RPC & Concurrency Control | RPC/Concurrency (#3/#6) | 5/5 ⭐ |
+| 10 | RPC & Concurrency Control | RPC (#3) + Concurrency (#6) ✅ ingested | 5/5 ⭐ |
 
 🔴 **Orphan topics (no slides):** DFS+AFS · DSO/Parallel-DB/Data-mining · callback/lightweight RPC · RRA protocol · NRNMB strategies · horiz/vert scaling · SQL-vs-NoSQL · prognostic · bitemporal. Full audit in [[../_LecturePlan]].

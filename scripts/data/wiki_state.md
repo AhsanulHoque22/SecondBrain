@@ -1,30 +1,35 @@
 # Study Brain — Compiled State
-_Updated: 2026-06-29 by overnight rollover_
+_Updated: 2026-06-30 by overnight rollover_
 
 ## Active exam
-🎯 CSE 719 — Distributed & Cloud · **Wed 1 Jul 2026, 10:30 AM** · 1 day from 2026-06-30 · Phase: 🔴 LAST DAY, SPINE STILL UNOPENED. Three straight days (06-27/28/29) closed with zero confirmed progress. Cloud/RPC/Consistency never opened, DSM/Fundamentals still 📖. Tue 30 must be compressed core learning on the spine FIRST (non-negotiable), then recall, then whatever timed practice the day allows. DFS/AFS and tail topics (8-14) are cut for this cycle.
+🎯 CSE 719 — Distributed & Cloud · **Wed 1 Jul 2026, 10:30 AM** · 0 days from 2026-07-01 (exam is tomorrow morning) · Phase: 🎯 EXAM DAY. 06-30 was a full turnaround day — all 10 lectures got solutions PDFs + wiki ingest (see git log: Fundamentals, Cloud, MapReduce, Failure Detection, Replication/2PC, Paxos, DFS+AFS, DSM+Consistency, RPC+Concurrency). No topic has had a confirmed cold active-recall pass yet. 07-01 morning = light recall/cheat-sheet pass only, no new material, then sit the exam at 10:30. Afternoon resets onto Window 5 — Computer Graphics (CSE 715, exam Wed 8 Jul).
 
 ## Topics — CSE719 Distributed & Cloud
 | Topic | Status | Conf | Next Recall |
 |---|:---:|:---:|---|
-| 1. DSM (false sharing, Invalidate/Update, consistency; NRNMB textbook gap) | 📖 | — | active recall due |
-| 2. Cloud Computing (e-commerce scenario, deploy/service models, scaling, multi-tenancy) | 🔲 | — | — |
-| 3. RPC (design issues, stub, RRA, callback/lightweight) | 🔲 | — | — |
-| 4. Consistency models (strong/weak/causal/release, quorum) | 🔲 | — | — |
-| 5. DFS + Andrew File System — ✂️ CUT, no runway left | 🔲 | — | — |
-| 6. Concurrency Control & Transactions — ✂️ CUT | 🔲 | — | — |
-| 7. Distributed System Fundamentals | 📖 | — | active recall due |
-| 8–14. MapReduce · Paxos · DSO/Parallel DB · SQL-vs-NoSQL · load balancing · heartbeating · fault recovery — ✂️ CUT | 🔲 | — | — |
+| 1. DSM (false sharing, Invalidate/Update, consistency, NRNMB, LRU-fail) | 📖 | — | pre-exam recall pass |
+| 2. Cloud Computing (e-commerce scenario, deploy/service models, scaling, multi-tenancy, EUCALYPTUS) | 📖 | — | pre-exam recall pass |
+| 3. RPC (design issues, stub, RRA, callback/lightweight) | 📖 | — | pre-exam recall pass |
+| 4. Consistency models (strong/weak/causal/release, quorum, 9-replica example) | 📖 | — | pre-exam recall pass |
+| 5. DFS + Andrew File System (UNIX semantics, Vice/Venus/callbacks) | 📖 | — | pre-exam recall pass |
+| 6. Concurrency Control & Transactions (2PC, multicast, ACID, WFG) | 📖 | — | pre-exam recall pass |
+| 7. Distributed System Fundamentals (+ all 5 sub-topics) | 📖 | — | pre-exam recall pass |
+| 8. MapReduce (map-function limits, straggler handling, job types) | 📖 | — | pre-exam recall pass |
+| 9. Paxos (leader<majority, 2f+1 math, same-ballot, P-B vs Paxos) | 📖 | — | pre-exam recall pass |
+| 10. DSO + Parallel DB + Data Mining — ✂️ CUT, no runway | 🔲 | — | — |
+| 11. SQL vs NoSQL — ✂️ CUT | 🔲 | — | — |
+| 12. Load balancing — ✂️ CUT | 🔲 | — | — |
+| 13. Heartbeating + Group Membership (SWIM, gossip) | 📖 | — | pre-exam recall pass |
+| 14. Fault detection & recovery (Chandra & Toueg, timeout+suspicion) | 📖 | — | pre-exam recall pass |
 
 ## Carry-forward
-- 🔴 CRITICAL: 3rd consecutive day (06-27, 06-28, 06-29) with zero confirmed CSE719 progress. Tomorrow is the actual last day before the exam.
-- DSM (#1): 📖 but not confirmed active-recalled.
-- Spine #2 Cloud, #3 RPC, #4 Consistency: still NOT started — must close out tomorrow, no day left after.
-- Fundamentals (#7): 📖, not yet ✅.
-- DFS/AFS (#5) and tail topics (#6, #8-14): cut for this exam cycle, no runway.
+- 🎯 Exam is tomorrow 10:30 AM. No new learning before it — recall/consolidation only.
+- 11 of 14 CSE719 topics now 📖 with wiki + solutions PDFs (huge 06-30 catch-up). Risk is recognition-not-recall, not missing coverage.
+- Topics #10, #11, #12 (DSO/Parallel DB, SQL-vs-NoSQL, Load balancing) — intentionally cut, no runway.
+- After the exam: reset onto Window 5 — Computer Graphics (CSE 715), exam Wed 8 Jul 2026.
 
-## Recall due 2026-06-30
-> ⚠️ All 20 items are AI (713) + InfoSec (717) — both exams already done. Informational only, do not let them eat spine time.
+## Recall due 2026-07-01
+> ⚠️ All 20 items below are AI (713) + InfoSec (717) — both exams already done. Informational only, do NOT touch before the CSE719 exam.
 
 - 🔁 Intelligent Agents + Environments (PAGE) `CSE713_AI` | conf 4/5
 - 🔁 Search: UCS, Greedy, A, IDDFS — trace on graph `CSE713_AI` | conf 4/5
@@ -48,6 +53,6 @@ _Updated: 2026-06-29 by overnight rollover_
 - 🔁 Number Theory & Modular Arithmetic (Euclidean, Fermat, Euler, CRT, Miller-Rabin, discrete log) `CSE717_InfoSec` | conf 5/5
 
 ## Recent pattern (last 3 days)
-- 2026-06-27: Plan called for spine core learning (Cloud→RPC→Consistency); end-of-day log left unfilled, no completions confirmed.
-- 2026-06-28: No daily log created at all — rollover gap, zero confirmed progress on record.
-- 2026-06-29: Daily log existed with emergency spine plan; end-of-day log left unfilled again, no completions confirmed. Spine still entirely 🔲.
+- 2026-06-28: No daily log created — rollover gap, zero confirmed progress on record.
+- 2026-06-29: Daily log existed with emergency spine plan; end-of-day log left unfilled, no completions confirmed. Spine still entirely 🔲.
+- 2026-06-30: 🟢 Turnaround — question-analysis + solutions PDF + wiki ingest completed for all 10 CSE719 lectures (per git log), even though the end-of-day log box was again left blank. Spine coverage went from 2/14 to 11/14 topics 📖 in one day. No confirmed recall pass yet.

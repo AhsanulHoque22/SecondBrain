@@ -3,11 +3,11 @@
 > Living file. Claude Code updates this every session. You read this first, every day.
 
 ## Right now
-- **Active exam:** 🎯 CSE 719 — Distributed & Cloud — **Wed 1 Jul 2026, 10:30 AM**
-- **Days left:** 1 (from Tue 30 Jun) — this is the LAST day before the exam.
-- **Phase:** 🔴 LAST DAY, SPINE STILL UNOPENED. Three straight days (06-27/28/29) closed with zero confirmed progress — Cloud/RPC/Consistency have never been opened, DSM + Fundamentals still 📖 (not recalled/✅). No slack and no day left after this one. DFS/AFS and tail topics (8-14) are cut for this cycle.
-- **Single most important thing:** Cloud → RPC → Consistency core learning TODAY, non-negotiable — they're 3 of the 6 answers needed. DSM + Fundamentals recall pass alongside. No Livora.
-- **After today:** Nothing — tomorrow 10:30 AM is the exam. Whatever isn't covered today is not covered.
+- **Active exam:** 🎯 CSE 719 — Distributed & Cloud — **Wed 1 Jul 2026, 10:30 AM — TODAY**
+- **Days left:** 0 — exam is this morning.
+- **Phase:** 🎯 EXAM DAY. 06-30 was a full turnaround: all 10 lectures (spine + MapReduce + Cloud) got solutions PDFs + wiki ingest in one day (see git log). Nothing has had a confirmed cold active-recall pass yet, so this morning is consolidation only — no new material. Tail topics #10–12 (DSO/Parallel DB, SQL vs NoSQL, Load balancing) stay cut, no runway left.
+- **Single most important thing:** Cold recall pass on DSM/Consistency/RPC + cheat-sheet skim before 10:30. Then sit the exam.
+- **After today:** Afternoon resets onto Window 5 — Computer Graphics (CSE 715), per the Weekly Engine's "exam Wednesday" step.
 - **Next exam after this:** CSE 715 — Computer Graphics — Wed 8 Jul 2026
 - **⚠️ Rule:** Google Calendar is the ONLY source of truth for daily plans. Never use the overnight rollover log for scheduling.
 - **🔴 Session protocols:** Read and execute `scripts/data/session_protocols.md` at EVERY session start. No exceptions.
@@ -42,7 +42,7 @@ Prayers structure the day — each gap is a study block:
 | [[02_Courses/CSE713_AI/_Topics\|AI (713)]] | ✅ EXAM DONE (27 topics) | 18✅ · 1🔁 · 7📖 · 1🔲 | ✅ past papers done per topic | 4.2 |
 | [[02_Courses/CSE717_InfoSec/_Topics\|InfoSec (717)]] | ✅ 14 topics ranked | 11✅ · 3📖 · 0🔲 | – | pending |
 | [[02_Courses/CSE711_Compiler/_Topics\|Compiler (711)]] | ✅ EXAM DONE (8 topics, 8yr past papers) | sat 24 Jun | – | – |
-| [[02_Courses/CSE719_Distributed/_Topics\|Distributed (719)]] | ✅ 14 topics ranked (3-yr analysis) | 2📖 (DSM, Fundamentals) · 12🔲 — 3 days no progress | – | pending |
+| [[02_Courses/CSE719_Distributed/_Topics\|Distributed (719)]] | ✅ 14 topics ranked (3-yr analysis) | 11📖 (spine + MapReduce + Cloud, all wiki+solutions done 06-30) · 3🔲 (tail, cut) | solutions PDFs all 10 lectures | pending recall |
 | [[02_Courses/CSE715_Graphics/README\|Graphics (715)]] | – | – | – | – |
 | [[02_Courses/CSE700_Thesis/README\|Thesis (700)]] | – | – | – | – |
 

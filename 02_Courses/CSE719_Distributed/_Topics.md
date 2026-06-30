@@ -11,10 +11,10 @@ Built 2026-06-26 from 3-year past-paper analysis (2020 / 2021 / 2022, Univ. of C
 
 | # | Topic | Status | Conf | Last Rev | Yield | Recurs | Notes / weak spots |
 |---|-------|:------:|:----:|:--------:|:-----:|:------:|--------------------|
-| 1 | **DSM (Distributed Shared Memory)** | 📖 | — | 2026-06-26 | 5/5 · 9–12 mk | 2020·21·22 | Wiki ingested (Lecture-09 → [[wiki/dsm]]). False sharing + Invalidate/Update + consistency covered. GAP: NRNMB strategies & LRU-fail are textbook-only — pull before exam. Next: active recall. |
+| 1 | **DSM (Distributed Shared Memory)** | 📖 | — | 2026-06-30 | 5/5 · 9–12 mk | 2020·21·22·24 | Wiki updated. Solutions: DSM_Consistency_Solutions.pdf. False sharing, Invalidate/Update, NRNMB strategies, LRU-fail, all covered. |
 | 2 | **Cloud Computing fundamentals** | 🔲 | — | — | 5/5 · 8–12 mk | 2020·21·22 | E-commerce scenario asked ALL 3 years. + definition, deployment vs service models, horizontal/vertical scaling, multi-tenancy, EUCALYPTUS, layers, on-demand, pros/cons. |
 | 3 | **RPC (Remote Procedure Call)** | 🔲 | — | — | 5/5 · 6–9 mk | 2020·21·22 | Design issues asked every year. + stub (gen/purpose), RRA protocol steps, callback & lightweight RPC, schematic diagram. |
-| 4 | **Consistency models** | 🔲 | — | — | 5/5 · 5–9 mk | 2020·21·22 | Strong/weak/causal/release; quorum (read+write size constraints, 9-replica example). Overlaps DSM — study together. |
+| 4 | **Consistency models** | 📖 | — | 2026-06-30 | 5/5 · 5–9 mk | 2020·21·22·24 | Wiki ingested (→ [[wiki/consistency-models]]). Causal/release/weak/sequential/linearizability; quorum rules + 9-replica example; scenarios. Solutions: DSM_Consistency_Solutions.pdf. |
 | 5 | **Distributed File Systems + AFS** | 📖 | — | 2026-06-30 | 5/5 · 6–8 mk | 2020·21·22·24 | Wiki ingested (→ [[wiki/dfs-afs]]). Solutions: DFS_AFS_Solutions.pdf. UNIX not idempotent+stateless; DFS principles; cache validation; Vice+Venus+callbacks; AFS callback loss. |
 | 6 | **Concurrency Control & Transactions** | 📖 | — | 2026-06-30 | 5/5 · 6–10 mk | 2021·22·24 | 2PC + multicast ordering ingested (→ [[wiki/replication-2pc]]). Pending: ACID, deadlock, locking, WFG, timestamp ordering → L10 solutions. |
 | 7 | **Distributed System Fundamentals** | 📖 | — | 2026-06-26 | 4/5 · 6–10 mk | 2020·21 | Lecture-01 ingested + solutions PDF (2020/21). Definition + examples, tightly vs loosely coupled, transparencies, scalability + challenges, marshalling/unmarshalling, distributed vs parallel, adv/disadv. |

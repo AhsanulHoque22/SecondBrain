@@ -1,0 +1,535 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{parskip}
+\usepackage[hidelinks]{hyperref}
+\usepackage{xcolor}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{tikz}
+
+\pagestyle{fancy}
+\fancyhf{}
+\rhead{CSE 719 --- Distributed \& Cloud Computing}
+\lhead{DSM \& Consistency (Lecture-09)}
+\cfoot{\thepage}
+
+\titleformat{\section}{\large\bfseries}{}{0em}{}[\titlerule]
+\titleformat{\subsection}{\normalsize\bfseries}{}{0em}{}
+
+\begin{document}
+
+\begin{center}
+  {\Large\bfseries CSE 719 --- DSM \& Consistency Models Solutions}\\[4pt]
+  {\normalsize Lecture-09 $\cdot$ Exam: Wed 1 Jul 2026 $\cdot$ Dr.\ Atiqur Rahman}
+\end{center}
+
+\tableofcontents
+\newpage
+
+%==========================================================
+\section{Reference: DSM \& Consistency Quick Facts}
+%==========================================================
+
+\textbf{DSM in one sentence:} An abstraction in which processes on different machines virtually share memory pages, programmed as if on a shared-memory multiprocessor, implemented over a message-passing network.
+
+\textbf{Consistency model ladder} (weakest $\to$ strongest):
+\begin{center}
+\begin{tabular}{@{}lll@{}}
+\toprule
+Model & Guarantee & Cost \\
+\midrule
+Eventual & Writes propagate eventually; no ordering & Lowest \\
+PRAM/FIFO & Writes by one process seen in order by all & Low \\
+Causal & Causally related writes seen in causal order everywhere & Medium \\
+Release & Flushes shared state on release; consistent at lock boundaries & Medium \\
+Weak & Consistent only at synchronisation points & Medium \\
+Sequential & All see same total order of operations & High \\
+Linearizability & Sequential + real-time: each op appears instantaneous & Highest \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\textbf{Invalidate vs Update in one line:}
+\begin{itemize}[noitemsep]
+  \item \textbf{Invalidate:} on write $\to$ multicast \emph{invalidate} to all R-copy holders $\to$ only owner has copy (W state).
+  \item \textbf{Update:} on write $\to$ multicast \emph{new value} to all holders $\to$ all update in place.
+\end{itemize}
+
+\textbf{Quorum rules for N replicas:} $R + W > N$ and $W > N/2$.
+
+%==========================================================
+\section{2021 Q8b / 2022 Q8b --- Define DSM; Implement over Message-Passing (3--3.5 marks)}
+%==========================================================
+
+\textbf{Question:} Define DSM. Discuss/implement DSM over a message-passing network with suitable illustration.
+
+\subsection*{Definition}
+
+\textbf{Distributed Shared Memory (DSM)} is a software abstraction that allows processes running on separate machines in a message-passing network to access a common virtual address space as if it were physically shared memory. Each process sees the same global set of memory pages; reads and writes are intercepted by the DSM layer and translated into network messages when necessary.
+
+\textbf{Advantages:}
+\begin{itemize}[noitemsep]
+  \item Allows reuse of shared-memory programs without rewriting for message passing.
+  \item Simpler programming model (shared variables) compared to explicit send/receive.
+\end{itemize}
+
+\subsection*{Implementation over Message-Passing (Invalidate Protocol)}
+
+\textbf{Key mechanism:}
+\begin{enumerate}[noitemsep]
+  \item Each process maintains a \textbf{local cache} of recently accessed pages.
+  \item On access, process checks cache: \textbf{page hit} $\to$ serve from cache (no network). \textbf{Page miss} $\to$ \textbf{page fault} (kernel trap) $\to$ DSM software activated.
+  \item DSM software locates the page owner via \textbf{multicast}, fetches the page, caches it, and resumes the process.
+\end{enumerate}
+
+\textbf{Page states and ownership:}
+\begin{itemize}[noitemsep]
+  \item \textbf{Owner} = process with the latest version of a page.
+  \item \textbf{R state:} owner has R copy; other processes \emph{may} also hold R copies; no W copy exists.
+  \item \textbf{W state:} \emph{only} the owner has a copy.
+\end{itemize}
+
+\textbf{Read operation} (Process 1 wants to read a page):
+
+\begin{center}
+\begin{tabular}{@{}lll@{}}
+\toprule
+P1's state & Others' state & Action \\
+\midrule
+Has page (R or W, owner or not) & Any & Read from cache. \textbf{No messages sent.} \\
+No page & Others hold R copies & Multicast: ask for R copy. Mark page R. Read. \\
+No page & Another holds W copy & Ask owner to degrade to R. Get page. Mark R. Read. \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\textbf{Write operation} (Process 1 wants to write a page):
+
+\begin{center}
+\begin{tabular}{@{}lll@{}}
+\toprule
+P1's state & Others' state & Action \\
+\midrule
+Owner, W state & No other copies & Write to cache. \textbf{No messages sent.} \\
+Owner, R state & Others may have R & Multicast \textbf{invalidate} all R copies. Mark W. Write. \\
+Has R, not owner & Others may have R & Multicast invalidate all R copies. Mark W. \textbf{Become owner.} Write. \\
+No page & Any & Multicast invalidate all copies. Fetch page. Mark W. Become owner. Write. \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\textbf{Schematic (DSM over message-passing):}
+
+\begin{center}
+\begin{tikzpicture}[node distance=1.2cm, box/.style={draw, minimum width=2cm, minimum height=1cm, align=center}]
+  \node[box] (p1) {Process 1\\Cache};
+  \node[box, right=1.5cm of p1] (p2) {Process 2\\Cache};
+  \node[box, right=1.5cm of p2] (p3) {Process 3\\Cache};
+  \node[draw, cloud, cloud puffs=10, minimum width=3cm, minimum height=1.5cm, below=1.5cm of p2] (net) {Network};
+  \draw[<->] (p1) -- (net);
+  \draw[<->] (p2) -- (net);
+  \draw[<->] (p3) -- (net);
+  \node[below=0.1cm of p1, font=\small\itshape] {page(W)(O)};
+  \node[below=0.1cm of p3, font=\small\itshape] {page(R)};
+\end{tikzpicture}
+\end{center}
+
+On a write by P1: P1 multicasts INVALIDATE to P3 (and all other R-copy holders). P3 discards its cached copy. P1 marks its page W and proceeds.
+
+%==========================================================
+\section{2024 Q4a --- Message Passing vs DSM Approaches (1.5 marks)}
+%==========================================================
+
+\textbf{Question:} Compare the message passing and DSM approaches to distributed computation.
+
+\begin{center}
+\begin{tabular}{@{}p{4cm}p{5cm}p{5cm}@{}}
+\toprule
+ & \textbf{Message Passing} & \textbf{DSM} \\
+\midrule
+Programming model & Explicit \texttt{send}/\texttt{receive}; programmer manages all data movement & Shared variables; familiar shared-memory model \\
+Code reuse & Must rewrite existing shared-memory code & Can run existing shared-memory programs directly \\
+Performance & Predictable; programmer controls communication & Implicit page-fault overhead; false sharing risk \\
+Fault isolation & Each node independent; failure containment easier & Shared state complicates recovery \\
+Scalability & Better for large clusters & Consistency overhead limits scale \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+%==========================================================
+\section{2020 Q6b / 2021 Q3c / 2022 Q4c / 2024 Q4b --- False Sharing (1.5--3 marks each)}
+%==========================================================
+
+\textbf{Question:} What is false sharing? How can it be minimized?
+
+\subsection*{What is False Sharing?}
+
+\textbf{False sharing} occurs when two or more processes repeatedly write to \emph{different, logically unrelated variables} that happen to reside on the \emph{same memory page}. Each write causes the page to be invalidated at all other processes (under the invalidate protocol) and triggers a page transfer, even though no real data is being shared.
+
+\textbf{Example:} Process A writes variable $x$ and Process B writes variable $y$. Both $x$ and $y$ are on Page~5. Every time A writes $x$, it invalidates B's copy of Page~5 (which contains $y$). B then triggers a page fault to get Page~5 back. This ping-pong continues with no actual data exchange --- only wasted network messages.
+
+\textbf{Why it is costly:} The invalidate protocol was designed for real sharing. False sharing causes it to generate the same overhead (multicast + page transfer) for zero logical benefit, severely degrading DSM performance.
+
+\subsection*{How to Minimize}
+
+\begin{enumerate}
+  \item \textbf{Tune page size.} A page that is too large increases the probability that two unrelated variables share a page. A page that is too small increases the frequency of page transfers on legitimate accesses. Choose a moderate page size matched to each process's working set.
+
+  \item \textbf{Co-locate related data; separate unrelated data.} Place variables accessed together by the same process on the same page. Place variables written by different processes on \emph{different} pages. This can be done by controlling memory layout in the program (e.g., padding structures to page boundaries, using separate arrays per process).
+
+  \item \textbf{Use the update protocol for fine-grained sharing.} The update protocol sends only the changed value (not the whole page) and does not invalidate; it is better when two processes genuinely share small variables within a page. However, for large pages or mostly-exclusive access, invalidate remains preferable.
+\end{enumerate}
+
+%==========================================================
+\section{2022 Q8c --- Invalidate vs Update Protocol; Which is Preferable? (3 marks)}
+%==========================================================
+
+\textbf{Question:} Compare the Invalidate and Update protocols in DSM. Which is preferable and why?
+
+\begin{center}
+\begin{tabular}{@{}p{3cm}p{5.5cm}p{5.5cm}@{}}
+\toprule
+ & \textbf{Invalidate} & \textbf{Update} \\
+\midrule
+On write & Multicast invalidate to all R-copy holders; only owner holds page (W state) & Multicast new value to all holders; all update in place \\
+Copies & Only one W copy at a time & Multiple W copies (all updated) \\
+Message content & Small (just ``invalidate page X'') & Larger (carries new value) \\
+Next read after write & Reader must fetch the page (page fault) & Reader uses local updated copy immediately \\
+Best for & Sequential write patterns; producer-consumer; writes are infrequent or exclusive & Fine-grained sharing; small frequently-written variables; many readers \\
+False sharing & Causes heavy ping-pong & Causes repeated value broadcasts \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\textbf{Which is preferable?} \textbf{Invalidate is the default and generally preferred} because:
+\begin{enumerate}[noitemsep]
+  \item Most programs have \emph{producer-consumer} or \emph{exclusive-write} patterns: one process writes a region, then another reads it. Invalidate handles this with low overhead (one invalidate message per write burst).
+  \item Invalidate sends only a short control message; the page is only fetched if actually needed. Update always sends the full value even to processes that may never read it again.
+  \item Sequential consistency is easier to maintain with invalidate (at most one W copy exists at any time).
+\end{enumerate}
+Update is preferred only when writes are to small variables read immediately by many processes (e.g., a shared counter updated by one and read by all).
+
+%==========================================================
+\section{2020 Q4c --- Why Simple LRU Fails as DSM Block Replacement Policy (2.25 marks)}
+%==========================================================
+
+\textbf{Question:} Why does simple LRU (Least Recently Used) fail as a block replacement policy in DSM?
+
+\subsection*{Answer}
+
+In a conventional cache or buffer, LRU is effective: evict the block not accessed for the longest time, because future accesses are likely to recent blocks (temporal locality). DSM blocks have \emph{state} and \emph{ownership} that LRU ignores:
+
+\textbf{Reason 1 --- Owner blocks require explicit transfer.}
+If a process owns a page in W state (it is the only copy), evicting that page means the data would be lost. Before eviction, the process must: (a) transfer the page and ownership to another process, or (b) write it back to a home node. Simple LRU makes no distinction between ``I am the only copy'' and ``I am one of many copies''. Evicting an owner block costs a network transfer; evicting a non-owner R copy costs nothing (another copy exists). LRU cannot make this distinction.
+
+\textbf{Reason 2 --- Block state affects eviction cost asymmetrically.}
+A W-state (exclusive) block costs far more to evict than an R-state (shared, read-only) block. An LRU eviction candidate might be a W-state block with high eviction cost, when a slightly-more-recent R-state block could be evicted for free. A cost-aware replacement policy (evict the cheapest to evict, breaking ties by recency) is needed.
+
+\textbf{Reason 3 --- Local access frequency $\neq$ global importance.}
+A page rarely accessed locally might be the \emph{only copy} in the DSM (the owner in W state). Evicting it forces ownership transfer. LRU based on local access history is blind to global ownership state.
+
+\textbf{Correct approach:} A DSM-aware replacement policy first evicts non-owner R-state blocks (cheapest: just discard), then non-owner R-state blocks with no other reader, and only lastly owner blocks (requiring ownership transfer protocol).
+
+%==========================================================
+\section{2020 Q6c --- NRNMB / NRMB / RMB / RNMB Replication Strategies (4 marks)}
+%==========================================================
+
+\textbf{Question:} Describe the advantages and disadvantages of the NRNMB, NRMB, RMB, and RNMB strategies in DSM design.
+
+\subsection*{Strategy Overview}
+
+The four strategies differ on two axes:
+\begin{itemize}[noitemsep]
+  \item \textbf{Replicated (R) vs Non-Replicated (NR):} whether multiple copies of a block exist.
+  \item \textbf{Migrating Block (MB) vs Non-Migrating Block (NMB):} whether the block's home location changes to follow access patterns.
+\end{itemize}
+
+\begin{center}
+\begin{tabular}{@{}p{2.8cm}p{5.8cm}p{5.8cm}@{}}
+\toprule
+Strategy & Advantages & Disadvantages \\
+\midrule
+\textbf{NRNMB}\\Non-Replicated\\Non-Migrating & Simple: single copy at fixed server; no consistency maintenance needed; low memory usage & Server becomes a bottleneck (all accesses go to same node); no fault tolerance; high latency for remote accesses \\
+\addlinespace
+\textbf{NRMB}\\Non-Replicated\\Migrating & Block migrates to requesting process; subsequent accesses are local (no network); good for sequential access by one process at a time & Single copy still limits concurrency; migration overhead on each ownership change; bad for multiple readers (only one can own at a time) \\
+\addlinespace
+\textbf{RMB}\\Replicated\\Migrating & Multiple copies exist and migrate to requesters; read-heavy workloads benefit (reads from local copy); good if one process reads for a long time & Write invalidates all copies across the network; high invalidation overhead on writes; complex consistency maintenance \\
+\addlinespace
+\textbf{RNMB}\\Replicated\\Non-Migrating & Multiple copies at fixed locations; reads always local if copy exists; good for read-mostly data with stable access patterns & Write must update/invalidate all fixed replicas; not adaptive to changing access patterns; higher memory usage; consistency overhead on writes \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\textbf{Summary:} NRNMB is simplest but least scalable. NRMB suits single-threaded migration patterns. RMB suits read-heavy workloads with occasional writes. RNMB suits stable read-mostly data where the set of readers is known.
+
+%==========================================================
+\section{2021 Q3d / 2022 Q4d --- Consistency: Definition + Types in DSM (2--3 marks)}
+%==========================================================
+
+\textbf{Question:} What is consistency? What types of consistency can be implemented with DSM?
+
+\subsection*{Definition}
+
+\textbf{Consistency} in a distributed/replicated system defines the contract between the system and programmers regarding how writes are propagated and when they become visible across processes. It answers: if process A writes a value and process B reads it, what does B see and when?
+
+\subsection*{Consistency Models Implementable with DSM}
+
+\begin{enumerate}
+  \item \textbf{Sequential consistency:} The result of any execution is the same as if the operations of all processes were executed in some sequential order, and each process's operations appear in that sequence. All processes agree on the same global order. Achievable with total-order multicast.
+
+  \item \textbf{Causal consistency:} Only \emph{causally related} writes (writes that have a happen-before relationship) must be seen in causal order everywhere. Concurrent (independent) writes may be seen in different orders by different processes. Uses vector clocks.
+
+  \item \textbf{Release consistency:} Synchronisation operations are distinguished as \emph{acquire} (lock) and \emph{release} (unlock). All shared-variable accesses before a release are completed before the release. All shared-variable accesses after an acquire see all updates released before the acquire. Between critical sections, no ordering is imposed.
+
+  \item \textbf{Weak consistency:} Consistency enforced only at \emph{synchronisation points} (explicit barrier or lock operations). Between synchronisation points, processes may see stale data. Weaker and cheaper than release consistency.
+
+  \item \textbf{Eventual consistency:} Writes will eventually propagate to all replicas; no ordering guarantees in the short term. Used in highly available systems (e.g., DNS, Dynamo).
+\end{enumerate}
+
+\textbf{DSM context:} Release consistency is the most common choice for DSM because it is the weakest model that guarantees correct behavior for programs that use standard lock-based synchronisation. It minimises network messages (only flush at release boundaries) while preserving programmer expectations.
+
+%==========================================================
+\section{2020 Q4a --- Causal Consistency + Application (3 marks)}
+%==========================================================
+
+\textbf{Question:} What is causal consistency? Give an example of an application best suited for it.
+
+\subsection*{Definition}
+
+\textbf{Causal consistency} guarantees that writes that are \emph{causally related} (one happened-before the other) are seen in the same causal order by \emph{all} processes. Concurrent writes (with no causal relationship) may be seen in different orders at different processes --- this is permitted.
+
+Two operations are causally related if: (1) they occur at the same process in order, or (2) one is a write and the other is a read of the same value (read-from relationship), or (3) transitively chained through these.
+
+\textbf{Implementation:} Vector clocks track causal dependencies. A process delays delivering a message until all causally prior messages have been delivered.
+
+\subsection*{Best-Suited Application: Social Media / Discussion Forum}
+
+A social media timeline or discussion forum is best suited for causal consistency:
+
+\textbf{Scenario:} User A posts a message $m_1$. User B reads $m_1$ and replies with $m_2$ (causally after $m_1$). All users must see $m_1$ before $m_2$, otherwise the reply appears without its context.
+
+With causal consistency:
+\begin{itemize}[noitemsep]
+  \item $m_1 \to m_2$ (causal order) is preserved at all replicas: $m_2$ is not delivered until $m_1$ is.
+  \item Two independent posts by A and C with no causal relationship may appear in different orders on different users' feeds --- this is acceptable.
+\end{itemize}
+
+Strong consistency would be unnecessarily expensive (total order on every post); eventual consistency would allow replies to appear before their original posts. Causal consistency is the sweet spot.
+
+%==========================================================
+\section{2020 Q4b --- Weak vs Release Consistency; Which for DSM? (3.5 marks)}
+%==========================================================
+
+\textbf{Question:} Differentiate weak consistency and release consistency. Which is better suited for DSM design and why?
+
+\subsection*{Weak Consistency}
+
+\begin{itemize}[noitemsep]
+  \item Shared memory is consistent only at \textbf{synchronisation points} (e.g., barriers, explicit \texttt{sync} operations).
+  \item Rule: before a sync operation, all preceding accesses to shared variables must complete. After a sync, all previous writes are visible to all processes.
+  \item No distinction between different types of synchronisation (lock acquire, lock release, barrier are all treated identically as ``sync'').
+\end{itemize}
+
+\subsection*{Release Consistency}
+
+\begin{itemize}[noitemsep]
+  \item Refines weak consistency by distinguishing two synchronisation types:
+    \begin{itemize}[noitemsep]
+      \item \textbf{Acquire:} before acquiring a lock, import all updates that were released by any previous release of the same lock.
+      \item \textbf{Release:} before releasing a lock, all preceding shared-variable writes must be visible (flushed) to other processes.
+    \end{itemize}
+  \item Weaker than weak consistency: only propagates updates at release points, not at every sync.
+\end{itemize}
+
+\begin{center}
+\begin{tabular}{@{}p{3.5cm}p{5cm}p{5cm}@{}}
+\toprule
+ & Weak Consistency & Release Consistency \\
+\midrule
+Sync granularity & Any sync operation flushes all & Only release flushes; acquire imports selectively \\
+Messages generated & More (flush on every sync) & Fewer (flush only on release) \\
+Flexibility & Less (no acquire/release distinction) & More (can pipeline acquires) \\
+Overhead & Higher & Lower \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsection*{Which is Better for DSM?}
+
+\textbf{Release consistency is better suited for DSM} because:
+\begin{enumerate}[noitemsep]
+  \item \textbf{Fewer network messages.} Release consistency only propagates writes at release boundaries. Weak consistency propagates at every sync point, which generates more invalidation/update messages.
+  \item \textbf{Compatible with standard locking.} Programs using mutexes (acquire = lock, release = unlock) work correctly under release consistency without modification.
+  \item \textbf{Lazy release consistency:} An optimisation where updates are sent not at release time but at the next acquire of the same lock --- further reducing network overhead. This is specific to release consistency and not possible under weak consistency.
+\end{enumerate}
+
+%==========================================================
+\section{2021 Q2a / 2021 Q2b --- Strong vs Weak for Specific Scenarios (3 + 1.75 marks)}
+%==========================================================
+
+\textbf{Question (Q2a):} Differentiate strong and weak consistency. Discuss advantages and disadvantages of each for a video-sharing site.
+
+\textbf{Question (Q2b):} Why is strong consistency required for a law enforcement video evidence server?
+
+\subsection*{Strong vs Weak Consistency}
+
+\begin{center}
+\begin{tabular}{@{}p{3.5cm}p{5cm}p{5cm}@{}}
+\toprule
+ & \textbf{Strong (Linearizability)} & \textbf{Weak Consistency} \\
+\midrule
+Guarantee & Every read returns the most recent write; all nodes see same state instantaneously & Writes propagate eventually; reads may return stale data \\
+Ordering & Total order consistent with real time & No ordering guarantee between operations \\
+Performance & Slow (coordination needed on every read/write) & Fast (local reads from cached/replicated data) \\
+Availability & Lower (blocked during failure/coordination) & Higher (can serve reads even if some replicas down) \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsection*{For a Video-Sharing Site (e.g., YouTube-style)}
+
+\textbf{Weak consistency is preferable:}
+\begin{itemize}[noitemsep]
+  \item \textbf{Advantage:} If a user uploads a video and view counts are slightly stale for a few seconds, it is acceptable. Weak consistency allows serving millions of read requests from local replicas without global coordination, giving high throughput and low latency.
+  \item \textbf{Disadvantage:} A user might see an old view count or briefly not see a recently uploaded video. This is tolerable --- the inconsistency is minor and self-correcting.
+\end{itemize}
+
+\textbf{Strong consistency disadvantage for this site:} Every read of a view counter would require a global coordination round to ensure the count is current. This would make the system orders of magnitude slower and unable to handle the load.
+
+\subsection*{Why Strong Consistency for Law Enforcement Video Evidence (Q2b)}
+
+Strong consistency is \textbf{required} for a law enforcement video evidence server because:
+\begin{enumerate}[noitemsep]
+  \item \textbf{Legal integrity:} Any update to evidence (chain of custody change, access log entry, modification flag) must be immediately and identically visible to all authorised parties. If a stale cached read returns an old version after an update (e.g., a tampering event), the inconsistency could conceal that tampering.
+  \item \textbf{Non-repudiation:} Two investigators querying the same evidence file at the same time must see the same version. Under weak consistency, one might see a tampered version and the other the original --- creating conflicting records.
+  \item \textbf{Audit requirements:} Legal proceedings require a single, consistent, timestamped history of all accesses and modifications. This requires linearizability so that any read reflects all prior writes in real-time order.
+\end{enumerate}
+Performance is secondary to correctness for evidence storage. The cost of strong consistency (higher latency) is acceptable.
+
+%==========================================================
+\section{2021 Q2c --- Quorum Read/Write Constraints: 9 Replicas (4 marks)}
+%==========================================================
+
+\textbf{Question:} For a system with 9 replicas, state the constraints on read quorum ($R$) and write quorum ($W$) sizes. Give a worked example.
+
+\subsection*{Quorum Constraints}
+
+With $N$ replicas, two rules must hold:
+
+\begin{enumerate}
+  \item \textbf{Read-Write overlap:} $R + W > N$\\
+    Ensures every read quorum shares at least one replica with every write quorum. The shared replica has the latest write, so the reader always gets the current value.
+
+  \item \textbf{Write-Write overlap:} $W > N/2$\\
+    Ensures any two write quorums share at least one replica. This prevents two concurrent writes both succeeding and creating a split-brain.
+\end{enumerate}
+
+\subsection*{For N = 9}
+
+\textbf{Constraint 1:} $R + W > 9$
+
+\textbf{Constraint 2:} $W > 9/2 = 4.5$, so $W \geq 5$
+
+\textbf{Valid configurations:}
+\begin{center}
+\begin{tabular}{@{}cccc@{}}
+\toprule
+$W$ & Min $R$ (from $R > 9 - W$) & $R + W$ & Both constraints? \\
+\midrule
+5 & 5 & 10 & \checkmark \\
+6 & 4 & 10 & \checkmark \\
+7 & 3 & 10 & \checkmark \\
+8 & 2 & 10 & \checkmark \\
+9 & 1 & 10 & \checkmark \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\textbf{Worked example:} Choose $W = 5$, $R = 5$.
+\begin{itemize}[noitemsep]
+  \item A write succeeds only if acknowledged by 5 of 9 replicas.
+  \item A read contacts 5 replicas and takes the value with the highest version number.
+  \item Since $5 + 5 = 10 > 9$, any read set of 5 replicas must overlap with any write set of 5 by at least 1 ($5 + 5 - 9 = 1$). That shared replica holds the latest write. \checkmark
+  \item Since $5 > 4.5$, any two write sets of 5 overlap by at least 1. No two concurrent writes can both succeed on disjoint sets. \checkmark
+\end{itemize}
+
+\textbf{Trade-off:} High $W$, low $R$ (e.g., $W=9$, $R=1$) optimises for fast reads. High $R$, low $W$ (e.g., $W=5$, $R=5$) balances read and write cost. $W=9$ means all replicas must acknowledge writes (very slow writes, very fast reads).
+
+%==========================================================
+\section{2024 Q2b --- Linearizability + Methods to Ensure Serializability (1.5 marks)}
+%==========================================================
+
+\textbf{Question:} What is linearizability? What methods can be used to ensure serializability?
+
+\subsection*{Linearizability}
+
+\textbf{Linearizability} (also called atomic consistency or strong consistency) is the strongest consistency model. It requires that:
+\begin{enumerate}[noitemsep]
+  \item Every operation appears to take effect \textbf{instantaneously} at some point between its invocation and its completion (atomicity).
+  \item The order of operations is consistent with \textbf{real time}: if operation $A$ completes before operation $B$ starts, $A$ appears before $B$ in the global order.
+\end{enumerate}
+
+Linearizability implies sequential consistency (both require a consistent global order) but additionally enforces real-time ordering. It is the correctness condition used for distributed locks, atomic registers, and coordination services like ZooKeeper.
+
+\subsection*{Methods to Ensure Serializability}
+
+Serializability requires that the outcome of concurrent transactions equals some serial execution of those transactions.
+
+\begin{enumerate}
+  \item \textbf{Two-Phase Locking (2PL):} A transaction acquires all locks before releasing any. Growing phase: only acquire. Shrinking phase: only release. Ensures no two transactions hold conflicting locks simultaneously.
+
+  \item \textbf{Timestamp Ordering:} Each transaction is assigned a unique timestamp on start. Operations proceed only if they are consistent with the timestamp order. If a transaction reads/writes out of order, it is aborted and restarted with a new timestamp.
+
+  \item \textbf{Optimistic Concurrency Control (OCC):} Transactions execute freely (no locks). At commit time, a validation phase checks whether any conflicting operations occurred. If conflicts detected $\to$ abort; otherwise $\to$ commit. Best for low-conflict workloads.
+
+  \item \textbf{Multi-Version Concurrency Control (MVCC):} Multiple versions of each data item are maintained. Reads access the version corresponding to the transaction's start timestamp; writes create new versions. Readers never block writers; good for read-heavy workloads.
+\end{enumerate}
+
+%==========================================================
+\section{Summary Table}
+%==========================================================
+
+\begin{center}
+\begin{tabular}{@{}llll@{}}
+\toprule
+Year & Q & Marks & Core answer \\
+\midrule
+2021 & Q8b & 3.5 & DSM = virtual shared pages; cache + page fault + multicast; R/W state table \\
+2022 & Q8b & 3 & Same as above \\
+2024 & Q4a & 1.5 & MP: explicit, scalable; DSM: shared-var model, false sharing risk \\
+2020 & Q6a & 1.75 & Schematic: processes + caches + cloud network + page state labels \\
+2020 & Q6b & 3 & False sharing = unrelated vars on same page $\Rightarrow$ ping-pong; fix: tune page size, separate data \\
+2021 & Q3c & 2 & Same as above \\
+2022 & Q4c & 2 & Same as above \\
+2024 & Q4b & 1.5 & Same as above \\
+2022 & Q8c & 3 & Invalidate: one W copy, small msg; Update: all copies, large msg; Invalidate preferred by default \\
+2020 & Q4c & 2.25 & LRU ignores owner/W-state eviction cost; DSM needs state-aware replacement \\
+2020 & Q6c & 4 & NRNMB (simple, bottleneck) · NRMB (migrates, bad concurrent) · RMB (replicated+migrate, write overhead) · RNMB (fixed replicas, read-mostly) \\
+2021 & Q3d & 2 & Consistency = contract on write visibility; types: sequential, causal, release, weak, eventual \\
+2022 & Q4d & 3 & Same as above \\
+2020 & Q4a & 3 & Causal = causally-related writes ordered everywhere; social media reply ordering \\
+2020 & Q4b & 3.5 & Release consistency preferred for DSM: fewer msgs, lazy-release possible \\
+2021 & Q2a & 3 & Strong = real-time, slow; Weak = stale, fast; video site $\Rightarrow$ weak \\
+2021 & Q2b & 1.75 & Evidence server $\Rightarrow$ strong: no stale reads, non-repudiation, legal audit \\
+2021 & Q2c & 4 & $R + W > 9$, $W \geq 5$; example $W=5, R=5$; quorum intersection proof \\
+2024 & Q2b & 1.5 & Linearizability = atomic + real-time order; serializability via 2PL / timestamp / OCC / MVCC \\
+\midrule
+ & Total & \textbf{$\approx$47} & \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\textbf{Five facts to know cold:}
+\begin{enumerate}[noitemsep]
+  \item \textbf{False sharing} = unrelated vars on same page $\Rightarrow$ invalidate ping-pong. Fix: separate vars across pages. Asked ALL 4 years.
+  \item \textbf{Invalidate preferred} over update (default for DSM). Know when update is better: fine-grained sharing, many readers.
+  \item \textbf{Release $>$ Weak for DSM}: release distinguishes acquire/release, generates fewer messages, enables lazy release.
+  \item \textbf{Quorum rule}: $R + W > N$ and $W > N/2$. For $N=9$: $W \geq 5$.
+  \item \textbf{LRU fails} because it ignores page state (owner/W-state blocks cost more to evict than non-owner R copies).
+\end{enumerate}
+
+\end{document}

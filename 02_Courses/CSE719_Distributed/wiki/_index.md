@@ -11,7 +11,7 @@ Course: Dr. Atiqur Rahman, Univ. of Chittagong. Exam Wed 1 Jul 2026.
 | 5/5 | RPC | _pending_ | (TBD lecture) |
 | 5/5 | Consistency models | _pending_ | Lecture-09 (+ own page) |
 | 4/5 | MapReduce & Hadoop | [[mapreduce]] | Lecture-03 |
-| 4/5 | Distributed File Systems + AFS | _pending_ | (TBD) |
+| 5/5 | Distributed File Systems + AFS | [[dfs-afs]] | Lecture-08 |
 | 4/5 | Concurrency Control & Transactions | [[replication-2pc]] (2PC/multicast) | Lecture-05 (2PC/multicast) + L10 (full) |
 | 4/5 | Distributed System Fundamentals | [[distributed-fundamentals]] | Lecture-01 |
 | 4/5 | Paxos | [[paxos]] | Lecture-07 |
@@ -27,7 +27,7 @@ Course: Dr. Atiqur Rahman, Univ. of Chittagong. Exam Wed 1 Jul 2026.
 | 5 | Replication Control | Replication/Transactions (#4/#6) ✅ ingested | 4/5 |
 | 6 | Networking & Routing (Reading) | — no past-paper Q | 1/5 |
 | 7 | Paxos | Paxos (#9) ✅ ingested | 4/5 |
-| 8 | ⛔ MISSING (likely DFS) | — | — |
+| 8 | Distributed File Systems | DFS+AFS (#5) ✅ ingested | 5/5 ⭐ |
 | 9 | Distributed Shared Memory | DSM (#1) ✅ ingested | 5/5 ⭐ |
 | 10 | RPC & Concurrency Control | RPC/Concurrency (#3/#6) | 5/5 ⭐ |
 

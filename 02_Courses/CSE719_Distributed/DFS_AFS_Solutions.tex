@@ -1,0 +1,359 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{parskip}
+\usepackage[hidelinks]{hyperref}
+\usepackage{xcolor}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+
+\pagestyle{fancy}
+\fancyhf{}
+\rhead{CSE 719 --- Distributed \& Cloud Computing}
+\lhead{DFS \& AFS (Lecture-08)}
+\cfoot{\thepage}
+
+\titleformat{\section}{\large\bfseries}{}{0em}{}[\titlerule]
+\titleformat{\subsection}{\normalsize\bfseries}{}{0em}{}
+
+\begin{document}
+
+\begin{center}
+  {\Large\bfseries CSE 719 --- Distributed File Systems \& AFS Solutions}\\[4pt]
+  {\normalsize Lecture-08 $\cdot$ Exam: Wed 1 Jul 2026 $\cdot$ Dr.\ Atiqur Rahman}
+\end{center}
+
+\tableofcontents
+\newpage
+
+%==========================================================
+\section{Reference: DFS Fundamentals}
+%==========================================================
+
+\subsection{What is a DFS?}
+A \textbf{Distributed File System (DFS)} stores files on a \emph{server machine}; client machines perform RPCs to the server to read, write, create, and delete files. Clients access DFS files transparently using the same interface as local files.
+
+\textbf{Three desirable properties (slides):}
+\begin{enumerate}[noitemsep]
+  \item \textbf{Transparency} --- client uses same API as local (Unix) files; location, replication, migration are invisible.
+  \item \textbf{Concurrent client support} --- multiple clients can read/write simultaneously with \emph{one-copy update semantics}: behaviour appears identical to having exactly one non-replicated copy.
+  \item \textbf{Replication} --- files are replicated across servers for fault tolerance.
+\end{enumerate}
+
+\subsection{Why UNIX Semantics is Difficult in a DFS}
+
+Unix file operations are \textbf{stateful} and \textbf{non-idempotent}:
+
+\begin{center}
+\begin{tabular}{@{}p{3.5cm}p{5.5cm}p{5.5cm}@{}}
+\toprule
+Unix feature & Why it breaks in DFS & Consequence \\
+\midrule
+\textbf{File descriptors} & Per-process handles held \emph{at server}; server must track open files per client & Server crash → state lost; complex recovery \\
+\textbf{Read-write pointer} & \texttt{read(fd, buf, n)} advances pointer automatically; same call returns different data each time → \emph{not idempotent} & Cannot safely retry on packet loss (retried read skips bytes) \\
+\textbf{Write visibility} & Unix: \texttt{write()} immediately visible to all readers on same machine & Across network, writes may be buffered → one-copy semantics violated \\
+\textbf{Open-then-unlink} & Unix allows deleting a file while another process has it open; server must keep it alive until last \texttt{close()} & Distributed reference counting across clients is complex \\
+\textbf{Blocking \texttt{read()}} & Blocks until data available; server holding a blocked thread per client does not scale & Thousands of clients = thousands of blocked server threads \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\textbf{Root cause (from slides):} ``Unix file system operations are neither idempotent nor stateless.'' A DFS must be both --- idempotent (for at-least-once retry safety) and stateless (for crash recovery without state reconstruction).
+
+\subsection{Vanilla DFS: Flat File Service API}
+
+The flat file service replaces Unix's stateful, pointer-based API with a \textbf{stateless, idempotent} API:
+
+\begin{itemize}[noitemsep]
+  \item \texttt{Read(\emph{file\_id, buffer, position, num\_bytes})} --- reads from \emph{absolute} position; no pointer advancement.
+  \item \texttt{Write(\emph{file\_id, buffer, position, num\_bytes})} --- writes at absolute position.
+  \item \texttt{Create/Delete(\emph{file\_id})}, \texttt{Get\_attributes/Set\_attributes(\emph{file\_id, buffer})}.
+\end{itemize}
+
+No file descriptors (no open state to lose on crash). No pointer advancement (same arguments = same result = idempotent). Directory service provides \texttt{lookup(\emph{dir, name})} to resolve names to \texttt{file\_id}.
+
+\subsection{DFS Security}
+
+\begin{itemize}[noitemsep]
+  \item \textbf{Authentication} --- verify that a user is who they claim to be (e.g., Kerberos tickets, password challenge).
+  \item \textbf{Authorization} --- after authentication, verify that the authenticated user has permission to access the file in the requested mode. Two mechanisms:
+    \begin{itemize}[noitemsep]
+      \item \textbf{Access Control Lists (ACLs)}: per file, a list of allowed users and their access modes (r/w/x). Easy to ask ``who can access this file?''
+      \item \textbf{Capability Lists}: per user, a list of files they may access and in what mode. Easy to ask ``what can this user do?'' Each (user, file) pair = one capability.
+    \end{itemize}
+\end{itemize}
+
+\subsection{NFS (Network File System)}
+
+NFS (Sun Microsystems, 1980s) is the canonical real-world DFS implementation. Three-layer architecture:
+\begin{itemize}[noitemsep]
+  \item \textbf{Virtual File System (VFS) module} at client: gives transparency. Processes use file descriptors as normal; VFS decides whether to route each call to the local Unix FS or to the NFS client system. Uses \emph{v-nodes} (virtual inodes) --- local file $\Rightarrow$ v-node points to local disk (i-node); remote file $\Rightarrow$ v-node contains remote NFS server address.
+  \item \textbf{NFS Client system}: integrated with kernel; performs RPCs to NFS server for file operations.
+  \item \textbf{NFS Server system}: plays role of both Flat file service + Directory service from Vanilla DFS. Supports \emph{mounting} --- mount \texttt{/usr/tesla/inventions} into \texttt{/usr/edison/my\_competitors}; does not copy files, just re-points the directory.
+\end{itemize}
+
+\textbf{Server caching:} NFS server caches recently-accessed blocks in memory (exploits locality of access).
+\begin{itemize}[noitemsep]
+  \item \textbf{Delayed write}: write to memory, flush to disk every $\sim$30 s. Fast but \emph{not consistent} (crash before flush $\Rightarrow$ data lost).
+  \item \textbf{Write-through}: write to disk before ack-ing client. Consistent but \emph{slow}.
+\end{itemize}
+
+\subsection{Andrew File System (AFS)}
+
+AFS (Carnegie Mellon, 1980s) solves DFS scalability via \textbf{whole-file client-side caching}.
+
+\textbf{Two processes:}
+\begin{itemize}[noitemsep]
+  \item \textbf{Vice} --- server-side processes on dedicated file servers. Store files on disk, handle authentication, maintain callback lists, notify clients of changes.
+  \item \textbf{Venus} --- client-side processes on each workstation. Intercept file system calls, manage local disk cache, contact Vice for cache misses, track callbacks.
+\end{itemize}
+
+\textbf{AFS file service architecture:}
+\begin{enumerate}[noitemsep]
+  \item Client (\textbf{Venus}) intercepts \texttt{open(file)}.
+  \item If not in local cache: Venus fetches entire file from Vice server to local disk.
+  \item Vice gives Venus a \textbf{callback promise}: ``I will notify you if this file changes.''
+  \item Subsequent reads/writes served from \emph{local disk} --- zero RPCs, no server load.
+  \item On \texttt{close()}: if file was modified, Venus uploads the new version to Vice.
+  \item Vice sends \textbf{callback break} to all other Venus processes that cached the file $\Rightarrow$ they mark cache entry invalid.
+\end{enumerate}
+
+\textbf{Session semantics:} A write to a file is not visible to other clients until the writer closes the file and the readers re-open it. This is a deliberate trade-off: better scalability in exchange for slightly weaker consistency than one-copy semantics.
+
+\textbf{Callback message loss:} If the callback break message from Vice to Venus is lost (network failure), Venus retains a stale cached copy. AFS handles this by:
+\begin{enumerate}[noitemsep]
+  \item When Venus re-contacts Vice (after reconnection), it \emph{validates all cached files} by checking with Vice whether each callback promise is still valid.
+  \item If not valid (file changed while offline): Venus discards the stale cached copy and fetches the new version on the next access.
+  \item Venus also treats cached files as stale after a long disconnection --- it does not serve cached data indefinitely without revalidating.
+\end{enumerate}
+
+%==========================================================
+\section{2020 Q7a / 2021 Q3b --- UNIX Semantics Difficulty in DFS (2.5 / 2 marks)}
+%==========================================================
+
+\textbf{Question:} Why is it difficult to implement UNIX file system semantics in a distributed file system? Give an example.
+
+\subsection*{Answer}
+
+UNIX file system operations are \textbf{stateful} (file descriptors track per-client open state at the server) and \textbf{non-idempotent} (results depend on implicit server-side pointer, not absolute position). Both properties are incompatible with the requirements of a reliable DFS.
+
+\textbf{Three core difficulties:}
+
+\textbf{1. Statefulness and crash recovery.}
+In Unix, \texttt{open()} returns a file descriptor managed by the server. The server must track which files each client has open and where their read-write pointer is. If the server crashes, all per-client state is lost --- clients receive errors with no path to recovery. A DFS must be stateless (no per-client state on server) to allow transparent crash recovery.
+
+\textit{Example:} Client A calls \texttt{open("/data/log")} and receives fd~5. Server crashes. Client A sends \texttt{read(5, ...)}: the server has no record of fd~5 and cannot serve the request.
+
+\textbf{2. Non-idempotent operations.}
+\texttt{read(fd, buffer, N)} advances the internal file pointer by $N$ bytes automatically. Two consecutive calls with identical arguments return different data. In a lossy network, if the server response is lost and the client retries, the retry causes the pointer to advance a second time, skipping bytes permanently. Idempotency (same args $\Rightarrow$ same result) is required for safe at-least-once RPC retry.
+
+\textit{Example:} Client sends \texttt{read(fd, buf, 1024)}. Server reads bytes 0--1023 and advances pointer to 1024. Response is lost. Client retries. Server now reads bytes 1024--2047 (advances to 2048) --- bytes 0--1023 are delivered twice, bytes in between are never read.
+
+\textbf{3. Immediate write visibility (one-copy semantics).}
+Unix guarantees that a \texttt{write()} by process A is immediately visible to a concurrent \texttt{read()} by process B on the same machine. Achieving this across a network with client-side caching requires either constant cache invalidation or write-through on every byte, which is prohibitively slow.
+
+%==========================================================
+\section{2020 Q7b / 2021 Q6c --- DFS Design Principles / Requirements (4 / 2 marks)}
+%==========================================================
+
+\textbf{Question:} State the general principles for designing a distributed file system / DFS requirements.
+
+\subsection*{Answer}
+
+\begin{enumerate}
+  \item \textbf{Transparency.} Clients must access DFS files using the \emph{same interface} as local files (same API: open, read, write, close). The location of the file, number of replicas, and server identities are invisible to client code. This includes: location transparency, replication transparency, and migration transparency.
+
+  \item \textbf{Concurrency support.} Multiple client processes must be able to read and write files simultaneously. The DFS must enforce \emph{one-copy update semantics}: the effect of concurrent access on a replicated file must appear identical to access on a single, non-replicated copy (no divergence between replicas visible to clients).
+
+  \item \textbf{Replication.} Files should be replicated across multiple servers for fault tolerance. If one server fails, clients can be transparently redirected to another replica without data loss.
+
+  \item \textbf{Security.} The DFS must enforce both authentication (verifying user identity) and authorization (verifying the authenticated user has the correct access rights to the file). This is implemented via Access Control Lists (per file) or Capability Lists (per user).
+
+  \item \textbf{Scalability.} The DFS must maintain performance as the number of clients, servers, and files grows. Stateless servers and client-side caching (as in AFS) are key scalability mechanisms.
+
+  \item \textbf{Stateless servers / Idempotent operations.} Server operations must not require per-client state. Using absolute file positions (not moving pointers) and unique file identifiers (not file descriptors) ensures operations are idempotent and servers can recover from crashes without complex state reconstruction.
+
+  \item \textbf{Heterogeneity.} DFS should work across different hardware and operating systems. A common interface (e.g., NFS via VFS layer) allows local and remote files to be accessed identically regardless of the underlying platform.
+\end{enumerate}
+
+%==========================================================
+\section{2020 Q7c --- Cache Validation (2.25 marks)}
+%==========================================================
+
+\textbf{Question:} How can the cache be validated in a DFS?
+
+\subsection*{Answer}
+
+When a DFS client caches file data locally, the cached copy may become stale if another client modifies the file on the server. Cache validation is the process of checking whether a cached copy is still current.
+
+\textbf{Two approaches:}
+
+\textbf{1. Client-initiated (polling / timestamp comparison).}
+The client attaches a timestamp to each cached block (the time it was last fetched from the server). Before using a cached block, the client sends a validation request to the server: ``is this block still current as of time $T$?'' The server compares $T$ against the file's last-modified timestamp:
+\begin{itemize}[noitemsep]
+  \item If the file has not changed since $T$: server replies ``still valid'' --- client serves from cache.
+  \item If the file has changed: server returns the new version; client updates cache.
+\end{itemize}
+NFS uses this approach with a configurable \emph{attribute cache timeout}: cached attributes are assumed valid for a few seconds, after which they must be revalidated.
+
+\textbf{2. Server-initiated (callbacks).}
+Used by AFS. When the server sends a file to a client, it issues a \textbf{callback promise}: ``I will tell you if this file changes.'' The client may then use the cached copy indefinitely \emph{without contacting the server} until it receives a \textbf{callback break} notification. On receiving a callback break, the client marks the cache entry invalid and fetches the new version on next access.
+
+\textbf{Comparison:}
+\begin{center}
+\begin{tabular}{@{}lll@{}}
+\toprule
+ & Client-initiated & Server-initiated (callbacks) \\
+\midrule
+Server load & High (periodic polls per client) & Low (only on file change) \\
+Freshness & Stale within cache timeout & Immediate (callback on change) \\
+Used by & NFS & AFS \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+%==========================================================
+\section{2021 Q6d / 2022 Q6c --- Andrew File System + Architecture (2 marks each)}
+%==========================================================
+
+\textbf{Question:} What is the Andrew File System? Describe its file service architecture.
+
+\subsection*{What is AFS?}
+
+The \textbf{Andrew File System (AFS)} is a distributed file system developed at Carnegie Mellon University (1980s). Its defining design choice is \textbf{whole-file caching} on client local disks, enabling servers to handle far more clients than NFS (which caches at the block level on the server). AFS scales because once a file is cached locally, subsequent reads and writes produce \emph{zero server RPCs}.
+
+\subsection*{File Service Architecture}
+
+AFS uses two types of processes:
+
+\textbf{Vice (server side):}
+\begin{itemize}[noitemsep]
+  \item Runs on dedicated file server machines.
+  \item Stores all files on local disk; handles authentication and authorization.
+  \item Maintains a \emph{callback list} for each file: the list of Venus processes that currently have the file cached.
+  \item Sends \textbf{callback break} messages to all listed Venus processes when a file is modified.
+\end{itemize}
+
+\textbf{Venus (client side):}
+\begin{itemize}[noitemsep]
+  \item Runs on each client workstation; integrated with the local kernel.
+  \item Intercepts every file system call (\texttt{open}, \texttt{read}, \texttt{write}, \texttt{close}).
+  \item On \texttt{open}: if file is not in local cache, fetches the \emph{entire file} from Vice to local disk. Requests a callback promise from Vice.
+  \item On \texttt{read}/\texttt{write}: serves directly from local disk --- no RPC to server.
+  \item On \texttt{close}: if file was modified, uploads new version to Vice; Vice sends callback breaks to all other Venus processes that cached the old version.
+  \item On receiving callback break: marks cached copy invalid; will re-fetch on next \texttt{open}.
+\end{itemize}
+
+\textbf{Key property --- session semantics:} A file modified by client A is not visible to client B until A closes the file (uploads to Vice) and B re-opens it (triggers re-fetch). This is weaker than one-copy Unix semantics but enables far better scalability.
+
+%==========================================================
+\section{2024 Q3b --- Security in DFS + Message Ordering Paradigms (3 marks)}
+%==========================================================
+
+\textbf{Question:} How do you ensure security in a DFS? Briefly remark on message ordering paradigms in distributed systems.
+
+\subsection*{Security in DFS}
+
+DFS security has two mandatory layers:
+
+\textbf{Authentication} --- verifying that a user is who they claim to be.
+\begin{itemize}[noitemsep]
+  \item Implementation: shared-secret challenge-response, or a trusted third party (e.g., Kerberos issues time-limited tickets that the DFS server verifies without needing the password).
+  \item Every client request must carry a credential that the server can verify.
+\end{itemize}
+
+\textbf{Authorization} --- after identity is verified, confirming the user has permission to access the requested file in the requested mode. Two mechanisms (from slides):
+\begin{itemize}[noitemsep]
+  \item \textbf{Access Control List (ACL)}: stored per file. Contains a list of (user, allowed-modes) pairs. Server checks the file's ACL on every access. Easy to ask: ``who can access \texttt{/data/payroll}?''
+  \item \textbf{Capability List}: stored per user. Contains a list of (file, allowed-modes) pairs. Client presents a capability token; server verifies it. Can be split into per-(user, file) capability tokens. Easy to ask: ``what can user alice do?''
+\end{itemize}
+
+\subsection*{Message Ordering Paradigms}
+
+In distributed systems, messages sent between processes arrive in unpredictable order. Four multicast ordering levels:
+\begin{itemize}[noitemsep]
+  \item \textbf{FIFO ordering}: messages from the \emph{same sender} are delivered in the order they were sent. Messages from different senders may interleave arbitrarily.
+  \item \textbf{Causal ordering}: if message $m_1$ causally precedes $m_2$ (via happen-before relation using vector clocks), every process delivers $m_1$ before $m_2$. Causal $\Rightarrow$ FIFO.
+  \item \textbf{Total (atomic) ordering}: \emph{all} processes deliver \emph{all} messages in the \emph{same order}, regardless of sender. Required for replicated state machines and active replication.
+  \item \textbf{Hybrid (*-Total)}: Total $+$ FIFO or Total $+$ Causal for overlapping groups where a node in two groups must see the same order in both.
+\end{itemize}
+Stronger ordering = higher coordination cost. Total ordering requires a sequencer or consensus round per message.
+
+%==========================================================
+\section{2024 Q4d --- Venus, Vice, and AFS Callback Message Loss (3 marks)}
+%==========================================================
+
+\textbf{Question:} What are the Venus and Vice processes in AFS? How does AFS deal with the risk of callback message loss?
+
+\subsection*{Venus and Vice}
+
+\textbf{Vice} is the server-side process in AFS. Each Vice server:
+\begin{itemize}[noitemsep]
+  \item Stores files on its local disk and handles all persistent storage.
+  \item Authenticates clients and checks access rights.
+  \item Maintains a \emph{callback list} per file: which Venus clients currently have that file cached.
+  \item Sends a \textbf{callback break} to each Venus on the list when a file is modified.
+\end{itemize}
+
+\textbf{Venus} is the client-side process on each workstation. Each Venus:
+\begin{itemize}[noitemsep]
+  \item Intercepts all kernel file system calls from local processes.
+  \item On \texttt{open}: checks local cache first; on miss, fetches the entire file from Vice to local disk and records a \emph{callback promise} (a token indicating the copy is currently valid).
+  \item Serves \texttt{read}/\texttt{write} directly from local disk (no server contact).
+  \item On \texttt{close} of a modified file: uploads the new version to Vice.
+  \item On receiving callback break from Vice: marks the cache entry invalid.
+\end{itemize}
+
+\subsection*{Handling Callback Message Loss}
+
+\textbf{Problem:} If a callback break message from Vice to Venus is lost (due to network failure, partition, or packet drop), Venus believes its cached copy is still valid when it is actually stale.
+
+\textbf{AFS solution --- revalidation on reconnection:}
+\begin{enumerate}
+  \item \textbf{No indefinite trust.} Venus does not assume a callback promise is valid forever. After a disconnection from Vice (network down, server restart), Venus treats the connection as interrupted.
+  \item \textbf{Validate on reconnect.} When Venus re-establishes contact with Vice, it \emph{explicitly validates} every file in its local cache by sending Vice the cached file's version number or timestamp. Vice checks its current version:
+    \begin{itemize}[noitemsep]
+      \item If unchanged: Vice confirms the callback promise is still valid.
+      \item If changed: Vice sends the updated file and a new callback promise.
+    \end{itemize}
+  \item \textbf{Conservative caching during disconnection.} If Venus cannot contact Vice and is uncertain whether its callbacks are still valid, it re-fetches any file before serving it to a local process, rather than serving a potentially stale cached copy.
+\end{enumerate}
+
+\textbf{Key insight:} AFS trades weak consistency (session semantics) for scalability. The callback mechanism makes consistency close to one-copy semantics in the common case, and the revalidation-on-reconnect protocol handles the failure case without requiring expensive keep-alive polling in normal operation.
+
+%==========================================================
+\section{Summary Table}
+%==========================================================
+
+\begin{center}
+\begin{tabular}{@{}llll@{}}
+\toprule
+Year & Q & Marks & Core answer \\
+\midrule
+2020 & Q7a & 2.5 & UNIX: stateful (fd) + non-idempotent (pointer) → breaks in DFS; retry problem \\
+2020 & Q7b & 4 & 7 principles: transparency, concurrency, replication, security, scalability, stateless, heterogeneity \\
+2020 & Q7c & 2.25 & Client-initiated (timestamp poll) vs server-initiated (AFS callbacks) \\
+2021 & Q3b & 2 & UNIX semantics: stateful + non-idempotent (same as Q7a, shorter) \\
+2021 & Q6c & 2 & DFS requirements: transparency, concurrency, replication, security, scalability \\
+2021 & Q6d & 2 & AFS = whole-file caching; Vice (server) + Venus (client); callbacks \\
+2022 & Q6c & 2 & AFS + architecture: Vice stores/callbacks; Venus caches/intercepts; session semantics \\
+2024 & Q3b & 3 & Security: authentication + ACL vs Capability; ordering: FIFO/Causal/Total/Hybrid \\
+2024 & Q4d & 3 & Vice = server (stores, callbacks); Venus = client (caches, intercepts); loss $\Rightarrow$ revalidate on reconnect \\
+\midrule
+ & Total & \textbf{22.75} & \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\textbf{Four facts to know cold:}
+\begin{enumerate}[noitemsep]
+  \item \textbf{UNIX is not idempotent and not stateless} --- these two properties are why UNIX semantics is hard in a DFS.
+  \item \textbf{AFS = Vice (server) + Venus (client) + whole-file caching + callback promises.}
+  \item \textbf{ACL = per-file list of users; Capability = per-user list of files.}
+  \item \textbf{Callback loss} → Venus revalidates all cached files when contact with Vice is restored.
+\end{enumerate}
+
+\end{document}

@@ -1,0 +1,320 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{parskip}
+\usepackage[hidelinks]{hyperref}
+\usepackage{xcolor}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+
+\pagestyle{fancy}
+\fancyhf{}
+\rhead{CSE 719 --- Distributed \& Cloud Computing}
+\lhead{Paxos (Lecture-07)}
+\cfoot{\thepage}
+
+\titleformat{\section}{\large\bfseries}{}{0em}{}[\titlerule]
+\titleformat{\subsection}{\normalsize\bfseries}{}{0em}{}
+
+\begin{document}
+
+\begin{center}
+  {\Large\bfseries CSE 719 --- Paxos Solutions}\\[4pt]
+  {\normalsize Lecture-07 $\cdot$ Exam: Wed 1 Jul 2026 $\cdot$ Dr.\ Atiqur Rahman}
+\end{center}
+
+\tableofcontents
+\newpage
+
+%==========================================================
+\section{Reference: Paxos Protocol}
+%==========================================================
+
+\subsection{Consensus Problem}
+
+\textbf{Definition:} $N$ processes each hold a private input (0 or 1) and an output variable set at most once. A consensus algorithm must guarantee that at termination \emph{all correct processes} output the same value.
+
+\textbf{Three properties required:}
+\begin{itemize}[noitemsep]
+  \item \textbf{Validity} --- the decided value must have been proposed by some process.
+  \item \textbf{Agreement} --- no two correct processes decide different values.
+  \item \textbf{Non-triviality} --- both outcomes (0 and 1) are reachable from some initial state.
+\end{itemize}
+
+\textbf{Key fact:} Consensus is possible in synchronous systems but \textbf{impossible in asynchronous systems} (Fischer-Lynch-Paterson / FLP, 1985).
+
+Consensus is \emph{equivalent to or harder than}: perfect failure detection, leader election, and total-order multicast.
+
+\subsection{Paxos Overview}
+
+\begin{itemize}[noitemsep]
+  \item Invented by \textbf{Leslie Lamport}. Used in Apache ZooKeeper (Yahoo!), Google Chubby, Active Disk Paxos.
+  \item Does \emph{not} solve the full consensus problem (impossible by FLP), but provides:
+  \begin{itemize}[noitemsep]
+    \item \textbf{Safety} --- two processes never decide different values.
+    \item \textbf{Eventual Liveness} --- if network conditions eventually stabilise, consensus will be reached. No guarantee on \emph{when}.
+  \end{itemize}
+  \item Runs in asynchronous \textbf{rounds}; each round has a unique \textbf{ballot id}. Higher ballot id = newer round. On hearing a message from round $j{+}1$ while in round $j$, abort everything and join round $j{+}1$.
+\end{itemize}
+
+\subsection{Three Phases Per Round}
+
+\begin{center}
+\begin{tabular}{@{}lll@{}}
+\toprule
+Phase & Name & Action \\
+\midrule
+1 & Election & Candidate broadcasts ballot id; processes vote OK to highest seen \\
+2 & Proposal (Bill) & Leader sends proposed value; acceptors log and respond OK \\
+3 & Decision (Law) & On majority OKs, leader broadcasts final value; all log decision \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\textbf{Phase 1 --- Election:}
+\begin{enumerate}[noitemsep]
+  \item Candidate picks ballot id $n$ strictly higher than any seen; broadcasts \textsc{Prepare}($n$).
+  \item Each process: if $n >$ highest seen ballot id $\Rightarrow$ respond OK and include any previously accepted value (with its ballot id). Log $n$ to disk. Otherwise reject.
+  \item If candidate receives OKs from a \textbf{majority} $\Rightarrow$ it is the leader for this round. Adopt the value $v'$ from the highest-ballot-id OK response (if any); otherwise use own value.
+\end{enumerate}
+
+\textbf{Phase 2 --- Proposal:}
+\begin{enumerate}[noitemsep]
+  \item Leader sends \textsc{Accept}($n, v$) to all. Each acceptor logs and responds OK.
+\end{enumerate}
+
+\textbf{Phase 3 --- Decision:}
+\begin{enumerate}[noitemsep]
+  \item Leader receives OKs from majority $\Rightarrow$ broadcasts \textsc{Decide}($v$). All processes log decision.
+\end{enumerate}
+
+\textbf{Point of no-return:} When a majority of processes have accepted value $v$ in Phase 2 (responded OK), consensus is implicitly reached --- even before the leader knows. Any subsequent round either chooses the same value or fails, because \textbf{any two majority sets intersect}, so the next leader's Phase 1 quorum will always contain at least one process carrying $v'$.
+
+\textbf{Fault handling:}
+\begin{itemize}[noitemsep]
+  \item Process crash: excluded from quorum; on restart, reads log to recover past ballot ids and accepted values.
+  \item Leader crash: another process starts a new round with higher ballot id.
+  \item Message drop: timeout $\Rightarrow$ start new round.
+  \item Protocol may never terminate (FLP); eventual liveness only.
+\end{itemize}
+
+\textbf{Fault tolerance math:}
+\begin{itemize}[noitemsep]
+  \item Majority $= \lfloor N/2\rfloor + 1$ processes must respond.
+  \item After $f$ failures: need $N - f \geq \lfloor N/2\rfloor + 1 \Rightarrow N \geq 2f+1$.
+\end{itemize}
+
+%==========================================================
+\section{2024 Q2a --- Consensus Definition \& Logical vs Physical Concurrency (1.5 marks)}
+%==========================================================
+
+\textbf{Question:} Define consensus algorithms. Differentiate between logical and physical concurrency.
+
+\subsection*{Consensus Algorithm}
+
+A \textbf{consensus algorithm} is a distributed protocol that enables a set of processes --- each starting with a private input value --- to agree on a single common output value, satisfying agreement (no two correct processes decide different values), validity (the decided value was proposed by some process), and termination under partial synchrony.
+
+Examples: Paxos (safety + eventual liveness), Raft, PBFT.
+
+\subsection*{Logical vs Physical Concurrency}
+
+\begin{center}
+\begin{tabular}{@{}p{3.2cm}p{5.5cm}p{5.5cm}@{}}
+\toprule
+ & \textbf{Logical Concurrency} & \textbf{Physical Concurrency} \\
+\midrule
+Definition & Multiple tasks \emph{interleaved} on a single CPU via time-multiplexing; appear concurrent & Multiple tasks execute \emph{truly simultaneously} on separate CPUs \\
+Parallelism & No (one instruction at a time) & Yes (instructions overlap in real time) \\
+Hardware & Single processor & Multiple processors or cores \\
+Example & OS thread scheduler on one core & Two transactions executing at the same instant on different servers \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+In distributed systems, \textbf{physical concurrency} is the norm: independent servers execute simultaneously with no global clock, creating race conditions that require concurrency control (locking, timestamps, consensus protocols like Paxos).
+
+%==========================================================
+\section{2021 Q8c / 2024 Q7b --- Leader Waits for Less Than Majority (2.5 / 3 marks)}
+%==========================================================
+
+\textbf{Question:} In a Paxos system, the leader proceeds to Phase 2 after receiving OKs from \emph{fewer than a majority} of acceptors in Phase 1. How does this break Paxos guarantees?
+
+\subsection*{Why Majority is Necessary}
+
+Paxos safety rests on one invariant: \textbf{any two quorums (majority sets) must intersect}. This intersection ensures a newly-elected leader in Phase 1 always hears from at least one process that witnessed the previously committed value $v'$, preventing it from proposing a conflicting value.
+
+If the leader proceeds with $k < \lfloor N/2\rfloor + 1$ OKs in Phase 1, two quorums of size $k$ can be \textbf{disjoint} when $k \leq N/2$. The intersection guarantee is lost.
+
+\subsection*{Concrete Counterexample}
+
+System: 5 acceptors $\{A_1, A_2, A_3, A_4, A_5\}$. True majority $= 3$. Leader waits for $k = 2$.
+
+\medskip
+\textbf{Round 1, Leader $L_1$ (ballot 1):}
+\begin{itemize}[noitemsep]
+  \item Phase 1 OKs from $\{A_1, A_2\}$ --- $L_1$ proceeds (only 2 needed).
+  \item Phase 2: proposes $v_1$; OKs from $\{A_1, A_2\}$. $L_1$ decides $v_1$ and multicasts.
+\end{itemize}
+
+\textbf{Round 2, Leader $L_2$ (ballot 2):}
+\begin{itemize}[noitemsep]
+  \item Phase 1 OKs from $\{A_3, A_4\}$ --- \emph{disjoint} from Round 1 set.
+  \item $A_3$ and $A_4$ never heard of $v_1$; both respond with no prior value.
+  \item $L_2$ proposes own value $v_2 \neq v_1$. Phase 2 OKs from $\{A_3, A_4\}$. $L_2$ decides $v_2$.
+\end{itemize}
+
+\textbf{Result:} $v_1$ and $v_2$ are both decided --- \textbf{safety is violated.}
+
+\subsection*{Root Cause and Conclusion}
+
+With $k < \lfloor N/2\rfloor + 1$, two leaders can collect Phase 1 quorums from completely disjoint sets. The new leader has no witness to the previously committed value, so it picks a different value and commits it. The intersection property --- the entire foundation of Paxos safety --- requires strict majority ($> N/2$) everywhere.
+
+\textbf{The leader must wait for $\lfloor N/2\rfloor + 1$ OKs in Phase 1. Any smaller quorum breaks safety.}
+
+%==========================================================
+\section{2022 Q2b --- Same Proposal Numbers + Strict-Smaller Reject Rule (6 marks)}
+%==========================================================
+
+\textbf{Question:} Consider a modified Paxos where (i) multiple proposers may use the \emph{same} ballot number, and (ii) acceptors reject a ballot only if it is \emph{strictly smaller} than the highest seen (i.e., they accept a ballot id \emph{equal to} what they have already processed). Is this correct? Provide a counterexample if not.
+
+\subsection*{Analysis}
+
+Standard Paxos requires: (1) each proposer picks a \emph{unique} ballot id, and (2) acceptors reject if new ballot id $\leq$ highest seen (i.e., accept only if \emph{strictly greater}).
+
+The modification relaxes both constraints. \textbf{This is not correct.} It allows two concurrent leaders to each achieve Phase 1 quorums with identical ballot ids, then commit conflicting values.
+
+\subsection*{Counterexample}
+
+System: 3 acceptors $\{P_1, P_2, P_3\}$. Proposers $L_A$ and $L_B$ independently choose ballot id $n = 5$.
+
+\medskip
+\textbf{Phase 1:}
+\begin{itemize}[noitemsep]
+  \item $L_A$ sends \textsc{Prepare}(5). $P_1$ and $P_2$ each respond OK (first time seeing ballot 5). $L_A$ has quorum $\{P_1, P_2\}$.
+  \item $L_B$ sends \textsc{Prepare}(5). $P_2$ responds OK (ballot $5 = 5$, not strictly less, so accepted under modified rule). $P_3$ responds OK. $L_B$ has quorum $\{P_2, P_3\}$.
+  \item Neither leader heard any previously accepted value, so both choose their own values.
+\end{itemize}
+
+\textbf{Phase 2:}
+\begin{itemize}[noitemsep]
+  \item $L_A$ sends \textsc{Accept}(5, $v_A$). $P_1$ and $P_2$ both log and accept $v_A$.
+  \item $L_B$ sends \textsc{Accept}(5, $v_B$) with $v_B \neq v_A$. $P_2$ accepts (ballot $5 = 5 \Rightarrow$ not strictly less $\Rightarrow$ accepted). $P_3$ accepts. $L_B$ commits $v_B$.
+\end{itemize}
+
+\textbf{Outcome:}
+\begin{itemize}[noitemsep]
+  \item $\{P_1, P_2\}$ accepted $v_A$; $\{P_2, P_3\}$ accepted $v_B \neq v_A$.
+  \item $P_2$ accepted \emph{two different values} for the same ballot id $n = 5$.
+  \item \textbf{Safety is violated}: two distinct values committed in the same Paxos instance.
+\end{itemize}
+
+\subsection*{Root Cause}
+
+In standard Paxos, accepting a ballot \emph{strictly greater} than any seen ensures that once an acceptor votes for $n=5$ from $L_A$, it rejects any subsequent \textsc{Prepare}(5) from $L_B$ (since $5 \not> 5$). This mutual exclusion ensures at most one leader can form a valid Phase 1 quorum per ballot number.
+
+Allowing equal ballot ids removes this mutual exclusion: the same ballot number can be used by two leaders simultaneously to achieve overlapping quorums, each unaware of the other's decision, breaking the invariant that a single value is committed per round.
+
+%==========================================================
+\section{2024 Q7a --- Why $2f+1$ Nodes Required to Tolerate $f$ Failures (3 marks)}
+%==========================================================
+
+\textbf{Question:} Explain why Paxos cannot tolerate $f$ node failures with fewer than $2f+1$ total nodes.
+
+\subsection*{Answer}
+
+Every Paxos operation (Phase 1 and Phase 2) requires a \textbf{majority} ($> N/2$) of all $N$ nodes to respond. After $f$ failures, $N - f$ nodes remain. For progress to be possible:
+
+\[
+  N - f > \frac{N}{2}
+  \;\Longrightarrow\;
+  \frac{N}{2} > f
+  \;\Longrightarrow\;
+  N > 2f
+  \;\Longrightarrow\;
+  \boxed{N \geq 2f+1}
+\]
+
+\textbf{With $N = 2f$ (insufficient):}
+\begin{itemize}[noitemsep]
+  \item $f$ nodes fail $\Rightarrow$ $f$ nodes remain.
+  \item Majority of $2f$ nodes $= f+1$.
+  \item $f < f+1$ $\Rightarrow$ remaining nodes cannot form a majority $\Rightarrow$ \textbf{protocol stalls forever}.
+\end{itemize}
+
+\textbf{With $N = 2f+1$ (minimum sufficient):}
+\begin{itemize}[noitemsep]
+  \item $f$ nodes fail $\Rightarrow$ $f+1$ nodes remain.
+  \item Majority of $2f+1$ nodes $= f+1$.
+  \item $f+1 = f+1$ $\Rightarrow$ remaining nodes \emph{exactly} form a majority $\Rightarrow$ \textbf{protocol can proceed}.
+\end{itemize}
+
+\textbf{Safety also requires $2f+1$:} Any two majority sets chosen from $N = 2f+1$ nodes must intersect. By pigeonhole:
+\[
+  |Q_1| + |Q_2| = (f+1) + (f+1) = 2f+2 > 2f+1 = N
+  \;\Rightarrow\; |Q_1 \cap Q_2| \geq 1
+\]
+This intersection carries the previously committed value $v'$ into every future Phase 1, preserving safety. With $N = 2f$, two quorums of size $\lceil (2f)/2 \rceil = f$ could be disjoint ($f + f = 2f = N$), breaking safety.
+
+\textbf{Conclusion:} $N \geq 2f+1$ is the minimum required for both liveness (majority reachable after $f$ failures) and safety (any two quorums intersect).
+
+%==========================================================
+\section{2024 Q7c --- Primary-Backup vs Paxos: Three Scenarios (3 marks)}
+%==========================================================
+
+\textbf{Question:} For each scenario, choose primary-backup or Paxos and justify: (i) stock exchange lock server, (ii) documentary movie storage, (iii) login server.
+
+\begin{center}
+\renewcommand{\arraystretch}{1.4}
+\begin{tabular}{@{}p{3.2cm}p{2.4cm}p{8cm}@{}}
+\toprule
+Scenario & Choice & Justification \\
+\midrule
+(i) Stock exchange lock server & \textbf{Paxos} & Correctness is critical: granting the same lock to two clients (due to split-brain or stale failover) causes direct financial harm. Primary-backup risks the backup granting a lock the primary already committed before crashing. Paxos consensus ensures a lock grant is agreed upon by a majority before any client is notified --- split-brain is structurally impossible. \\
+\addlinespace
+(ii) Documentary movie storage & \textbf{Primary-backup} & Movies are written once and read many times; there is no concurrent modification. Paxos imposes 3-phase overhead per write with zero correctness benefit here. Simple replication (primary streams to replicas) suffices; brief failover downtime is acceptable for archival storage. \\
+\addlinespace
+(iii) Login server & \textbf{Primary-backup} & Authentication is read-heavy and requests are stateless between sessions. A brief downtime during failover (primary $\to$ backup) is acceptable --- users re-submit login. Paxos overhead on every authentication attempt is unjustified; simple failover preserves availability with minimal complexity. \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\textbf{Decision rule:}
+\begin{itemize}[noitemsep]
+  \item \textbf{Use Paxos} when correctness is absolute and split-brain is catastrophic (financial, legal, lock management).
+  \item \textbf{Use primary-backup} when write-once or read-heavy, brief downtime is acceptable, and Paxos latency overhead is not justified.
+\end{itemize}
+
+%==========================================================
+\section{Summary Table}
+%==========================================================
+
+\begin{center}
+\begin{tabular}{@{}llll@{}}
+\toprule
+Year & Q & Marks & Core answer \\
+\midrule
+2024 & Q2a (partial) & 1.5 & Consensus = all agree on one value; logical = interleaved, physical = simultaneous \\
+2021 & Q8c & 2.5 & $k <$ majority $\Rightarrow$ disjoint quorums possible $\Rightarrow$ two values decided $\Rightarrow$ safety violated \\
+2024 & Q7b & 3 & Same as 2021 Q8c (verbatim repeat) \\
+2022 & Q2b & 6 & Same ballot id $\Rightarrow$ two leaders both achieve quorum $\Rightarrow$ both commit different values \\
+2024 & Q7a & 3 & $N - f > N/2 \Rightarrow N \geq 2f+1$; with $2f$ nodes, $f$ remaining cannot form majority \\
+2024 & Q7c & 3 & Lock server $\to$ Paxos; Movie storage $\to$ P-B; Login server $\to$ P-B \\
+\midrule
+ & Total & \textbf{19} & \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\textbf{Five facts to know cold:}
+\begin{enumerate}[noitemsep]
+  \item Paxos provides \textbf{safety + eventual liveness}; NOT guaranteed termination (FLP).
+  \item \textbf{Any two majority sets always intersect} --- the foundation of safety.
+  \item Majority $= \lfloor N/2\rfloor + 1$; need $N \geq 2f+1$ to tolerate $f$ failures.
+  \item Leader $<$ majority in Phase 1 $\Rightarrow$ disjoint quorums possible $\Rightarrow$ safety violated.
+  \item Same ballot id from two proposers $\Rightarrow$ both achieve quorum $\Rightarrow$ safety violated.
+\end{enumerate}
+
+\end{document}

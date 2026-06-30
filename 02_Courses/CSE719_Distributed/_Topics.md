@@ -25,7 +25,7 @@ Built 2026-06-26 from 3-year past-paper analysis (2020 / 2021 / 2022, Univ. of C
 | ↳ Scalability + challenges | 🔲 | — | — | 4/5 · 2.5 mk | 2021 Q1c | Define + size/geo/admin scalability challenges. |
 | ↳ Marshalling/Unmarshalling + ACID | 🔲 | — | — | 3/5 · 2 mk | 2021 Q1d | Serialization for transmission; ACID = Atomicity/Consistency/Isolation/Durability. |
 | 8 | **MapReduce** | 🔲 | — | — | 3/5 · 4–6 mk | 2021·22 | Map-function limitations, straggler handling, job types. Recent — likely again. |
-| 9 | **Paxos** | 🔲 | — | — | 3/5 · 2.5–6 mk | 2021·22 | Leader-waits-less-than-majority counterexample; proposal-number correctness. Recent + tricky. |
+| 9 | **Paxos** | 📖 | — | 2026-06-30 | 4/5 · 2.5–6 mk | 2021·22·24 | Wiki ingested (→ [[wiki/paxos]]). Solutions: Paxos_Solutions.pdf. Leader<majority counterexample; 2f+1 math; same-ballot violation; P-B vs Paxos scenarios. |
 | 10 | **DSO + Parallel DB + Data Mining** | 🔲 | — | — | 3/5 · 4.5–8 mk | 2021·22 | Distributed System Overhead, scalable parallel database, hidden-pattern extraction methodologies, bitemporal relation. |
 | 11 | SQL vs NoSQL | 🔲 | — | — | 2/5 · ~5 mk | 2021 | Comparative analysis. Single appearance but high marks (4.75). |
 | 12 | Load balancing (round robin) | 🔲 | — | — | 2/5 · 2 mk | 2021 | Short definition-style. |

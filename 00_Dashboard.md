@@ -3,12 +3,12 @@
 > Living file. Claude Code updates this every session. You read this first, every day.
 
 ## Right now
-- **Active exam:** 🎯 CSE 719 — Distributed & Cloud — **Wed 1 Jul 2026, 10:30 AM — TODAY**
-- **Days left:** 0 — exam is this morning.
-- **Phase:** 🎯 EXAM DAY. 06-30 was a full turnaround: all 10 lectures (spine + MapReduce + Cloud) got solutions PDFs + wiki ingest in one day (see git log). Nothing has had a confirmed cold active-recall pass yet, so this morning is consolidation only — no new material. Tail topics #10–12 (DSO/Parallel DB, SQL vs NoSQL, Load balancing) stay cut, no runway left.
-- **Single most important thing:** Cold recall pass on DSM/Consistency/RPC + cheat-sheet skim before 10:30. Then sit the exam.
-- **After today:** Afternoon resets onto Window 5 — Computer Graphics (CSE 715), per the Weekly Engine's "exam Wednesday" step.
-- **Next exam after this:** CSE 715 — Computer Graphics — Wed 8 Jul 2026
+- **Active exam:** 🎯 CSE 715 — Computer Graphics — **Wed 8 Jul 2026, 10:30 AM**
+- **Days left:** 6
+- **Phase:** 🚨 Window 5 unstarted. CSE719 exam was sat 07-01 per schedule (outcome unconfirmed — end-of-day log left blank). The Weekly Engine's "exam Wednesday afternoon" reset never happened: CSE715 folder has zero materials (no slides/syllabus/past papers), no _Topics.md. This is now the #1 blocker — 6 days of runway and none of it usable until materials are dropped in and ranked.
+- **Single most important thing:** Get CSE715 materials uploaded and topics ranked by yield (Block 1, 07-02). Until then, fill the day with the 20-item AI/InfoSec recall backlog — real spaced-rep work, not filler.
+- **After CSE719:** Exam sat 07-01. Topics roll into normal spaced-recall rotation — no longer a special tracked risk.
+- **Next exam after this:** CSE 700 — Thesis — Wed 15 Jul 2026
 - **⚠️ Rule:** Google Calendar is the ONLY source of truth for daily plans. Never use the overnight rollover log for scheduling.
 - **🔴 Session protocols:** Read and execute `scripts/data/session_protocols.md` at EVERY session start. No exceptions.
 
@@ -42,8 +42,8 @@ Prayers structure the day — each gap is a study block:
 | [[02_Courses/CSE713_AI/_Topics\|AI (713)]] | ✅ EXAM DONE (27 topics) | 18✅ · 1🔁 · 7📖 · 1🔲 | ✅ past papers done per topic | 4.2 |
 | [[02_Courses/CSE717_InfoSec/_Topics\|InfoSec (717)]] | ✅ 14 topics ranked | 11✅ · 3📖 · 0🔲 | – | pending |
 | [[02_Courses/CSE711_Compiler/_Topics\|Compiler (711)]] | ✅ EXAM DONE (8 topics, 8yr past papers) | sat 24 Jun | – | – |
-| [[02_Courses/CSE719_Distributed/_Topics\|Distributed (719)]] | ✅ 14 topics ranked (3-yr analysis) | 11📖 (spine + MapReduce + Cloud, all wiki+solutions done 06-30) · 3🔲 (tail, cut) | solutions PDFs all 10 lectures | pending recall |
-| [[02_Courses/CSE715_Graphics/README\|Graphics (715)]] | – | – | – | – |
+| [[02_Courses/CSE719_Distributed/_Topics\|Distributed (719)]] | ✅ EXAM SAT 07-01 (14 topics ranked) | 11📖 (spine + MapReduce + Cloud, all wiki+solutions done 06-30) · 3🔲 (tail, cut) | solutions PDFs all 10 lectures | outcome unconfirmed |
+| [[02_Courses/CSE715_Graphics/README\|Graphics (715)]] | 🚨 0 topics — no materials uploaded | – | – | – |
 | [[02_Courses/CSE700_Thesis/README\|Thesis (700)]] | – | – | – | – |
 
 ## Navigation

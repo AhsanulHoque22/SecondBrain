@@ -1,1 +1,30 @@
+ Note: if any topic that is in the book but not in the following list that topic should be covered only if it is in the previous year question also, otherwise skip that topic from the book. but by any means do not skip anything from previous year questions. also never miss the topics mentioned below.
  
+ 
+ Chapter 2: full chapter. {specially: Direct Coding, Look Up table, Halftone Approximation}, solved problems {Even Number Problems}
+ 
+ Chapter 3: full chapter. each and every section important very important chapter with solved problems at the end of the chapter.
+ 
+ Chapter 4: full chapter {specially: rotation, transformation, scaling, mirror, matrix description} with solved problems and book exercise
+ 
+ Chapter 5: section 5.3, 5.5 related book worked out example and solved problems most important, rest depend on the previous year. if previous year question covers any of the topics from the book then it is important otherwise skip
+ 
+ Chapter 6: rotation, transformation, scaling, mirror related exercises, related solved problems
+ 
+ Chapter 7: perspective, parallel projection, comparison, distinction, first few related problems that matches this topic.
+ 
+ Chapter 8: skip. (only previous years questions if any)
+ 
+ Chapter 9: Bezier Curve, solve problems, B-spline, Hermite Curve, exercise and solved questions (other topics only previous years questions if any)
+ 
+ Chapter 10: 10.2 only solved example and exercise (other topics only previous years questions if any)
+ 
+ Chapter 11: Phong Model, Types of Shading, illumination only solved example and exercise (other topics only previous years questions if any)
+ 
+ Chapter 12: Ray Tracing (topics only previous years questions if any)
+ 
+ from the book: Computer Graphics C version
+ only the following topics
+ 1. Octrees (how it works) page 359, Quadtree, BST- Tree 10-17, Fratal Geometry 10-18, B-spline Curve, types of Shading
+ 
+ Topic-Without resource: Polygon Rendering, Surface Rendering

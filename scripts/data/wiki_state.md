@@ -1,17 +1,19 @@
 # Study Brain — Compiled State
-_Updated: 2026-07-01 by overnight rollover_
+_Updated: 2026-07-04 by Claude Code (manual reset session)_
 
 ## Active exam
-🎯 CSE 715 — Computer Graphics · **Wed 8 Jul 2026, 10:30 AM** · 6 days from 2026-07-02 · Phase: 🚨 Window unstarted. CSE719 exam was sat 07-01 per schedule (outcome unconfirmed — end-of-day log left blank). The Weekly Engine's "exam Wednesday afternoon" reset (skim syllabus, pull past papers, rank topics by yield) never happened — CSE715 folder has zero materials (no slides/syllabus/past papers) and no _Topics.md. This is 07-02's #1 blocking priority.
+🎯 CSE 715 — Computer Graphics · **Wed 8 Jul 2026, 10:30 AM** · 4 days from 2026-07-04 · Phase: ✅ Reset complete. Full exam-Wednesday reset (syllabus skim, 5-year past-paper analysis 2020–2024, topic ranking) done 2026-07-04, 2 days later than planned — the 07-01/07-02 reset never happened (blocker sat unresolved for 2 days, no daily logs exist for 07-03/07-04, overnight rollover gap unconfirmed). Course structure now matches the other 4 courses: [[02_Courses/CSE715_Graphics/_Syllabus|_Syllabus]] · [[02_Courses/CSE715_Graphics/_Topics|_Topics]] · [[02_Courses/CSE715_Graphics/_TopicQuestionMap|_TopicQuestionMap]] · [[02_Courses/CSE715_Graphics/_PastPapers|_PastPapers]].
+
+**⚠️ Timeline is tight:** last-2-days-pure-revision rule means Mon 6 Jul + Tue 7 Jul are revision-only. That leaves **only today (Sat 4 Jul) and tomorrow (Sun 5 Jul)** for core learning of 0/40+ topics — none studied yet. TIER 1 (8 topics, 5/5-year yield) + TIER 2 (6 topics, 4/5-year yield) = 14 topics is the realistic 2-day target; see _Syllabus.md for the full tier breakdown.
 
 ## Topics — CSE715 Computer Graphics
-No _Topics.md exists yet. Course folder contains only a README stub and an empty NotebookLM_Sources checklist — no PDFs, syllabus, or past papers have been dropped in. Cannot rank or plan topics until materials are provided. First action: user uploads materials → Claude clones the AI course structure (_Syllabus, _Topics, _TopicQuestionMap) and ranks by yield.
+40 topics tracked in _Topics.md, all 🔲 not started. Textbook = Schaum's Outline of Computer Graphics (chapter numbers in Syllabus.txt match this book, not Hearn & Baker). TIER 1 (must be cold before Monday): Cohen-Sutherland clipping, normalization transform, rotation, scaling, cavalier/cabinet projection, perspective-vs-parallel, Z-buffer, image crop math. One open judgment call: syllabus mandates Bezier/B-spline/Hermite curves (Ch9) regardless of past-paper history, but 0/5 years (2020–2024) ever asked about them — deprioritized to last unless told otherwise.
 
 _CSE719 Distributed & Cloud (exam sat 07-01) topics remain in the normal spaced-recall rotation — see Recall due below — but are no longer tracked as an active-exam risk._
 
 ## Carry-forward
-- 🚨 CSE715 Graphics — zero materials, no _Topics.md, post-exam reset not done. Blocking all Window 5 core learning. 6 days of runway, none usable yet.
-- ❓ CSE719 exam outcome unconfirmed — 07-01 end-of-day log left blank (how the exam went, whether Livora/public speaking ran, is unknown).
+- ❓ CSE719 exam outcome still unconfirmed — 07-01 end-of-day log was left blank and no daily logs exist for 07-03 or 07-04 either. There's a multi-day gap in the daily-log/rollover chain that hasn't been investigated.
+- 🎯 CSE715 Graphics core learning starts now, 2 days behind the ideal schedule — compressed to 2 learning days instead of 6.
 
 ## Recall due 2026-07-02
 - 🔁 Intelligent Agents + Environments (PAGE) `CSE713_AI` | conf 4/5

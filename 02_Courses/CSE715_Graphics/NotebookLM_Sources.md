@@ -1,22 +1,21 @@
 # NotebookLM Sources — CSE715_Graphics
-
 > Upload all files below to the **CSE715_Graphics** notebook at notebooklm.google.com
-> Last updated: 2026-05-29
+> Last updated: 2026-07-04
 
 ## PDFs to upload
-
-- (no PDFs found yet — add your lecture slides and textbook chapters here)
+- `Computer Graphics C Version by Donald Hearn & M Pauline Baker II Edition.pdf`
+- `(Schaum's outline series) Plastock, Roy A._ Xiang, Zhigang-Schaum's outline of theory and problems of computer graphics-McGraw-Hill (2000).pdf`
+- `cg 715 2023_to_2020.pdf` (past papers 2020-2023)
+- `cse715 2024.pdf` (past paper 2024)
 
 ## Notes to paste as text
-
-- [ ] `README.md` — paste contents into NotebookLM as a text source
+- [ ] `_Syllabus.md` — ranked topic list
+- [ ] `_PastPapers.md` — pattern analysis
 
 ## Recommended NotebookLM prompts (use after upload)
-
 ```
 "Generate 15 exam-style questions based on past paper patterns"
 "Create a 1-page cheat sheet for this course"
-"What topics from my syllabus are covered in the uploaded materials?"
 "Explain [topic] step by step as if preparing me for an exam"
 "Generate an Audio Overview focusing on the most important exam topics"
 ```

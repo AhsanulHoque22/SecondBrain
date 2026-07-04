@@ -61,17 +61,18 @@
 
 ## TIER 2
 
-**DDA + Bresenham line algorithms**
-- 2024 Q1c — DDA and Bresenham trace (2,3)→(10,7); do they choose same pixel?
-- 2023 Q1c — how Bresenham overcomes DDA limitations
-- 2021 Q2a — basic line algo raster locations, why slow, Bresenham fix
-- 2020 Q3b,c — DDA (1,1)→(5,8); Bresenham (0,0)→(8,5)
+**DDA + Bresenham line algorithms** — ✅ verified against raw scanned papers 2026-07-04, full solutions in [[Chapter3_Solutions.pdf]]
+- 2024 **Q3(c)** — DDA and Bresenham trace (2,3)→(10,7); do they choose same pixel? **(No — m=0.5 is an exact tie every other step, and DDA/Bresenham break the tie oppositely.)** *(topic map previously said "Q1c" — wrong; Q1 in 2024 is generic Ch1 concepts, the line-trace question is Q3(c).)*
+- 2023 Q1(c) — how Bresenham overcomes DDA limitations (1 mark, conceptual only, no trace)
+- 2021 Q2(a) — line (1,1)→(10,7): basic-algorithm raster locations, why slower, Bresenham explanation, Bresenham raster locations (6 marks total, 4 sub-parts)
+- 2020 Q3(b),(c) — DDA (1,1)→(5,8) [3.75]; Bresenham (0,0)→(8,5) [4]
+- 2022 — **not asked this year** (2022's Q2 cluster is circle/antialiasing/Koch only, no line-trace question)
 
-**Koch curve / fractal generation**
-- 2023 Q2d — 3rd generation from given 1st/2nd gen
-- 2022 Q2d — same, different starting shape
-- 2021 Q1f — Quadratic Koch curve, draw 2nd generation
-- 2020 — (embedded style question, recursive drawing)
+**Koch curve / fractal generation** — ✅ verified 2026-07-04, full solutions in [[Chapter3_Solutions.pdf]]
+- 2023 **Q2(d)** — square-bump (quadratic Koch) variant, draw 3rd generation from given gen1/gen2 (25 segments)
+- 2022 **Q2(d)** — classic triangular-bump Koch, triangle→star shown, draw 3rd generation (48 segments, Koch snowflake iteration 2)
+- 2021 **Q1(f)** — Quadratic Koch curve (square bump), draw generation 2 (same construction as 2023 Q2d, just numbered one generation lower)
+- 2020 — **not asked this year** (no Koch curve question found in the 2020 paper)
 
 **Point-obscures-point visibility via viewpoint**
 - 2023 Q6a — A(5,1,-2),B(10,4,9),C(15,-2,-3), V(0,1,-10)
@@ -107,19 +108,21 @@
 
 ## TIER 3 (brief refs — lower priority, drill only after Tier 1–2 solid)
 - **CG vs Image Processing/HCI:** 2023 Q1a — differentiate CG from image processing (1 mark); 2022 Q1a — CG vs image processing/HCI (both distinctions); 2021 Q1a — how does image processing differ from CG; 2020 Q1a — which discipline describes producing/synthesizing digital images (justify: CG = object definition → image; image processing = image → image, pixel-based)
-- **Antialiasing/slanted lines:** 2023 Q1c(implicit), 2022 Q2c, 2021 Q1d(color capture context)
+- **Antialiasing/slanted lines:** ✅ verified 2026-07-04, solved in [[Chapter3_Solutions.pdf]] — 2023 Q2(a) why dimmer only [1]; 2022 Q2(c) why dimmer + how to fix [2]; 2021 Q2(b) "3 adverse effects" + lowpass-filter kernel application [2.75, bundled with the line-trace question]
 - **Geometric vs Coordinate transform:** 2022 (Q3a-equiv), 2021 Q3a, 2020 Q5d
 - **RGB scanline interpolation:** 2022 Q7c, 2021 Q7c, 2020 (Q7d-equiv 2021 paper)
 - **Ray vs Vector:** 2022 Q8a, 2021 Q8c, 2020 Q7c(2021 paper actually — cross-check when drilling)
 - **Ray equation point-finding:** 2022 Q8c, 2021 Q8b
-- **Convex/concave polygon ID:** 2022 Q4c, 2021 Q4c, 2020 (Q6c 2021 paper)
-- **Midpoint circle + 8-way symmetry:** 2023 Q2b, 2022 Q2a,b, 2020 Q4c
+- **Convex/concave polygon ID:** lives in the Q4/Ch5-Clipping cluster, not Ch3 — 2022 Q4c, 2021 Q4(c) [confirmed: "Identify the convex and concave polygons"], 2020 (Q6c 2021 paper) — will be answered alongside Chapter 5 (Clipping), not Chapter 3
+- **Midpoint circle + 8-way symmetry:** ✅ verified 2026-07-04, solved in [[Chapter3_Solutions.pdf]] — 2023 Q2(b) r=10 center-origin, 3rd-quadrant points [4]; 2022 Q2(a) 8-way symmetry explain [1.5] + Q2(b) r=10 center(50,50) [4]; 2020 Q4(c) show 8-way symmetry [1]
 
 ## TIER 4 (one appearance each — learn the method fast, don't over-invest)
-Tilting: 2022 (Q3c-equiv), 2021 Q5c/6c-area · Monitor matrix M: 2023 Q7a, 2021 Q7a · Isometric/Dimetric/Trimetric: 2023 Q1i, 2020 Q8b · Foreshortening/vanishing point: 2021 Q5c(2021 paper Q5c-equiv), 2020 Q6d · Phong model: 2022 Q6d, 2023 (image-based Q) · Flood/boundary fill: 2023 Q2c, 2020 Q2d · Point left/right test: 2022 Q7a, 2021 Q7a
+Tilting: 2022 (Q3c-equiv), 2021 Q5c/6c-area · Monitor matrix M: 2023 Q7a, 2021 Q7a · Isometric/Dimetric/Trimetric: 2023 Q1i, 2020 Q8b · Foreshortening/vanishing point: 2021 Q5c(2021 paper Q5c-equiv), 2020 Q6d · Phong model: 2022 Q6d, 2023 (image-based Q) · **Flood/boundary fill: 2023 Q2(c) hexagon [3], 2020 Q2(d) arrow [2.5] — ✅ verified 2026-07-04, solved in [[Chapter3_Solutions.pdf]] (both are "will 8-connected fill leak on diagonal edges" reasoning questions)** · Point left/right test: 2022 Q7a, 2021 Q7a — lives in Q7/Ch11 cluster, not Ch3
 
 ## TIER 5 (2024-only or syllabus-mandated zero-yield)
 Halftoning+dither: 2024 Q2d, Q3a,b · Circular clipping: 2024 Q5c · Trapezoid fill: 2024 Q7b,c,e · Axonometric: 2024 Q6c · 3D scaling: 2023 Q3c · Painter's vs Z-buffer: 2023 Q7d · Perspective anomalies: 2023 Q4c · Orthographic vs Oblique: 2023 Q4b · Back-face/visible surface: 2024 Q1c, Q7a · Color gamut: 2022 Q8b · **Bezier/B-spline/Hermite: no PYQ hit 2020–2024**
 
 ## Note on accuracy
 This map was built from scanned/handwritten past papers read in one pass — Tier 3–5 year attributions may have minor mix-ups between adjacent years since several questions repeat near-identically. Re-verify the specific year during block study if it matters for your prep; the topic identification itself is solid.
+
+**Chapter 3 (Scan Conversion) cluster fully re-verified against the raw scanned papers on 2026-07-04** during question-analysis — see [[Chapter3_Solutions.pdf]]. Key corrections: the exact question number for this cluster **shifts every year** (Q2 in 2022/2023, Q1+Q2 split in 2021, Q2+Q3+Q4 split in 2020, Q3 only in 2024) — don't assume "Q2 = Scan Conversion" holds across all years despite what the general Q#→chapter table in [[_PastPapers]] implies. Convex/concave polygon ID and the point left/right-of-line test, though conceptually scan-conversion/geometry topics, are both asked inside other questions' clusters (Q4/Ch5-Clipping and Q7/Ch11 respectively) — answered there, not in Chapter 3.

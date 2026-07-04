@@ -7,8 +7,8 @@ Status: 🔲 not started · 📖 learning · 🔁 needs recall · ✅ can explai
 |-------|:------:|:----:|:-------------:|:-----------:|:-----:|--------------------|
 | Cohen-Sutherland region codes + line clipping | 🔲 | — | — | — | 5/5 · 3–4 marks | 4-bit TOP/BOTTOM/RIGHT/LEFT vs rectangle window |
 | Normalization transformation (window→viewport) | 🔲 | — | — | — | 5/5 · 2–3 marks | Derive from window/viewport corners |
-| Rotation — derive matrix + apply | 🔲 | — | — | — | 5/5 · 2–4 marks | Origin AND arbitrary-point variants both asked |
-| Scaling/magnification about a fixed point | 🔲 | — | — | — | 5/5 · 2–4 marks | Keep a named vertex fixed |
+| Rotation — derive matrix + apply | 📖 | — | 2026-07-04 | — | 5/5 · 2–4 marks | Origin AND arbitrary-point variants both asked. Question analysis + [[Chapter4_Solutions.pdf]] done — all 5 years solved. Needs active recall to reach ✅. |
+| Scaling/magnification about a fixed point | 📖 | — | 2026-07-04 | — | 5/5 · 2–4 marks | Keep a named vertex fixed. 2022 occurrence previously missing from map — now added. Solved in [[Chapter4_Solutions.pdf]]. |
 | Cavalier/Cabinet projection matrices | 🔲 | — | — | — | 5/5 · 2.5–4 marks | tan α=1 (cavalier) vs tan α=0.5 (cabinet); θ varies |
 | Perspective vs Parallel projection | 🔲 | — | — | — | 5/5 · 1–4 marks | Who uses which (architects/engineers) |
 | Z-Buffer algorithm | 🔲 | — | — | — | 5/5 · 4.5–4.75 marks | Max objects representable + 2×2 pixel trace |
@@ -25,7 +25,9 @@ Status: 🔲 not started · 📖 learning · 🔁 needs recall · ✅ can explai
 | Sutherland-Hodgman / Weiler-Atherton polygon clipping | 🔲 | — | — | — | 4/5 · 3–4 marks | 2024 upgraded to Weiler-Atherton — learn both |
 | CG vs Image Processing/HCI | 📖 | — | 2026-07-04 | — | 4/5 · 1–3 marks | Short distinguishing answer. Solved in [[Chapter2_Solutions.pdf]]. |
 | Antialiasing / slanted-line dimming | 📖 | — | 2026-07-04 | — | 3/5 · 1–2 marks | Explain cause (√2 vs 1 unit pixel spacing) + fix (area/super-sampling). Solved in [[Chapter3_Solutions.pdf]]. |
-| Geometric vs Coordinate transformation | 🔲 | — | — | — | 3/5 · 1–3.5 marks | Definitional distinction |
+| Geometric vs Coordinate transformation | 📖 | — | 2026-07-04 | — | 3/5 · 1–3.5 marks | Definitional distinction. Solved in [[Chapter4_Solutions.pdf]]. |
+| ↳ Coordinate-system rationale (device-independent/NDC) | 📖 | — | 2026-07-04 | — | 3/5 · 1 mark | "Monitor sizes vary — what coordinate system + why" — new subtopic split out 2026-07-04, previously untracked. 2020 Q6a, 2022 Q3a, 2023 Q3a. Solved in [[Chapter4_Solutions.pdf]]. |
+| ↳ 2D transform extras: translation, shear, composite-rotation steps, figure-based transform ID | 📖 | — | 2026-07-04 | — | 1/5 · 9 marks (2024 Q4 whole) | 2024-only, new subtopic split out 2026-07-04. Q4a identify transforms from figure, Q4c translate a segment, Q4d steps to rotate arbitrary line about a point, Q4e shear matrices. Syllabus explicitly names mirror/shear/matrix description under Ch4 even without 5-yr PYQ history. Solved in [[Chapter4_Solutions.pdf]]. |
 | RGB scanline color interpolation | 🔲 | — | — | — | 3/5 · 1.75–2.5 marks | Linear interpolation given colors at 2 points on a line |
 | Ray vs Vector distinction | 🔲 | — | — | — | 3/5 · 1 mark | "Show a ray is not a vector" |
 | Ray equation r(t)=s+td point-finding | 🔲 | — | — | — | 3/5 · 2.5–3 marks | Plug in t values |

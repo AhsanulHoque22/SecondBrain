@@ -17,17 +17,30 @@
 - 2021 Q7d — window(1,4)-(3,4), preserve aspect ratio → NDC
 - 2020 Q5a,b — workstation transform (NDC→device 0-199,0-639); window(1,1)-(2,2)→viewport(0,0)-(1/2,1/2)
 
-**Rotation — derive matrix + apply**
+**Rotation — derive matrix + apply** — ✅ verified against raw scanned papers 2026-07-04, full solutions in [[Chapter4_Solutions.pdf]]
 - 2024 Q4b — derive CCW rotation matrix from geometry (P(x,y)→P'(x',y'))
 - 2023 Q3b — rotate P(-1,2),Q(4,4),R(1,-4) 45° about origin and about Q(4,4)
-- 2022 (2022 paper Q3c-equivalent) — 45° rotation of A(5,6),B(2,1),C(5,3) about origin and (2,3)
-- 2021 Q3c — 60° rotation of rectangle about E(-1,-1)
-- 2020 Q4a — 90° rotation of rectangle about B(-1,-1)
+- 2022 **Q3c** — 45° rotation of A(5,6),B(2,1),C(5,3) about origin and (2,3) *(topic map previously said "Q3c-equivalent" — confirmed exact: Q3c)*
+- 2021 Q3c — 60° rotation of rectangle A(1,1),B(1,2),C(2,2),D(2,1) about E(-1,-1)
+- 2020 Q4a — 90° rotation of rectangle A(1,1),B(1,2),C(2,2),D(2,1) about B(-1,-1)
 
-**Scaling/magnification about a fixed point**
-- 2023 Q3c — scale 3D object A,B,C,D by (3,2,3) on X,Y,Z (also 3D scaling, Tier 5)
+**Scaling/magnification about a fixed point** — ✅ verified 2026-07-04, full solutions in [[Chapter4_Solutions.pdf]]
+- 2023 Q3c — scale 3D object A,B,C,D by (3,2,3) on X,Y,Z (also 3D scaling, Tier 5 — answered in both places)
+- 2022 **Q3b — previously MISSING from this map.** Magnify triangle P(-1,2),Q(2,4),R(0,0) keeping Q(2,4) fixed: (i) ×3 (ii) ×0.5
 - 2021 Q3b — magnify pentagon ARTHE ×2 keeping E(1,6) fixed
 - 2020 Q4b — magnify triangle A,B,C ×2 keeping B(2,1) fixed
+
+**Coordinate-system rationale (device-independent/NDC)** — new subtopic split out 2026-07-04, solved in [[Chapter4_Solutions.pdf]]
+- 2023 Q3a — "monitor sizes vary — what coordinate system is required and why?" [1]
+- 2022 Q3a — identical question [1]
+- 2020 Q6a — identical question, bundled with Group-B Q6 (Cohen-Sutherland region codes) instead of the Q3/Q4 transformation cluster [~1]
+- 2021 — **not asked this year**
+
+**2D transform extras (2024-only): translation, shear, composite-rotation steps, figure ID** — new subtopic split out 2026-07-04, solved in [[Chapter4_Solutions.pdf]]
+- 2024 Q4a [2] — given shape (a) and 4 transformed variants (b)-(e), name the transformation used for each
+- 2024 Q4c [2] — translate segment P1(1,2)-P2(3,3) by (-1,-2)
+- 2024 Q4d [2] — steps needed to rotate an arbitrary line about a point P1 (translate-rotate-translate-back recipe)
+- 2024 Q4e [1] — write the 2D shear transformation matrices
 
 **Cavalier/Cabinet projection matrices**
 - 2023 Q5a — cavalier θ=60°, cabinet θ=45°
@@ -109,7 +122,7 @@
 ## TIER 3 (brief refs — lower priority, drill only after Tier 1–2 solid)
 - **CG vs Image Processing/HCI:** 2023 Q1a — differentiate CG from image processing (1 mark); 2022 Q1a — CG vs image processing/HCI (both distinctions); 2021 Q1a — how does image processing differ from CG; 2020 Q1a — which discipline describes producing/synthesizing digital images (justify: CG = object definition → image; image processing = image → image, pixel-based)
 - **Antialiasing/slanted lines:** ✅ verified 2026-07-04, solved in [[Chapter3_Solutions.pdf]] — 2023 Q2(a) why dimmer only [1]; 2022 Q2(c) why dimmer + how to fix [2]; 2021 Q2(b) "3 adverse effects" + lowpass-filter kernel application [2.75, bundled with the line-trace question]
-- **Geometric vs Coordinate transform:** 2022 (Q3a-equiv), 2021 Q3a, 2020 Q5d
+- **Geometric vs Coordinate transform:** ✅ verified 2026-07-04, solved in [[Chapter4_Solutions.pdf]] — 2021 Q3a [1.25]; 2020 Q5d [~1] *(2022's occurrence was mis-attributed to Q3a — that question is actually the separate Coordinate-system-rationale question above; 2022 does not ask Geometric vs Coordinate transformation)*
 - **RGB scanline interpolation:** 2022 Q7c, 2021 Q7c, 2020 (Q7d-equiv 2021 paper)
 - **Ray vs Vector:** 2022 Q8a, 2021 Q8c, 2020 Q7c(2021 paper actually — cross-check when drilling)
 - **Ray equation point-finding:** 2022 Q8c, 2021 Q8b

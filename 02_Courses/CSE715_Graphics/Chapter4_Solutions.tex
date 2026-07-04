@@ -1,0 +1,443 @@
+% CSE 715 — Computer Graphics
+% Chapter 4: 2D Transformations — Complete Model Answers (2020–2024)
+% University of Chittagong, 7th Semester B.Sc. Engineering
+% Source: Schaum's Outline of Computer Graphics (Xiang & Plastock), Chapter 4
+%
+% Compile with: pdflatex Chapter4_Solutions.tex (run twice for TOC)
+
+\documentclass[12pt, a4paper]{article}
+
+\usepackage[left=2.5cm, right=2.5cm, top=2.8cm, bottom=2.8cm, headheight=15pt]{geometry}
+\usepackage{amsmath, amssymb}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta, positioning, shapes.geometric, calc, backgrounds, fit}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{xcolor}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{mdframed}
+\usepackage{multicol}
+\usepackage{tabularx}
+\usepackage{multirow}
+\usepackage{hyperref}
+
+%----- Colours -----
+\definecolor{sectionblue}{RGB}{10,60,110}
+\definecolor{boxbg}{RGB}{242,247,255}
+\definecolor{answerbg}{RGB}{240,255,240}
+\definecolor{notesbg}{RGB}{255,250,230}
+\definecolor{keyblue}{RGB}{0,80,160}
+\definecolor{accent}{RGB}{180,40,40}
+
+%----- Box environments -----
+\mdfdefinestyle{solutionframe}{linecolor=sectionblue, backgroundcolor=boxbg, roundcorner=4pt, linewidth=1.4pt, innertopmargin=7pt, innerbottommargin=7pt, innerleftmargin=9pt, innerrightmargin=9pt}
+\mdfdefinestyle{answerframe}{linecolor=green!55!black, backgroundcolor=answerbg, roundcorner=4pt, linewidth=1.4pt, innertopmargin=7pt, innerbottommargin=7pt, innerleftmargin=9pt, innerrightmargin=9pt}
+\mdfdefinestyle{notesframe}{linecolor=orange!70!black, backgroundcolor=notesbg, roundcorner=4pt, linewidth=1pt, innertopmargin=5pt, innerbottommargin=5pt, innerleftmargin=8pt, innerrightmargin=8pt}
+\newenvironment{solutionbox}{\begin{mdframed}[style=solutionframe]}{\end{mdframed}}
+\newenvironment{answerbox}{\begin{mdframed}[style=answerframe]}{\end{mdframed}}
+\newenvironment{notesbox}{\begin{mdframed}[style=notesframe]}{\end{mdframed}}
+
+%----- Page style -----
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{\small\color{sectionblue} CSE 715 --- Chapter 4: 2D Transformations}
+\rhead{\small\color{sectionblue} Model Solutions (2020--2024)}
+\cfoot{\small\thepage}
+\renewcommand{\headrulewidth}{0.5pt}
+
+%----- Section formatting -----
+\titleformat{\section}{\Large\bfseries\color{sectionblue}}{}{0em}{}[\vspace{-2pt}\color{sectionblue}\rule{\linewidth}{0.8pt}]
+\titleformat{\subsection}{\large\bfseries\color{sectionblue!85!black}}{}{0em}{}
+\titleformat{\subsubsection}{\normalsize\bfseries\color{black}}{}{0em}{}
+
+%----- Custom list -----
+\newlist{keypoints}{itemize}{1}
+\setlist[keypoints]{label=$\triangleright$, leftmargin=1.5cm, itemsep=2pt, topsep=3pt}
+\newlist{examlist}{enumerate}{1}
+\setlist[examlist]{label=\textbf{(\roman*)}, leftmargin=1.8cm, itemsep=3pt, topsep=4pt}
+
+%=====================================================================
+\begin{document}
+%=====================================================================
+
+\begin{center}
+  {\LARGE\bfseries\color{sectionblue} CSE 715: Computer Graphics}\\[0.6em]
+  {\Large\bfseries Chapter 4 --- 2D Transformations}\\[0.3em]
+  {\large Complete Model Answers (2020--2024)}\\[0.2em]
+  {\normalsize University of Chittagong \quad|\quad 7\textsuperscript{th} Semester B.Sc.\ (Engg.) Examination}\\[0.3em]
+  {\small Source: Schaum's Outline of Computer Graphics (Xiang \& Plastock), Chapter 4}
+\end{center}
+
+\vspace{0.3em}
+\noindent\rule{\linewidth}{1pt}
+\vspace{0.5em}
+
+\tableofcontents
+\newpage
+
+%=====================================================================
+\section{Theoretical Framework --- Reusable Across All Years}
+%=====================================================================
+This cluster shows up as \textbf{Q3 (2020--2023) or Q4 (2020 Group-A / 2024)} every year --- the exact question number shifts (2020 splits it oddly: the numeric rotation/scaling pair is its Q4, while 8-way symmetry is bundled into the same Q4 as a Ch3 sub-part). The content is always: derive/apply a 2D transformation matrix (rotation and/or scaling), usually about an \emph{arbitrary fixed point} rather than the origin, plus a recurring theory question distinguishing coordinate systems or transformation types.
+
+%----------------------------------------------------------------------
+\subsection{The Four Basic 2D Transformations (Homogeneous Matrix Form)}
+%----------------------------------------------------------------------
+Using homogeneous coordinates $(x,y,1)$ so translation becomes a matrix multiply like the others: $[x'\ y'\ 1] = [x\ y\ 1]\cdot T$.
+\begin{center}
+\renewcommand{\arraystretch}{1.5}
+\begin{tabular}{ll}
+\toprule
+\textbf{Transformation} & \textbf{Matrix} $T$ (row-vector convention, post-multiply) \\
+\midrule
+Translation by $(t_x,t_y)$ & $\begin{bmatrix}1&0&0\\0&1&0\\t_x&t_y&1\end{bmatrix}$ \\[0.9em]
+Rotation by $\theta$ (CCW, about origin) & $\begin{bmatrix}\cos\theta&\sin\theta&0\\-\sin\theta&\cos\theta&0\\0&0&1\end{bmatrix}$ \\[0.9em]
+Scaling by $(s_x,s_y)$ (about origin) & $\begin{bmatrix}s_x&0&0\\0&s_y&0\\0&0&1\end{bmatrix}$ \\[0.9em]
+Reflection about $x$-axis & $\begin{bmatrix}1&0&0\\0&-1&0\\0&0&1\end{bmatrix}$ \\[0.9em]
+Reflection about $y$-axis & $\begin{bmatrix}-1&0&0\\0&1&0\\0&0&1\end{bmatrix}$ \\[0.9em]
+Reflection about origin (=180° rotation) & $\begin{bmatrix}-1&0&0\\0&-1&0\\0&0&1\end{bmatrix}$ \\[0.9em]
+$x$-shear (factor $sh_x$) & $x'=x+sh_x\cdot y,\ y'=y$ \\[0.3em]
+$y$-shear (factor $sh_y$) & $x'=x,\ y'=y+sh_y\cdot x$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+Equivalently, without homogeneous coordinates: $x'=x\cos\theta-y\sin\theta,\ y'=x\sin\theta+y\cos\theta$ (rotation); $x'=s_x\cdot x,\ y'=s_y\cdot y$ (scaling about origin).
+
+%----------------------------------------------------------------------
+\subsection{Deriving the Rotation Matrix from Geometry}
+%----------------------------------------------------------------------
+\begin{answerbox}
+Let $P(x,y)$ be at distance $l$ from the origin, at angle $\alpha$ to the $x$-axis, so $x=l\cos\alpha,\ y=l\sin\alpha$. Rotating $P$ by $\theta$ (CCW) about the origin gives $P'(x',y')$ at the same distance $l$, angle $\alpha+\theta$:
+$$x' = l\cos(\alpha+\theta) = l\cos\alpha\cos\theta - l\sin\alpha\sin\theta = x\cos\theta - y\sin\theta$$
+$$y' = l\sin(\alpha+\theta) = l\sin\alpha\cos\theta + l\cos\alpha\sin\theta = x\sin\theta + y\cos\theta$$
+using the angle-sum identities and substituting back $l\cos\alpha=x,\ l\sin\alpha=y$.
+\end{answerbox}
+
+%----------------------------------------------------------------------
+\subsection{Transformations About an Arbitrary Fixed Point (the recurring exam pattern)}
+%----------------------------------------------------------------------
+\begin{answerbox}
+\textbf{3-step recipe} (works identically for rotation \emph{and} scaling about a fixed point $F(f_x,f_y)$):
+\begin{enumerate}[noitemsep]
+  \item \textbf{Translate} $F$ to the origin: subtract $F$ from every point, $(x-f_x,\,y-f_y)$.
+  \item \textbf{Apply} the transformation about the origin (rotate by $\theta$, or scale by $(s_x,s_y)$) to the translated coordinates.
+  \item \textbf{Translate back:} add $F$ to the result.
+\end{enumerate}
+Composite matrix: $T(F)\cdot R(\theta)\cdot T(-F)$ for rotation, or $T(F)\cdot S(s_x,s_y)\cdot T(-F)$ for scaling.
+Closed forms used throughout this chapter:
+$$\textbf{Rotate about }F:\quad x'=f_x+(x-f_x)\cos\theta-(y-f_y)\sin\theta,\quad y'=f_y+(x-f_x)\sin\theta+(y-f_y)\cos\theta$$
+$$\textbf{Scale about }F:\quad x'=f_x+s\,(x-f_x),\quad y'=f_y+s\,(y-f_y)$$
+\end{answerbox}
+
+%----------------------------------------------------------------------
+\subsection{Geometric Transformation vs.\ Coordinate Transformation}
+%----------------------------------------------------------------------
+\begin{center}
+\renewcommand{\arraystretch}{1.4}
+\begin{tabular}{p{5.3cm}p{5.3cm}}
+\toprule
+\textbf{Geometric transformation} & \textbf{Coordinate transformation} \\
+\midrule
+The \textbf{object itself} moves/changes (position, size, orientation) while the reference axes stay fixed. & The \textbf{object stays physically fixed}; instead the reference frame (axes) is moved/rotated/scaled, and the object's coordinates are re-expressed relative to the new frame. \\
+Produces a genuinely new object (new points in the same coordinate system). & Produces the same object described in a different coordinate system --- no physical change. \\
+Uses matrix $M$ directly on point coordinates: $P'=M\cdot P$. & Mathematically equivalent to applying $M^{-1}$ to describe the same fixed point relative to the transformed frame. \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+%----------------------------------------------------------------------
+\subsection{Why a Device-Independent Coordinate System is Needed}
+%----------------------------------------------------------------------
+\begin{answerbox}
+Physical displays vary in resolution and physical size across systems. If a picture were defined directly in device (pixel) coordinates, it would look different --- distorted, cropped, or mis-scaled --- on every different device. The fix is a \textbf{Normalized (Device-Independent) Coordinate System}: define/model the picture once in a standard normalized range (e.g.\ the unit square $[0,1]\times[0,1]$), then apply a separate \textbf{workstation/viewport transformation} that maps normalized coordinates to whatever the actual device's pixel range happens to be. This decouples \emph{what} is drawn from \emph{which device} it is drawn on, so the same picture definition renders correctly (same relative proportions) everywhere.
+\end{answerbox}
+
+%=====================================================================
+\section{Examination 2024 --- Q4(a--e) (Section A)}
+%=====================================================================
+\begin{solutionbox}
+\textbf{Question breakdown:}
+\begin{enumerate}[noitemsep]
+  \item[(a)] Given a shape in a 2D coordinate system, Figure (a), mention the transformations used on (a) to generate the shapes in (b), (c), (d), and (e). (2)
+  \item[(b)] A point $P(x,y)$ is rotated at angle $\theta$ about the origin $O$ in CCW direction. Derive the rotation matrix using the given figure. (2)
+  \item[(c)] Translate the line segment $P_1P_2$ by $-1$ units in $x$ and $-2$ units in $y$; $P_1(1,2), P_2(3,3)$. Find the new endpoint coordinates. (2)
+  \item[(d)] Mention the steps needed to rotate an arbitrary line about a point $P_1$. (2)
+  \item[(e)] Write down the matrices for shear transformation in 2D space. (1)
+\end{enumerate}
+\end{solutionbox}
+
+\subsection*{(a) --- Identify the Transformations from the Figure [2 marks]}
+\begin{answerbox}
+The figure shows shape (a) (a small face icon near the axis origin) reproduced as four variants (b)--(e) at different positions/orientations. \textbf{Method (apply this to your own paper's exact figure):} compare each variant's position and orientation against (a) using these four signatures:
+\begin{keypoints}
+  \item \textbf{Pure translation:} same size, same orientation (face right-side-up, not mirrored), only the position has moved --- e.g.\ variant (e), which sits diagonally opposite (a) but is not flipped.
+  \item \textbf{Reflection about the $x$-axis:} the shape is flipped \textbf{upside-down} (vertically mirrored) but not left-right reversed --- appears directly below/above (a) on the opposite side of the horizontal axis.
+  \item \textbf{Reflection about the $y$-axis:} the shape is flipped \textbf{left-right} (horizontally mirrored) but not upside-down --- appears on the opposite side of the vertical axis at the same height.
+  \item \textbf{Reflection about the origin (=180° rotation):} the shape is flipped \textbf{both} vertically and horizontally --- appears diagonally opposite through the origin.
+\end{keypoints}
+Reading this paper's layout (four quadrant positions (b)/(c)/(d) along the bottom row and (e) at top-right, mirroring (a) at top-left/top-center): (b) and (d) are the two single-axis reflections ($x$-axis and $y$-axis respectively, whichever one is upside-down vs.\ left-right flipped in your printed copy), (c) is reflection about the origin (both flips combined, sitting at bottom-middle), and (e) is a pure translation (same orientation as (a), just moved). \textbf{On exam day: name each transform by checking orientation, not position} --- position alone is ambiguous, but "is it flipped vertically / horizontally / both / neither" uniquely identifies translation vs.\ the three reflection types.
+\end{answerbox}
+
+\subsection*{(b) --- Derive the Rotation Matrix [2 marks]}
+See \S1.2 for the full derivation. Final result in matrix form:
+\begin{answerbox}
+$$\begin{bmatrix}x'\\y'\end{bmatrix} = \begin{bmatrix}\cos\theta & -\sin\theta\\ \sin\theta & \cos\theta\end{bmatrix}\begin{bmatrix}x\\y\end{bmatrix}$$
+\end{answerbox}
+
+\subsection*{(c) --- Translate $P_1(1,2), P_2(3,3)$ by $(-1,-2)$ [2 marks]}
+\begin{answerbox}
+$$P_1' = (1-1,\ 2-2) = (0,0) \qquad P_2' = (3-1,\ 3-2) = (2,1)$$
+\end{answerbox}
+
+\subsection*{(d) --- Steps to Rotate an Arbitrary Line About a Point $P_1$ [2 marks]}
+\begin{answerbox}
+Same recipe as \S1.3, applied to a line (both endpoints get the same treatment):
+\begin{enumerate}[noitemsep]
+  \item Translate the whole line so that $P_1$ coincides with the origin: subtract $P_1$'s coordinates from both endpoints.
+  \item Rotate the translated endpoints by the required angle $\theta$ about the origin using the standard rotation matrix.
+  \item Translate the result back by adding $P_1$'s original coordinates to both rotated endpoints.
+\end{enumerate}
+Composite matrix: $T(P_1)\cdot R(\theta)\cdot T(-P_1)$.
+\end{answerbox}
+
+\subsection*{(e) --- 2D Shear Transformation Matrices [1 mark]}
+\begin{answerbox}
+$$\textbf{$x$-shear:}\ \begin{bmatrix}1 & 0 & 0\\ sh_x & 1 & 0\\ 0&0&1\end{bmatrix}\ (x'=x+sh_x\cdot y,\ y'=y) \qquad \textbf{$y$-shear:}\ \begin{bmatrix}1 & sh_y & 0\\ 0 & 1 & 0\\ 0&0&1\end{bmatrix}\ (x'=x,\ y'=y+sh_y\cdot x)$$
+\end{answerbox}
+
+%=====================================================================
+\section{Examination 2023 --- Q3(a--c) (Section A)}
+%=====================================================================
+\begin{solutionbox}
+\textbf{Question breakdown:}
+\begin{enumerate}[noitemsep]
+  \item[(a)] While capturing/displaying images, monitor sizes vary between systems. What kind of coordinate system is required to resolve this, and why? (1)
+  \item[(b)] Find the new coordinates of triangle $P(-1,2), Q(4,4), R(1,-4)$ after $45°$ rotation for: (i) about the origin, (ii) about the point $Q(4,4)$. (4)
+  \item[(c)] Given a 3D object with points $A(3,0,3), B(3,3,6), C(3,0,1), D(0,0,0)$, apply scaling parameters $3$ (X), $2$ (Y), $3$ (Z) and find the new coordinates. (4)
+\end{enumerate}
+\end{solutionbox}
+
+\subsection*{(a) --- Coordinate System Rationale [1 mark]}
+See \S1.5. A \textbf{normalized (device-independent) coordinate system} decouples the image definition from any one device's resolution/size.
+
+\subsection*{(b) --- 45° Rotation, About Origin and About $Q(4,4)$ [4 marks]}
+$\cos45°=\sin45°\approx0.70711$.
+\begin{solutionbox}
+\textbf{(i) About the origin} --- $x'=x\cos45°-y\sin45°,\ y'=x\sin45°+y\cos45°$:
+\begin{center}
+\begin{tabular}{lccc}
+\toprule
+Point & $x-y$ & $x+y$ & $P'=(0.70711(x-y),\ 0.70711(x+y))$ \\
+\midrule
+$P(-1,2)$ & $-3$ & $1$ & $(-2.1213,\ 0.7071)$ \\
+$Q(4,4)$ & $0$ & $8$ & $(0,\ 5.6569)$ \\
+$R(1,-4)$ & $5$ & $-3$ & $(3.5355,\ -2.1213)$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+\end{solutionbox}
+\begin{solutionbox}
+\textbf{(ii) About $Q(4,4)$} --- translate by $-Q$, rotate $45°$, translate back by $+Q$:
+\begin{center}
+\begin{tabular}{lccc}
+\toprule
+Point & $(x-4,y-4)$ & rotate $45°$ & $+Q(4,4)$ \\
+\midrule
+$P(-1,2)$ & $(-5,-2)$ & $(-2.1213,-4.9497)$ & $(1.8787,\ -0.9497)$ \\
+$Q(4,4)$ & $(0,0)$ & $(0,0)$ & $(4,\ 4)$ \emph{(fixed point --- unchanged)} \\
+$R(1,-4)$ & $(-3,-8)$ & $(3.5355,-7.7782)$ & $(7.5355,\ -3.7782)$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+\end{solutionbox}
+
+\subsection*{(c) --- 3D Scaling [4 marks] \emph{(Related --- primary home is Ch6/Tier-5 "3D scaling application," answered here too since it is bundled in this year's Q3)}}
+\begin{answerbox}
+New coordinates $=(3x,\ 2y,\ 3z)$ (scaling about the origin, since no other fixed point is specified and $D=(0,0,0)$ already sits at the origin):
+$$A(3,0,3)\to(9,0,9) \qquad B(3,3,6)\to(9,6,18) \qquad C(3,0,1)\to(9,0,3) \qquad D(0,0,0)\to(0,0,0)$$
+\end{answerbox}
+
+%=====================================================================
+\section{Examination 2022 --- Q3(a--c) (Section A)}
+%=====================================================================
+\begin{solutionbox}
+\textbf{Question breakdown:}
+\begin{enumerate}[noitemsep]
+  \item[(a)] While capturing/displaying images, monitor sizes vary. What kind of coordinate system is required and why? (1)
+  \item[(b)] Find the new coordinates of triangle $P(-1,2), Q(2,4), R(0,0)$ keeping $Q(2,4)$ fixed for: (i) expanded thrice its size, (ii) reduced to half its size. (4)
+  \item[(c)] Find the matrix to perform a $45°$ rotation of triangle $A(5,6), B(2,1), C(5,3)$: (i) about the origin, (ii) about the point $(2,3)$. (4)
+\end{enumerate}
+\end{solutionbox}
+
+\subsection*{(a) --- Coordinate System Rationale [1 mark]}
+Identical question and answer to 2023(a) --- see \S1.5.
+
+\subsection*{(b) --- Scale Triangle Keeping $Q(2,4)$ Fixed, $\times3$ and $\times0.5$ [4 marks]}
+Formula (\S1.3): $P'=Q+s\,(P-Q)$.
+\begin{solutionbox}
+\begin{center}
+\begin{tabular}{lcc}
+\toprule
+Point & (i) $s=3$: $Q+3(P-Q)$ & (ii) $s=0.5$: $Q+0.5(P-Q)$ \\
+\midrule
+$P(-1,2)$ & $(2,4)+3(-3,-2)=(-7,-2)$ & $(2,4)+0.5(-3,-2)=(0.5,3)$ \\
+$Q(2,4)$ & fixed: $(2,4)$ & fixed: $(2,4)$ \\
+$R(0,0)$ & $(2,4)+3(-2,-4)=(-4,-8)$ & $(2,4)+0.5(-2,-4)=(1,2)$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+\end{solutionbox}
+
+\subsection*{(c) --- 45° Rotation, About Origin and About $(2,3)$ [4 marks]}
+\begin{solutionbox}
+\textbf{About the origin:}
+\begin{center}
+\begin{tabular}{lccc}
+\toprule
+Point & $x-y$ & $x+y$ & $A'=(0.70711(x-y),\ 0.70711(x+y))$ \\
+\midrule
+$A(5,6)$ & $-1$ & $11$ & $(-0.7071,\ 7.7782)$ \\
+$B(2,1)$ & $1$ & $3$ & $(0.7071,\ 2.1213)$ \\
+$C(5,3)$ & $2$ & $8$ & $(1.4142,\ 5.6569)$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+\end{solutionbox}
+\begin{solutionbox}
+\textbf{About $(2,3)$} --- translate by $-(2,3)$, rotate $45°$, translate back:
+\begin{center}
+\begin{tabular}{lccc}
+\toprule
+Point & $(x-2,y-3)$ & rotate $45°$ & $+(2,3)$ \\
+\midrule
+$A(5,6)$ & $(3,3)$ & $(0,\ 4.2426)$ & $(2,\ 7.2426)$ \\
+$B(2,1)$ & $(0,-2)$ & $(1.4142,\ -1.4142)$ & $(3.4142,\ 1.5858)$ \\
+$C(5,3)$ & $(3,0)$ & $(2.1213,\ 2.1213)$ & $(4.1213,\ 5.1213)$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+\end{solutionbox}
+
+%=====================================================================
+\section{Examination 2021 --- Q3(a--c) (Section A)}
+%=====================================================================
+\begin{solutionbox}
+\textbf{Question breakdown:}
+\begin{enumerate}[noitemsep]
+  \item[(a)] Differentiate between the geometric and coordinate transformation. (1.25)
+  \item[(b)] Magnify the Pentagon ARTHE to twice its size while keeping $E(1,6)$ fixed. $A(-4,3), R(-2,-5), T(2,-3), H(7,0), E(1,6)$. (3.5)
+  \item[(c)] Perform a $60°$ rotation of the rectangle $A(1,1), B(1,2), C(2,2), D(2,1)$ about the point $E(-1,-1)$. (4)
+\end{enumerate}
+\end{solutionbox}
+
+\subsection*{(a) --- Geometric vs.\ Coordinate Transformation [1.25 marks]}
+See \S1.4 for the full comparison table.
+
+\subsection*{(b) --- Magnify Pentagon ARTHE $\times2$ Keeping $E(1,6)$ Fixed [3.5 marks]}
+Formula: $P'=E+2(P-E)$.
+\begin{solutionbox}
+\begin{center}
+\begin{tabular}{lccc}
+\toprule
+Point & $(x-1,y-6)$ & $\times2$ & $+E(1,6)$ \\
+\midrule
+$A(-4,3)$ & $(-5,-3)$ & $(-10,-6)$ & $(-9,\ 0)$ \\
+$R(-2,-5)$ & $(-3,-11)$ & $(-6,-22)$ & $(-5,\ -16)$ \\
+$T(2,-3)$ & $(1,-9)$ & $(2,-18)$ & $(3,\ -12)$ \\
+$H(7,0)$ & $(6,-6)$ & $(12,-12)$ & $(13,\ -6)$ \\
+$E(1,6)$ & --- & --- & fixed: $(1,\ 6)$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+\end{solutionbox}
+
+\subsection*{(c) --- $60°$ Rotation About $E(-1,-1)$ [4 marks]}
+$\cos60°=0.5,\ \sin60°=0.86603$. Formula (\S1.3): $x'=f_x+(x-f_x)\cos\theta-(y-f_y)\sin\theta,\ y'=f_y+(x-f_x)\sin\theta+(y-f_y)\cos\theta$.
+\begin{solutionbox}
+\begin{center}
+\begin{tabular}{lccc}
+\toprule
+Point & $(x-(-1),y-(-1))$ & rotate $60°$ (relative) & $+E(-1,-1)$ \\
+\midrule
+$A(1,1)$ & $(2,2)$ & $(-0.7321,\ 2.7321)$ & $(-1.7321,\ 1.7321)$ \\
+$B(1,2)$ & $(2,3)$ & $(-1.5981,\ 3.2321)$ & $(-2.5981,\ 2.2321)$ \\
+$C(2,2)$ & $(3,3)$ & $(-1.0981,\ 4.0981)$ & $(-2.0981,\ 3.0981)$ \\
+$D(2,1)$ & $(3,2)$ & $(-0.2321,\ 3.5981)$ & $(-1.2321,\ 2.5981)$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+\end{solutionbox}
+
+%=====================================================================
+\section{Examination 2020 --- Q4(a--c), plus related Q5(d) \& Q6(a) (Group-A / Group-B)}
+%=====================================================================
+\begin{solutionbox}
+\textbf{Question breakdown:}
+\begin{enumerate}[noitemsep]
+  \item[Q4(a)] Perform a $90°$ rotation of rectangle $A(1,1), B(1,2), C(2,2), D(2,1)$ about the point $B(-1,-1)$. (4.25)
+  \item[Q4(b)] Magnify the triangle $A(1,1), B(2,1), C(2,2)$ to twice its size while keeping $B(2,1)$ fixed. (3.5)
+  \item[Q4(c)] Show 8-way symmetry of a circle. (1) --- \emph{Ch3 topic, already solved in \href{run:./Chapter3_Solutions.pdf}{Chapter3\_Solutions.pdf}; cross-referenced only.}
+  \item[Q5(d)] Differentiate between the geometric and coordinate transformation. (part of Q5, Group-B)
+  \item[Q6(a)] While capturing/displaying images, monitor sizes vary. What kind of coordinate system is required and why? (part of Q6, Group-B)
+\end{enumerate}
+\end{solutionbox}
+
+\subsection*{Q4(a) --- $90°$ Rotation About $B(-1,-1)$ [4.25 marks]}
+\textbf{Note:} this fixed point is named "$B$" in the question text but is a different point from the rectangle's own vertex $B(1,2)$ --- treat it as an independently-given pivot, exactly like $E$ in the 2021 paper. $\cos90°=0,\ \sin90°=1\Rightarrow x'=f_x-(y-f_y),\ y'=f_y+(x-f_x)$.
+\begin{solutionbox}
+\begin{center}
+\begin{tabular}{lccc}
+\toprule
+Point & $(x-(-1),y-(-1))$ & rotate $90°$ (relative) & $+(-1,-1)$ \\
+\midrule
+$A(1,1)$ & $(2,2)$ & $(-2,\ 2)$ & $(-3,\ 1)$ \\
+$B(1,2)$ & $(2,3)$ & $(-3,\ 2)$ & $(-4,\ 1)$ \\
+$C(2,2)$ & $(3,3)$ & $(-3,\ 3)$ & $(-4,\ 2)$ \\
+$D(2,1)$ & $(3,2)$ & $(-2,\ 3)$ & $(-3,\ 2)$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+\end{solutionbox}
+
+\subsection*{Q4(b) --- Magnify Triangle $\times2$ Keeping $B(2,1)$ Fixed [3.5 marks]}
+Formula: $P'=B+2(P-B)$.
+\begin{answerbox}
+$$A(1,1)\to (2,1)+2(-1,0)=(0,\ 1) \qquad B(2,1)\to\text{fixed: }(2,\ 1) \qquad C(2,2)\to (2,1)+2(0,1)=(2,\ 3)$$
+\end{answerbox}
+
+\subsection*{Q4(c) --- 8-Way Symmetry [1 mark]}
+See \href{run:./Chapter3_Solutions.pdf}{Chapter3\_Solutions.pdf} §1.2/§3 --- one octant point $(x,y)$ mirrors to 7 others.
+
+\subsection*{Q5(d) --- Geometric vs.\ Coordinate Transformation [related]}
+Same answer as 2021(a) --- see \S1.4.
+
+\subsection*{Q6(a) --- Coordinate System Rationale [related]}
+Same answer as 2022(a)/2023(a) --- see \S1.5.
+
+%=====================================================================
+\section{Quick Summary --- Exam Patterns for Chapter 4}
+%=====================================================================
+
+\begin{center}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{p{5cm}|p{2.7cm}|p{6.3cm}}
+\toprule
+\textbf{Pattern} & \textbf{Years} & \textbf{Method to memorise} \\
+\midrule
+Rotate points/polygon by $\theta$, about origin \emph{and} about an arbitrary fixed point & 2020, 2021, 2022, 2023, 2024 & Origin: $x'=x\cos\theta-y\sin\theta,\ y'=x\sin\theta+y\cos\theta$. Arbitrary point $F$: subtract $F$, rotate, add $F$ back \\
+Magnify/scale a polygon keeping one named vertex fixed & 2020, 2021, 2022, 2023 & $P'=F+s(P-F)$ for every vertex; the fixed vertex itself is unchanged \\
+Coordinate-system rationale (why device-independent coords) & 2020, 2022, 2023 & One-line answer: normalized coords decouple the picture from any one device's resolution; a separate workstation transform maps to the real device \\
+Geometric vs.\ Coordinate transformation (definitional) & 2020, 2021 & Object moves (geometric) vs.\ axes move (coordinate) --- same matrix, opposite thing is "held still" \\
+Figure-based transform ID + translation + shear + composite-rotation steps (2024 "extras") & 2024 only & Read orientation cues (flipped how?) for reflections; translation is a direct coordinate subtraction; shear multiplies one axis by the other's value \\
+3D scaling (bundled into this Q3/Q4 slot in 2023) & 2023 & Same per-axis scale rule extended to $z$: $(s_xx,s_yy,s_zz)$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{notesbox}
+\textbf{Exam-day strategy for the 2D Transformations cluster:} every numeric sub-part reduces to the same 3-step "translate--transform--translate back" recipe (\S1.3) --- memorise that recipe once and it covers rotation, scaling, and (per 2024) rotating an arbitrary line about a point. The 1-mark theory sub-parts (coordinate-system rationale, geometric vs.\ coordinate transformation) are free points if the one-paragraph distinctions in \S1.4/\S1.5 are memorised --- don't skip them chasing only the numeric marks.
+\end{notesbox}
+
+\end{document}

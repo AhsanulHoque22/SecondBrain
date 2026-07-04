@@ -178,6 +178,8 @@
   },
   "active": "3c4b25164d05238d",
   "lastOpenFiles": [
+    "CLAUDE.md.tmp.4482.f88125d1b4c4",
+    "skills-lock.json",
     "scripts/data/recall_due.md",
     "00_Dashboard.md",
     "03_Daily_Logs/2026-06-03.md.tmp.129265.3f22e9d4aa36",
@@ -193,7 +195,6 @@
     "scripts/data/protocols/recall_gaps.md",
     "scripts/data/protocols/recall_gaps.md.tmp.73759.530c7c680fe8",
     "scripts/data/protocols/active_recall.md",
-    "scripts/data/protocols/active_recall.md.tmp.73759.0847dd9283e4",
     "scripts/data/protocols/wiki_ingest.md",
     "scripts/data/protocols/block_study_guide.md",
     "scripts/data/protocols/quiz_mode.md",

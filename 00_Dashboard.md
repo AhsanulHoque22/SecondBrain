@@ -4,9 +4,9 @@
 
 ## Right now
 - **Active exam:** 🎯 CSE 715 — Computer Graphics — **Wed 8 Jul 2026, 10:30 AM**
-- **Days left:** 4
-- **Phase:** ✅ Reset complete (2026-07-04, 2 days late). Syllabus mapped to Schaum's Outline chapters, 5-year past papers (2020–2024) analysed, 40 topics ranked by yield in [[02_Courses/CSE715_Graphics/_Syllabus|_Syllabus]]. **Only 2 core-learning days left** (today + tomorrow) before Mon/Tue lockdown to pure revision — TIER 1 (8 topics, every year) + TIER 2 (6 topics) is the realistic target.
-- **Single most important thing:** Start TIER 1 topics now — Cohen-Sutherland clipping, normalization transform, rotation/scaling, cavalier/cabinet projection, Z-buffer, image crop math. Say "starting block 1" to get the study guide.
+- **Days left:** 3
+- **Phase:** 📖 Core learning, day 2 of 2. 07-04 recovered well: Ch2/3/4 question analysis + solutions + wiki ingest done, 16 topics now 📖 (recall set for Mon 07-06). 5 of 8 TIER 1 topics still 🔲 (Ch5 clipping/normalization, Ch7 projections, Ch10 Z-buffer) — **today (07-05) is the last core-learning day** before Mon/Tue lock to pure revision.
+- **Single most important thing:** Close out TIER 1 today — Cohen-Sutherland clipping, normalization transform, cavalier/cabinet projection, perspective vs parallel, Z-buffer. Say "starting block 1" to get the study guide.
 - **After CSE719:** Exam sat 07-01. Topics roll into normal spaced-recall rotation — no longer a special tracked risk.
 - **Next exam after this:** CSE 700 — Thesis — Wed 15 Jul 2026
 - **⚠️ Rule:** Google Calendar is the ONLY source of truth for daily plans. Never use the overnight rollover log for scheduling.
@@ -43,7 +43,7 @@ Prayers structure the day — each gap is a study block:
 | [[02_Courses/CSE717_InfoSec/_Topics\|InfoSec (717)]] | ✅ 14 topics ranked | 11✅ · 3📖 · 0🔲 | – | pending |
 | [[02_Courses/CSE711_Compiler/_Topics\|Compiler (711)]] | ✅ EXAM DONE (8 topics, 8yr past papers) | sat 24 Jun | – | – |
 | [[02_Courses/CSE719_Distributed/_Topics\|Distributed (719)]] | ✅ EXAM SAT 07-01 (14 topics ranked) | 11📖 (spine + MapReduce + Cloud, all wiki+solutions done 06-30) · 3🔲 (tail, cut) | solutions PDFs all 10 lectures | outcome unconfirmed |
-| [[02_Courses/CSE715_Graphics/_Topics\|Graphics (715)]] | ✅ 40 topics ranked (5yr PYQ 2020-24) | 0✅ · 6📖 (Ch2 done) · 34🔲 | Ch2 solved (Chapter2_Solutions.pdf) | pending recall |
+| [[02_Courses/CSE715_Graphics/_Topics\|Graphics (715)]] | ✅ 49 topics ranked (5yr PYQ 2020-24) | 0✅ · 16📖 (Ch2/3/4 done) · 33🔲 | Ch2/3/4 solved (Chapter2/3/4_Solutions.pdf) | pending recall |
 | [[02_Courses/CSE700_Thesis/README\|Thesis (700)]] | – | – | – | – |
 
 ## Navigation

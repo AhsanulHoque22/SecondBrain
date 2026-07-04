@@ -1,8 +1,9 @@
 {
   "topics": [
-    "🚨 CSE715 Graphics has ZERO materials — no PDFs/slides/syllabus/past papers in 02_Courses/CSE715_Graphics/, no _Topics.md, no wiki. The Weekly Engine 'exam Wednesday afternoon' reset (skim syllabus, pull past papers, rank topics by yield) did NOT happen on 07-01 despite the exam being sat and the daily log's post-exam checklist calling for it. This blocks all core learning for Window 5 (exam Wed 8 Jul) — only 6 days of runway left and none of it can start until materials are dropped in and ranked.",
-    "CSE719 Distributed & Cloud exam was sat today (07-01, 10:30 AM) per schedule. End-of-day log was left blank again (3rd time in a row: 06-28, 06-29, 06-30 pattern continues into 07-01) — no confirmation of how the exam went or whether the post-exam reset tasks were done."
+    "CSE715 TIER 1 not yet started (5 of 8): Cohen-Sutherland clipping + normalization transform (Ch5), Cavalier/Cabinet projection + perspective-vs-parallel (Ch7), Z-Buffer trace (Ch10). Tomorrow (07-05) is the LAST core-learning day before Mon/Tue lockdown to pure revision — these 5 must be question-analysed + wiki-ingested tomorrow or they get zero coverage before the exam.",
+    "20-item AI/InfoSec recall backlog still not cleared — due again 2026-07-05 (see wiki_state.md). Overdue 25-31 days on the AI items.",
+    "CSE719 exam outcome still unconfirmed — 07-01 end-of-day log was left blank and no daily logs exist for 07-03 (gap remains uninvestigated, low priority now that exam is sat and topics are in normal recall rotation)."
   ],
-  "note": "07-01 end-of-day log was never filled in, so there is no confirmed record of: (1) how the CSE719 exam went, (2) whether the CSE715 syllabus/past-paper reset happened, (3) whether Livora/public speaking ran post-exam. Treat CSE715 material upload + topic ranking as tomorrow's (07-02) #1 blocking priority — Window 5 has only 6 days and hasn't started. The prior CSE719 recall/coverage items are resolved (exam sat) and dropped from carry-forward; CSE719 topics remain in the normal spaced-recall rotation going forward, not as a special carry-forward risk.",
-  "last_updated": "2026-07-01"
+  "note": "07-04 recovered well: Ch2/Ch3/Ch4 question analysis + solutions PDFs + wiki ingest completed for 16 topics (all reached 📖, Next Recall set to 2026-07-06). But EOD log field was left blank again despite real work happening — verify via git log/_Topics.md diffs, not the log narrative, per standing pattern. Tomorrow's #1 priority: finish the remaining 5 TIER1 topics (Ch5/Ch7/Ch10) since Monday locks to revision-only.",
+  "last_updated": "2026-07-04"
 }

@@ -46,12 +46,18 @@
 - 2021 Q6c — same structure, different geometry
 - 2020 — (Painter's/Z-buffer style question embedded in Group-B Q6, general HSR)
 
-**Image crop / sub-image coordinates**
-- 2024 Q2b — crop 128×128 from center of 512×512
-- 2023 Q1b — crop 786×660 from center of 1200×1200
-- 2022 Q1b — resize 1680×1050 → 1024 wide, keep aspect
-- 2021 Q1e — crop 700×700 from center of 900×800 (upper-right corner)
-- 2020 Q2c — crop 700×700 from center of 900×800 (upper-right corner)
+**Image crop / sub-image coordinates** — ✅ verified against full source text 2026-07-04
+- 2024 Q2b — crop 128×128 from center of 512×512 → upper-left corner = ((512-128)/2, (512-128)/2) = (192,192)
+- 2023 Q1b — crop 786×660 from center of 1200×1200 → lower-left = (207,270), upper-right = (993,930)
+- 2021 Q1e — crop 700×700 from center of 900×800 → lower-left = (100,50), upper-right = (800,750)
+- 2020 Q2c — crop 700×700 from center of 900×800 (same as 2021 Q1e — recurring exact setup)
+
+**Aspect ratio / resize distortion** — ✅ verified, merged with image-crop cluster (same Q1)
+- 2022 Q1b — resize 1680×1050 → 1024 wide, same AR → height = 1024×1050/1680 = 640
+- 2022 Q1e — 5×3.5in image at 3.5×4in, no distortion? AR 5/3.5=1.4286 vs 3.5/4=0.875 → distortion occurs, answer NO
+- 2021 Q1d — resize 1024×675 onto 800×527 and 1800×1100 devices → AR 1024/675=1.517 vs 800/527=1.518 (negligible, ~no distortion) vs 1800/1100=1.636 (noticeably distorted)
+- 2020 Q1b — 5×3.5in at 3.5×4in, same check as 2022 Q1e → distortion occurs
+- 2020 Q1d — height=2in, AR=1.5 → width = 1.5×2 = 3in
 
 ## TIER 2
 
@@ -73,11 +79,19 @@
 - 2021 Q6a — P1(1,3,1),P2(3,6,-11),P3(2,6,-5), C(0,0,7)
 - 2020 Q8c — P1(1,2,0),P2(3,6,20),P3(2,4,10), C(0,0,-10)
 
-**Direct coding + lookup table bit math**
-- 2024 Q2c — 10-bit grayscale LUT entries
-- 2022 Q1c,d — 2-byte LUT bits; direct coding CMY (3+3+4 bits)
-- 2021 Q1b,c — 24-bit LUT (2-byte pixel); direct coding RGB 12 bits/color
-- 2020 Q2b — direct coding RGB 10 bits/color
+**Direct coding + lookup table bit math** — ✅ verified against full source text 2026-07-04
+- 2024 Q2c — 10-bit grayscale pixel values in LUT → entries required = 2¹⁰ = 1024
+- 2022 Q1c — 2-byte pixel in LUT → bits occupied = 2¹⁶×24 = 1,572,864 bits (196,608 bytes)
+- 2022 Q1d — direct coding CMY: 3 bits cyan, 3 bits magenta, 4 bits yellow → colors = 2³×2³×2⁴ = 1024
+- 2021 Q1b — 2-byte pixel in 24-bit LUT → bits occupied = 2¹⁶×24 = 1,572,864 bits
+- 2021 Q1c — direct coding RGB, 12 bits/primary → colors = 2¹²×2¹²×2¹² = 2³⁶ = 68,719,476,736
+- 2020 Q2b — direct coding RGB, 10 bits/primary → colors = 2¹⁰×2¹⁰×2¹⁰ = 1,073,741,824
+
+**RGB/CMY color model + subtractive color + perceptual terms** — new subtopic, split out from Direct Coding 2026-07-04
+- 2024 Q2a — color model concept: why RGB (additive/display) and CMY (subtractive/print) both used
+- 2023 Q1g — name 3 perceptual color terms + physical properties (Hue↔wavelength, Saturation↔purity, Brightness↔intensity)
+- 2022 Q1f — why color printers use subtractive model (pigments absorb/reflect light vs. displays emit light)
+- 2020 Q2a — define subtractive color model + example; why color printers use separate black (K) ink (cost + hard to mix true black from CMY)
 
 **Ray–sphere intersection**
 - 2023 Q8c — S1 r=8 at (2,4,1), S2 r=10 at (10,-2,-5); ray s=2I+5K, d=I-2J
@@ -92,14 +106,13 @@
 - 2021 Q4b — SH clipping abcdefghijkl vs MNOP, order: left PM, bottom PO
 
 ## TIER 3 (brief refs — lower priority, drill only after Tier 1–2 solid)
-- **CG vs Image Processing/HCI:** 2023 Q1a, 2022 Q1a, 2021 Q1a, 2020 Q1a
+- **CG vs Image Processing/HCI:** 2023 Q1a — differentiate CG from image processing (1 mark); 2022 Q1a — CG vs image processing/HCI (both distinctions); 2021 Q1a — how does image processing differ from CG; 2020 Q1a — which discipline describes producing/synthesizing digital images (justify: CG = object definition → image; image processing = image → image, pixel-based)
 - **Antialiasing/slanted lines:** 2023 Q1c(implicit), 2022 Q2c, 2021 Q1d(color capture context)
 - **Geometric vs Coordinate transform:** 2022 (Q3a-equiv), 2021 Q3a, 2020 Q5d
 - **RGB scanline interpolation:** 2022 Q7c, 2021 Q7c, 2020 (Q7d-equiv 2021 paper)
 - **Ray vs Vector:** 2022 Q8a, 2021 Q8c, 2020 Q7c(2021 paper actually — cross-check when drilling)
 - **Ray equation point-finding:** 2022 Q8c, 2021 Q8b
 - **Convex/concave polygon ID:** 2022 Q4c, 2021 Q4c, 2020 (Q6c 2021 paper)
-- **Aspect ratio/resize distortion:** 2023 (Q1 context), 2022 Q1b, 2021 Q1d, 2020 Q1d
 - **Midpoint circle + 8-way symmetry:** 2023 Q2b, 2022 Q2a,b, 2020 Q4c
 
 ## TIER 4 (one appearance each — learn the method fast, don't over-invest)

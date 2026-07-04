@@ -219,6 +219,25 @@ Check `02_Courses/[active course]/wiki/` for:
 
 ---
 
+## Obsidian Skills — standing rule
+
+This vault is an Obsidian vault (`.obsidian/` config present). 5 skills from
+`kepano/obsidian-skills` are installed globally at `~/.claude/skills/`. Invoke
+them automatically — never wait for the user to ask:
+
+| Task | Skill |
+|---|---|
+| Editing/creating any `.md` file (wikilinks, callouts, frontmatter, embeds, tags) | `obsidian-markdown` |
+| Creating/editing `.canvas` files | `json-canvas` |
+| Creating/editing `.base` files (database-like views) | `obsidian-bases` |
+| Interacting with the *running* Obsidian app (vault search, reload plugins, run JS, screenshots) | `obsidian-cli` |
+| Reading an external web page/article/doc (not a `.md` URL) | `defuddle` (instead of WebFetch) |
+
+Since virtually every file this mentor creates or edits is a `.md` file in this
+vault, `obsidian-markdown` in particular should be treated as the default for
+wikilink/callout/frontmatter syntax questions — don't hand-roll that syntax
+from memory when the skill is available.
+
 ## Learning method rules
 - **Past-papers first.** Find the pattern before studying anything.
 - **Active recall over re-reading.** After any topic: close notes, explain it back.

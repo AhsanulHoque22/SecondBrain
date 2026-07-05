@@ -54,11 +54,12 @@
 - 2021 Q5a — distinguish perspective/parallel; who uses which [1.5]
 - 2020 Q8a — distinguish; who uses which (architects/engineers) [3]
 
-**Z-Buffer algorithm**
-- 2024 Q7d — illustrate Z-buffer, advantages/disadvantages
-- 2022 Q6c — max objects representable; 2×2 pixel trace for objects A,B
-- 2021 Q6c — same structure, different geometry
-- 2020 — (Painter's/Z-buffer style question embedded in Group-B Q6, general HSR)
+**Z-Buffer algorithm** — ✅ verified against raw scanned papers 2026-07-06, full solutions in [[ZBuffer_Solutions.pdf]]. **Correction:** 2020 has no Z-buffer question at all (that year's Ch10 content is only "point-obscures-point via viewpoint," Q8c, tracked separately); full numeric trace is 2021/2022 only.
+- 2024 Q7d — illustrate Z-buffer, advantages/disadvantages [2]
+- 2023 Q7d — differentiate Painter's algorithm vs Z-buffer [2] (lighter touch, no numeric trace)
+- 2022 Q6c — max objects representable (answer: unlimited/arbitrary — memory is per-pixel not per-object); 2×2 pixel trace for objects A,B [4.5]
+- 2021 Q6d — same structure, different geometry [4.75] *(topic map previously said "Q6c" — actual letter is Q6d, confirmed against scan)*
+- 2020 — none (see correction above)
 
 **Image crop / sub-image coordinates** — ✅ verified against full source text 2026-07-04
 - 2024 Q2b — crop 128×128 from center of 512×512 → upper-left corner = ((512-128)/2, (512-128)/2) = (192,192)
@@ -134,7 +135,7 @@
 Tilting: ✅ verified 2026-07-05, solved in [[Chapter6_Solutions.pdf]] — **2022 Q5c only** (3.5 marks: "Define tilting as a rotation about the x-axis followed by a rotation about the y-axis. Find the tilting matrix; does order matter?"). *(Previous entry said "2022 (Q3c-equiv), 2021 Q5c/6c-area" — wrong; re-read all pages of the 2021 paper directly and confirmed no tilting question exists that year. Corrected to 1/5, not 2/5.)* · Monitor matrix M: 2023 Q7a, 2021 Q7a · Isometric/Dimetric/Trimetric: ✅ verified 2026-07-05, solved in [[Chapter7_Solutions.pdf]] — 2023 Q1i (differentiate), 2020 Q8b (draw diagrams) · Foreshortening/vanishing point: ✅ verified 2026-07-05, solved in [[Chapter7_Solutions.pdf]] — 2021 Q5c, 2020 Q6d · Phong model: 2022 Q6d, 2023 (image-based Q) · **Flood/boundary fill: 2023 Q2(c) hexagon [3], 2020 Q2(d) arrow [2.5] — ✅ verified 2026-07-04, solved in [[Chapter3_Solutions.pdf]] (both are "will 8-connected fill leak on diagonal edges" reasoning questions)** · Point left/right test: 2022 Q7a, 2021 Q7a — lives in Q7/Ch11 cluster, not Ch3
 
 ## TIER 5 (2024-only or syllabus-mandated zero-yield)
-Halftoning+dither: 2024 Q2d, Q3a,b · Circular clipping: 2024 Q5c — answered as Related bundle in [[Chapter5_Solutions.pdf]] (center (10,10) r=6, chord intersects circle at ≈(4.04,10.73) and ≈(7.64,15.51)) · Trapezoid fill: 2024 Q7b,c,e · Axonometric: 2024 Q6c — ✅ verified 2026-07-05, solved in [[Chapter7_Solutions.pdf]] (plus Q6d cabinet properties [1], Q8a orthographic top/front/side multiview [3], bundled in same doc) · 3D scaling: 2023 Q3c — A(3,0,3),B(3,3,6),C(3,0,1),D(0,0,0) scaled (3,2,3) on X,Y,Z → A'(9,0,9),B'(9,6,18),C'(9,0,3),D'(0,0,0); solved in [[Chapter4_Solutions.pdf]] and [[Chapter6_Solutions.pdf]] · Painter's vs Z-buffer: 2023 Q7d · Perspective anomalies: 2023 Q4c — ✅ verified 2026-07-05, solved in [[Chapter7_Solutions.pdf]] (foreshortening, vanishing points, view confusion, topological distortion) · Orthographic vs Oblique: 2023 Q4b — ✅ verified 2026-07-05, solved in [[Chapter7_Solutions.pdf]] · Back-face/visible surface: 2024 Q1c, Q7a · Color gamut: 2022 Q8b · **Bezier/B-spline/Hermite: no PYQ hit 2020–2024**
+Halftoning+dither: 2024 Q2d, Q3a,b · Circular clipping: 2024 Q5c — answered as Related bundle in [[Chapter5_Solutions.pdf]] (center (10,10) r=6, chord intersects circle at ≈(4.04,10.73) and ≈(7.64,15.51)) · Trapezoid fill: 2024 Q7b,c,e · Axonometric: 2024 Q6c — ✅ verified 2026-07-05, solved in [[Chapter7_Solutions.pdf]] (plus Q6d cabinet properties [1], Q8a orthographic top/front/side multiview [3], bundled in same doc) · 3D scaling: 2023 Q3c — A(3,0,3),B(3,3,6),C(3,0,1),D(0,0,0) scaled (3,2,3) on X,Y,Z → A'(9,0,9),B'(9,6,18),C'(9,0,3),D'(0,0,0); solved in [[Chapter4_Solutions.pdf]] and [[Chapter6_Solutions.pdf]] · Painter's vs Z-buffer: 2023 Q7d · Perspective anomalies: 2023 Q4c — ✅ verified 2026-07-05, solved in [[Chapter7_Solutions.pdf]] (foreshortening, vanishing points, view confusion, topological distortion) · Orthographic vs Oblique: 2023 Q4b — ✅ verified 2026-07-05, solved in [[Chapter7_Solutions.pdf]] · Back-face/visible surface: 2024 Q1c, Q7a · Color gamut: 2022 Q8b · **Bezier/B-spline/Hermite: no PYQ hit 2020–2024 (re-confirmed 2026-07-06)** — syllabus-mandated theory + solved exercises (no past-paper questions to solve) in [[Chapter9_Solutions.pdf]]
 
 ## Note on accuracy
 This map was built from scanned/handwritten past papers read in one pass — Tier 3–5 year attributions may have minor mix-ups between adjacent years since several questions repeat near-identically. Re-verify the specific year during block study if it matters for your prep; the topic identification itself is solid.

@@ -8,3 +8,5 @@
 - [[wiki/2d-viewing-clipping|2D Viewing and Clipping (Ch5)]] — normalization/window-viewport transform, Cohen-Sutherland region codes, Sutherland-Hodgman/Weiler-Atherton polygon clipping, convex/concave
 - [[wiki/3d-transformations|3D Transformations (Ch6)]] — translation/scaling/rotation about x/y/z, tilting, arbitrary-axis rotation, mirror reflection
 - [[wiki/mathematics-of-projection|Mathematics of Projection (Ch7)]] — perspective/parallel projection, cavalier/cabinet, isometric/dimetric/trimetric, perspective anomalies
+- [[wiki/bezier-bspline-hermite|Bezier/B-Spline/Hermite Curves (Ch9)]] — 0/5 PYQ, syllabus-mandated theory only
+- [[wiki/z-buffer|Z-Buffer Algorithm (Ch10)]] — max objects representable, 2×2 pixel trace, vs Painter's algorithm

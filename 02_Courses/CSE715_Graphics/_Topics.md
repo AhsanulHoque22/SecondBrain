@@ -13,7 +13,7 @@ Status: 🔲 not started · 📖 learning · 🔁 needs recall · ✅ can explai
 | Perspective vs Parallel projection | 📖 | — | 2026-07-05 | 2026-07-07 | 3/5 · 1–4 marks | Who uses which (architects/engineers). **Correction:** exact classic phrasing only 2020 Q8a/2021 Q5a/2022 Q5a (topic map previously mis-numbered these as "Q6b"); 2023/2024 ask differently-shaped projection-choice questions instead. Solved in [[Chapter7_Solutions.pdf]]. |
 | ↳ General parallel/perspective projection derivation (homogeneous coords) | 📖 | — | 2026-07-05 | 2026-07-07 | 1/5 · 2–3 marks | 2023-only, new subtopic split out 2026-07-05. Q5c derives Par_V for direction aI+bJ+cK; Q8b derives Per_K via homogeneous coordinates. Solved in [[Chapter7_Solutions.pdf]]. |
 | ↳ Orthographic multiview (top/front/side) drawing | 🔲 | — | — | — | 1/5 · 3 marks | 2024-only, new subtopic split out 2026-07-05. Draw 3 views of a stepped block, hidden edges dashed. Method covered in [[Chapter7_Solutions.pdf]] (figure-only, no numeric answer). |
-| Z-Buffer algorithm | 🔲 | — | — | — | 5/5 · 4.5–4.75 marks | Max objects representable + 2×2 pixel trace |
+| Z-Buffer algorithm | 📖 | — | 2026-07-06 | 2026-07-08 | 4/5 · 2–4.75 marks | Max objects representable (unlimited/arbitrary) + 2×2 pixel trace. **Correction:** re-verified 2026-07-06 — full numeric trace only 2021/2022; 2023 is "differentiate vs Painter's" only, 2024 is "illustrate+pros/cons" only; 2020 has none at all (not 5/5 as previously tracked). Solved in [[ZBuffer_Solutions.pdf]]. |
 | Image crop / sub-image coordinates | 📖 | — | 2026-07-04 | 2026-07-06 | 5/5 · 1.5–3 marks | Center-crop AND corner-crop variants. Question analysis + [[Chapter2_Solutions.pdf]] done — all 5 years solved. Needs active recall to reach ✅. |
 | ↳ RGB/CMY color model + subtractive color + perceptual terms | 📖 | — | 2026-07-04 | 2026-07-06 | 3/5 · 1–3 marks | RGB↔CMY conversion formula; why printers use K (black) ink; Hue/Saturation/Brightness↔wavelength/purity/intensity. Solved in [[Chapter2_Solutions.pdf]]. |
 | ↳ Image file format (header/data, RLE compression) | 🔲 | — | — | — | 0/5 PYQ | Schaum's §2.6 — no past-paper hit, low priority |
@@ -54,7 +54,7 @@ Status: 🔲 not started · 📖 learning · 🔁 needs recall · ✅ can explai
 | Orthographic vs Oblique projection | 📖 | — | 2026-07-05 | 2026-07-07 | 1/5 · 1 mark | Differentiate. Solved in [[Chapter7_Solutions.pdf]]. |
 | Back-face / visible-surface definitions | 🔲 | — | — | — | 1/5 · 2 marks | Define with example |
 | Color gamut of a monitor | 🔲 | — | — | — | 1/5 · 1 mark | Short explain |
-| Bezier / B-spline / Hermite curves | 🔲 | — | — | — | 0/5 PYQ, syllabus-mandated | See [[_Syllabus]] conflict note — deprioritized to last given time crunch |
+| Bezier / B-spline / Hermite curves | 📖 | — | 2026-07-06 | — | 0/5 PYQ, syllabus-mandated | See [[_Syllabus]] conflict note — deprioritized to last given time crunch. Theory + solved exercises (syllabus.txt scope only, no past-paper questions exist) in [[Chapter9_Solutions.pdf]]. Stretch-goal only — do not prioritize over TIER1/2 topics before the exam. |
 | Octree/Quadtree/BST-tree/Fractal Geometry (Hearn&Baker) | 🔲 | — | — | — | 0/5 PYQ, syllabus-mandated | p.359 Octrees + named pages; no-PYQ, deprioritized |
 
 ## Column guide

@@ -34,7 +34,7 @@ Status: 🔲 not started · 📖 learning · 🔁 needs recall · ✅ can explai
 | Convex/concave polygon identification | 📖 | — | 2026-07-05 | 2026-07-07 | 3/5 · 1.5–2 marks | Justify from shape — check every interior angle <180° or find a reflex vertex. Solved alongside Ch5 in [[Chapter5_Solutions.pdf]] (2020 Q6c, 2021 Q4c, 2022 Q7b). |
 | Aspect ratio / resize distortion | 📖 | — | 2026-07-04 | 2026-07-06 | 4/5 · 1–2 marks | Compute resized dims; geometric distortion check. Solved in [[Chapter2_Solutions.pdf]]. |
 | Midpoint circle algorithm + 8-way symmetry | 📖 | — | 2026-07-04 | 2026-07-06 | 3/5 · 1.5–4 marks | Raster locations for given radius/center — full octant-trace method verified. Solved in [[Chapter3_Solutions.pdf]]. |
-| Tilting (3D composite rotation, x then y) | 🔲 | — | — | — | 2/5 · 3–3.5 marks | Derive matrix; does order matter? |
+| Tilting (3D composite rotation, x then y) | 📖 | — | 2026-07-05 | 2026-07-07 | 1/5 · 3.5 marks | Derive matrix; does order matter? **Correction:** re-verified against all 5 raw scanned papers 2026-07-05 — only appears 2022 Q5c, not 2021 as previously tracked. Solved in [[Chapter6_Solutions.pdf]]. |
 | Monitor color transformation matrix M | 🔲 | — | — | — | 2/5 · 3 marks | Given chromaticity + white point (D65) |
 | Isometric/Dimetric/Trimetric projection | 🔲 | — | — | — | 2/5 · 2.25–4 marks | Draw/differentiate |
 | Perspective foreshortening + vanishing point | 🔲 | — | — | — | 2/5 · 1.75–2 marks | Explain with diagram |
@@ -46,7 +46,7 @@ Status: 🔲 not started · 📖 learning · 🔁 needs recall · ✅ can explai
 | Circular clipping window | 🔲 | — | — | — | 1/5 · 3 marks | Inside/outside/intersecting + clip. 2024 Q5c answered as Related bundle in [[Chapter5_Solutions.pdf]] (not a full study block yet). |
 | Trapezoid-primitive polygon fill | 🔲 | — | — | — | 1/5 · 1–2 marks each | No textbook resource — 2024 lecture-only topic |
 | Axonometric projection significance | 🔲 | — | — | — | 1/5 · 2 marks | Short explain |
-| 3D scaling application | 🔲 | — | — | — | 1/5 · 4 marks | Apply given scale params to 3D points |
+| 3D scaling application | 📖 | — | 2026-07-05 | 2026-07-07 | 1/5 · 4 marks | Apply given scale params to 3D points. Solved in both [[Chapter4_Solutions.pdf]] and [[Chapter6_Solutions.pdf]] (2023 Q3c: A(3,0,3),B(3,3,6),C(3,0,1),D(0,0,0) scaled ×3,×2,×3). |
 | Painter's algorithm vs Z-buffer | 🔲 | — | — | — | 1/5 · 2 marks | Differentiate |
 | Perspective projection anomalies (4) | 🔲 | — | — | — | 1/5 · 4 marks | List + explain |
 | Orthographic vs Oblique projection | 🔲 | — | — | — | 1/5 · 1 mark | Differentiate |

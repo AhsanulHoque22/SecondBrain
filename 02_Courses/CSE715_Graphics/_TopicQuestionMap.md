@@ -4,18 +4,18 @@
 
 ## TIER 1
 
-**Cohen-Sutherland region codes + line clipping**
-- 2024 Q5b — region codes for P1–P5 vs window (10,30,10,25); is A(5,5)-B(12,20) visible/clip
-- 2023 Q8a — clip (5,5)-(15,10) in window (0,0,10,10)
-- 2022 Q4a — region codes A,B,C,D vs window (2,5,1,9); clip AB, CD
-- 2021 Q4a — region codes M,N,P,Q vs given rectangle; clip MN, PQ
-- 2020 Q6b — region codes A,B,C,D vs window (1,5,1,7); clip AB, CD
+**Cohen-Sutherland region codes + line clipping** — ✅ verified against raw scanned papers 2026-07-05, full solutions in [[Chapter5_Solutions.pdf]]
+- 2024 Q5b — window Xmin=10,Xmax=30,Ymin=10,Ymax=25; region codes for P1(5,5),P2(20,30),P3(35,15),P4(15,8),P5(12,20); A(5,5)-B(12,20) requires clipping → visible portion (10,15.71)-(12,20)
+- 2023 Q8a — clip (5,5)-(15,10) in window Xmin=0,Ymin=0,Xmax=10,Ymax=10 → clipped to (5,5)-(10,7.5)
+- 2022 Q4a — region codes A(6,2),B(3,8),C(-1,2),D(2,4) vs window Xmin=2,Xmax=5,Ymin=1,Ymax=9; clip AB→(5,4)-(3,8); CD clips to single point D (line grazes boundary exactly at D)
+- 2021 Q4a — region codes M(8,11),N(16,7),P(6,8),Q(3,5) vs window from A(4,4),B(14,4),C(14,10),D(4,10) i.e. Xmin=4,Xmax=14,Ymin=4,Ymax=10; clip MN→(10,10)-(14,8); PQ→(4,6)-(6,8)
+- 2020 Q6b — region codes A(6,2),B(3,8),C(-1,2),D(2,4) vs window Xmin=1,Xmax=5,Ymin=1,Ymax=7; clip AB→(5,4)-(3.5,7); CD→(1,3.33)-(2,4)
 
-**Normalization transformation (window→viewport)**
+**Normalization transformation (window→viewport)** — ✅ verified against raw scanned papers 2026-07-05, full solutions in [[Chapter5_Solutions.pdf]]. **Correction:** previous entry had 2021/2022 swapped — re-verified directly against the scans.
 - 2024 Q5a — window(1,1)-(3,5) → (i) full NDC (ii) viewport with corner (vx,vy)
-- 2022 Q4c — window(1,1)-(2,2) → viewport(0,0)-(1/2,1/2)
-- 2021 Q7d — window(1,4)-(3,4), preserve aspect ratio → NDC
-- 2020 Q5a,b — workstation transform (NDC→device 0-199,0-639); window(1,1)-(2,2)→viewport(0,0)-(1/2,1/2)
+- 2022 Q4c — window (scan partly illegible, read as (1,1)-(3,4)), preserve aspect ratio → NDC (only variant with no explicit viewport given)
+- 2021 Q7d — window(1,1)-(2,2) → viewport(0,0)-(1/2,1/2) *(topic map previously said "2022 Q4c" — wrong; this exact question is 2021 Q7d)*
+- 2020 Q5a,b — workstation transform (NDC→device 0-199,0-639); window(1,1)-(2,2)→viewport(0,0)-(1/2,1/2) *(identical numbers to 2021 Q7d, different year)*
 
 **Rotation — derive matrix + apply** — ✅ verified against raw scanned papers 2026-07-04, full solutions in [[Chapter4_Solutions.pdf]]
 - 2024 Q4b — derive CCW rotation matrix from geometry (P(x,y)→P'(x',y'))
@@ -113,11 +113,11 @@
 - 2021 Q8e — same two-sphere setup as 2023
 - 2020 — (ray equation embedded, no explicit sphere in this year's extract)
 
-**Sutherland-Hodgman / Weiler-Atherton polygon clipping**
-- 2024 Q6a — Weiler-Atherton: quad A,B,C,D vs triangle P,Q,R — entry/exit points, CCW order
-- 2023 Q4a — Sutherland-Hodgman: A(1,1),B(4,1),C(4,4),D(1,4) vs window W,X,Y,Z
-- 2022 Q4b — SH clipping steps, given polygon figure
-- 2021 Q4b — SH clipping abcdefghijkl vs MNOP, order: left PM, bottom PO
+**Sutherland-Hodgman / Weiler-Atherton polygon clipping** — ✅ verified 2026-07-05, full solutions in [[Chapter5_Solutions.pdf]]
+- 2024 Q6a — Weiler-Atherton: window ABCD=(1,1),(5,1),(5,4),(1,4) vs triangle P(2,2),Q(4,2),R(3,5) — exit E1(10/3,4), entry E2(8/3,4); clipped CCW: P,Q,E1,E2
+- 2023 Q4a — Sutherland-Hodgman: A(1,1),B(4,1),C(4,4),D(1,4) vs window W(2,2),X(3,2),Y(3,3),Z(2,3) — fully numeric, clipped result = the window itself (2,3),(2,2),(3,2),(3,3)
+- 2022 Q4b — SH clipping steps, given polygon figure P1-P8 (no coordinates in paper — figure/method-only answer)
+- 2021 Q4b — SH clipping abcdefghijkl vs MNOP, order: left PM, bottom PO (no coordinates in paper — figure/method-only answer)
 
 ## TIER 3 (brief refs — lower priority, drill only after Tier 1–2 solid)
 - **CG vs Image Processing/HCI:** 2023 Q1a — differentiate CG from image processing (1 mark); 2022 Q1a — CG vs image processing/HCI (both distinctions); 2021 Q1a — how does image processing differ from CG; 2020 Q1a — which discipline describes producing/synthesizing digital images (justify: CG = object definition → image; image processing = image → image, pixel-based)
@@ -126,14 +126,14 @@
 - **RGB scanline interpolation:** 2022 Q7c, 2021 Q7c, 2020 (Q7d-equiv 2021 paper)
 - **Ray vs Vector:** 2022 Q8a, 2021 Q8c, 2020 Q7c(2021 paper actually — cross-check when drilling)
 - **Ray equation point-finding:** 2022 Q8c, 2021 Q8b
-- **Convex/concave polygon ID:** lives in the Q4/Ch5-Clipping cluster, not Ch3 — 2022 Q4c, 2021 Q4(c) [confirmed: "Identify the convex and concave polygons"], 2020 (Q6c 2021 paper) — will be answered alongside Chapter 5 (Clipping), not Chapter 3
+- **Convex/concave polygon ID:** ✅ verified 2026-07-05, solved in [[Chapter5_Solutions.pdf]] — 2020 Q6c (4 shapes incl. pentagon), 2021 Q4c (3 shapes), 2022 Q7b (draw example diagram, 1 mark) — lives in the Ch5-Clipping cluster, not Ch3
 - **Midpoint circle + 8-way symmetry:** ✅ verified 2026-07-04, solved in [[Chapter3_Solutions.pdf]] — 2023 Q2(b) r=10 center-origin, 3rd-quadrant points [4]; 2022 Q2(a) 8-way symmetry explain [1.5] + Q2(b) r=10 center(50,50) [4]; 2020 Q4(c) show 8-way symmetry [1]
 
 ## TIER 4 (one appearance each — learn the method fast, don't over-invest)
 Tilting: 2022 (Q3c-equiv), 2021 Q5c/6c-area · Monitor matrix M: 2023 Q7a, 2021 Q7a · Isometric/Dimetric/Trimetric: 2023 Q1i, 2020 Q8b · Foreshortening/vanishing point: 2021 Q5c(2021 paper Q5c-equiv), 2020 Q6d · Phong model: 2022 Q6d, 2023 (image-based Q) · **Flood/boundary fill: 2023 Q2(c) hexagon [3], 2020 Q2(d) arrow [2.5] — ✅ verified 2026-07-04, solved in [[Chapter3_Solutions.pdf]] (both are "will 8-connected fill leak on diagonal edges" reasoning questions)** · Point left/right test: 2022 Q7a, 2021 Q7a — lives in Q7/Ch11 cluster, not Ch3
 
 ## TIER 5 (2024-only or syllabus-mandated zero-yield)
-Halftoning+dither: 2024 Q2d, Q3a,b · Circular clipping: 2024 Q5c · Trapezoid fill: 2024 Q7b,c,e · Axonometric: 2024 Q6c · 3D scaling: 2023 Q3c · Painter's vs Z-buffer: 2023 Q7d · Perspective anomalies: 2023 Q4c · Orthographic vs Oblique: 2023 Q4b · Back-face/visible surface: 2024 Q1c, Q7a · Color gamut: 2022 Q8b · **Bezier/B-spline/Hermite: no PYQ hit 2020–2024**
+Halftoning+dither: 2024 Q2d, Q3a,b · Circular clipping: 2024 Q5c — answered as Related bundle in [[Chapter5_Solutions.pdf]] (center (10,10) r=6, chord intersects circle at ≈(4.04,10.73) and ≈(7.64,15.51)) · Trapezoid fill: 2024 Q7b,c,e · Axonometric: 2024 Q6c · 3D scaling: 2023 Q3c · Painter's vs Z-buffer: 2023 Q7d · Perspective anomalies: 2023 Q4c · Orthographic vs Oblique: 2023 Q4b · Back-face/visible surface: 2024 Q1c, Q7a · Color gamut: 2022 Q8b · **Bezier/B-spline/Hermite: no PYQ hit 2020–2024**
 
 ## Note on accuracy
 This map was built from scanned/handwritten past papers read in one pass — Tier 3–5 year attributions may have minor mix-ups between adjacent years since several questions repeat near-identically. Re-verify the specific year during block study if it matters for your prep; the topic identification itself is solid.

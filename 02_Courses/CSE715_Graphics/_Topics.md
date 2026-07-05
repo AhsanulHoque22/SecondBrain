@@ -5,8 +5,8 @@ Status: 🔲 not started · 📖 learning · 🔁 needs recall · ✅ can explai
 
 | Topic | Status | Conf | Last Reviewed | Next Recall | Yield | Notes / weak spots |
 |-------|:------:|:----:|:-------------:|:-----------:|:-----:|--------------------|
-| Cohen-Sutherland region codes + line clipping | 🔲 | — | — | — | 5/5 · 3–4 marks | 4-bit TOP/BOTTOM/RIGHT/LEFT vs rectangle window |
-| Normalization transformation (window→viewport) | 🔲 | — | — | — | 5/5 · 2–3 marks | Derive from window/viewport corners |
+| Cohen-Sutherland region codes + line clipping | 📖 | — | 2026-07-05 | 2026-07-07 | 5/5 · 3–4 marks | 4-bit TOP/BOTTOM/RIGHT/LEFT vs rectangle window. Question analysis + [[Chapter5_Solutions.pdf]] done — all 5 years solved incl. corner-touching CD case (2022). |
+| Normalization transformation (window→viewport) | 📖 | — | 2026-07-05 | 2026-07-07 | 5/5 · 2–3 marks | Derive from window/viewport corners. Solved in [[Chapter5_Solutions.pdf]] — includes 2022's aspect-ratio-preserved variant (only window given) and 2020's workstation-transform variant (NDC→device). |
 | Rotation — derive matrix + apply | 📖 | — | 2026-07-04 | 2026-07-06 | 5/5 · 2–4 marks | Origin AND arbitrary-point variants both asked. Question analysis + [[Chapter4_Solutions.pdf]] done — all 5 years solved. Needs active recall to reach ✅. |
 | Scaling/magnification about a fixed point | 📖 | — | 2026-07-04 | 2026-07-06 | 5/5 · 2–4 marks | Keep a named vertex fixed. 2022 occurrence previously missing from map — now added. Solved in [[Chapter4_Solutions.pdf]]. |
 | Cavalier/Cabinet projection matrices | 🔲 | — | — | — | 5/5 · 2.5–4 marks | tan α=1 (cavalier) vs tan α=0.5 (cabinet); θ varies |
@@ -22,7 +22,7 @@ Status: 🔲 not started · 📖 learning · 🔁 needs recall · ✅ can explai
 | Point-obscures-point visibility via viewpoint | 🔲 | — | — | — | 4/5 · 3 marks | Given 3 points + viewpoint, order by occlusion |
 | Direct coding + lookup table bit math | 📖 | — | 2026-07-04 | 2026-07-06 | 4/5 · 1–2 marks | bits↔colors↔table-size arithmetic. Solved in [[Chapter2_Solutions.pdf]]. |
 | Ray–sphere intersection | 🔲 | — | — | — | 4/5 · 3.5–3.75 marks | Quadratic in t; may involve 2 spheres |
-| Sutherland-Hodgman / Weiler-Atherton polygon clipping | 🔲 | — | — | — | 4/5 · 3–4 marks | 2024 upgraded to Weiler-Atherton — learn both |
+| Sutherland-Hodgman / Weiler-Atherton polygon clipping | 📖 | — | 2026-07-05 | 2026-07-07 | 4/5 · 3–4 marks | 2024 upgraded to Weiler-Atherton — learn both. Solved in [[Chapter5_Solutions.pdf]] — 2023 fully numeric (3×3 square vs 1×1 window), 2024 Weiler-Atherton fully numeric (triangle vs rectangle), 2021/2022 are figure-only (no coordinates given in paper). |
 | CG vs Image Processing/HCI | 📖 | — | 2026-07-04 | 2026-07-06 | 4/5 · 1–3 marks | Short distinguishing answer. Solved in [[Chapter2_Solutions.pdf]]. |
 | Antialiasing / slanted-line dimming | 📖 | — | 2026-07-04 | 2026-07-06 | 3/5 · 1–2 marks | Explain cause (√2 vs 1 unit pixel spacing) + fix (area/super-sampling). Solved in [[Chapter3_Solutions.pdf]]. |
 | Geometric vs Coordinate transformation | 📖 | — | 2026-07-04 | 2026-07-06 | 3/5 · 1–3.5 marks | Definitional distinction. Solved in [[Chapter4_Solutions.pdf]]. |
@@ -31,7 +31,7 @@ Status: 🔲 not started · 📖 learning · 🔁 needs recall · ✅ can explai
 | RGB scanline color interpolation | 🔲 | — | — | — | 3/5 · 1.75–2.5 marks | Linear interpolation given colors at 2 points on a line |
 | Ray vs Vector distinction | 🔲 | — | — | — | 3/5 · 1 mark | "Show a ray is not a vector" |
 | Ray equation r(t)=s+td point-finding | 🔲 | — | — | — | 3/5 · 2.5–3 marks | Plug in t values |
-| Convex/concave polygon identification | 🔲 | — | — | — | 3/5 · 1.5–2 marks | Justify from shape |
+| Convex/concave polygon identification | 📖 | — | 2026-07-05 | 2026-07-07 | 3/5 · 1.5–2 marks | Justify from shape — check every interior angle <180° or find a reflex vertex. Solved alongside Ch5 in [[Chapter5_Solutions.pdf]] (2020 Q6c, 2021 Q4c, 2022 Q7b). |
 | Aspect ratio / resize distortion | 📖 | — | 2026-07-04 | 2026-07-06 | 4/5 · 1–2 marks | Compute resized dims; geometric distortion check. Solved in [[Chapter2_Solutions.pdf]]. |
 | Midpoint circle algorithm + 8-way symmetry | 📖 | — | 2026-07-04 | 2026-07-06 | 3/5 · 1.5–4 marks | Raster locations for given radius/center — full octant-trace method verified. Solved in [[Chapter3_Solutions.pdf]]. |
 | Tilting (3D composite rotation, x then y) | 🔲 | — | — | — | 2/5 · 3–3.5 marks | Derive matrix; does order matter? |
@@ -43,7 +43,7 @@ Status: 🔲 not started · 📖 learning · 🔁 needs recall · ✅ can explai
 | ↳ Scan-line polygon fill algorithm (edge list) | 🔲 | — | — | — | 0/5 PYQ | Schaum's §3.7 — geometric (vertex-based) fill, no past-paper hit, theory only |
 | Point left/right-of-line test | 🔲 | — | — | — | 2/5 · 1 mark | C=(x2-x1)(y-y1)-(y2-y1)(x-x1), interpret sign |
 | Halftoning + dither matrix (D2→D4) | 📖 | — | 2026-07-04 | 2026-07-06 | 1/5 · 2–3 marks | 2024 only, recurrence relation given in-paper. Solved in [[Chapter2_Solutions.pdf]] (Bayer matrix result). |
-| Circular clipping window | 🔲 | — | — | — | 1/5 · 3 marks | Inside/outside/intersecting + clip |
+| Circular clipping window | 🔲 | — | — | — | 1/5 · 3 marks | Inside/outside/intersecting + clip. 2024 Q5c answered as Related bundle in [[Chapter5_Solutions.pdf]] (not a full study block yet). |
 | Trapezoid-primitive polygon fill | 🔲 | — | — | — | 1/5 · 1–2 marks each | No textbook resource — 2024 lecture-only topic |
 | Axonometric projection significance | 🔲 | — | — | — | 1/5 · 2 marks | Short explain |
 | 3D scaling application | 🔲 | — | — | — | 1/5 · 4 marks | Apply given scale params to 3D points |

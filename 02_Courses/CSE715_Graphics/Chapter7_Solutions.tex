@@ -1,0 +1,328 @@
+% CSE 715 — Computer Graphics
+% Chapter 7: Mathematics of Projection — Complete Model Answers (2020–2024)
+% University of Chittagong, 7th Semester B.Sc. Engineering
+% Source: Schaum's Outline of Computer Graphics (Xiang & Plastock), Chapter 7
+%
+% Compile with: pdflatex Chapter7_Solutions.tex (run twice for TOC)
+
+\documentclass[12pt, a4paper]{article}
+
+\usepackage[left=2.5cm, right=2.5cm, top=2.8cm, bottom=2.8cm, headheight=15pt]{geometry}
+\usepackage{amsmath, amssymb}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta, positioning, shapes.geometric, calc, backgrounds, fit}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{xcolor}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{mdframed}
+\usepackage{multicol}
+\usepackage{tabularx}
+\usepackage{multirow}
+\usepackage{hyperref}
+
+%----- Colours -----
+\definecolor{sectionblue}{RGB}{10,60,110}
+\definecolor{boxbg}{RGB}{242,247,255}
+\definecolor{answerbg}{RGB}{240,255,240}
+\definecolor{notesbg}{RGB}{255,250,230}
+\definecolor{keyblue}{RGB}{0,80,160}
+\definecolor{accent}{RGB}{180,40,40}
+
+%----- Box environments -----
+\mdfdefinestyle{solutionframe}{linecolor=sectionblue, backgroundcolor=boxbg, roundcorner=4pt, linewidth=1.4pt, innertopmargin=7pt, innerbottommargin=7pt, innerleftmargin=9pt, innerrightmargin=9pt}
+\mdfdefinestyle{answerframe}{linecolor=green!55!black, backgroundcolor=answerbg, roundcorner=4pt, linewidth=1.4pt, innertopmargin=7pt, innerbottommargin=7pt, innerleftmargin=9pt, innerrightmargin=9pt}
+\mdfdefinestyle{notesframe}{linecolor=orange!70!black, backgroundcolor=notesbg, roundcorner=4pt, linewidth=1pt, innertopmargin=5pt, innerbottommargin=5pt, innerleftmargin=8pt, innerrightmargin=8pt}
+\newenvironment{solutionbox}{\begin{mdframed}[style=solutionframe]}{\end{mdframed}}
+\newenvironment{answerbox}{\begin{mdframed}[style=answerframe]}{\end{mdframed}}
+\newenvironment{notesbox}{\begin{mdframed}[style=notesframe]}{\end{mdframed}}
+
+%----- Page style -----
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{\small\color{sectionblue} CSE 715 --- Chapter 7: Mathematics of Projection}
+\rhead{\small\color{sectionblue} Model Solutions (2020--2024)}
+\cfoot{\small\thepage}
+\renewcommand{\headrulewidth}{0.5pt}
+
+%----- Section formatting -----
+\titleformat{\section}{\Large\bfseries\color{sectionblue}}{}{0em}{}[\vspace{-2pt}\color{sectionblue}\rule{\linewidth}{0.8pt}]
+\titleformat{\subsection}{\large\bfseries\color{sectionblue!85!black}}{}{0em}{}
+\titleformat{\subsubsection}{\normalsize\bfseries\color{black}}{}{0em}{}
+
+%----- Custom list -----
+\newlist{keypoints}{itemize}{1}
+\setlist[keypoints]{label=$\triangleright$, leftmargin=1.5cm, itemsep=2pt, topsep=3pt}
+\newlist{examlist}{enumerate}{1}
+\setlist[examlist]{label=\textbf{(\roman*)}, leftmargin=1.8cm, itemsep=3pt, topsep=4pt}
+
+%=====================================================================
+\begin{document}
+%=====================================================================
+
+\begin{center}
+  {\LARGE\bfseries\color{sectionblue} CSE 715: Computer Graphics}\\[0.6em]
+  {\Large\bfseries Chapter 7 --- Mathematics of Projection}\\[0.3em]
+  {\large Complete Model Answers (2020--2024)}\\[0.2em]
+  {\normalsize University of Chittagong \quad|\quad 7\textsuperscript{th} Semester B.Sc.\ (Engg.) Examination}\\[0.3em]
+  {\small Source: Schaum's Outline of Computer Graphics (Xiang \& Plastock), Chapter 7 --- notation follows the book exactly ($Per_{\mathbf K}$/$Par_{\mathbf V}$ for perspective/parallel matrices, $f,\theta$ for oblique projections, $R_0$/$\mathbf N$ for the view plane)}
+\end{center}
+
+\vspace{0.3em}
+\noindent\rule{\linewidth}{1pt}
+\vspace{0.5em}
+
+\tableofcontents
+\newpage
+
+%=====================================================================
+\section{Theoretical Framework --- Reusable Across All Years}
+%=====================================================================
+Chapter 7 is \textbf{TIER 1} --- some projection-comparison or cavalier/cabinet-matrix question appears almost every year, spread across \textbf{Q1 (short theory), Q4/Q5 (matrix derivation), Q6 (significance), and Q8 (homogeneous-coordinate derivation)} depending on the year.
+
+%----------------------------------------------------------------------
+\subsection{Taxonomy of Projection (\S7.1)}
+%----------------------------------------------------------------------
+\begin{answerbox}
+$$\text{Projections}\begin{cases}\textbf{Perspective (converging projectors)} \to \text{one-point, two-point, three-point (by number of principal vanishing points)}\\[4pt] \textbf{Parallel (parallel projectors, fixed direction }\mathbf V\textbf{)}\begin{cases}\textbf{Orthographic} (\mathbf V \parallel \text{view-plane normal }\mathbf N)\begin{cases}\text{Multiview (front/top/side)}\\ \text{Axonometric: Isometric, Dimetric, Trimetric}\end{cases}\\ \textbf{Oblique} (\mathbf V \not\parallel \mathbf N)\begin{cases}\text{Cavalier }(f=1)\\ \text{Cabinet }(f=\tfrac12)\end{cases}\end{cases}\end{cases}$$
+\textbf{Perspective vs.\ Parallel:} perspective projectors converge to a \emph{center of projection} --- mimics how the eye/camera sees, giving realistic depth cues but distorting true size/shape; used by \textbf{artists and photographers}. Parallel projectors stay mutually parallel --- preserves true scale and shape (no foreshortening along the projection direction for orthographic types); used by \textbf{drafters, architects, and engineers} for working/technical drawings, since dimensions can be measured directly off the drawing.
+\textbf{Orthographic vs.\ Oblique} (both parallel): orthographic $\Rightarrow$ direction of projection $\mathbf V$ is \emph{perpendicular} to the view plane; oblique $\Rightarrow$ $\mathbf V$ is \emph{not} perpendicular to the view plane.
+\textbf{Isometric / Dimetric / Trimetric} (all orthographic axonometric --- direction of projection not parallel to any principal axis, so all 3 faces show at once): \textbf{isometric} --- $\mathbf V$ makes \emph{equal} angles with all 3 principal axes; \textbf{dimetric} --- equal angles with exactly \emph{2} of the 3; \textbf{trimetric} --- \emph{unequal} angles with all 3.
+\textbf{Axonometric significance:} unlike a multiview drawing (3 separate front/top/side sheets), a single axonometric view shows all three principal faces of an object at once while still preserving parallel-projection's scale/shape fidelity along each axis --- useful for technical illustration where one picture must convey full 3D form.
+\end{answerbox}
+
+%----------------------------------------------------------------------
+\subsection{Perspective Projection --- Math and Anomalies (\S7.2)}
+%----------------------------------------------------------------------
+\begin{answerbox}
+\textbf{Standard perspective transformation} $Per_{\mathbf K}$: view plane = $xy$ plane, center of projection $C(0,0,-d)$. By similar triangles ($\triangle ABC \sim \triangle A'OC$):
+$$x' = \frac{d\cdot x}{z+d}, \qquad y'=\frac{d\cdot y}{z+d}, \qquad z'=0$$
+This mapping is \emph{nonlinear} in 3D, but becomes linear in \textbf{homogeneous coordinates} as a $4\times4$ matrix:
+$$\begin{pmatrix}x'\\y'\\z'\\1\end{pmatrix} = \begin{pmatrix}d&0&0&0\\0&d&0&0\\0&0&0&0\\0&0&1&d\end{pmatrix}\begin{pmatrix}x\\y\\z\\1\end{pmatrix} \qquad (\text{divide the homogeneous 4th coordinate }z+d\text{ back in to recover 3D }x',y')$$
+
+\textbf{Four perspective anomalies} (Schaum's \S7.2):
+\begin{enumerate}[noitemsep]
+  \item \textbf{Perspective foreshortening} --- objects farther from the center of projection appear smaller; a large distant object and a small nearby object can project to the same apparent size.
+  \item \textbf{Vanishing points} --- projections of lines not parallel to the view plane appear to converge at a point (e.g.\ railroad tracks meeting at the horizon). \emph{Principal} vanishing points arise from lines parallel to a principal ($x$, $y$, or $z$) axis; the number of principal vanishing points equals the number of principal axes the view plane intersects (1, 2, or 3 $\Rightarrow$ one/two/three-point perspective).
+  \item \textbf{View confusion} --- objects located \emph{behind} the center of projection project upside-down and backward onto the view plane.
+  \item \textbf{Topological distortion} --- the plane through the center of projection parallel to the view plane projects to infinity; a finite line segment crossing this plane is projected as a \emph{broken line of infinite extent}, not a normal finite segment.
+\end{enumerate}
+\end{answerbox}
+
+%----------------------------------------------------------------------
+\subsection{Parallel Projection --- Math, Oblique Form, Cavalier/Cabinet (\S7.3)}
+%----------------------------------------------------------------------
+\begin{answerbox}
+\textbf{Parallel projection onto the $xy$ plane}, direction $\mathbf V=a\mathbf I+b\mathbf J+c\mathbf K$: since $\overrightarrow{PP'}=k\mathbf V$ and $z'=0$, we get $k=-z/c$, so
+$$x'=x-\frac{a}{c}z, \qquad y'=y-\frac{b}{c}z, \qquad z'=0 \qquad\Rightarrow\qquad Par_{\mathbf V}=\begin{pmatrix}1&0&-a/c&0\\0&1&-b/c&0\\0&0&0&0\\0&0&0&1\end{pmatrix}$$
+\textbf{General oblique projection onto the $xy$ plane} --- parametrized by a foreshortening ratio $f$ (how much a unit line perpendicular to the $xy$ plane shrinks) and an angle $\theta$ (angle the projected perpendicular line makes with the $+x$ axis): $\mathbf V=f\cos\theta\,\mathbf I + f\sin\theta\,\mathbf J - \mathbf K$, giving
+$$Par_{\mathbf V} = \begin{pmatrix}1&0&f\cos\theta&0\\0&1&f\sin\theta&0\\0&0&0&0\\0&0&0&1\end{pmatrix}$$
+\textbf{Cavalier projection:} $f=1$ (no foreshortening of lines perpendicular to the $xy$ plane). \textbf{Cabinet projection:} $f=\tfrac12$ (such lines foreshortened to half length) --- cabinet therefore looks more "natural"/less elongated in depth than cavalier, at the cost of measurements along the projection direction no longer being true-length.
+\end{answerbox}
+
+%=====================================================================
+\section{Examination 2024 --- Q6(c,d) \& Q8(a) (Section B)}
+%=====================================================================
+\begin{solutionbox}
+\textbf{Question breakdown:}
+\begin{enumerate}[noitemsep]
+  \item[Q6(c)] What is the significance of Axonometric projection? (2)
+  \item[Q6(d)] Demonstrate some properties of Cabinet projection. (1)
+  \item[Q8(a)] Given a stepped/L-shaped solid block (Top/Front/Right faces labeled in the figure): draw the top, front, and right/side views. (3)
+\end{enumerate}
+\end{solutionbox}
+
+\subsection*{Q6(c) --- Significance of Axonometric Projection [2 marks]}
+\begin{answerbox}
+Axonometric projection is an \textbf{orthographic} projection (direction of projection $\perp$ view plane) chosen so that the direction of projection is \emph{not} parallel to any of the three principal axes --- unlike a multiview drawing. Its significance: \textbf{a single view reveals all three principal faces of a 3D object at once} while still preserving parallel-projection's fidelity (true scale along each axis, per the isometric/dimetric/trimetric ratio chosen) --- giving a 3D impression without perspective's size-distorting foreshortening, and without needing three separate multiview sheets (front/top/side) to understand the object's shape.
+\end{answerbox}
+
+\subsection*{Q6(d) --- Properties of Cabinet Projection [1 mark]}
+\begin{answerbox}
+Cabinet is an \textbf{oblique} parallel projection with foreshortening ratio $f=\tfrac12$: lines perpendicular to the projection ($xy$) plane are drawn at \textbf{half} their true length, while lines lying in the $xy$ plane are drawn true length/shape. The angle $\theta$ (commonly $30^\circ$ or $45^\circ$) sets the direction the foreshortened depth-axis is drawn in. Because depth is foreshortened rather than left full length (as in cavalier, $f=1$), cabinet drawings look noticeably \textbf{more realistic / less elongated} than cavalier drawings of the same object.
+\end{answerbox}
+
+\subsection*{Q8(a) --- Orthographic Multiview: Top, Front, Right/Side [3 marks]}
+\begin{answerbox}
+This is a figure-only question (draw, not compute) --- apply the method directly to your paper's stepped-block figure. \textbf{Method:} an orthographic multiview drawing projects the solid onto three mutually perpendicular planes using a direction of projection perpendicular to each:
+\begin{enumerate}[noitemsep]
+  \item \textbf{Front view} --- look along $-z$ (or the axis labeled "Front"); draw the outline seen, with any edge hidden behind other material as a dashed line.
+  \item \textbf{Top view} --- look straight down (along $-y$ from "Top"); draw the footprint/outline seen from above, aligned directly above the front view.
+  \item \textbf{Right/side view} --- look along the "Right" axis; draw the outline seen from that side, aligned to the right of the front view.
+\end{enumerate}
+For a stepped (L-shaped) block like the one shown, each view is itself a stepped/L-shaped (or rectangular, depending on which step faces that direction) outline reflecting where the block's height changes --- any edge where one step is hidden behind a taller step in that viewing direction is drawn as a dashed hidden line, and all three views must line up so that corresponding features share the same width/height/depth across views (a core drafting convention).
+\end{answerbox}
+
+%=====================================================================
+\section{Examination 2023 --- Q1(f,i), Q4(b,c), Q5(a,c) \& Q8(b)}
+%=====================================================================
+\begin{solutionbox}
+\textbf{Question breakdown:}
+\begin{enumerate}[noitemsep]
+  \item[Q1(f)] You intend to draw a picture of your university --- what kind of projection technique will you consider? ($\approx$1, part of 9$\times$1)
+  \item[Q1(i)] Differentiate among the isometric, dimetric, and trimetric projections. ($\approx$1)
+  \item[Q4(b)] Differentiate the orthographic and oblique projection. (1)
+  \item[Q4(c)] Explain the four anomalies of perspective projection with necessary diagrams. (4)
+  \item[Q5(a)] Find the transformation for (a) cavalier with $\theta=60^\circ$ and (b) cabinet projections with $\theta=45^\circ$. (3.5)
+  \item[Q5(c)] Derive the equation of parallel projection onto the $xy$ plane in the direction of projection $\mathbf V=a\mathbf I+b\mathbf J+c\mathbf K$. (3)
+  \item[Q8(b)] Derive the matrix for performing a perspective projection using homogeneous coordinates. (2)
+\end{enumerate}
+\end{solutionbox}
+
+\subsection*{Q1(f) --- Projection Choice for a Picture of the University}
+\begin{answerbox}
+A "picture" (photographic/realistic depiction) of a real building is best captured with \textbf{perspective projection} --- it matches how the human eye/a camera actually sees the scene, including natural depth cues (foreshortening, converging vanishing lines on receding building edges). Parallel/orthographic projection would instead be the right choice only if the goal were an accurate-to-scale technical/architectural drawing rather than a realistic picture.
+\end{answerbox}
+
+\subsection*{Q1(i) --- Isometric vs.\ Dimetric vs.\ Trimetric}
+\begin{answerbox}
+See \S1.1: \textbf{isometric} = equal angles with all 3 principal axes; \textbf{dimetric} = equal angles with exactly 2 of the 3 (third differs); \textbf{trimetric} = all 3 angles unequal. All three are orthographic \emph{axonometric} projections (direction of projection not parallel to any single principal axis).
+\end{answerbox}
+
+\subsection*{Q4(b) --- Orthographic vs.\ Oblique Projection [1 mark]}
+\begin{answerbox}
+Both are parallel (fixed-direction-projector) projections. \textbf{Orthographic:} direction of projection $\mathbf V$ is \emph{perpendicular} to the view plane ($\mathbf V \parallel \mathbf N$) --- includes multiview and axonometric (isometric/dimetric/trimetric). \textbf{Oblique:} direction of projection is \emph{not} perpendicular to the view plane --- includes cavalier ($f=1$) and cabinet ($f=\tfrac12$).
+\end{answerbox}
+
+\subsection*{Q4(c) --- Four Anomalies of Perspective Projection [4 marks]}
+\begin{answerbox}
+See \S1.2 for the full list with diagrams: (1) perspective foreshortening (farther = smaller), (2) vanishing points (non-view-plane-parallel lines appear to converge), (3) view confusion (objects behind the center of projection appear upside-down/backward), (4) topological distortion (a finite segment crossing the plane-through-the-center-of-projection-parallel-to-the-view-plane projects to an infinite broken line).
+\end{answerbox}
+
+\subsection*{Q5(a) --- Cavalier $\theta=60^\circ$, Cabinet $\theta=45^\circ$ [3.5 marks]}
+\begin{solutionbox}
+Using $Par_{\mathbf V}=\begin{pmatrix}1&0&f\cos\theta&0\\0&1&f\sin\theta&0\\0&0&0&0\\0&0&0&1\end{pmatrix}$:
+
+\textbf{Cavalier} ($f=1,\ \theta=60^\circ$): $\cos60^\circ=\tfrac12,\ \sin60^\circ=\tfrac{\sqrt3}{2}$.
+$$Par_{\text{cav}} = \begin{pmatrix}1&0&\tfrac12&0\\0&1&\tfrac{\sqrt3}{2}&0\\0&0&0&0\\0&0&0&1\end{pmatrix}$$
+
+\textbf{Cabinet} ($f=\tfrac12,\ \theta=45^\circ$): $\cos45^\circ=\sin45^\circ=\tfrac{\sqrt2}{2}$, so $f\cos\theta=f\sin\theta=\tfrac{\sqrt2}{4}$.
+$$Par_{\text{cab}} = \begin{pmatrix}1&0&\tfrac{\sqrt2}{4}&0\\0&1&\tfrac{\sqrt2}{4}&0\\0&0&0&0\\0&0&0&1\end{pmatrix}$$
+\end{solutionbox}
+
+\subsection*{Q5(c) --- Derive Parallel Projection, $\mathbf V=a\mathbf I+b\mathbf J+c\mathbf K$ [3 marks]}
+\begin{solutionbox}
+From Fig.\ 7-22: $\overrightarrow{PP'}$ has the same direction as $\mathbf V$, so $\overrightarrow{PP'}=k\mathbf V$ for some scalar $k$. Comparing components: $x'-x=ka,\ y'-y=kb,\ z'-z=kc$. Since the image lies on the $xy$ plane, $z'=0 \Rightarrow k=-z/c$. Substituting:
+$$x' = x - \frac{a}{c}z, \qquad y' = y - \frac{b}{c}z, \qquad z'=0$$
+$$Par_{\mathbf V} = \begin{pmatrix}1&0&-a/c&0\\0&1&-b/c&0\\0&0&0&0\\0&0&0&1\end{pmatrix}, \qquad P' = Par_{\mathbf V}\cdot P$$
+\end{solutionbox}
+
+\subsection*{Q8(b) --- Perspective Projection Matrix via Homogeneous Coordinates [2 marks]}
+\begin{solutionbox}
+Standard perspective transformation: view plane = $xy$ plane, center of projection $C(0,0,-d)$. By similar triangles $\triangle ABC \sim \triangle A'OC$ (Fig.\ 7-4): $x'=\dfrac{d\cdot x}{z+d},\ y'=\dfrac{d\cdot y}{z+d},\ z'=0$. This is nonlinear in ordinary 3D coordinates, but linear in homogeneous coordinates $(x,y,z,1)$:
+$$\begin{pmatrix}x'_h\\y'_h\\z'_h\\h\end{pmatrix} = \begin{pmatrix}d&0&0&0\\0&d&0&0\\0&0&0&0\\0&0&1&d\end{pmatrix}\begin{pmatrix}x\\y\\z\\1\end{pmatrix} = \begin{pmatrix}dx\\dy\\0\\z+d\end{pmatrix}$$
+Dividing through by the homogeneous coordinate $h=z+d$ recovers $x'=\dfrac{dx}{z+d},\ y'=\dfrac{dy}{z+d},\ z'=0$ --- confirming the matrix is correct. This is exactly how a nonlinear perspective divide is made representable as ordinary matrix multiplication.
+\end{solutionbox}
+
+%=====================================================================
+\section{Examination 2022 --- Q5(a,b) (Section B)}
+%=====================================================================
+\begin{solutionbox}
+\textbf{Question breakdown:}
+\begin{enumerate}[noitemsep]
+  \item[Q5(a)] Differentiate between perspective and parallel projection. Which projection is used by architects and engineers? (1)
+  \item[Q5(b)] The unit cube is projected onto the $XY$ plane. Find the transformation and projection matrix for (a) cavalier with $\theta=30^\circ$ and (b) cabinet projections with $\theta=45^\circ$. (4)
+\end{enumerate}
+\end{solutionbox}
+
+\subsection*{Q5(a) --- Perspective vs.\ Parallel, Architects/Engineers [1 mark]}
+\begin{answerbox}
+See \S1.1: perspective converges to a center of projection (realistic, used by artists/photographers, distorts true size via foreshortening); parallel keeps projectors mutually parallel (preserves true scale/shape, used by \textbf{architects and engineers} for working drawings where measurements must be read directly off the page).
+\end{answerbox}
+
+\subsection*{Q5(b) --- Cavalier $\theta=30^\circ$, Cabinet $\theta=45^\circ$ [4 marks]}
+\begin{solutionbox}
+\textbf{Cavalier} ($f=1,\ \theta=30^\circ$): $\cos30^\circ=\tfrac{\sqrt3}{2},\ \sin30^\circ=\tfrac12$.
+$$Par_{\text{cav}} = \begin{pmatrix}1&0&\tfrac{\sqrt3}{2}&0\\0&1&\tfrac12&0\\0&0&0&0\\0&0&0&1\end{pmatrix}$$
+\textbf{Cabinet} ($f=\tfrac12,\ \theta=45^\circ$): identical numeric result to 2023's cabinet sub-part above (same angle):
+$$Par_{\text{cab}} = \begin{pmatrix}1&0&\tfrac{\sqrt2}{4}&0\\0&1&\tfrac{\sqrt2}{4}&0\\0&0&0&0\\0&0&0&1\end{pmatrix}$$
+Applying either matrix to the unit-cube homogeneous vertex matrix $V=(ABCDEFGH)$ (Schaum's Fig.\ 7-12) draws the projected cube by adding the $f\cos\theta,f\sin\theta$ offset to the back-face vertices $E,F,G,H$ while the front face $A,B,C,D$ is unchanged (since it already lies in the $xy$ plane).
+\end{solutionbox}
+
+%=====================================================================
+\section{Examination 2021 --- Q5(a,b,c) (Section B)}
+%=====================================================================
+\begin{solutionbox}
+\textbf{Question breakdown:}
+\begin{enumerate}[noitemsep]
+  \item[Q5(a)] Distinguish between perspective and parallel projection. Which projection is used by architects and engineers? (1.5)
+  \item[Q5(b)] The unit cube is projected onto the $XY$ plane. Find the transformation and projection matrix for (a) cavalier with $\theta=45^\circ$ and (b) cabinet projections with $\theta=30^\circ$. (4)
+  \item[Q5(c)] What do you mean by perspective foreshortening and vanishing point? Explain with the necessary diagram. (2)
+\end{enumerate}
+\end{solutionbox}
+
+\subsection*{Q5(a) --- Perspective vs.\ Parallel, Architects/Engineers [1.5 marks]}
+\begin{answerbox}
+Identical answer to 2022 Q5(a) and 2020 Q8(a) above --- see \S1.1.
+\end{answerbox}
+
+\subsection*{Q5(b) --- Cavalier $\theta=45^\circ$, Cabinet $\theta=30^\circ$ [4 marks]}
+\begin{solutionbox}
+\textbf{Cavalier} ($f=1,\ \theta=45^\circ$): $\cos45^\circ=\sin45^\circ=\tfrac{\sqrt2}{2}$.
+$$Par_{\text{cav}} = \begin{pmatrix}1&0&\tfrac{\sqrt2}{2}&0\\0&1&\tfrac{\sqrt2}{2}&0\\0&0&0&0\\0&0&0&1\end{pmatrix}$$
+\textbf{Cabinet} ($f=\tfrac12,\ \theta=30^\circ$): $\cos30^\circ=\tfrac{\sqrt3}{2},\ \sin30^\circ=\tfrac12 \Rightarrow f\cos\theta=\tfrac{\sqrt3}{4},\ f\sin\theta=\tfrac14$.
+$$Par_{\text{cab}} = \begin{pmatrix}1&0&\tfrac{\sqrt3}{4}&0\\0&1&\tfrac14&0\\0&0&0&0\\0&0&0&1\end{pmatrix}$$
+\end{solutionbox}
+
+\subsection*{Q5(c) --- Perspective Foreshortening and Vanishing Point [2 marks]}
+\begin{answerbox}
+\textbf{Perspective foreshortening:} the illusion that objects/lengths appear smaller the farther they are from the center of projection (Fig.\ 7-5 --- a sphere $2\tfrac12\times$ larger but twice as far away appears the \emph{same size} as a nearer, smaller sphere). \textbf{Vanishing point:} the illusion that a family of parallel lines \emph{not} parallel to the view plane appears, under perspective projection, to converge to a single point on the view plane (e.g.\ railroad tracks appearing to meet at the horizon) --- formally, the projection of the point at infinity in the lines' common direction.
+\end{answerbox}
+
+%=====================================================================
+\section{Examination 2020 --- Q6(d) \& Q8(a,b) (Group-B)}
+%=====================================================================
+\begin{solutionbox}
+\textbf{Question breakdown:}
+\begin{enumerate}[noitemsep]
+  \item[Q6(d)] What do you mean by perspective foreshortening and vanishing point? (1.75)
+  \item[Q8(a)] Distinguish between perspective and parallel projections. Which projection is used by the architects and engineers? (3)
+  \item[Q8(b)] Draw the diagrams of isometric, diametric, and trimetric projections. (2.25)
+\end{enumerate}
+\end{solutionbox}
+
+\subsection*{Q6(d) --- Perspective Foreshortening and Vanishing Point [1.75 marks]}
+\begin{answerbox}
+Identical answer to 2021 Q5(c) above --- see \S1.2 and the 2021 Q5(c) solution.
+\end{answerbox}
+
+\subsection*{Q8(a) --- Perspective vs.\ Parallel, Architects/Engineers [3 marks]}
+\begin{answerbox}
+Identical answer to 2021/2022 Q5(a) above --- see \S1.1. (Highest mark-weight instance of this recurring question --- write the full comparison: converging vs.\ parallel projectors, realistic depth vs.\ true-scale preservation, artists/photographers vs.\ architects/engineers.)
+\end{answerbox}
+
+\subsection*{Q8(b) --- Isometric / Diametric / Trimetric Diagrams [2.25 marks]}
+\begin{answerbox}
+Draw three cubes, each showing all 3 faces (axonometric --- direction of projection not parallel to any axis): \textbf{isometric} --- all 3 visible edge-angles from the corner are equal ($120^\circ$ apart in the classic top-corner view); \textbf{dimetric} --- exactly 2 of the 3 angles/axis-foreshortenings are equal, the third distinct; \textbf{trimetric} --- all 3 angles/foreshortenings are different. See \S1.1 for the formal angle definitions.
+\end{answerbox}
+
+%=====================================================================
+\section{Quick Summary --- Exam Patterns for Chapter 7}
+%=====================================================================
+
+\begin{center}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{p{4.6cm}|p{2.5cm}|p{6.9cm}}
+\toprule
+\textbf{Pattern} & \textbf{Years} & \textbf{Method to memorise} \\
+\midrule
+Perspective vs.\ Parallel --- distinguish + architects/engineers (exact classic phrasing) & 2020, 2021, 2022 & Converging vs.\ parallel projectors; realistic-but-distorted vs.\ true-scale; artists/photographers vs.\ architects/engineers \\
+Cavalier/Cabinet projection matrix for given $\theta$ & 2021, 2022, 2023 & $Par_{\mathbf V}=\begin{pmatrix}1&0&f\cos\theta&0\\0&1&f\sin\theta&0\\0&0&0&0\\0&0&0&1\end{pmatrix}$, cavalier $f=1$, cabinet $f=\tfrac12$ --- just plug in $\theta$ \\
+Perspective foreshortening + vanishing point (explain) & 2020, 2021 & Foreshortening = farther looks smaller; vanishing point = non-view-plane-parallel lines converge to a point \\
+Isometric/Dimetric/Trimetric --- differentiate or draw & 2020, 2023 & Equal angles with all 3 axes / exactly 2 / none --- isometric/dimetric/trimetric respectively \\
+Orthographic vs.\ Oblique projection & 2023 only & Direction of projection $\perp$ view plane (ortho) vs.\ not (oblique) \\
+Perspective anomalies (4, with diagrams) & 2023 only & Foreshortening, vanishing points, view confusion, topological distortion \\
+General parallel/perspective projection derivation (homogeneous coordinates) & 2023 only & $Par_{\mathbf V}$: $x'=x-\frac{a}{c}z$ etc.; $Per_{\mathbf K}$: $x'=\frac{dx}{z+d}$ made linear via the homogeneous 4th row \\
+Axonometric significance / Cabinet properties (light-touch) & 2024 only & One view shows all 3 faces; cabinet halves perpendicular-line length vs.\ cavalier's no foreshortening \\
+Orthographic multiview (top/front/side) drawing & 2024 only & Project along each of 3 perpendicular directions; hidden edges dashed; views aligned \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{notesbox}
+\textbf{Exam-day strategy for Chapter 7:} \textbf{correction from earlier tracking} --- "Perspective vs.\ Parallel projection" and "Cavalier/Cabinet" were both previously logged as 5/5-year topics; re-verified directly against all pages of all 5 raw scanned papers on 2026-07-05. Cavalier/Cabinet's exact matrix-derivation question is genuinely only \textbf{2021, 2022, 2023} (2020 has no such question at all; 2024 only asks for "properties of Cabinet" qualitatively, no $\theta$ given). The classic "distinguish perspective vs.\ parallel + architects/engineers" phrasing is \textbf{2020, 2021, 2022} only --- 2023/2024 ask related-but-differently-shaped projection questions instead (orthographic/oblique, projection choice for a scenario, axonometric significance). The underlying \emph{concept cluster} (some projection-type comparison) is still 5/5 --- just don't expect the identical wording every year.
+\end{notesbox}
+
+\end{document}

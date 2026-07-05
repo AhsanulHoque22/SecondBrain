@@ -9,8 +9,10 @@ Status: 🔲 not started · 📖 learning · 🔁 needs recall · ✅ can explai
 | Normalization transformation (window→viewport) | 📖 | — | 2026-07-05 | 2026-07-07 | 5/5 · 2–3 marks | Derive from window/viewport corners. Solved in [[Chapter5_Solutions.pdf]] — includes 2022's aspect-ratio-preserved variant (only window given) and 2020's workstation-transform variant (NDC→device). |
 | Rotation — derive matrix + apply | 📖 | — | 2026-07-04 | 2026-07-06 | 5/5 · 2–4 marks | Origin AND arbitrary-point variants both asked. Question analysis + [[Chapter4_Solutions.pdf]] done — all 5 years solved. Needs active recall to reach ✅. |
 | Scaling/magnification about a fixed point | 📖 | — | 2026-07-04 | 2026-07-06 | 5/5 · 2–4 marks | Keep a named vertex fixed. 2022 occurrence previously missing from map — now added. Solved in [[Chapter4_Solutions.pdf]]. |
-| Cavalier/Cabinet projection matrices | 🔲 | — | — | — | 5/5 · 2.5–4 marks | tan α=1 (cavalier) vs tan α=0.5 (cabinet); θ varies |
-| Perspective vs Parallel projection | 🔲 | — | — | — | 5/5 · 1–4 marks | Who uses which (architects/engineers) |
+| Cavalier/Cabinet projection matrices | 📖 | — | 2026-07-05 | 2026-07-07 | 3/5 · 2.5–4 marks | f=1 (cavalier) vs f=0.5 (cabinet), matrix col3 = (f cosθ, f sinθ). **Correction:** re-verified against all raw scans 2026-07-05 — 2020 has NO cavalier/cabinet question at all (contradicts prior 5/5 claim); full matrix-derivation only in 2021/2022/2023; 2024 only asks qualitative "properties of Cabinet" [1 mark]. Solved in [[Chapter7_Solutions.pdf]]. |
+| Perspective vs Parallel projection | 📖 | — | 2026-07-05 | 2026-07-07 | 3/5 · 1–4 marks | Who uses which (architects/engineers). **Correction:** exact classic phrasing only 2020 Q8a/2021 Q5a/2022 Q5a (topic map previously mis-numbered these as "Q6b"); 2023/2024 ask differently-shaped projection-choice questions instead. Solved in [[Chapter7_Solutions.pdf]]. |
+| ↳ General parallel/perspective projection derivation (homogeneous coords) | 📖 | — | 2026-07-05 | 2026-07-07 | 1/5 · 2–3 marks | 2023-only, new subtopic split out 2026-07-05. Q5c derives Par_V for direction aI+bJ+cK; Q8b derives Per_K via homogeneous coordinates. Solved in [[Chapter7_Solutions.pdf]]. |
+| ↳ Orthographic multiview (top/front/side) drawing | 🔲 | — | — | — | 1/5 · 3 marks | 2024-only, new subtopic split out 2026-07-05. Draw 3 views of a stepped block, hidden edges dashed. Method covered in [[Chapter7_Solutions.pdf]] (figure-only, no numeric answer). |
 | Z-Buffer algorithm | 🔲 | — | — | — | 5/5 · 4.5–4.75 marks | Max objects representable + 2×2 pixel trace |
 | Image crop / sub-image coordinates | 📖 | — | 2026-07-04 | 2026-07-06 | 5/5 · 1.5–3 marks | Center-crop AND corner-crop variants. Question analysis + [[Chapter2_Solutions.pdf]] done — all 5 years solved. Needs active recall to reach ✅. |
 | ↳ RGB/CMY color model + subtractive color + perceptual terms | 📖 | — | 2026-07-04 | 2026-07-06 | 3/5 · 1–3 marks | RGB↔CMY conversion formula; why printers use K (black) ink; Hue/Saturation/Brightness↔wavelength/purity/intensity. Solved in [[Chapter2_Solutions.pdf]]. |
@@ -36,8 +38,8 @@ Status: 🔲 not started · 📖 learning · 🔁 needs recall · ✅ can explai
 | Midpoint circle algorithm + 8-way symmetry | 📖 | — | 2026-07-04 | 2026-07-06 | 3/5 · 1.5–4 marks | Raster locations for given radius/center — full octant-trace method verified. Solved in [[Chapter3_Solutions.pdf]]. |
 | Tilting (3D composite rotation, x then y) | 📖 | — | 2026-07-05 | 2026-07-07 | 1/5 · 3.5 marks | Derive matrix; does order matter? **Correction:** re-verified against all 5 raw scanned papers 2026-07-05 — only appears 2022 Q5c, not 2021 as previously tracked. Solved in [[Chapter6_Solutions.pdf]]. |
 | Monitor color transformation matrix M | 🔲 | — | — | — | 2/5 · 3 marks | Given chromaticity + white point (D65) |
-| Isometric/Dimetric/Trimetric projection | 🔲 | — | — | — | 2/5 · 2.25–4 marks | Draw/differentiate |
-| Perspective foreshortening + vanishing point | 🔲 | — | — | — | 2/5 · 1.75–2 marks | Explain with diagram |
+| Isometric/Dimetric/Trimetric projection | 📖 | — | 2026-07-05 | 2026-07-07 | 2/5 · 2.25–4 marks | Draw/differentiate — equal angles w/ all 3 axes (isometric) / exactly 2 (dimetric) / none (trimetric). Solved in [[Chapter7_Solutions.pdf]]. |
+| Perspective foreshortening + vanishing point | 📖 | — | 2026-07-05 | 2026-07-07 | 2/5 · 1.75–2 marks | Explain with diagram. Solved in [[Chapter7_Solutions.pdf]]. |
 | Phong illumination model | 🔲 | — | — | — | 2/5 · 1.5–3 marks | Diffuse + specular significance |
 | Flood-fill / boundary-fill (8-connected) | 📖 | — | 2026-07-04 | 2026-07-06 | 2/5 · 2.5–3 marks | Justify fill on given shape — key trap: same connectivity for boundary+fill leaks on diagonal edges. Solved in [[Chapter3_Solutions.pdf]]. |
 | ↳ Scan-line polygon fill algorithm (edge list) | 🔲 | — | — | — | 0/5 PYQ | Schaum's §3.7 — geometric (vertex-based) fill, no past-paper hit, theory only |
@@ -45,11 +47,11 @@ Status: 🔲 not started · 📖 learning · 🔁 needs recall · ✅ can explai
 | Halftoning + dither matrix (D2→D4) | 📖 | — | 2026-07-04 | 2026-07-06 | 1/5 · 2–3 marks | 2024 only, recurrence relation given in-paper. Solved in [[Chapter2_Solutions.pdf]] (Bayer matrix result). |
 | Circular clipping window | 🔲 | — | — | — | 1/5 · 3 marks | Inside/outside/intersecting + clip. 2024 Q5c answered as Related bundle in [[Chapter5_Solutions.pdf]] (not a full study block yet). |
 | Trapezoid-primitive polygon fill | 🔲 | — | — | — | 1/5 · 1–2 marks each | No textbook resource — 2024 lecture-only topic |
-| Axonometric projection significance | 🔲 | — | — | — | 1/5 · 2 marks | Short explain |
+| Axonometric projection significance | 📖 | — | 2026-07-05 | 2026-07-07 | 1/5 · 2 marks | Short explain — one view shows all 3 faces vs 3 separate multiview sheets. Solved in [[Chapter7_Solutions.pdf]] (2024 Q6c), plus 2024 Q6d "properties of Cabinet" [1] and Q8a orthographic top/front/side multiview [3] bundled in same doc. |
 | 3D scaling application | 📖 | — | 2026-07-05 | 2026-07-07 | 1/5 · 4 marks | Apply given scale params to 3D points. Solved in both [[Chapter4_Solutions.pdf]] and [[Chapter6_Solutions.pdf]] (2023 Q3c: A(3,0,3),B(3,3,6),C(3,0,1),D(0,0,0) scaled ×3,×2,×3). |
 | Painter's algorithm vs Z-buffer | 🔲 | — | — | — | 1/5 · 2 marks | Differentiate |
-| Perspective projection anomalies (4) | 🔲 | — | — | — | 1/5 · 4 marks | List + explain |
-| Orthographic vs Oblique projection | 🔲 | — | — | — | 1/5 · 1 mark | Differentiate |
+| Perspective projection anomalies (4) | 📖 | — | 2026-07-05 | 2026-07-07 | 1/5 · 4 marks | List + explain — foreshortening, vanishing points, view confusion, topological distortion. Solved in [[Chapter7_Solutions.pdf]]. |
+| Orthographic vs Oblique projection | 📖 | — | 2026-07-05 | 2026-07-07 | 1/5 · 1 mark | Differentiate. Solved in [[Chapter7_Solutions.pdf]]. |
 | Back-face / visible-surface definitions | 🔲 | — | — | — | 1/5 · 2 marks | Define with example |
 | Color gamut of a monitor | 🔲 | — | — | — | 1/5 · 1 mark | Short explain |
 | Bezier / B-spline / Hermite curves | 🔲 | — | — | — | 0/5 PYQ, syllabus-mandated | See [[_Syllabus]] conflict note — deprioritized to last given time crunch |

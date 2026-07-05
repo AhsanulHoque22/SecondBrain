@@ -42,16 +42,17 @@
 - 2024 Q4d [2] — steps needed to rotate an arbitrary line about a point P1 (translate-rotate-translate-back recipe)
 - 2024 Q4e [1] — write the 2D shear transformation matrices
 
-**Cavalier/Cabinet projection matrices**
-- 2023 Q5a — cavalier θ=60°, cabinet θ=45°
-- 2022 Q5b/6c — cavalier θ=30°, cabinet θ=45° for a unit cube
-- 2021 Q5b — cavalier θ=45°, cabinet θ=30°
+**Cavalier/Cabinet projection matrices** — ✅ verified against raw scanned papers 2026-07-05, full solutions in [[Chapter7_Solutions.pdf]]. **Correction:** 2020 has NO such question (previously wrongly assumed 5/5); 2024 only has qualitative "properties of Cabinet" (Q6d, no θ/matrix).
+- 2023 Q5a — cavalier θ=60° → Par=(1,0,1/2,0;0,1,√3/2,0;...); cabinet θ=45° → (1,0,√2/4,0;0,1,√2/4,0;...)
+- 2022 Q5b — cavalier θ=30° → (1,0,√3/2,0;0,1,1/2,0;...); cabinet θ=45° → same as 2023's cabinet
+- 2021 Q5b — cavalier θ=45° → (1,0,√2/2,0;0,1,√2/2,0;...); cabinet θ=30° → (1,0,√3/4,0;0,1,1/4,0;...)
+- 2024 Q6d — qualitative "properties of Cabinet projection" only [1 mark], no matrix/θ given
 
-**Perspective vs Parallel projection**
-- 2023 Q4b — orthographic vs oblique; Q1f projection choice for photographing university
-- 2022 Q6b — why easier to locate hidden surfaces with parallel projection
-- 2021 Q6b — distinguish perspective/parallel; who uses which
-- 2020 Q8a — distinguish; who uses which (architects/engineers)
+**Perspective vs Parallel projection** — ✅ verified against raw scanned papers 2026-07-05, full solutions in [[Chapter7_Solutions.pdf]]. **Correction:** previous entries wrongly numbered 2021/2022 as "Q6b" with wrong content (2022's real Q6b is "why are hidden surface algorithms needed", a Ch10 question) — the actual perspective/parallel question both years is **Q5a**.
+- 2023 — no exact-phrasing match; has Q4b orthographic-vs-oblique [1] and Q1f "projection for photographing university" [~1] instead
+- 2022 Q5a — differentiate perspective/parallel; who uses which [1]
+- 2021 Q5a — distinguish perspective/parallel; who uses which [1.5]
+- 2020 Q8a — distinguish; who uses which (architects/engineers) [3]
 
 **Z-Buffer algorithm**
 - 2024 Q7d — illustrate Z-buffer, advantages/disadvantages
@@ -130,10 +131,10 @@
 - **Midpoint circle + 8-way symmetry:** ✅ verified 2026-07-04, solved in [[Chapter3_Solutions.pdf]] — 2023 Q2(b) r=10 center-origin, 3rd-quadrant points [4]; 2022 Q2(a) 8-way symmetry explain [1.5] + Q2(b) r=10 center(50,50) [4]; 2020 Q4(c) show 8-way symmetry [1]
 
 ## TIER 4 (one appearance each — learn the method fast, don't over-invest)
-Tilting: ✅ verified 2026-07-05, solved in [[Chapter6_Solutions.pdf]] — **2022 Q5c only** (3.5 marks: "Define tilting as a rotation about the x-axis followed by a rotation about the y-axis. Find the tilting matrix; does order matter?"). *(Previous entry said "2022 (Q3c-equiv), 2021 Q5c/6c-area" — wrong; re-read all pages of the 2021 paper directly and confirmed no tilting question exists that year. Corrected to 1/5, not 2/5.)* · Monitor matrix M: 2023 Q7a, 2021 Q7a · Isometric/Dimetric/Trimetric: 2023 Q1i, 2020 Q8b · Foreshortening/vanishing point: 2021 Q5c(2021 paper Q5c-equiv), 2020 Q6d · Phong model: 2022 Q6d, 2023 (image-based Q) · **Flood/boundary fill: 2023 Q2(c) hexagon [3], 2020 Q2(d) arrow [2.5] — ✅ verified 2026-07-04, solved in [[Chapter3_Solutions.pdf]] (both are "will 8-connected fill leak on diagonal edges" reasoning questions)** · Point left/right test: 2022 Q7a, 2021 Q7a — lives in Q7/Ch11 cluster, not Ch3
+Tilting: ✅ verified 2026-07-05, solved in [[Chapter6_Solutions.pdf]] — **2022 Q5c only** (3.5 marks: "Define tilting as a rotation about the x-axis followed by a rotation about the y-axis. Find the tilting matrix; does order matter?"). *(Previous entry said "2022 (Q3c-equiv), 2021 Q5c/6c-area" — wrong; re-read all pages of the 2021 paper directly and confirmed no tilting question exists that year. Corrected to 1/5, not 2/5.)* · Monitor matrix M: 2023 Q7a, 2021 Q7a · Isometric/Dimetric/Trimetric: ✅ verified 2026-07-05, solved in [[Chapter7_Solutions.pdf]] — 2023 Q1i (differentiate), 2020 Q8b (draw diagrams) · Foreshortening/vanishing point: ✅ verified 2026-07-05, solved in [[Chapter7_Solutions.pdf]] — 2021 Q5c, 2020 Q6d · Phong model: 2022 Q6d, 2023 (image-based Q) · **Flood/boundary fill: 2023 Q2(c) hexagon [3], 2020 Q2(d) arrow [2.5] — ✅ verified 2026-07-04, solved in [[Chapter3_Solutions.pdf]] (both are "will 8-connected fill leak on diagonal edges" reasoning questions)** · Point left/right test: 2022 Q7a, 2021 Q7a — lives in Q7/Ch11 cluster, not Ch3
 
 ## TIER 5 (2024-only or syllabus-mandated zero-yield)
-Halftoning+dither: 2024 Q2d, Q3a,b · Circular clipping: 2024 Q5c — answered as Related bundle in [[Chapter5_Solutions.pdf]] (center (10,10) r=6, chord intersects circle at ≈(4.04,10.73) and ≈(7.64,15.51)) · Trapezoid fill: 2024 Q7b,c,e · Axonometric: 2024 Q6c · 3D scaling: 2023 Q3c — A(3,0,3),B(3,3,6),C(3,0,1),D(0,0,0) scaled (3,2,3) on X,Y,Z → A'(9,0,9),B'(9,6,18),C'(9,0,3),D'(0,0,0); solved in [[Chapter4_Solutions.pdf]] and [[Chapter6_Solutions.pdf]] · Painter's vs Z-buffer: 2023 Q7d · Perspective anomalies: 2023 Q4c · Orthographic vs Oblique: 2023 Q4b · Back-face/visible surface: 2024 Q1c, Q7a · Color gamut: 2022 Q8b · **Bezier/B-spline/Hermite: no PYQ hit 2020–2024**
+Halftoning+dither: 2024 Q2d, Q3a,b · Circular clipping: 2024 Q5c — answered as Related bundle in [[Chapter5_Solutions.pdf]] (center (10,10) r=6, chord intersects circle at ≈(4.04,10.73) and ≈(7.64,15.51)) · Trapezoid fill: 2024 Q7b,c,e · Axonometric: 2024 Q6c — ✅ verified 2026-07-05, solved in [[Chapter7_Solutions.pdf]] (plus Q6d cabinet properties [1], Q8a orthographic top/front/side multiview [3], bundled in same doc) · 3D scaling: 2023 Q3c — A(3,0,3),B(3,3,6),C(3,0,1),D(0,0,0) scaled (3,2,3) on X,Y,Z → A'(9,0,9),B'(9,6,18),C'(9,0,3),D'(0,0,0); solved in [[Chapter4_Solutions.pdf]] and [[Chapter6_Solutions.pdf]] · Painter's vs Z-buffer: 2023 Q7d · Perspective anomalies: 2023 Q4c — ✅ verified 2026-07-05, solved in [[Chapter7_Solutions.pdf]] (foreshortening, vanishing points, view confusion, topological distortion) · Orthographic vs Oblique: 2023 Q4b — ✅ verified 2026-07-05, solved in [[Chapter7_Solutions.pdf]] · Back-face/visible surface: 2024 Q1c, Q7a · Color gamut: 2022 Q8b · **Bezier/B-spline/Hermite: no PYQ hit 2020–2024**
 
 ## Note on accuracy
 This map was built from scanned/handwritten past papers read in one pass — Tier 3–5 year attributions may have minor mix-ups between adjacent years since several questions repeat near-identically. Re-verify the specific year during block study if it matters for your prep; the topic identification itself is solid.

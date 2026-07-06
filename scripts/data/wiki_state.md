@@ -1,8 +1,8 @@
 # Study Brain — Compiled State
-_Updated: 2026-07-05 by overnight rollover_
+_Updated: 2026-07-06 by overnight rollover_
 
 ## Active exam
-🎯 CSE 715 — Computer Graphics · **Wed 8 Jul 2026, 10:30 AM** · 2 days from 2026-07-06 · Phase: 🔒 Lockdown, day 1 of 2 (pure revision + timed past papers, Graphics only — no Livora, no other subjects). 07-05 closed Ch5/Ch6/Ch7 (Cohen-Sutherland clipping, normalization transform, Cavalier/Cabinet projection, perspective-vs-parallel — all now 📖, 30/51 topics 📖). Z-Buffer (TIER1, 5/5 yield) still 🔲 — the planned block got skipped and needs a gap-fill pass before pure revision mode.
+🎯 CSE 715 — Computer Graphics · **Wed 8 Jul 2026, 10:30 AM** · 1 day from 2026-07-07 · Phase: 🔒 Lockdown, day 2 of 2 — FINAL day (pure revision + timed past papers, Graphics only — no Livora, no other subjects). 07-06 closed the Z-Buffer gap (Ch10, now 📖) plus an unplanned Ch9 pass (Bezier/B-spline/Hermite, 0/5 PYQ stretch-goal, now 📖) — 32/51 topics 📖. Ray-sphere intersection still 🔲. More urgently: zero timed past-paper attempts confirmed all lockdown — today is the last chance before the exam.
 
 ## Topics — CSE715 Computer Graphics
 | Topic | Status | Conf | Next Recall |
@@ -15,7 +15,7 @@ _Updated: 2026-07-05 by overnight rollover_
 | Perspective vs Parallel projection | 📖 | — | 2026-07-07 |
 | ↳ General parallel/perspective derivation (homogeneous coords) | 📖 | — | 2026-07-07 |
 | ↳ Orthographic multiview (top/front/side) drawing | 🔲 | — | — |
-| Z-Buffer algorithm | 🔲 | — | — |
+| Z-Buffer algorithm | 📖 | — | 2026-07-08 |
 | Image crop / sub-image coordinates | 📖 | — | 2026-07-06 |
 | ↳ RGB/CMY color model + subtractive color + perceptual terms | 📖 | — | 2026-07-06 |
 | ↳ Image file format (header/data, RLE compression) | 🔲 | — | — |
@@ -56,16 +56,17 @@ _Updated: 2026-07-05 by overnight rollover_
 | Orthographic vs Oblique projection | 📖 | — | 2026-07-07 |
 | Back-face / visible-surface definitions | 🔲 | — | — |
 | Color gamut of a monitor | 🔲 | — | — |
-| Bezier / B-spline / Hermite curves | 🔲 | — | — |
+| Bezier / B-spline / Hermite curves | 📖 | — | — |
 | Octree/Quadtree/BST-tree/Fractal Geometry | 🔲 | — | — |
 
 ## Carry-forward
-- Z-Buffer algorithm (Ch10) — still 🔲, TIER1, 5/5 yield. Skipped planned block yesterday. Tomorrow's Block 1 — non-negotiable gap-fill before revision mode.
-- Ray-sphere intersection (Ch12) — still 🔲, TIER2, 4/5 yield. Tomorrow's Block 2 if time allows.
-- 20-item AI/InfoSec recall backlog still not cleared — due again 2026-07-06, 26–33 days overdue on AI items, 19d on Number Theory. Parked through Mon/Tue lockdown — will keep slipping until after the Graphics exam.
+- Ray-sphere intersection (Ch12) — still 🔲, TIER2, 4/5 yield. Quick gap-fill only (30–45 min max), tomorrow's Block 1.
+- ZERO timed past-paper attempts confirmed all lockdown so far. Top priority for 07-07 — the only day left before the exam.
+- Active recall passes (Ch2-4, Ch5-9) — not confirmed done. Fold into 07-07's blocks.
+- 20-item AI/InfoSec recall backlog still not cleared — due again 2026-07-07, 27–34 days overdue on AI items, 20d on Number Theory. Parked through 07-07 (still inside lockdown, exam is Wed 07-08) — will keep slipping until after the Graphics exam.
 - CSE719 exam outcome still unconfirmed — 07-01 EOD log left blank, no 07-03 daily log exists. Low priority, not blocking.
 
-## Recall due 2026-07-06
+## Recall due 2026-07-07
 - 🔁 Intelligent Agents + Environments (PAGE) `CSE713_AI` | conf 4/5
 - 🔁 Search: UCS, Greedy, A, IDDFS — trace on graph `CSE713_AI` | conf 4/5
 - 🔁 Forward + Backward Chaining + Rule-Based System `CSE713_AI` | conf 5/5
@@ -90,6 +91,6 @@ _Updated: 2026-07-05 by overnight rollover_
 **Parked** — do not touch until after the 2026-07-08 Graphics exam (last-2-days rule).
 
 ## Recent pattern (last 3 days)
-- 2026-07-03/04: 07-04 recovery day — CSE715 exam-Wednesday reset finally done, syllabus mapped, past papers analysed, 49 topics ranked, then Ch2/3/4 fully solved + wiki-ingested (16 topics → 📖).
 - 2026-07-04: EOD log field left blank despite real work — confirmed via git log, not the log narrative.
-- 2026-07-05: Ch5/Ch6/Ch7 fully question-analysed + solved (5yr PYQ) + wiki-ingested (3 commits). 30/51 topics now 📖. Z-Buffer block skipped — the one gap heading into lockdown. EOD log left blank again (same pattern).
+- 2026-07-05: Ch5/Ch6/Ch7 fully question-analysed + solved (5yr PYQ) + wiki-ingested (3 commits). 30/51 topics now 📖. Z-Buffer block skipped. EOD log left blank again.
+- 2026-07-06: Z-Buffer (Ch10) gap-filled + unplanned Ch9 (Bezier/B-spline/Hermite) pass, both wiki-ingested (commit 3b568cb). 32/51 topics 📖. But Ray-sphere still 🔲 and no timed past papers or active recall confirmed — EOD log blank a third day running (same pattern).

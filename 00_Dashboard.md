@@ -43,7 +43,7 @@ Prayers structure the day — each gap is a study block:
 | [[02_Courses/CSE717_InfoSec/_Topics\|InfoSec (717)]] | ✅ 14 topics ranked | 11✅ · 3📖 · 0🔲 | – | pending |
 | [[02_Courses/CSE711_Compiler/_Topics\|Compiler (711)]] | ✅ EXAM DONE (8 topics, 8yr past papers) | sat 24 Jun | – | – |
 | [[02_Courses/CSE719_Distributed/_Topics\|Distributed (719)]] | ✅ EXAM SAT 07-01 (14 topics ranked) | 11📖 (spine + MapReduce + Cloud, all wiki+solutions done 06-30) · 3🔲 (tail, cut) | solutions PDFs all 10 lectures | outcome unconfirmed |
-| [[02_Courses/CSE715_Graphics/_Topics\|Graphics (715)]] | ✅ 51 topics ranked (5yr PYQ 2020-24) | 0✅ · 42📖 (Ch2-12 + Z-buffer done) · 9🔲 (mostly 0-1/5 PYQ) | Ch2-7,9,11,12 + Z-buffer solved — 0 timed papers confirmed yet | pending recall |
+| [[02_Courses/CSE715_Graphics/_Topics\|Graphics (715)]] | ✅ 51 topics ranked (5yr PYQ 2020-24) | 0✅ · 43📖 (Ch2-12 + Z-buffer + Octree/Fractal done) · 8🔲 (mostly 0-1/5 PYQ) | Ch2-7,9,11,12 + Z-buffer + Octree/Fractal solved — 0 timed papers confirmed yet | pending recall |
 | [[02_Courses/CSE700_Thesis/README\|Thesis (700)]] | – | – | – | – |
 
 ## Navigation

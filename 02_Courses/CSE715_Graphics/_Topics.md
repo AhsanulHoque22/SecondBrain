@@ -57,7 +57,7 @@ Status: 🔲 not started · 📖 learning · 🔁 needs recall · ✅ can explai
 | Back-face / visible-surface definitions | 🔲 | — | — | — | 1/5 · 2 marks | Define with example |
 | Color gamut of a monitor | 📖 | — | 2026-07-07 | — | 1/5 · 1 mark | Triangular region in CIE chromaticity diagram bounded by phosphor (x,y) coords — range of displayable colors. 2022 Q8b. Solved in [[Chapter11_Solutions.pdf]]. |
 | Bezier / B-spline / Hermite curves | 📖 | — | 2026-07-06 | — | 0/5 PYQ, syllabus-mandated | See [[_Syllabus]] conflict note — deprioritized to last given time crunch. Theory + solved exercises (syllabus.txt scope only, no past-paper questions exist) in [[Chapter9_Solutions.pdf]]. Stretch-goal only — do not prioritize over TIER1/2 topics before the exam. |
-| Octree/Quadtree/BST-tree/Fractal Geometry (Hearn&Baker) | 🔲 | — | — | — | 0/5 PYQ, syllabus-mandated | p.359 Octrees + named pages; no-PYQ, deprioritized |
+| Octree/Quadtree/BST-tree/Fractal Geometry (Hearn&Baker) | 📖 | — | 2026-07-07 | — | 0/5 PYQ, syllabus-mandated | §10-16 Octrees/Quadtrees, §10-17 BSP-Trees ("BST-Tree" in syllabus ≈ typo for BSP-Tree), §10-18 Fractal Geometry (dimension formula D=ln n/ln(1/s)). Stretch-goal only — do not prioritize over TIER1/2 topics or timed papers. Solved in [[OctreeFractal_Solutions.pdf]]. |
 
 ## Column guide
 - **Conf** — confidence 1–5 (1=shaky, 5=bulletproof). Update after every recall pass.

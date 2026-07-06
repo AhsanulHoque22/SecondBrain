@@ -12,3 +12,4 @@
 - [[wiki/z-buffer|Z-Buffer Algorithm (Ch10)]] — max objects representable, 2×2 pixel trace, vs Painter's algorithm
 - [[wiki/color-shading-models|Color & Shading Models (Ch11)]] — Phong model, RGB scanline interpolation, monitor matrix M, point left/right test, color gamut
 - [[wiki/ray-tracing|Ray Tracing (Ch12)]] — ray vs vector, ray equation, ray-sphere intersection, hidden-surface+projection integration, point/plane same-side test
+- [[wiki/octrees-fractals|Octrees, Quadtrees, BSP-Trees & Fractal Geometry]] — 0/5 PYQ, syllabus-mandated (Hearn & Baker) theory only

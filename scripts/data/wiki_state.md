@@ -57,7 +57,7 @@ _Updated: 2026-07-06 by overnight rollover_
 | Back-face / visible-surface definitions | 🔲 | — | — |
 | Color gamut of a monitor | 📖 | — | — |
 | Bezier / B-spline / Hermite curves | 📖 | — | — |
-| Octree/Quadtree/BST-tree/Fractal Geometry | 🔲 | — | — |
+| Octree/Quadtree/BST-tree/Fractal Geometry | 📖 | — | — |
 
 ## Carry-forward
 - Ch11 + Ch12 question-analysis done 07-07 (unplanned — displaced the originally-scheduled Ray-sphere gap-fill + timed papers). Point-obscures-point visibility (4/5 yield) is now the only real-yield 🔲 left.

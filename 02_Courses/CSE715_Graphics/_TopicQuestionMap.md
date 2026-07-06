@@ -109,11 +109,10 @@
 - 2022 Q1f — why color printers use subtractive model (pigments absorb/reflect light vs. displays emit light)
 - 2020 Q2a — define subtractive color model + example; why color printers use separate black (K) ink (cost + hard to mix true black from CMY)
 
-**Ray–sphere intersection**
-- 2023 Q8c — S1 r=8 at (2,4,1), S2 r=10 at (10,-2,-5); ray s=2I+5K, d=I-2J
-- 2022 Q8d — sphere r=2 at origin; ray from (3,0,0) dir (-3,1,0)
-- 2021 Q8e — same two-sphere setup as 2023
-- 2020 — (ray equation embedded, no explicit sphere in this year's extract)
+**Ray–sphere intersection** — ✅ re-verified against all 5 raw scans 2026-07-07, solved in [[Chapter12_Solutions.pdf]]. **Correction:** 2020 has zero ray-tracing content of any kind (its Q7/Q8 are point left/right, polygon orientation, 3D rotation, projections, and point-obscures-viewpoint — no ray equation, no ray-sphere). Real years: 2021, 2022, 2023 only (3/5, not 4/5).
+- 2023 Q8c [3.5] — S1 r=8 at (2,4,1), S2 r=10 at (10,-2,-5); ray s=2I+5K, d=I-2J — intersects S1 once (originates inside, t≈1.393), misses S2 (discriminant <0)
+- 2022 Q8d [4] — sphere r=2 at origin; ray from (3,0,0) dir (-3,1,0) — two intersections, t≈0.343 and t≈1.457
+- 2021 Q8e [3.75] — S1 r=8 at (2,4,1), S2 r=10 at (10,-2,-5); ray s=2J+5K, d=I-2K — this is Schaum's own worked example (Solved Prob. 12.15): ray starts inside S1, enters S2 before exiting S1, then exits S2 (spheres overlap)
 
 **Sutherland-Hodgman / Weiler-Atherton polygon clipping** — ✅ verified 2026-07-05, full solutions in [[Chapter5_Solutions.pdf]]
 - 2024 Q6a — Weiler-Atherton: window ABCD=(1,1),(5,1),(5,4),(1,4) vs triangle P(2,2),Q(4,2),R(3,5) — exit E1(10/3,4), entry E2(8/3,4); clipped CCW: P,Q,E1,E2
@@ -126,8 +125,10 @@
 - **Antialiasing/slanted lines:** ✅ verified 2026-07-04, solved in [[Chapter3_Solutions.pdf]] — 2023 Q2(a) why dimmer only [1]; 2022 Q2(c) why dimmer + how to fix [2]; 2021 Q2(b) "3 adverse effects" + lowpass-filter kernel application [2.75, bundled with the line-trace question]
 - **Geometric vs Coordinate transform:** ✅ verified 2026-07-04, solved in [[Chapter4_Solutions.pdf]] — 2021 Q3a [1.25]; 2020 Q5d [~1] *(2022's occurrence was mis-attributed to Q3a — that question is actually the separate Coordinate-system-rationale question above; 2022 does not ask Geometric vs Coordinate transformation)*
 - **RGB scanline interpolation:** ✅ re-verified against raw scans 2026-07-07, solved in [[Chapter11_Solutions.pdf]] — **corrected:** 2021 Q7c (P1 line6 RGB(1,1,0), P2 line15 RGB(0.6,0.5,0.2), find line8 [2]); 2022 Q7d (P1 line13 RGB(0.4,5,0), P2 line15 RGB(2,0.5,7), find line12 [2.5]); 2023 Q7c (P1 line3 RGB(5,5,0), P2 line9 RGB(2,0.5,7), find line5 [2]). No 2020 occurrence found (previous "2020 Q7d-equiv 2021 paper" note was garbled/wrong).
-- **Ray vs Vector:** 2022 Q8a, 2021 Q8c, 2020 Q7c(2021 paper actually — cross-check when drilling)
-- **Ray equation point-finding:** 2022 Q8c, 2021 Q8b
+- **Ray vs Vector:** ✅ re-verified against raw scans 2026-07-07, solved in [[Chapter12_Solutions.pdf]] — **corrected:** 2021 Q8c [1] "difference between vector and ray", 2022 Q8a [1] "show that a ray is not a vector", 2024 Q8c [2] "distinguish between ray and vector" (previous "2020" attribution was wrong — 2020 has no ray content; 2023 doesn't ask this either)
+- **Ray equation point-finding:** ✅ re-verified 2026-07-07, solved in [[Chapter12_Solutions.pdf]] — 2021 Q8b [2.5] (s=2I+J-3K,d=I+2K, t=0,1,7,4,3), 2022 Q8c [3] (s=2I-3J-7K,d=I-J-2K, t=1,2,-4,3,7). No 2020 occurrence.
+- **Ray tracing integrates hidden-surface+projection:** 2021 Q8a [1.5] "describe how", 2022 Q7c-related [3, bundled with homogeneous-coordinates question], 2024 Q8b [2] "why Ray Tracing is efficient" — solved in [[Chapter12_Solutions.pdf]]
+- **Point/plane same-side test (3D):** 2024 Q8d [2+2] — plane 5x-3y+6z=7, find normal + test if P1(1,4,2)/P2(-5,-1,3) same side — solved in [[Chapter12_Solutions.pdf]]
 - **Convex/concave polygon ID:** ✅ verified 2026-07-05, solved in [[Chapter5_Solutions.pdf]] — 2020 Q6c (4 shapes incl. pentagon), 2021 Q4c (3 shapes), 2022 Q7b (draw example diagram, 1 mark) — lives in the Ch5-Clipping cluster, not Ch3
 - **Midpoint circle + 8-way symmetry:** ✅ verified 2026-07-04, solved in [[Chapter3_Solutions.pdf]] — 2023 Q2(b) r=10 center-origin, 3rd-quadrant points [4]; 2022 Q2(a) 8-way symmetry explain [1.5] + Q2(b) r=10 center(50,50) [4]; 2020 Q4(c) show 8-way symmetry [1]
 

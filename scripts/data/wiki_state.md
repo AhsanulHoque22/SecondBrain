@@ -2,7 +2,7 @@
 _Updated: 2026-07-06 by overnight rollover_
 
 ## Active exam
-🎯 CSE 715 — Computer Graphics · **Wed 8 Jul 2026, 10:30 AM** · 1 day from 2026-07-07 · Phase: 🔒 Lockdown, day 2 of 2 — FINAL day (pure revision + timed past papers, Graphics only — no Livora, no other subjects). 07-06 closed the Z-Buffer gap (Ch10, now 📖) plus an unplanned Ch9 pass (Bezier/B-spline/Hermite, 0/5 PYQ stretch-goal, now 📖). 07-07 added a full Ch11 pass (Color/Shading Models: Phong, RGB interpolation, monitor matrix M, point left/right test, color gamut — real PYQ history 2020-2023, all 5 subtopics now 📖) — 37/51 topics 📖. Ray-sphere intersection (Ch12) still 🔲. More urgently: zero timed past-paper attempts confirmed all lockdown — today is the last chance before the exam.
+🎯 CSE 715 — Computer Graphics · **Wed 8 Jul 2026, 10:30 AM** · 1 day from 2026-07-07 · Phase: 🔒 Lockdown, day 2 of 2 — FINAL day (pure revision + timed past papers, Graphics only — no Livora, no other subjects). 07-06 closed the Z-Buffer gap (Ch10, now 📖) plus an unplanned Ch9 pass (Bezier/B-spline/Hermite, 0/5 PYQ stretch-goal, now 📖). 07-07 added full Ch11 (Color/Shading Models, 5 subtopics) AND Ch12 (Ray Tracing, 5 subtopics) question-analysis passes — 42/51 topics 📖. Of the 12 remaining 🔲, only **Point-obscures-point visibility via viewpoint** is real yield (4/5 years, 3 marks) — the rest are 0-1/5 PYQ leftovers. **Critical:** zero timed past-paper attempts confirmed all lockdown — today's actual study time went entirely to Ch11/Ch12 instead, and this is genuinely the last day before the exam.
 
 ## Topics — CSE715 Computer Graphics
 | Topic | Status | Conf | Next Recall |
@@ -25,7 +25,7 @@ _Updated: 2026-07-06 by overnight rollover_
 | Koch curve / fractal generation | 📖 | — | 2026-07-06 |
 | Point-obscures-point visibility via viewpoint | 🔲 | — | — |
 | Direct coding + lookup table bit math | 📖 | — | 2026-07-06 |
-| Ray–sphere intersection | 🔲 | — | — |
+| Ray–sphere intersection | 📖 | — | — |
 | Sutherland-Hodgman / Weiler-Atherton polygon clipping | 📖 | — | 2026-07-07 |
 | CG vs Image Processing/HCI | 📖 | — | 2026-07-06 |
 | Antialiasing / slanted-line dimming | 📖 | — | 2026-07-06 |
@@ -33,8 +33,8 @@ _Updated: 2026-07-06 by overnight rollover_
 | ↳ Coordinate-system rationale (device-independent/NDC) | 📖 | — | 2026-07-06 |
 | ↳ 2D transform extras: translation, shear, composite-rotation, figure-ID | 📖 | — | 2026-07-06 |
 | RGB scanline color interpolation | 📖 | — | — |
-| Ray vs Vector distinction | 🔲 | — | — |
-| Ray equation r(t)=s+td point-finding | 🔲 | — | — |
+| Ray vs Vector distinction | 📖 | — | — |
+| Ray equation r(t)=s+td point-finding | 📖 | — | — |
 | Convex/concave polygon identification | 📖 | — | 2026-07-07 |
 | Aspect ratio / resize distortion | 📖 | — | 2026-07-06 |
 | Midpoint circle algorithm + 8-way symmetry | 📖 | — | 2026-07-06 |
@@ -60,9 +60,9 @@ _Updated: 2026-07-06 by overnight rollover_
 | Octree/Quadtree/BST-tree/Fractal Geometry | 🔲 | — | — |
 
 ## Carry-forward
-- Ray-sphere intersection (Ch12) — still 🔲, TIER2, 4/5 yield. Quick gap-fill only (30–45 min max), tomorrow's Block 1.
-- ZERO timed past-paper attempts confirmed all lockdown so far. Top priority for 07-07 — the only day left before the exam.
-- Active recall passes (Ch2-4, Ch5-9) — not confirmed done. Fold into 07-07's blocks.
+- Ch11 + Ch12 question-analysis done 07-07 (unplanned — displaced the originally-scheduled Ray-sphere gap-fill + timed papers). Point-obscures-point visibility (4/5 yield) is now the only real-yield 🔲 left.
+- ZERO timed past-paper attempts confirmed all lockdown so far. Top priority — the only day left before the exam, and time already spent on Ch11/Ch12 instead.
+- Active recall passes (Ch2-12, all chapters) — not confirmed done. Fold into remaining blocks today.
 - 20-item AI/InfoSec recall backlog still not cleared — due again 2026-07-07, 27–34 days overdue on AI items, 20d on Number Theory. Parked through 07-07 (still inside lockdown, exam is Wed 07-08) — will keep slipping until after the Graphics exam.
 - CSE719 exam outcome still unconfirmed — 07-01 EOD log left blank, no 07-03 daily log exists. Low priority, not blocking.
 

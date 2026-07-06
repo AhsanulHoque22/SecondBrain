@@ -1,0 +1,11 @@
+\contentsline {section}{\numberline {1}Theoretical Framework}{2}{section.1}%
+\contentsline {subsection}{\numberline {1.1}Ray vs Vector}{2}{subsection.1.1}%
+\contentsline {subsection}{\numberline {1.2}Parametric Vector Representation of a Ray}{2}{subsection.1.2}%
+\contentsline {subsection}{\numberline {1.3}The Recursive Ray-Tracing Algorithm}{2}{subsection.1.3}%
+\contentsline {subsection}{\numberline {1.4}Ray--Sphere Intersection}{3}{subsection.1.4}%
+\contentsline {subsection}{\numberline {1.5}Ray--Plane Intersection \& Point/Plane Same-Side Test}{3}{subsection.1.5}%
+\contentsline {section}{\numberline {2}Examination 2021 --- Q8(a), Q8(b), Q8(c) \& Q8(e)}{3}{section.2}%
+\contentsline {section}{\numberline {3}Examination 2022 --- Q7(c)-related, Q8(a), Q8(c) \& Q8(d)}{4}{section.3}%
+\contentsline {section}{\numberline {4}Examination 2023 --- Q8(c): Ray--Sphere Intersection [3.5 marks]}{6}{section.4}%
+\contentsline {section}{\numberline {5}Examination 2024 --- Q8(b), Q8(c) \& Q8(d)}{6}{section.5}%
+\contentsline {section}{\numberline {6}Quick Summary}{7}{section.6}%

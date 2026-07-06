@@ -1,0 +1,259 @@
+% CSE 715 — Computer Graphics
+% Chapter 12: Ray Tracing (ray vs vector, ray equation, ray-sphere/ray-plane intersection, point/plane side test)
+% University of Chittagong, 7th Semester B.Sc. Engineering
+% Source: Schaum's Outline of Computer Graphics (Xiang & Plastock), Chapter 12
+%
+% Compile with: pdflatex Chapter12_Solutions.tex (run twice for TOC)
+
+\documentclass[12pt, a4paper]{article}
+
+\usepackage[left=2.5cm, right=2.5cm, top=2.8cm, bottom=2.8cm, headheight=15pt]{geometry}
+\usepackage{amsmath, amssymb, mathtools}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta, positioning, shapes.geometric, calc, backgrounds, fit}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{xcolor}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{mdframed}
+\usepackage{tabularx}
+\usepackage{hyperref}
+
+\definecolor{sectionblue}{RGB}{10,60,110}
+\definecolor{boxbg}{RGB}{242,247,255}
+\definecolor{answerbg}{RGB}{240,255,240}
+\definecolor{notesbg}{RGB}{255,250,230}
+
+\mdfdefinestyle{solutionframe}{linecolor=sectionblue, backgroundcolor=boxbg, roundcorner=4pt, linewidth=1.4pt, innertopmargin=7pt, innerbottommargin=7pt, innerleftmargin=9pt, innerrightmargin=9pt}
+\mdfdefinestyle{answerframe}{linecolor=green!55!black, backgroundcolor=answerbg, roundcorner=4pt, linewidth=1.4pt, innertopmargin=7pt, innerbottommargin=7pt, innerleftmargin=9pt, innerrightmargin=9pt}
+\mdfdefinestyle{notesframe}{linecolor=orange!70!black, backgroundcolor=notesbg, roundcorner=4pt, linewidth=1pt, innertopmargin=5pt, innerbottommargin=5pt, innerleftmargin=8pt, innerrightmargin=8pt}
+\newenvironment{solutionbox}{\begin{mdframed}[style=solutionframe]}{\end{mdframed}}
+\newenvironment{answerbox}{\begin{mdframed}[style=answerframe]}{\end{mdframed}}
+\newenvironment{notesbox}{\begin{mdframed}[style=notesframe]}{\end{mdframed}}
+
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{\small\color{sectionblue} CSE 715 --- Chapter 12: Ray Tracing}
+\rhead{\small\color{sectionblue} Model Solutions (2021--2024)}
+\cfoot{\small\thepage}
+\renewcommand{\headrulewidth}{0.5pt}
+
+\titleformat{\section}{\Large\bfseries\color{sectionblue}}{}{0em}{}[\vspace{-2pt}\color{sectionblue}\rule{\linewidth}{0.8pt}]
+\titleformat{\subsection}{\large\bfseries\color{sectionblue!85!black}}{}{0em}{}
+
+\begin{document}
+
+\begin{center}
+  {\LARGE\bfseries\color{sectionblue} CSE 715: Computer Graphics}\\[0.6em]
+  {\Large\bfseries Chapter 12 --- Ray Tracing}\\[0.3em]
+  {\large Ray vs Vector, Ray Equation, Ray--Sphere/Ray--Plane Intersection, Point/Plane Side Test}\\[0.2em]
+  {\normalsize University of Chittagong \quad|\quad 7\textsuperscript{th} Semester B.Sc.\ (Engg.) Examination}\\[0.3em]
+  {\small Source: Schaum's Outline of Computer Graphics (Xiang \& Plastock), Chapter 12 --- notation follows the book exactly ($\mathbf{r}(t)=\mathbf{s}+t\mathbf{d}$, $A,B,C$ quadratic coefficients)}
+\end{center}
+
+\vspace{0.3em}\noindent\rule{\linewidth}{1pt}\vspace{0.5em}
+
+\begin{notesbox}
+\textbf{Yield note (re-verified against all 5 raw scanned papers 2026-07-07):} \textbf{2020 has zero ray-tracing content of any kind} --- its Section-B Q7/Q8 are point left/right test, polygon orientation, 3D rotation matrices, projections, and point-obscures-via-viewpoint, none of which touch rays. The previous \texttt{\_PastPapers.md} table wrongly credited 2020 with ray-sphere/ray-vector/ray-equation questions --- corrected in this pass. Real spread: ray-sphere (2021, 2022, 2023), ray vs vector (2021, 2022, 2024), ray equation point-finding (2021, 2022 only), plus two new subtopics split out today: "ray tracing integrates hidden-surface+projection" (2021, 2022-related, 2024) and the 2024-only 3D point/plane same-side test.
+\end{notesbox}
+
+\tableofcontents
+\newpage
+
+%=====================================================================
+\section{Theoretical Framework}
+%=====================================================================
+
+\subsection{Ray vs Vector}
+\begin{answerbox}
+A \textbf{vector} is defined only by \textbf{direction and magnitude} --- it is translation-invariant; the same vector can be drawn starting anywhere. A \textbf{ray} is defined by a \textbf{direction and a fixed starting point} $\mathbf{s}$, and extends in that one direction only for $t\ge0$ (a half-line, not a full line). Two rays with identical direction but different starting points are different rays, whereas the corresponding vectors would be considered the same.
+\end{answerbox}
+
+\subsection{Parametric Vector Representation of a Ray}
+\begin{answerbox}
+$$\mathbf{r}(t) = \mathbf{s} + t\mathbf{d}, \qquad t\ge0$$
+where $\mathbf{s}$ is the starting point and $\mathbf{d}$ the direction vector. Substituting a value of $t$ gives the coordinates of the point on the ray at that parameter value (applied component-wise to $\mathbf{I},\mathbf{J},\mathbf{K}$).
+\end{answerbox}
+
+\subsection{The Recursive Ray-Tracing Algorithm}
+\begin{answerbox}
+Each pixel's color comes from a \textbf{primary ray} traced from the viewpoint through the pixel into the scene. At the closest intersection point, the color is the sum of three contributions, each computed via a \textbf{secondary ray}:
+\begin{itemize}[noitemsep]
+  \item \textbf{Local contribution} (shadow/illumination ray): direct light from source(s), via the Phong formula; blocked $\Rightarrow$ in shadow.
+  \item \textbf{Reflected contribution} (specularly reflected ray): inter-object reflection, found by recursively ray-tracing the mirror-reflection direction.
+  \item \textbf{Transmitted contribution} (specularly transmitted/refracted ray): light through a transparent surface, direction given by Snell's law $\sin\alpha/\sin\beta=\eta_2/\eta_1$.
+\end{itemize}
+Full formula: $I = I_ak_a + \sum_i I_{p_i}(k_d\mathbf{L}_i\!\cdot\!\mathbf{N}+k_s(\mathbf{R}_i\!\cdot\!\mathbf{V})^n) + k_rI_r + k_tI_t$, where $I_r,I_t$ are obtained by recursively treating the reflected/transmitted ray as a new primary ray (up to a depth limit).
+\textbf{Why ray tracing is efficient/integrates hidden-surface removal + projection (Solved Prob.\ 12.1):} each primary ray is a \emph{projector} mapping a surface point $P$ to its image $P'$ on the view plane. If all primary rays emanate from one viewpoint, this \emph{is} perspective projection; if all primary rays are parallel, this \emph{is} parallel projection. If a primary ray intersects several object surfaces, only the \textbf{closest} one to the view plane determines the pixel's color --- every other surface it hits is automatically treated as hidden and discarded. So a single ray/surface-intersection test simultaneously performs projection \emph{and} hidden-surface removal, instead of needing them as separate pipeline stages.
+\end{answerbox}
+
+\subsection{Ray--Sphere Intersection}
+\begin{answerbox}
+Sphere: center $\mathbf{c}$, radius $R$. Substituting $\mathbf{r}(t)=\mathbf{s}+t\mathbf{d}$ into $|\mathbf{p}-\mathbf{c}|=R$ and squaring gives a quadratic in $t$:
+$$At^2+2Bt+C=0, \qquad A=|\mathbf{d}|^2,\ \ B=(\mathbf{s}-\mathbf{c})\cdot\mathbf{d},\ \ C=|\mathbf{s}-\mathbf{c}|^2-R^2$$
+$$t = \frac{-B\pm\sqrt{B^2-AC}}{A}$$
+\begin{center}
+\begin{tabular}{p{2.6cm}p{9.8cm}}
+\toprule
+$B^2-AC<0$ & no intersection \\
+$B^2-AC=0$ & ray (or its negative extension) touches the sphere \\
+$B^2-AC>0$ & two $t$ values $t_1,t_2$: both $<0\Rightarrow$ negative extension only (no real intersection); one $=0\Rightarrow$ ray starts on sphere, intersects only if the other root $>0$; \textbf{differ in sign} $\Rightarrow$ ray starts \emph{inside} the sphere, intersects once (at the positive root); \textbf{both positive} $\Rightarrow$ ray intersects twice (enters then exits), smaller root = nearer intersection \\
+\bottomrule
+\end{tabular}
+\end{center}
+\end{answerbox}
+
+\subsection{Ray--Plane Intersection \& Point/Plane Same-Side Test}
+\begin{answerbox}
+For a plane with normal $\mathbf{n}=x_n\mathbf{I}+y_n\mathbf{J}+z_n\mathbf{K}$ through point $P_0$, the plane equation is $x_n(x-x_0)+y_n(y-y_0)+z_n(z-z_0)=0$, i.e.\ in the form $ax+by+cz=d$ where $(a,b,c)=\mathbf{n}$. \textbf{Same-side test:} define $f(x,y,z)=ax+by+cz-d$; two points are on the \textbf{same side} of the plane iff $f$ has the \textbf{same sign} at both (this is the direct 3D analogue of the 2D point left/right-of-line test in the Chapter 11 wiki page).
+\textbf{Ray--plane intersection:} substituting $\mathbf{s}+t\mathbf{d}$ for $(x,y,z)$ and solving for $t$ gives $t=\dfrac{\mathbf{n}\cdot\mathbf{p}}{\mathbf{n}\cdot\mathbf{d}}$ where $\mathbf{p}=P_0-\mathbf{s}$; $\mathbf{n}\cdot\mathbf{d}=0\Rightarrow$ ray parallel to plane (no intersection); $t<0\Rightarrow$ only the negative extension intersects; $t>0\Rightarrow$ the ray itself intersects.
+\end{answerbox}
+
+%=====================================================================
+\section{Examination 2021 --- Q8(a), Q8(b), Q8(c) \& Q8(e)}
+%=====================================================================
+
+\subsection*{Q8(a) --- Ray Tracing Integrates Hidden-Surface + Projection [1.5 marks]}
+\begin{solutionbox}
+\textbf{Question:} Describe how hidden surface removal and projection are integrated into the ray-tracing process.
+\end{solutionbox}
+\begin{answerbox}
+See \S1.3: each primary ray is a projector mapping $P\to P'$; rays converging at one viewpoint = perspective, parallel rays = parallel projection; when a ray hits multiple surfaces, only the closest to the view plane is kept (the rest are hidden surfaces, removed automatically).
+\end{answerbox}
+
+\subsection*{Q8(b) --- Ray Equation Point-Finding [2.5 marks]}
+\begin{solutionbox}
+\textbf{Question:} A ray is represented by $\mathbf{r}(t)=\mathbf{s}+t\mathbf{d}$ where $\mathbf{s}=2\mathbf{I}+\mathbf{J}-3\mathbf{K}$ and $\mathbf{d}=\mathbf{I}+2\mathbf{K}$. Find the coordinates of the points on the ray that correspond to $t=0,1,7,4,3$.
+\end{solutionbox}
+\begin{answerbox}
+$\mathbf{r}(t)=(2+t)\mathbf{I}+\mathbf{J}+(-3+2t)\mathbf{K}$:
+$$t{=}0{:}\ (2,1,-3)\quad t{=}1{:}\ (3,1,-1)\quad t{=}7{:}\ (9,1,11)\quad t{=}4{:}\ (6,1,5)\quad t{=}3{:}\ (5,1,3)$$
+\end{answerbox}
+
+\subsection*{Q8(c) --- Ray vs Vector [1 mark]}
+\begin{solutionbox}
+\textbf{Question:} What is the difference between a vector and a ray?
+\end{solutionbox}
+\begin{answerbox}
+See \S1.1: a vector has direction+magnitude only (translation-invariant); a ray has direction+a fixed starting point and extends one-sidedly ($t\ge0$).
+\end{answerbox}
+
+\subsection*{Q8(e) --- Ray--Sphere Intersection (Two Spheres) [3.75 marks]}
+\begin{solutionbox}
+\textbf{Question:} Let $S_1$ be a sphere of radius 8 centered at $(2,4,1)$ and $S_2$ a sphere of radius 10 centered at $(10,-2,-5)$. Determine if a ray with $\mathbf{s}=2\mathbf{J}+5\mathbf{K}$ and $\mathbf{d}=\mathbf{I}-2\mathbf{K}$ intersects the spheres.
+\end{solutionbox}
+\begin{answerbox}
+\textbf{This is Schaum's own worked example (Solved Prob.\ 12.15) --- identical numbers.} $A=|\mathbf{d}|^2=1+4=5$.
+\textbf{$S_1$:} $\mathbf{s}-\mathbf{c}_1=(-2,-2,4)$, $B=(-2)(1)+(-2)(0)+(4)(-2)=-10$, $C=4+4+16-64=-40$. $B^2-AC=100+200=300>0$: $t_1=2(1+\sqrt3)\approx5.464>0$, $t_2=2(1-\sqrt3)\approx-1.464<0$ --- signs differ $\Rightarrow$ ray starts \textbf{inside} $S_1$, exits at $t\approx5.464$.
+\textbf{$S_2$:} $\mathbf{s}-\mathbf{c}_2=(-10,4,10)$, $B=-10-20=-30$, $C=100+16+100-100=116$. $B^2-AC=900+580=320>0$: $t_3=6+1.6\sqrt5\approx9.578$, $t_4=6-1.6\sqrt5\approx2.422$ --- both positive $\Rightarrow$ ray enters $S_2$ at $t\approx2.422$, exits at $t\approx9.578$.
+\textbf{Conclusion:} comparing $t_2{<}0{<}t_4(2.422){<}t_1(5.464){<}t_3(9.578)$ --- the ray starts inside $S_1$, \textbf{enters $S_2$ before leaving $S_1$}, then finally exits $S_2$ (the two spheres overlap).
+\end{answerbox}
+
+%=====================================================================
+\section{Examination 2022 --- Q7(c)-related, Q8(a), Q8(c) \& Q8(d)}
+%=====================================================================
+
+\subsection*{Q7(c)-related --- Ray Tracing Benefits [3 marks, bundled with homogeneous coordinates]}
+\begin{solutionbox}
+\textbf{Question:} What is the purpose of homogeneous coordinates? How does ray tracing technique incorporate the benefits of hidden surface removal and projection techniques?
+\end{solutionbox}
+\begin{answerbox}
+\textbf{Homogeneous coordinates part} (Related, primary home = Ch4/Ch7 transformation topics): represent a point $(x,y,z)$ as $(x,y,z,1)$ so that translation --- otherwise not expressible as a matrix multiply --- becomes a matrix product like rotation/scaling, letting all affine transforms compose into a single matrix; also enables perspective projection via a $4^{\mathrm{th}}$-row divide.
+\textbf{Ray-tracing part:} identical to \S1.3/Q8(a) 2021 --- primary rays double as projectors (viewpoint-converging = perspective, parallel = parallel projection) and automatically resolve hidden surfaces by keeping only the nearest intersection.
+\end{answerbox}
+
+\subsection*{Q8(a) --- Ray vs Vector [1 mark]}
+\begin{solutionbox}
+\textbf{Question:} Show that a ray is not a vector.
+\end{solutionbox}
+\begin{answerbox}
+See \S1.1: a vector is fully specified by direction+magnitude and is position-free; a ray additionally requires a fixed starting point and only extends in one direction ($t\ge0$), so two rays with the same direction but different origins are different rays even though the corresponding vectors would be identical --- hence a ray carries more information than a vector and is not simply a vector.
+\end{answerbox}
+
+\subsection*{Q8(c) --- Ray Equation Point-Finding [3 marks]}
+\begin{solutionbox}
+\textbf{Question:} A ray is represented by $\mathbf{r}(t)=\mathbf{s}+t\mathbf{d}$ where $\mathbf{s}=2\mathbf{I}-3\mathbf{J}-7\mathbf{K}$ and $\mathbf{d}=\mathbf{I}-\mathbf{J}-2\mathbf{K}$. Find the coordinates of the points on the ray that correspond to $t=1,2,-4,3,7$.
+\end{solutionbox}
+\begin{answerbox}
+$\mathbf{r}(t)=(2+t)\mathbf{I}+(-3-t)\mathbf{J}+(-7-2t)\mathbf{K}$:
+$$t{=}1{:}(3,{-}4,{-}9)\ \ t{=}2{:}(4,{-}5,{-}11)\ \ t{=}{-}4{:}({-}2,1,1)\ \ t{=}3{:}(5,{-}6,{-}13)\ \ t{=}7{:}(9,{-}10,{-}21)$$
+\end{answerbox}
+
+\subsection*{Q8(d) --- Ray--Sphere Intersection [4 marks]}
+\begin{solutionbox}
+\textbf{Question:} Assume a sphere of radius 2 with center located at the origin. If a ray originates from the point $(3,0,0)$ in the direction $(-3,1,0)$, determine the intersection point(s) of that ray with the sphere.
+\end{solutionbox}
+\begin{answerbox}
+$\mathbf{s}=(3,0,0),\ \mathbf{d}=(-3,1,0),\ \mathbf{c}=(0,0,0),\ R=2$. $A=|\mathbf{d}|^2=9+1=10$. $B=(\mathbf{s}-\mathbf{c})\cdot\mathbf{d}=(3)(-3)+0+0=-9$. $C=|\mathbf{s}-\mathbf{c}|^2-R^2=9-4=5$. $B^2-AC=81-50=31>0$:
+$$t=\frac{9\pm\sqrt{31}}{10} \Rightarrow t_1\approx1.457,\ t_2\approx0.343$$
+Both positive $\Rightarrow$ ray intersects the sphere \textbf{twice}. Near point ($t_2\approx0.343$): $(3-3(0.343),\ 0.343,\ 0)\approx(1.970,\,0.343,\,0)$. Far point ($t_1\approx1.457$): $(3-3(1.457),\ 1.457,\ 0)\approx(-1.370,\,1.457,\,0)$.
+\end{answerbox}
+
+%=====================================================================
+\section{Examination 2023 --- Q8(c): Ray--Sphere Intersection [3.5 marks]}
+%=====================================================================
+\begin{solutionbox}
+\textbf{Question:} Let $S_1$ be a sphere of radius 8 centered at $(2,4,1)$ and $S_2$ a sphere of radius 10 centered at $(10,-2,-5)$. Determine if a ray with $\mathbf{s}=2\mathbf{I}+5\mathbf{K}$ and $\mathbf{d}=\mathbf{I}-2\mathbf{J}$ intersects the spheres.
+\end{solutionbox}
+\begin{answerbox}
+Note the different $\mathbf{s},\mathbf{d}$ from 2021's Q8(e) (same sphere centers/radii, different ray). $A=|\mathbf{d}|^2=1+4=5$.
+\textbf{$S_1$:} $\mathbf{s}-\mathbf{c}_1=(0,-4,4)$, $B=0+8+0=8$, $C=0+16+16-64=-32$. $B^2-AC=64+160=224>0$: $t=\dfrac{-8\pm\sqrt{224}}{5}\Rightarrow t_1\approx1.393,\ t_2\approx-4.593$ --- signs differ $\Rightarrow$ ray starts \textbf{inside} $S_1$, exits at $t\approx1.393$: point $\approx(2{+}1.393,\ 0{-}2(1.393),\ 5)=(3.393,\,-2.787,\,5)$.
+\textbf{$S_2$:} $\mathbf{s}-\mathbf{c}_2=(-8,2,10)$, $B=-8-4+0=-12$, $C=64+4+100-100=68$. $B^2-AC=144-340=-196<0$ $\Rightarrow$ \textbf{no intersection} with $S_2$.
+\textbf{Conclusion:} the ray intersects only $S_1$ (once, since it originates inside), and misses $S_2$ entirely.
+\end{answerbox}
+
+%=====================================================================
+\section{Examination 2024 --- Q8(b), Q8(c) \& Q8(d)}
+%=====================================================================
+
+\subsection*{Q8(b) --- Why Ray Tracing Is Efficient [2 marks]}
+\begin{solutionbox}
+\textbf{Question:} Why is Ray Tracing an efficient method of generating images?
+\end{solutionbox}
+\begin{answerbox}
+Per \S1.3: a single ray/object intersection test simultaneously performs \textbf{projection} (rays act as projectors), \textbf{hidden-surface removal} (only the nearest hit is kept), \textbf{shading/shadowing} (local contribution via a shadow ray), and can capture \textbf{reflection/refraction} (recursive secondary rays) --- one unified computational process instead of separate pipeline stages for each of these tasks.
+\end{answerbox}
+
+\subsection*{Q8(c) --- Ray vs Vector [2 marks]}
+\begin{solutionbox}
+\textbf{Question:} Distinguish between ray and vector.
+\end{solutionbox}
+\begin{answerbox}
+See \S1.1 (same answer as 2021 Q8c/2022 Q8a): vector = direction+magnitude, position-free; ray = direction+fixed starting point, one-sided ($t\ge0$).
+\end{answerbox}
+
+\subsection*{Q8(d) --- Point/Plane Same-Side Test [2+2 marks]}
+\begin{solutionbox}
+\textbf{Question:} Given the plane $5x-3y+6z=7$: (i) find the normal vector to the plane, and (ii) determine whether $P_1(1,4,2)$ and $P_2(-5,-1,3)$ are on the same side of the plane.
+\end{solutionbox}
+\begin{answerbox}
+\textbf{(i)} The plane is in the form $ax+by+cz=d$ with $(a,b,c)=(5,-3,6)$, so the normal vector is $\mathbf{n}=5\mathbf{I}-3\mathbf{J}+6\mathbf{K}$.
+\textbf{(ii)} Define $f(x,y,z)=5x-3y+6z-7$ (see \S1.5):
+$$f(P_1)=5(1)-3(4)+6(2)-7=5-12+12-7=-2 \qquad f(P_2)=5(-5)-3(-1)+6(3)-7=-25+3+18-7=-11$$
+Both negative (same sign) $\Rightarrow$ $P_1$ and $P_2$ are on the \textbf{same side} of the plane.
+\end{answerbox}
+
+%=====================================================================
+\section{Quick Summary}
+%=====================================================================
+\begin{center}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{p{4.8cm}|p{2.2cm}|p{6.8cm}}
+\toprule
+\textbf{Subtopic} & \textbf{Years} & \textbf{Method} \\
+\midrule
+Ray vs vector & 2021, 2022, 2024 & Vector = direction+magnitude; ray = direction+fixed origin, one-sided \\
+Ray equation point-finding & 2021, 2022 & Plug $t$ into $\mathbf{r}(t)=\mathbf{s}+t\mathbf{d}$ component-wise \\
+Ray--sphere intersection & 2021, 2022, 2023 & Quadratic $At^2+2Bt+C=0$; sign/value of roots tells enter/exit/inside/miss \\
+Ray tracing integrates hidden-surface+projection & 2021, 2022 (related), 2024 & Primary ray = projector; nearest hit wins (auto hidden-surface removal) \\
+Point/plane same-side test (3D) & 2024 & $f(P)=ax+by+cz-d$; same sign at two points = same side \\
+\bottomrule
+\end{tabular}
+\end{center}
+\begin{notesbox}
+\textbf{Exam-day takeaway:} every ray question reduces to one of two mechanical recipes --- plug $t$ into $\mathbf{r}(t)=\mathbf{s}+t\mathbf{d}$, or set up the quadratic $At^2+2Bt+C=0$ and read off enter/exit/inside/miss from the signs of the roots. The "why efficient / integrates hidden-surface+projection" explain-questions all boil down to the single idea in \S1.3: the nearest ray/surface hit does projection and hidden-surface removal for free.
+\end{notesbox}
+
+\end{document}

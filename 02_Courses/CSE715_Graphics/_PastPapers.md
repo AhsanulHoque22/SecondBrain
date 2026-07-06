@@ -40,14 +40,14 @@
 | Koch curve / fractal generation | 2020 2021 2022 2023 | Draw next generation from given rule | 1 | ⭐⭐ |
 | Point-obscures-point (visibility via viewpoint) | 2020 2021 2022 2023 | Given 3 points + viewpoint, determine occlusion order | 3 | ⭐⭐ |
 | Direct coding + lookup table bit math | 2020 2021 2022 2024 | Bits per pixel ↔ number of colors ↔ table size | 1–2 | ⭐⭐ |
-| Ray–sphere intersection | 2020 2021 2022 2023 | Given ray + sphere(s), determine intersection | 3.5–3.75 | ⭐⭐ |
+| Ray–sphere intersection | 2021 2022 2023 | Given ray + sphere(s), determine intersection | 3.5–4 | ⭐⭐ |
 | Sutherland-Hodgman / Weiler-Atherton polygon clipping | 2021 2022 2023 2024 | Clip polygon against window edge-by-edge (2024 upgraded to Weiler-Atherton) | 3–4 | ⭐⭐ |
 | CG vs Image Processing / HCI | 2020 2021 2022 2023 | Short distinguishing answer | 1–3 | ⭐⭐ |
 | Antialiasing / why slanted lines look dimmer | 2021 2022 2023 | Explain + how to fix | 1.5–2 | ⭐⭐ |
 | Geometric vs Coordinate transformation | 2020 2021 2022 | Distinguish the two | 1–3.5 | ⭐ |
 | RGB color interpolation along a scanline | 2021 2022 2023 | Given colors at two points on a line, find color at third point | 2–2.5 | ⭐ |
-| Ray vs Vector distinction | 2020 2021 2022 | "Show a ray is not a vector" / difference | 1 | ⭐ |
-| Ray equation r(t)=s+td — point finding | 2020 2021 2022 | Plug in t values, get coordinates | 2.5–3 | ⭐ |
+| Ray vs Vector distinction | 2021 2022 2024 | "Show a ray is not a vector" / difference | 1–2 | ⭐ |
+| Ray equation r(t)=s+td — point finding | 2021 2022 | Plug in t values, get coordinates | 2.5–3 | ⭐ |
 | Convex/concave polygon identification | 2020 2021 2022 | Identify + justify from given shapes | 1.5–2 | ⭐ |
 | Aspect ratio / resize distortion | 2020 2021 2022 2023 | Compute resized dimensions; geometric distortion check | 1–2 | ⭐ |
 | Midpoint circle algorithm + 8-way symmetry | 2020 2022 2023 | Raster locations for given radius/center; explain symmetry | 1.5–4 | ⭐ |

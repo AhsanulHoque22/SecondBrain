@@ -5,8 +5,8 @@
 ## Right now
 - **Active exam:** 🎯 CSE 715 — Computer Graphics — **Wed 8 Jul 2026, 10:30 AM**
 - **Days left:** 1
-- **Phase:** 🔒 Lockdown, day 2 of 2 — FINAL day (pure revision + timed past papers, Graphics only). 07-06 closed the Z-Buffer gap (Ch10, now 📖) plus an unplanned Ch9 Bezier/B-spline/Hermite pass (32/51 topics 📖). But Ray-sphere intersection is still 🔲, and **zero timed past-paper attempts have been confirmed all lockdown** — Blocks 3–7 from 07-06 (active recall, timed papers, cheat sheet) have no evidence of completion.
-- **Single most important thing:** Quick Ray-sphere gap-fill (cap 45 min), then the rest of today MUST be timed past papers + active recall — that's the one thing that hasn't happened yet and can't slip again before tomorrow's exam. Say "starting block 1" to get the study guide.
+- **Phase:** 🔒 Lockdown, day 2 of 2 — FINAL day (pure revision + timed past papers, Graphics only). 07-06 closed the Z-Buffer gap (Ch10, now 📖) plus an unplanned Ch9 Bezier/B-spline/Hermite pass. 07-07 added a full Ch11 (Color/Shading + point left/right test, 5 subtopics, real PYQ history 2020-2023) question-analysis pass (37/51 topics 📖). Ray-sphere intersection (Ch12) still 🔲, and **zero timed past-paper attempts have been confirmed all lockdown** — Blocks 3–7 from 07-06 (active recall, timed papers, cheat sheet) have no evidence of completion.
+- **Single most important thing:** Ray-sphere gap-fill next, then the rest of today MUST be timed past papers + active recall — that's the one thing that hasn't happened yet and can't slip again before tomorrow's exam.
 - **After CSE719:** Exam sat 07-01. Topics roll into normal spaced-recall rotation — no longer a special tracked risk.
 - **Next exam after this:** CSE 700 — Thesis — Wed 15 Jul 2026
 - **⚠️ Rule:** Google Calendar is the ONLY source of truth for daily plans. Never use the overnight rollover log for scheduling.

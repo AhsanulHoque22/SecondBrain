@@ -10,3 +10,4 @@
 - [[wiki/mathematics-of-projection|Mathematics of Projection (Ch7)]] — perspective/parallel projection, cavalier/cabinet, isometric/dimetric/trimetric, perspective anomalies
 - [[wiki/bezier-bspline-hermite|Bezier/B-Spline/Hermite Curves (Ch9)]] — 0/5 PYQ, syllabus-mandated theory only
 - [[wiki/z-buffer|Z-Buffer Algorithm (Ch10)]] — max objects representable, 2×2 pixel trace, vs Painter's algorithm
+- [[wiki/color-shading-models|Color & Shading Models (Ch11)]] — Phong model, RGB scanline interpolation, monitor matrix M, point left/right test, color gamut

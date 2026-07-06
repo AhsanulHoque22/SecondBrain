@@ -45,7 +45,7 @@
 | CG vs Image Processing / HCI | 2020 2021 2022 2023 | Short distinguishing answer | 1–3 | ⭐⭐ |
 | Antialiasing / why slanted lines look dimmer | 2021 2022 2023 | Explain + how to fix | 1.5–2 | ⭐⭐ |
 | Geometric vs Coordinate transformation | 2020 2021 2022 | Distinguish the two | 1–3.5 | ⭐ |
-| RGB color interpolation along a scanline | 2020 2021 2022 | Given colors at two points on a line, find color at third point | 1.75–2.5 | ⭐ |
+| RGB color interpolation along a scanline | 2021 2022 2023 | Given colors at two points on a line, find color at third point | 2–2.5 | ⭐ |
 | Ray vs Vector distinction | 2020 2021 2022 | "Show a ray is not a vector" / difference | 1 | ⭐ |
 | Ray equation r(t)=s+td — point finding | 2020 2021 2022 | Plug in t values, get coordinates | 2.5–3 | ⭐ |
 | Convex/concave polygon identification | 2020 2021 2022 | Identify + justify from given shapes | 1.5–2 | ⭐ |
@@ -67,7 +67,7 @@
 | Orthographic vs Oblique projection | 2023 | Differentiate | 1 | rare |
 | Back-face / visible-surface definition | 2024 | Define with example | 2 | rare |
 | Color gamut of a monitor | 2022 | Explain | 1 | rare |
-| Point left/right-of-line test | 2021 2022 | C=(x2-x1)(y-y1)-(y2-y1)(x-x1) — interpret sign | 1 | rare, quick to learn |
+| Point left/right-of-line test | 2020 2022 | C=(x2-x1)(y-y1)-(y2-y1)(x-x1) — interpret sign | 1–2.25 | rare, quick to learn |
 | Bezier / B-spline / Hermite curves | **0/5 — never appeared** | — | — | ⚠️ **syllabus mandates it anyway (Ch9), 5-year PYQ record says otherwise — see [[_Syllabus]] note** |
 
 ## Key repeating setups (memorise the method, not the numbers — numbers change every year)

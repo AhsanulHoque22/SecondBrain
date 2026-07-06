@@ -30,20 +30,20 @@ Status: 🔲 not started · 📖 learning · 🔁 needs recall · ✅ can explai
 | Geometric vs Coordinate transformation | 📖 | — | 2026-07-04 | 2026-07-06 | 3/5 · 1–3.5 marks | Definitional distinction. Solved in [[Chapter4_Solutions.pdf]]. |
 | ↳ Coordinate-system rationale (device-independent/NDC) | 📖 | — | 2026-07-04 | 2026-07-06 | 3/5 · 1 mark | "Monitor sizes vary — what coordinate system + why" — new subtopic split out 2026-07-04, previously untracked. 2020 Q6a, 2022 Q3a, 2023 Q3a. Solved in [[Chapter4_Solutions.pdf]]. |
 | ↳ 2D transform extras: translation, shear, composite-rotation steps, figure-based transform ID | 📖 | — | 2026-07-04 | 2026-07-06 | 1/5 · 9 marks (2024 Q4 whole) | 2024-only, new subtopic split out 2026-07-04. Q4a identify transforms from figure, Q4c translate a segment, Q4d steps to rotate arbitrary line about a point, Q4e shear matrices. Syllabus explicitly names mirror/shear/matrix description under Ch4 even without 5-yr PYQ history. Solved in [[Chapter4_Solutions.pdf]]. |
-| RGB scanline color interpolation | 🔲 | — | — | — | 3/5 · 1.75–2.5 marks | Linear interpolation given colors at 2 points on a line |
+| RGB scanline color interpolation | 📖 | — | 2026-07-07 | — | 3/5 · 1.75–2.5 marks | Linear interpolation given colors at 2 points on a line, find color at 3rd. 2021 Q7c/2022 Q7d/2023 Q7c — all bundled in Q7/Ch11 cluster. Solved in [[Chapter11_Solutions.pdf]]. |
 | Ray vs Vector distinction | 🔲 | — | — | — | 3/5 · 1 mark | "Show a ray is not a vector" |
 | Ray equation r(t)=s+td point-finding | 🔲 | — | — | — | 3/5 · 2.5–3 marks | Plug in t values |
 | Convex/concave polygon identification | 📖 | — | 2026-07-05 | 2026-07-07 | 3/5 · 1.5–2 marks | Justify from shape — check every interior angle <180° or find a reflex vertex. Solved alongside Ch5 in [[Chapter5_Solutions.pdf]] (2020 Q6c, 2021 Q4c, 2022 Q7b). |
 | Aspect ratio / resize distortion | 📖 | — | 2026-07-04 | 2026-07-06 | 4/5 · 1–2 marks | Compute resized dims; geometric distortion check. Solved in [[Chapter2_Solutions.pdf]]. |
 | Midpoint circle algorithm + 8-way symmetry | 📖 | — | 2026-07-04 | 2026-07-06 | 3/5 · 1.5–4 marks | Raster locations for given radius/center — full octant-trace method verified. Solved in [[Chapter3_Solutions.pdf]]. |
 | Tilting (3D composite rotation, x then y) | 📖 | — | 2026-07-05 | 2026-07-07 | 1/5 · 3.5 marks | Derive matrix; does order matter? **Correction:** re-verified against all 5 raw scanned papers 2026-07-05 — only appears 2022 Q5c, not 2021 as previously tracked. Solved in [[Chapter6_Solutions.pdf]]. |
-| Monitor color transformation matrix M | 🔲 | — | — | — | 2/5 · 3 marks | Given chromaticity + white point (D65) |
+| Monitor color transformation matrix M | 📖 | — | 2026-07-07 | — | 2/5 · 3 marks | Given chromaticity + white point (D65), find M via C_r/C_g/C_b auxiliary vars. 2021 Q7a/2023 Q7b. Method template = Schaum's solved Prob 11.7/11.8. Solved in [[Chapter11_Solutions.pdf]]. |
 | Isometric/Dimetric/Trimetric projection | 📖 | — | 2026-07-05 | 2026-07-07 | 2/5 · 2.25–4 marks | Draw/differentiate — equal angles w/ all 3 axes (isometric) / exactly 2 (dimetric) / none (trimetric). Solved in [[Chapter7_Solutions.pdf]]. |
 | Perspective foreshortening + vanishing point | 📖 | — | 2026-07-05 | 2026-07-07 | 2/5 · 1.75–2 marks | Explain with diagram. Solved in [[Chapter7_Solutions.pdf]]. |
-| Phong illumination model | 🔲 | — | — | — | 2/5 · 1.5–3 marks | Diffuse + specular significance |
+| Phong illumination model | 📖 | — | 2026-07-07 | — | 2/5 · 1.5–3 marks | I = Iₐkₐ + Iₚ(k_d L·N + k_s(R·V)^n). **Correction:** re-verified against raw scans 2026-07-07 — 2022 is Q7e "enumerate significance of diffuse/specular reflection" [1.5] (topic map previously said Q6d, wrong); 2023 is Q6d "explain the L/N/R/V diagram" [3]. Solved in [[Chapter11_Solutions.pdf]]. |
 | Flood-fill / boundary-fill (8-connected) | 📖 | — | 2026-07-04 | 2026-07-06 | 2/5 · 2.5–3 marks | Justify fill on given shape — key trap: same connectivity for boundary+fill leaks on diagonal edges. Solved in [[Chapter3_Solutions.pdf]]. |
 | ↳ Scan-line polygon fill algorithm (edge list) | 🔲 | — | — | — | 0/5 PYQ | Schaum's §3.7 — geometric (vertex-based) fill, no past-paper hit, theory only |
-| Point left/right-of-line test | 🔲 | — | — | — | 2/5 · 1 mark | C=(x2-x1)(y-y1)-(y2-y1)(x-x1), interpret sign |
+| Point left/right-of-line test | 📖 | — | 2026-07-07 | — | 2/5 · 1 mark | C=(x2-x1)(y-y1)-(y2-y1)(x-x1) — z-component of cross product; sign gives left/right/on. 2020 Q7a [2.25], 2022 Q7a [1]. Solved in [[Chapter11_Solutions.pdf]]. |
 | Halftoning + dither matrix (D2→D4) | 📖 | — | 2026-07-04 | 2026-07-06 | 1/5 · 2–3 marks | 2024 only, recurrence relation given in-paper. Solved in [[Chapter2_Solutions.pdf]] (Bayer matrix result). |
 | Circular clipping window | 🔲 | — | — | — | 1/5 · 3 marks | Inside/outside/intersecting + clip. 2024 Q5c answered as Related bundle in [[Chapter5_Solutions.pdf]] (not a full study block yet). |
 | Trapezoid-primitive polygon fill | 🔲 | — | — | — | 1/5 · 1–2 marks each | No textbook resource — 2024 lecture-only topic |
@@ -53,7 +53,7 @@ Status: 🔲 not started · 📖 learning · 🔁 needs recall · ✅ can explai
 | Perspective projection anomalies (4) | 📖 | — | 2026-07-05 | 2026-07-07 | 1/5 · 4 marks | List + explain — foreshortening, vanishing points, view confusion, topological distortion. Solved in [[Chapter7_Solutions.pdf]]. |
 | Orthographic vs Oblique projection | 📖 | — | 2026-07-05 | 2026-07-07 | 1/5 · 1 mark | Differentiate. Solved in [[Chapter7_Solutions.pdf]]. |
 | Back-face / visible-surface definitions | 🔲 | — | — | — | 1/5 · 2 marks | Define with example |
-| Color gamut of a monitor | 🔲 | — | — | — | 1/5 · 1 mark | Short explain |
+| Color gamut of a monitor | 📖 | — | 2026-07-07 | — | 1/5 · 1 mark | Triangular region in CIE chromaticity diagram bounded by phosphor (x,y) coords — range of displayable colors. 2022 Q8b. Solved in [[Chapter11_Solutions.pdf]]. |
 | Bezier / B-spline / Hermite curves | 📖 | — | 2026-07-06 | — | 0/5 PYQ, syllabus-mandated | See [[_Syllabus]] conflict note — deprioritized to last given time crunch. Theory + solved exercises (syllabus.txt scope only, no past-paper questions exist) in [[Chapter9_Solutions.pdf]]. Stretch-goal only — do not prioritize over TIER1/2 topics before the exam. |
 | Octree/Quadtree/BST-tree/Fractal Geometry (Hearn&Baker) | 🔲 | — | — | — | 0/5 PYQ, syllabus-mandated | p.359 Octrees + named pages; no-PYQ, deprioritized |
 

@@ -2,7 +2,7 @@
 _Updated: 2026-07-06 by overnight rollover_
 
 ## Active exam
-🎯 CSE 715 — Computer Graphics · **Wed 8 Jul 2026, 10:30 AM** · 1 day from 2026-07-07 · Phase: 🔒 Lockdown, day 2 of 2 — FINAL day (pure revision + timed past papers, Graphics only — no Livora, no other subjects). 07-06 closed the Z-Buffer gap (Ch10, now 📖) plus an unplanned Ch9 pass (Bezier/B-spline/Hermite, 0/5 PYQ stretch-goal, now 📖) — 32/51 topics 📖. Ray-sphere intersection still 🔲. More urgently: zero timed past-paper attempts confirmed all lockdown — today is the last chance before the exam.
+🎯 CSE 715 — Computer Graphics · **Wed 8 Jul 2026, 10:30 AM** · 1 day from 2026-07-07 · Phase: 🔒 Lockdown, day 2 of 2 — FINAL day (pure revision + timed past papers, Graphics only — no Livora, no other subjects). 07-06 closed the Z-Buffer gap (Ch10, now 📖) plus an unplanned Ch9 pass (Bezier/B-spline/Hermite, 0/5 PYQ stretch-goal, now 📖). 07-07 added a full Ch11 pass (Color/Shading Models: Phong, RGB interpolation, monitor matrix M, point left/right test, color gamut — real PYQ history 2020-2023, all 5 subtopics now 📖) — 37/51 topics 📖. Ray-sphere intersection (Ch12) still 🔲. More urgently: zero timed past-paper attempts confirmed all lockdown — today is the last chance before the exam.
 
 ## Topics — CSE715 Computer Graphics
 | Topic | Status | Conf | Next Recall |
@@ -32,20 +32,20 @@ _Updated: 2026-07-06 by overnight rollover_
 | Geometric vs Coordinate transformation | 📖 | — | 2026-07-06 |
 | ↳ Coordinate-system rationale (device-independent/NDC) | 📖 | — | 2026-07-06 |
 | ↳ 2D transform extras: translation, shear, composite-rotation, figure-ID | 📖 | — | 2026-07-06 |
-| RGB scanline color interpolation | 🔲 | — | — |
+| RGB scanline color interpolation | 📖 | — | — |
 | Ray vs Vector distinction | 🔲 | — | — |
 | Ray equation r(t)=s+td point-finding | 🔲 | — | — |
 | Convex/concave polygon identification | 📖 | — | 2026-07-07 |
 | Aspect ratio / resize distortion | 📖 | — | 2026-07-06 |
 | Midpoint circle algorithm + 8-way symmetry | 📖 | — | 2026-07-06 |
 | Tilting (3D composite rotation, x then y) | 📖 | — | 2026-07-07 |
-| Monitor color transformation matrix M | 🔲 | — | — |
+| Monitor color transformation matrix M | 📖 | — | — |
 | Isometric/Dimetric/Trimetric projection | 📖 | — | 2026-07-07 |
 | Perspective foreshortening + vanishing point | 📖 | — | 2026-07-07 |
-| Phong illumination model | 🔲 | — | — |
+| Phong illumination model | 📖 | — | — |
 | Flood-fill / boundary-fill (8-connected) | 📖 | — | 2026-07-06 |
 | ↳ Scan-line polygon fill algorithm (edge list) | 🔲 | — | — |
-| Point left/right-of-line test | 🔲 | — | — |
+| Point left/right-of-line test | 📖 | — | — |
 | Halftoning + dither matrix (D2→D4) | 📖 | — | 2026-07-06 |
 | Circular clipping window | 🔲 | — | — |
 | Trapezoid-primitive polygon fill | 🔲 | — | — |
@@ -55,7 +55,7 @@ _Updated: 2026-07-06 by overnight rollover_
 | Perspective projection anomalies (4) | 📖 | — | 2026-07-07 |
 | Orthographic vs Oblique projection | 📖 | — | 2026-07-07 |
 | Back-face / visible-surface definitions | 🔲 | — | — |
-| Color gamut of a monitor | 🔲 | — | — |
+| Color gamut of a monitor | 📖 | — | — |
 | Bezier / B-spline / Hermite curves | 📖 | — | — |
 | Octree/Quadtree/BST-tree/Fractal Geometry | 🔲 | — | — |
 

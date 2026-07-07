@@ -1,5 +1,16 @@
 {
-  "date": "2026-07-04",
-  "fetched_at": "2026-07-03T23:00:28Z",
-  "events": []
+  "date": "2026-07-07",
+  "fetched_at": "2026-07-07T05:00:25+06:00",
+  "events": [
+    {
+      "id": "reclaim0habit0o040o041249840o041249840o020260707",
+      "title": "🛡 🍱 Lunch",
+      "start_time": "2026-07-07T12:00:00+06:00",
+      "end_time": "2026-07-07T13:00:00+06:00",
+      "duration_minutes": 60,
+      "type": "meal",
+      "description": ""
+    }
+  ]
 }
+

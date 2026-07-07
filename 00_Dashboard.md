@@ -3,10 +3,10 @@
 > Living file. Claude Code updates this every session. You read this first, every day.
 
 ## Right now
-- **Active exam:** 🎯 CSE 715 — Computer Graphics — **Wed 8 Jul 2026, 10:30 AM**
-- **Days left:** 1
-- **Phase:** 🔒 Lockdown, day 2 of 2 — FINAL day (pure revision + timed past papers, Graphics only). 07-06 closed the Z-Buffer gap (Ch10, now 📖) plus an unplanned Ch9 Bezier/B-spline/Hermite pass. 07-07 added full Ch11 (Color/Shading, 5 subtopics) AND Ch12 (Ray Tracing, 5 subtopics) question-analysis passes (42/51 topics 📖 — every chapter now has at least a first pass). But this displaced the day's original plan, and **zero timed past-paper attempts have been confirmed all lockdown** — that's still the one thing that hasn't happened with the exam tomorrow.
-- **Single most important thing:** Stop adding new chapter analysis — pivot straight to timed past papers now. That's the one thing that hasn't happened yet and can't slip again before tomorrow's exam.
+- **Active exam:** 🎯 CSE 715 — Computer Graphics — **Wed 8 Jul 2026, 10:30 AM — TODAY**
+- **Days left:** 0
+- **Phase:** 🎯 EXAM DAY. 07-07 added full Ch11 (Color/Shading) + Ch12 (Ray Tracing) question-analysis passes plus an unplanned Octree/Fractal pass — 43/51 topics 📖, Ray-sphere intersection resolved. **Zero timed past-paper attempts were confirmed during the entire 2-day lockdown** — that risk is now closed (too late to fix), logged as a retrospective lesson for the next exam cycle. This morning is final-review only, no new topics.
+- **Single most important thing:** Final brain dump of TIER1 formulas/algorithms before 9:30, then rest before the 10:30 exam. Don't chase new material.
 - **After CSE719:** Exam sat 07-01. Topics roll into normal spaced-recall rotation — no longer a special tracked risk.
 - **Next exam after this:** CSE 700 — Thesis — Wed 15 Jul 2026
 - **⚠️ Rule:** Google Calendar is the ONLY source of truth for daily plans. Never use the overnight rollover log for scheduling.
@@ -43,7 +43,7 @@ Prayers structure the day — each gap is a study block:
 | [[02_Courses/CSE717_InfoSec/_Topics\|InfoSec (717)]] | ✅ 14 topics ranked | 11✅ · 3📖 · 0🔲 | – | pending |
 | [[02_Courses/CSE711_Compiler/_Topics\|Compiler (711)]] | ✅ EXAM DONE (8 topics, 8yr past papers) | sat 24 Jun | – | – |
 | [[02_Courses/CSE719_Distributed/_Topics\|Distributed (719)]] | ✅ EXAM SAT 07-01 (14 topics ranked) | 11📖 (spine + MapReduce + Cloud, all wiki+solutions done 06-30) · 3🔲 (tail, cut) | solutions PDFs all 10 lectures | outcome unconfirmed |
-| [[02_Courses/CSE715_Graphics/_Topics\|Graphics (715)]] | ✅ 51 topics ranked (5yr PYQ 2020-24) | 0✅ · 43📖 (Ch2-12 + Z-buffer + Octree/Fractal done) · 8🔲 (mostly 0-1/5 PYQ) | Ch2-7,9,11,12 + Z-buffer + Octree/Fractal solved — 0 timed papers confirmed yet | pending recall |
+| [[02_Courses/CSE715_Graphics/_Topics\|Graphics (715)]] | ✅ 51 topics ranked (5yr PYQ 2020-24) | 0✅ · 43📖 (Ch2-12 + Z-buffer + Octree/Fractal done) · 10🔲 (mostly 0-1/5 PYQ) | Ch2-7,9,11,12 + Z-buffer + Octree/Fractal solved — 0 timed papers confirmed, exam is 07-08 | EXAM DAY |
 | [[02_Courses/CSE700_Thesis/README\|Thesis (700)]] | – | – | – | – |
 
 ## Navigation

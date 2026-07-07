@@ -1,8 +1,8 @@
 # Study Brain — Compiled State
-_Updated: 2026-07-06 by overnight rollover_
+_Updated: 2026-07-07 by overnight rollover_
 
 ## Active exam
-🎯 CSE 715 — Computer Graphics · **Wed 8 Jul 2026, 10:30 AM** · 1 day from 2026-07-07 · Phase: 🔒 Lockdown, day 2 of 2 — FINAL day (pure revision + timed past papers, Graphics only — no Livora, no other subjects). 07-06 closed the Z-Buffer gap (Ch10, now 📖) plus an unplanned Ch9 pass (Bezier/B-spline/Hermite, 0/5 PYQ stretch-goal, now 📖). 07-07 added full Ch11 (Color/Shading Models, 5 subtopics) AND Ch12 (Ray Tracing, 5 subtopics) question-analysis passes — 42/51 topics 📖. Of the 12 remaining 🔲, only **Point-obscures-point visibility via viewpoint** is real yield (4/5 years, 3 marks) — the rest are 0-1/5 PYQ leftovers. **Critical:** zero timed past-paper attempts confirmed all lockdown — today's actual study time went entirely to Ch11/Ch12 instead, and this is genuinely the last day before the exam.
+🎯 CSE 715 — Computer Graphics · **Wed 8 Jul 2026, 10:30 AM — TODAY, 0 days out** · Phase: 🎯 EXAM DAY. 07-07 added full Ch11 (Color/Shading) + Ch12 (Ray Tracing) question-analysis passes plus an unplanned Octree/Fractal pass — 43/51 topics 📖, Ray-sphere intersection resolved. **Zero timed past-paper attempts were confirmed during the entire 2-day lockdown** — that risk is now closed (too late to fix), logged as a retrospective lesson for the next exam cycle. Today's plan is pre-exam final review only (TIER1 formula/algorithm brain dump + correction re-checks), then rest, then the 10:30 AM exam.
 
 ## Topics — CSE715 Computer Graphics
 | Topic | Status | Conf | Next Recall |
@@ -35,6 +35,8 @@ _Updated: 2026-07-06 by overnight rollover_
 | RGB scanline color interpolation | 📖 | — | — |
 | Ray vs Vector distinction | 📖 | — | — |
 | Ray equation r(t)=s+td point-finding | 📖 | — | — |
+| ↳ Ray tracing: how it integrates hidden-surface removal + projection | 📖 | — | — |
+| ↳ Point/plane same-side test (3D, plane normal) | 📖 | — | — |
 | Convex/concave polygon identification | 📖 | — | 2026-07-07 |
 | Aspect ratio / resize distortion | 📖 | — | 2026-07-06 |
 | Midpoint circle algorithm + 8-way symmetry | 📖 | — | 2026-07-06 |
@@ -60,15 +62,13 @@ _Updated: 2026-07-06 by overnight rollover_
 | Octree/Quadtree/BST-tree/Fractal Geometry | 📖 | — | — |
 
 ## Carry-forward
-- Ch11 + Ch12 question-analysis done 07-07 (unplanned — displaced the originally-scheduled Ray-sphere gap-fill + timed papers). Point-obscures-point visibility (4/5 yield) is now the only real-yield 🔲 left.
-- ZERO timed past-paper attempts confirmed all lockdown so far. Top priority — the only day left before the exam, and time already spent on Ch11/Ch12 instead.
-- Active recall passes (Ch2-12, all chapters) — not confirmed done. Fold into remaining blocks today.
-- 20-item AI/InfoSec recall backlog still not cleared — due again 2026-07-07, 27–34 days overdue on AI items, 20d on Number Theory. Parked through 07-07 (still inside lockdown, exam is Wed 07-08) — will keep slipping until after the Graphics exam.
+- 20-item AI/InfoSec recall backlog — parked through the entire Graphics lockdown, due again 2026-07-08 but exam is that morning at 10:30. Resume 07-08 afternoon/evening, post-exam. Now 28-34d overdue on AI items, 20d on Number Theory.
 - CSE719 exam outcome still unconfirmed — 07-01 EOD log left blank, no 07-03 daily log exists. Low priority, not blocking.
+- Retrospective, not actionable today: zero timed past-paper attempts were confirmed during the entire 07-06/07-07 lockdown — both days' time went to new chapter analysis instead. Apply to the NEXT written-exam cycle: protect a timed-paper block on lockdown day 1 before new-topic analysis is allowed to encroach.
 
-## Recall due 2026-07-07
+## Recall due 2026-07-08
 - 🔁 Intelligent Agents + Environments (PAGE) `CSE713_AI` | conf 4/5
-- 🔁 Search: UCS, Greedy, A, IDDFS — trace on graph `CSE713_AI` | conf 4/5
+- 🔁 Search: UCS, Greedy, A*, IDDFS — trace on graph `CSE713_AI` | conf 4/5
 - 🔁 Forward + Backward Chaining + Rule-Based System `CSE713_AI` | conf 5/5
 - 🔁 ↳ PL Basics: satisfiability, validity, entailment, Modus Ponens `CSE713_AI` | conf 5/5
 - 🔁 ↳ Resolution in PL: clause form (4-step), refutation proof `CSE713_AI` | conf 5/5
@@ -88,9 +88,9 @@ _Updated: 2026-07-06 by overnight rollover_
 - 🔁 ↳ McCulloch-Pitts Neuron + Perceptron + Learning Rule `CSE713_AI` | conf 3/5
 - 🔁 Number Theory & Modular Arithmetic (Euclidean, Fermat, Euler, CRT, Miller-Rabin, discrete log) `CSE717_InfoSec` | conf 5/5
 
-**Parked** — do not touch until after the 2026-07-08 Graphics exam (last-2-days rule).
+**Parked** — do not touch until after the 2026-07-08 Graphics exam (last-2-days rule / exam-day rule).
 
 ## Recent pattern (last 3 days)
-- 2026-07-04: EOD log field left blank despite real work — confirmed via git log, not the log narrative.
-- 2026-07-05: Ch5/Ch6/Ch7 fully question-analysed + solved (5yr PYQ) + wiki-ingested (3 commits). 30/51 topics now 📖. Z-Buffer block skipped. EOD log left blank again.
-- 2026-07-06: Z-Buffer (Ch10) gap-filled + unplanned Ch9 (Bezier/B-spline/Hermite) pass, both wiki-ingested (commit 3b568cb). 32/51 topics 📖. But Ray-sphere still 🔲 and no timed past papers or active recall confirmed — EOD log blank a third day running (same pattern).
+- 2026-07-05: Ch5/Ch6/Ch7 fully question-analysed + solved (5yr PYQ) + wiki-ingested (3 commits). 30/51 topics now 📖. Z-Buffer block skipped. EOD log left blank.
+- 2026-07-06: Z-Buffer (Ch10) gap-filled + unplanned Ch9 (Bezier/B-spline/Hermite) pass, both wiki-ingested (commit 3b568cb). 32/51 topics 📖. Ray-sphere still 🔲, no timed papers or active recall confirmed — EOD log blank a third day running.
+- 2026-07-07: Full Ch11 (Color/Shading) + Ch12 (Ray Tracing) + unplanned Octree/Fractal passes, all wiki-ingested (commits 8cda553/0660db7/e56422f). 43/51 topics 📖, Ray-sphere resolved. Still zero timed past-paper attempts confirmed — EOD log blank a fourth day running (confirmed via git log, not log narrative). Exam is tomorrow.

@@ -55,6 +55,9 @@ SecondBrain/
 ├── 05_Skills/              ← public speaking log
 ├── 06_Relationships/       ← daily connection strategy
 ├── 07_Daily_Routine/       ← prayer-anchored schedule template
+├── 08_LinkedIn/            ← continuous LinkedIn content series (see LinkedInPosts protocol)
+│   ├── _index.md           ← all series + standalone posts, status
+│   └── Series_[Name]/      ← one folder per series: _series.md tracker + numbered post files
 └── scripts/                ← automation (Telegram bot, cron, Drive)
     └── data/
         ├── wiki_state.md   ← compiled state cache (updated nightly by rollover)
@@ -129,6 +132,12 @@ Never create, edit, or delete Google Calendar events unless the user explicitly 
 → Read `scripts/data/protocols/video_topic_year.md` and execute all 8 steps:
   fetch titles via yt-dlp → load wiki subtopics → load past paper questions → map each video → output Priority 1/2/Skip tables → output subtopic coverage map → state hard cap → git commit if any files changed.
 
+### LinkedInPosts
+**Trigger:** `"LinkedInPosts"` / "write my next LinkedIn post" / "start a new LinkedIn series on [X]" / "brainstorm LinkedIn post ideas".
+→ Read `scripts/data/protocols/linkedin_posts.md` and execute all steps:
+  classify request (new series / next post / standalone / brainstorm / research) → set up series if new → brainstorm angles → research vault-first then external → draft post in `08_LinkedIn/` with obsidian-markdown → link back to sources + update series/index trackers → append to the protocol's own Evolution Log if a new pattern emerged → git commit.
+  This is independent of exam tracking — runs regardless of exam-season pause state.
+
 ---
 
 ## Risk Assessment (MANDATORY — every session)
@@ -157,7 +166,7 @@ If unsure → treat as HIGH risk.
 git add -A
 git commit -m "[type]: [one-line description]"
 ```
-Types: `study`, `plan`, `livora`, `log`, `system`, `auto`
+Types: `study`, `plan`, `livora`, `log`, `system`, `auto`, `linkedin`
 Cron scripts commit themselves — don't double-commit.
 
 ---

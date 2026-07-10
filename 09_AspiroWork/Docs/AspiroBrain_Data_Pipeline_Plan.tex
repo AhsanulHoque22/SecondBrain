@@ -4,8 +4,7 @@
 \usepackage[margin=2.2cm,top=2.4cm,bottom=2.6cm]{geometry}
 \usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
-\usepackage{helvet}
-\renewcommand{\familydefault}{\sfdefault}
+\usepackage{mathptmx} % Times New Roman-equivalent
 \usepackage{microtype}
 \usepackage{parskip}
 \usepackage{enumitem}
@@ -25,56 +24,54 @@
 \usepackage{float}
 \setlength{\headheight}{24pt}
 
-% ---------- Palette ----------
-\definecolor{navy}{HTML}{16324F}
-\definecolor{steel}{HTML}{2E75B6}
-\definecolor{teal}{HTML}{128A7D}
-\definecolor{amber}{HTML}{C8790D}
-\definecolor{purple}{HTML}{6C3483}
-\definecolor{slate}{HTML}{5B6B79}
-\definecolor{lightbg}{HTML}{F4F6F8}
-\definecolor{hairline}{HTML}{D6DCE1}
+% ---------- Palette: grayscale only. Color is reserved for Figure 1. ----------
+\definecolor{ink}{HTML}{1A1A1A}
+\definecolor{graytext}{HTML}{444444}
+\definecolor{grayrule}{HTML}{BFBFBF}
+\definecolor{graylight}{HTML}{EDEDED}
+\definecolor{graymed}{HTML}{8C8C8C}
+\definecolor{graydark}{HTML}{262626}
 
-\definecolor{phaseA}{HTML}{2E75B6} % ingestion - steel blue
-\definecolor{phaseB}{HTML}{128A7D} % processing - teal
-\definecolor{phaseC}{HTML}{C8790D} % storage - amber
-\definecolor{phaseD}{HTML}{6C3483} % serving - purple
+\definecolor{phaseA}{HTML}{2E75B6} % Figure 1 only - ingestion - steel blue
+\definecolor{phaseB}{HTML}{128A7D} % Figure 1 only - processing - teal
+\definecolor{phaseC}{HTML}{C8790D} % Figure 1 only - storage - amber
+\definecolor{phaseD}{HTML}{6C3483} % Figure 1 only - serving - purple
 
 % ---------- Headings ----------
 \titleformat{\section}
-  {\Large\bfseries\color{navy}}{\thesection}{0.6em}{}[{\color{hairline}\titlerule[1pt]}]
+  {\Large\bfseries\color{ink}}{\thesection}{0.6em}{}[{\color{grayrule}\titlerule[1pt]}]
 \titleformat{\subsection}
-  {\large\bfseries\color{steel}}{\thesubsection}{0.5em}{}
+  {\large\bfseries\color{ink}}{\thesubsection}{0.5em}{}
 \titlespacing*{\section}{0pt}{22pt}{10pt}
 \titlespacing*{\subsection}{0pt}{14pt}{6pt}
 
 \pagestyle{fancy}
 \fancyhf{}
 \renewcommand{\headrulewidth}{0.6pt}
-\renewcommand{\headrule}{\hbox to\headwidth{\color{hairline}\leaders\hrule height \headrulewidth\hfill}}
-\lhead{\small\color{slate}AspiroBrain Data Pipeline --- Implementation Plan}
-\rhead{\small\color{slate}AspiroEdu Internal}
-\cfoot{\small\color{slate}\thepage\ of \pageref{LastPage}}
+\renewcommand{\headrule}{\hbox to\headwidth{\color{grayrule}\leaders\hrule height \headrulewidth\hfill}}
+\lhead{\small\color{graytext}AspiroBrain Data Pipeline --- Implementation Plan}
+\rhead{\small\color{graytext}AspiroEdu Internal}
+\cfoot{\small\color{graytext}\thepage\ of \pageref{LastPage}}
 \usepackage{lastpage}
 
-% ---------- Callout boxes ----------
+% ---------- Callout boxes: gray highlight only, no color ----------
 \newtcolorbox{infobox}[1][]{
-  breakable, enhanced, colback=steel!6, colframe=steel,
+  breakable, enhanced, colback=graylight, colframe=grayrule,
   boxrule=0.6pt, left=8pt, right=8pt, top=6pt, bottom=6pt,
   arc=2pt, title={#1}, fonttitle=\bfseries\small, coltitle=white,
-  colbacktitle=steel
+  colbacktitle=graydark
 }
 \newtcolorbox{actionbox}[1][]{
-  breakable, enhanced, colback=teal!7, colframe=teal,
+  breakable, enhanced, colback=graylight, colframe=grayrule,
   boxrule=0.6pt, left=8pt, right=8pt, top=6pt, bottom=6pt,
   arc=2pt, title={#1}, fonttitle=\bfseries\small, coltitle=white,
-  colbacktitle=teal
+  colbacktitle=graydark
 }
 \newtcolorbox{riskbox}[1][]{
-  breakable, enhanced, colback=amber!8, colframe=amber,
+  breakable, enhanced, colback=graylight, colframe=grayrule,
   boxrule=0.6pt, left=8pt, right=8pt, top=6pt, bottom=6pt,
   arc=2pt, title={#1}, fonttitle=\bfseries\small, coltitle=white,
-  colbacktitle=amber
+  colbacktitle=graydark
 }
 
 \newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
@@ -88,8 +85,8 @@
 \begin{titlepage}
 \newgeometry{margin=0cm}
 \begin{tikzpicture}[remember picture, overlay]
-  \fill[navy] (current page.north west) rectangle ([yshift=-7.2cm]current page.north east);
-  \fill[steel] (current page.north west) rectangle ([yshift=-0.18cm]current page.north east);
+  \fill[graydark] (current page.north west) rectangle ([yshift=-7.2cm]current page.north east);
+  \fill[graymed] (current page.north west) rectangle ([yshift=-0.18cm]current page.north east);
   \node[anchor=north west, text=white, font=\bfseries\Huge, align=left] at ([xshift=2.4cm,yshift=-3.0cm]current page.north west) {AspiroBrain};
   \node[anchor=north west, text=white!85!black, font=\Large, align=left] at ([xshift=2.4cm,yshift=-4.15cm]current page.north west) {Data Pipeline --- Implementation Plan};
   \node[anchor=north west, text=white!70!black, font=\normalsize, align=left] at ([xshift=2.4cm,yshift=-5.15cm]current page.north west) {From scraped CSVs to a trustworthy, hallucination-resistant data foundation};
@@ -109,7 +106,7 @@ This document translates the \emph{``Research Note: Data Challenges in Building 
 
 \vfill
 \begin{center}
-\small\color{slate} Confidential --- Internal AspiroEdu Working Document
+\small\color{graytext} Confidential --- Internal AspiroEdu Working Document
 \end{center}
 \vspace{1cm}
 \restoregeometry
@@ -203,19 +200,19 @@ Figure~\ref{fig:architecture} shows the full pipeline as four layers, each corre
 \draw[arr, phaseB] (B1) -- (B2);
 \draw[arr, phaseB] (B2) -- (B3);
 \draw[arr, phaseB] (B3) -- (B4);
-\draw[arr, slate] (A2.south) to[out=-90,in=90] (B1.north);
+\draw[arr, graymed] (A2.south) to[out=-90,in=90] (B1.north);
 
 % ---- Row C: Storage ----
 \node[box, fill=phaseC!12, draw=phaseC, below=2.55cm of B2, xshift=1.6cm, text width=6.6cm, minimum height=1.4cm] (C1)
   {\textbf{Relational Store}\\[1pt]\footnotesize SQLite now $\to$ Postgres / Supabase later\\[1pt]\footnotesize university $\cdot$ program $\cdot$ fee\_line $\cdot$ intake $\cdot$ requirement};
 
-\draw[arr, slate] (B4.south) to[out=-90,in=90] (C1.north);
+\draw[arr, graymed] (B4.south) to[out=-90,in=90] (C1.north);
 
 % ---- Row D: Serving ----
 \node[box, fill=phaseD!12, draw=phaseD, below=2.55cm of C1, xshift=-1.75cm] (D1) {\textbf{Access API}\\[1pt]\footnotesize filtered queries + live FX};
 \node[box, fill=phaseD!12, draw=phaseD, right=1.1cm of D1, text width=3.4cm] (D2) {\textbf{AspiroBrain LLM}\\[1pt]\footnotesize tool-calling, field-level grounding};
 \draw[arr, phaseD] (D1) -- (D2);
-\draw[arr, slate] (C1.south) to[out=-90,in=90] (D1.north);
+\draw[arr, graymed] (C1.south) to[out=-90,in=90] (D1.north);
 
 % ---- Background phase bands ----
 \begin{pgfonlayer}{background}
@@ -379,6 +376,6 @@ Phase 0 can be completed today inside the existing \texttt{Data Collection/} wor
 \end{actionbox}
 
 \vspace{0.6cm}
-{\small\color{slate}\textit{Prepared as part of the AspiroWork data internship, grounded in the live mastersportal.com scraping pipeline (Netherlands + Malta, 200 programs, 10 July 2026). Full research citations available on request.}}
+{\small\color{graytext}\textit{Prepared as part of the AspiroWork data internship, grounded in the live mastersportal.com scraping pipeline (Netherlands + Malta, 200 programs, 10 July 2026). Full research citations available on request.}}
 
 \end{document}

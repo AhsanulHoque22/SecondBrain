@@ -375,7 +375,27 @@ LLM grounding & --- & --- & Tool-calling, field-level grounding (\S\ref{sec:grou
 Phase 0 can be completed today inside the existing \texttt{Data Collection/} workflow: add \texttt{currency}, \texttt{last\_verified\_date}, and \texttt{program\_id} columns, and freeze the current Netherlands and Malta CSVs as immutable Bronze snapshots. This is roughly half a day of work and removes the schema gaps that get exponentially more expensive to backfill once the catalog grows past a handful of countries.
 \end{actionbox}
 
+% ============================================================
+\section{Further Reading}
+% ============================================================
+
+Sources surfaced during the research pass behind this plan:
+
+\begin{itemize}[leftmargin=1.4em, itemsep=3pt]
+  \small
+  \item \href{https://frankfurter.dev}{Frankfurter API}
+  \item \href{https://github.com/fawazahmed0/exchange-api}{fawazahmed0/exchange-api (GitHub)}
+  \item \href{https://engineering.freeagent.com/2025/05/29/decoding-data-orchestration-tools-comparing-prefect-dagster-airflow-and-mage/}{Decoding Data Orchestration Tools: Prefect, Dagster, Airflow, Mage}
+  \item \href{https://www.prefect.io/compare/dagster}{Prefect vs Dagster}
+  \item \href{https://medium.com/@amarshaw83/rapidfuzz-339295aece71}{RapidFuzz --- A Fast, Flexible, Modern Library}
+  \item \href{https://aeturrell.com/blog/posts/the-data-validation-landscape-in-2025/}{The Data Validation Landscape in 2025}
+  \item \href{https://medium.com/@bhagyarana80/8-great-expectations-vs-pandera-which-fits-your-python-stack-a115c9241dcb}{Great Expectations vs Pandera}
+  \item \href{https://abhishekchaudhary.com/blog/sqlite-vs-postgres-solo-founder}{SQLite vs Postgres for the Solo Founder in 2026}
+  \item \href{https://solodevstack.com/blog/sqlite-vs-supabase-solo-developers}{SQLite vs Supabase for Solo Developers}
+  \item \href{https://dataladder.com/fuzzy-matching-101/}{Fuzzy Matching 101: The Complete Guide to Accurate Data Matching}
+\end{itemize}
+
 \vspace{0.6cm}
-{\small\color{graytext}\textit{Prepared as part of the AspiroWork data internship, grounded in the live mastersportal.com scraping pipeline (Netherlands + Malta, 200 programs, 10 July 2026). Full research citations available on request.}}
+{\small\color{graytext}\textit{Prepared as part of the AspiroWork data internship, grounded in the live mastersportal.com scraping pipeline (Netherlands + Malta, 200 programs, 10 July 2026).}}
 
 \end{document}

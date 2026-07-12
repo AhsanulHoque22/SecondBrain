@@ -109,46 +109,78 @@ def _row_key(row: dict) -> tuple:
     return (row["university_name"].lower(), row["program_name"].lower(), row["source_url"])
 
 
-def append_to_csv(row: dict, csv_path: Path) -> bool:
-    """Append row to csv_path, skipping exact duplicates. Returns True if a row was written.
+def _load_csv_rows(csv_path: Path) -> list[dict]:
+    if not csv_path.exists():
+        return []
+    with csv_path.open("r", newline="", encoding="utf-8") as f:
+        return list(csv.DictReader(f))
 
-    Writes atomically: the full file (existing rows + the new row) is
-    written to a temp file in the same directory, then swapped in with
-    os.replace() — atomic on POSIX and Windows. A crash or kill mid-write
-    leaves the original file exactly as it was, never a truncated or
-    half-written CSV. Trade-off: this is an O(rows) rewrite per call rather
-    than a true O(1) append, which is the right call at this pipeline's
-    scale (hundreds to low thousands of program rows) but wouldn't be for a
-    much larger file.
+
+def _write_csv_atomic(rows: list[dict], csv_path: Path) -> None:
+    """Writes atomically: the full row set is written to a temp file in the
+    same directory, then swapped in with os.replace() — atomic on POSIX and
+    Windows. A crash or kill mid-write leaves the original file exactly as
+    it was, never a truncated or half-written CSV. Trade-off: this is an
+    O(rows) rewrite per call rather than a true O(1) append, which is the
+    right call at this pipeline's scale (hundreds to low thousands of
+    program rows) but wouldn't be for a much larger file.
     """
     csv_path.parent.mkdir(parents=True, exist_ok=True)
-
-    existing_rows: list[dict] = []
-    existing_keys: set[tuple] = set()
-    if csv_path.exists():
-        with csv_path.open("r", newline="", encoding="utf-8") as f:
-            for existing in csv.DictReader(f):
-                existing_rows.append(existing)
-                existing_keys.add(
-                    (
-                        (existing.get("university_name") or "").lower(),
-                        (existing.get("program_name") or "").lower(),
-                        existing.get("source_url") or "",
-                    )
-                )
-
-    if _row_key(row) in existing_keys:
-        return False
-
     fd, tmp_path = tempfile.mkstemp(dir=csv_path.parent, prefix=f".{csv_path.name}.", suffix=".tmp")
     try:
         with os.fdopen(fd, "w", newline="", encoding="utf-8") as f:
             writer = csv.DictWriter(f, fieldnames=FIELDNAMES)
             writer.writeheader()
-            writer.writerows(existing_rows)
-            writer.writerow(row)
+            writer.writerows(rows)
         os.replace(tmp_path, csv_path)
     except BaseException:
         Path(tmp_path).unlink(missing_ok=True)
         raise
+
+
+def append_to_csv(row: dict, csv_path: Path) -> bool:
+    """Append row to csv_path, skipping exact duplicates. Returns True if a
+    row was written."""
+    existing_rows = _load_csv_rows(csv_path)
+    existing_keys = {
+        (
+            (existing.get("university_name") or "").lower(),
+            (existing.get("program_name") or "").lower(),
+            existing.get("source_url") or "",
+        )
+        for existing in existing_rows
+    }
+
+    if _row_key(row) in existing_keys:
+        return False
+
+    existing_rows.append(row)
+    _write_csv_atomic(existing_rows, csv_path)
     return True
+
+
+def upsert_to_csv(row: dict, csv_path: Path) -> str:
+    """Like append_to_csv, but replaces an existing row with the same
+    (university_name, program_name, source_url) key instead of treating it
+    as a duplicate to skip. Used by pipeline.py's change-detection refresh
+    path once extractor.has_content_changed() has confirmed a program's
+    source page actually changed — the old row's data would otherwise be
+    stuck stale forever, since append_to_csv would just see the same key
+    and refuse to write. Returns "inserted" (no prior row existed) or
+    "updated" (an existing row was replaced)."""
+    existing_rows = _load_csv_rows(csv_path)
+    key = _row_key(row)
+    for i, existing in enumerate(existing_rows):
+        existing_key = (
+            (existing.get("university_name") or "").lower(),
+            (existing.get("program_name") or "").lower(),
+            existing.get("source_url") or "",
+        )
+        if existing_key == key:
+            existing_rows[i] = row
+            _write_csv_atomic(existing_rows, csv_path)
+            return "updated"
+
+    existing_rows.append(row)
+    _write_csv_atomic(existing_rows, csv_path)
+    return "inserted"

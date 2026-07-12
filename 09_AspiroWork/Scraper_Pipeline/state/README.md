@@ -1,7 +1,6 @@
 # State
 
-Two mechanisms live here. **Discovery dedup is implemented.**
-**Change-detection is still just a scaffold.**
+Two mechanisms live here. **Both are now implemented.**
 
 ## `discovered_urls.json` — implemented
 
@@ -46,14 +45,19 @@ Given that, the role split is:
 }
 ```
 
-## `extraction_state.json` — scaffold only, not yet implemented
+## `extraction_state.json` — implemented
 
-Keyed by program URL. Written after a successful extraction, holding a
-content hash of the fetched page (raw HTML or `clean_text` — the exact
-choice is an implementation decision for later, not made here) so a future
-run can re-fetch a previously-processed URL, hash the new content, and
-compare: unchanged → stays resumed/skipped as today; changed → treated as
-needing re-extraction instead of being silently skipped.
+Keyed by program URL. Written by `extractor.record_extraction_state()`
+after every successful extraction (new URL or a refreshed one), holding a
+hash of `extractor.clean_text_from_html()`'s output (not the raw HTML —
+see "Hash target" below, this decision is now made and confirmed live, not
+just reasoned about). `pipeline.py --refresh` re-fetches an already-done
+URL, hashes the new content via `extractor.has_content_changed()`, and
+compares: unchanged → reported `UNCHANGED`, no LLM call, no CSV write;
+changed → re-extracted and the existing row replaced in place via
+`cleaner.upsert_to_csv()` (not appended as a duplicate — `append_to_csv`'s
+dedup key would otherwise just see the same university+program+URL and
+silently refuse to write the updated data).
 
 ```jsonc
 {
@@ -65,25 +69,36 @@ needing re-extraction instead of being silently skipped.
 }
 ```
 
-## Open decisions for whoever builds `extraction_state.json` next
+**Merge key:** exact URL match — same as `discovered_urls.json`.
 
-(The equivalent decision for `discovered_urls.json` — merge key — is
-resolved: exact URL match, see above.)
+**Hash target — decided, and the tradeoff is now confirmed live, not just
+theoretical.** Hashing raw HTML was rejected (too noisy — ads, trackers,
+per-request markup variance). Hashing `clean_text_from_html()`'s output was
+chosen as the middle ground. Verified live: re-extracting the same real
+mastersportal.com page after a tuition change correctly triggered `UPDATED`
+with the new value upserted in place (the feature's actual purpose,
+working). But also, in the same round of live testing, two real fetches of
+the identical page — genuinely unchanged, confirmed by three separate
+controlled follow-up fetches (including one with a deliberate 90-second
+gap) all matching — one time landed on *different* hashes. The most likely
+cause: `collector.fetch_html_playwright`'s `networkidle` wait doesn't
+always settle by the same point (it's wrapped in a try/except that just
+moves on — see collector.py), so two fetches of the same page can capture
+slightly different DOM-render-completeness snapshots, independent of
+whether the underlying data changed at all. Net effect: `--refresh` can
+occasionally report a false `UPDATED` (wasted LLM cost on a page that
+didn't really change) but should never *miss* a real change — the failure
+mode leans toward "extra work," not "silently stale data," which is the
+safer side to be wrong on. Not reproduced reliably enough to fix with
+confidence right now; flagged in the main README's Drawbacks instead of
+guessed at.
 
-- **Hash target:** hashing the full raw HTML will flag on *any* page change,
-  including irrelevant ones (ads, a changed timestamp in the footer,
-  a/b-tested markup) — hashing `extractor.clean_text_from_html()`'s output
-  instead is noisier-content-resistant but still not field-level (a change
-  to `program_name` and a change to unrelated body copy both trip it).
-  Field-level change detection (compare the actual extracted values, not
-  page content) would need running extraction on every "pending recheck"
-  URL regardless, which defeats the purpose of a cheap pre-check hash.
+**Field-level change detection** (compare the actual extracted values
+before/after, not page content) would sidestep this entirely, but needs
+running extraction on every "pending recheck" URL regardless of whether
+anything changed — which defeats the purpose of a cheap pre-check hash. Not
+pursued for that reason.
 
-**Git tracking, decided for `discovered_urls.json`:** tracked, not
-gitignored — unlike `raw/` (bulky, trivially regenerable) or `output/`
-(copied elsewhere; see main README), this manifest is small and its whole
-value *is* the accumulated history — gitignoring it would defeat the
-purpose the moment this runs from a second machine or a fresh clone.
-`extraction_state.json` doesn't do anything yet, so its own git-tracking
-call is still open until it's actually implemented (it'll likely follow
-the same reasoning, but isn't decided here).
+**Git tracking:** tracked, not gitignored — same reasoning as
+`discovered_urls.json` below: small, and the accumulated history is the
+whole point.

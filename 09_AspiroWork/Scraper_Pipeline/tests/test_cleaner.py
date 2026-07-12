@@ -11,6 +11,7 @@ from cleaner import (
     normalize_repeatable,
     normalize_requirement_pairs,
     normalize_tag_entries,
+    upsert_to_csv,
     validate_required,
 )
 
@@ -143,4 +144,47 @@ def test_append_to_csv_is_atomic_on_crash(tmp_path, monkeypatch):
         append_to_csv(_row(program_name="Program Two", source_url="https://example.com/2"), csv_path)
 
     assert csv_path.read_text() == before
+    assert list(tmp_path.glob(f".{csv_path.name}.*.tmp")) == []
+
+
+# ---------------------------------------------------------------------------
+# upsert_to_csv — change-detection's update-in-place path
+# ---------------------------------------------------------------------------
+
+
+def test_upsert_to_csv_inserts_when_no_matching_row(tmp_path):
+    csv_path = tmp_path / "programs.csv"
+    outcome = upsert_to_csv(_row(), csv_path)
+    assert outcome == "inserted"
+    rows = list(csv.DictReader(csv_path.open()))
+    assert len(rows) == 1
+
+
+def test_upsert_to_csv_replaces_matching_row_in_place(tmp_path):
+    """The actual scenario this exists for: a program's tuition changed on
+    the source page. append_to_csv would see the same (university, program,
+    url) key and silently refuse to write the new data — upsert_to_csv must
+    replace the stale row instead of leaving it stuck or duplicating it."""
+    csv_path = tmp_path / "programs.csv"
+    append_to_csv(_row(), csv_path)  # tuition_1st_year is empty in _row()'s raw fields
+
+    raw = {
+        "university_name": "Test University",
+        "level": "MSc",
+        "program_name": "Program One",
+        "tuition_1st_year": "20,000 EUR",
+    }
+    updated_row = clean_record(raw, "https://example.com/1")
+
+    outcome = upsert_to_csv(updated_row, csv_path)
+    assert outcome == "updated"
+
+    rows = list(csv.DictReader(csv_path.open()))
+    assert len(rows) == 1  # replaced, not appended as a second row
+    assert rows[0]["tuition_1st_year"] == "20,000 EUR"
+
+
+def test_upsert_to_csv_leaves_no_temp_file_on_success(tmp_path):
+    csv_path = tmp_path / "programs.csv"
+    upsert_to_csv(_row(), csv_path)
     assert list(tmp_path.glob(f".{csv_path.name}.*.tmp")) == []

@@ -59,9 +59,11 @@ program's details live on one page.
                     ┌─────────────────────────────────────────────┐
                     │              pipeline.py (CLI)               │
                     │  --url / --url-file  →  loop, delay+jitter   │
-                    │  skip already-in-output (resume) per URL     │
+                    │  skip already-in-output (resume) per URL,    │
+                    │  or (--refresh) re-check via content hash    │
+                    │  in state/extraction_state.json              │
                     └─────────────────────┬─────────────────────────┘
-                                          │  for each new URL
+                                          │  for each new/changed URL
                                           ▼
    ┌─────────────────┐   ┌──────────────────────────────┐   ┌──────────────────┐
    │  1. COLLECT      │   │  2. EXTRACT                    │   │  3. CLEAN         │
@@ -92,12 +94,12 @@ program's details live on one page.
 | `collector.py` | Collect | Fetch raw HTML, clear Cloudflare/WAF via a headless-browser fallback, detect hard blocks, cache to disk |
 | `extractor.py` | Extract | Haiku → Sonnet → Opus cascade with a free validator gate (required fields, numeric shape, source-grounding); heuristic fallback if no LLM is reachable |
 | `cleaner.py` | Clean | Normalize, validate required fields, dedupe, atomically append to CSV |
-| `pipeline.py` | — | CLI orchestrator: delay/jitter, hard-block cooldown, resume-skip, cost/token report |
+| `pipeline.py` | — | CLI orchestrator: delay/jitter, hard-block cooldown, resume-skip or `--refresh` change-check, cost/token report |
 | `canary.py` | — | Smoke test: known-good real URLs, run periodically to catch silent site-layout breakage |
-| `tests/` | — | `pytest` suite for every pure-logic piece above (63 tests, no network) |
+| `tests/` | — | `pytest` suite for every pure-logic piece above (73 tests, no network) |
 | `pytest.ini` | — | Points `pytest` at `tests/` |
 | `state/discovered_urls.json` | — | Persistent cross-run discovery manifest, written/merged by `discover.py`. Git-tracked (see `state/README.md`) |
-| `state/extraction_state.json` | — | **Scaffold only, not implemented** — intended schema for change-detection on already-extracted programs; see `state/README.md` |
+| `state/extraction_state.json` | — | Per-URL content-hash record, written by `extractor.record_extraction_state()`, read by `pipeline.py --refresh`. Git-tracked (see `state/README.md`) |
 
 ## How to use it
 
@@ -128,14 +130,26 @@ it is fine — the collector still works for any site that doesn't block plain
 ./.venv/bin/python pipeline.py --url-file urls.txt --output output/my_batch.csv --raw-dir raw/my_batch
 ./.venv/bin/python pipeline.py --url-file urls.txt --delay 2.0 --block-cooldown 60
 ./.venv/bin/python pipeline.py --url-file urls.txt --no-resume   # reprocess URLs already in the output CSV
+./.venv/bin/python pipeline.py --url-file urls.txt --refresh     # for already-done URLs, re-check for source-page changes instead of skipping
 ```
 
 Output: `output/programs.csv` by default. Raw HTML snapshots are cached in
 `raw/` (one `.html` + `.meta.json` per URL, keyed by a hash of the URL), so
 extraction can be re-run later without re-fetching. Each line printed during
-a run is one of `OK` / `DUPLICATE` / `RESUMED` / `SKIPPED` / `BLOCKED` /
-`FAILED`, followed by a summary count and — if any LLM calls were made — a
-per-model token/cost report.
+a run is one of `OK` / `DUPLICATE` / `UPDATED` / `UNCHANGED` / `RESUMED` /
+`SKIPPED` / `BLOCKED` / `FAILED`, followed by a summary count and — if any
+LLM calls were made — a per-model token/cost report.
+
+**Change-detection (`--refresh`).** By default, an already-done URL is
+skipped outright (`RESUMED`, no network). With `--refresh`, it's re-fetched
+instead, and `state/extraction_state.json` (content-hash record from the
+last extraction, `--extraction-state` to point it elsewhere) decides what
+happens next: unchanged page → `UNCHANGED`, no LLM call, no CSV write;
+changed page → re-extracted and the existing row **replaced in place**
+(not appended as a duplicate) → `UPDATED`. See `state/README.md` for the
+hash design and a real, live-confirmed limitation (occasional false
+`UPDATED` from fetch-to-fetch rendering variance, not just real data
+changes — see Drawbacks below).
 
 `--url` expects an individual program page. Pointing it at a search/listing
 page instead (e.g. `mastersportal.com/search/master/...`) will "succeed"
@@ -293,6 +307,25 @@ cached and handed to the extractor as if it were program content). This is
 the concrete failure that motivated most of the Failproofing work below:
 `collector.py` had no way to tell "fetched real content" apart from
 "fetched a block page that happens to be valid HTML."
+
+**10. The content-hash change-detection check itself isn't perfectly
+stable, discovered while verifying it live.** `pipeline.py --refresh`
+worked exactly as intended for its actual purpose — re-extracting a real
+mastersportal.com program after its tuition changed correctly produced
+`UPDATED` with the new value replacing the old row. But in the same round
+of live testing, two fetches of a genuinely *unchanged* page landed on
+different content hashes once — not reproduced across three controlled
+follow-up fetches (including one with a deliberate 90-second gap, all
+three matching). Most likely cause: `fetch_html_playwright`'s
+`networkidle` wait doesn't always settle at the same point (see Failproofing
+#1's fallback code — the wait is wrapped in a try/except that just moves
+on), so two fetches of the identical page can capture slightly different
+DOM-render-completeness snapshots. Not fixed — the exact trigger couldn't
+be reliably reproduced to fix with confidence, and further probing risked
+another Cloudflare escalation like #9. Documented as a known limitation
+(Drawbacks below) rather than guessed at: the failure mode leans toward
+"occasionally wastes an LLM call re-extracting an unchanged page," never
+"misses a real change," which is the safer side to be wrong on.
 
 ## Failproofing (this round)
 
@@ -520,6 +553,18 @@ cheaper to hit.
   crash-safety on the manifest itself (same technique as
   `cleaner.append_to_csv`) with a simulated mid-write failure. 7 new unit
   tests added (63 total, all passing).
+- **Change-detection (`--refresh`), live:** ran `pipeline.py` on a real
+  mastersportal.com program to establish a baseline extraction + content
+  hash, then re-ran with `--refresh`. Confirmed the core mechanism works:
+  a version with a changed `tuition_1st_year` correctly produced `UPDATED`
+  and replaced the existing CSV row in place (not a duplicate second row).
+  Also surfaced a real limitation in the same testing round — see
+  Challenge #10 and Drawbacks — an unchanged page occasionally hashes
+  differently between two fetches, not reproduced across three controlled
+  follow-up fetches. 10 new unit tests added (73 total, all passing),
+  including the CSV upsert-in-place behavior and the unchanged-vs-changed
+  branching in `refresh_if_changed` (mocked collect/extract, no network in
+  the test suite itself).
 
 ## Drawbacks / known limitations
 
@@ -565,13 +610,21 @@ cheaper to hit.
   + URL. Two different URLs that happen to describe the same program won't
   be caught by resume (though they'd still be caught as a `DUPLICATE` by
   `cleaner.py` if actually reprocessed).
-- **Change-detection for already-extracted programs is still not
-  implemented** (cross-run discovery dedup *is* — see below). `pipeline.py`'s
-  resume feature skips any URL already in the output CSV unconditionally,
-  so a program whose tuition/deadline/requirements changed on the source
-  page after it was first scraped will never be re-extracted. `state/` has
-  the file-level scaffolding (schema + design notes, no logic) for this —
-  see `state/README.md`.
+- **Change-detection (`--refresh`) can occasionally trigger a false
+  `UPDATED`.** Confirmed live (Challenge #10): a content hash comparison
+  between two fetches of the *same, genuinely unchanged* real page
+  differed once during testing, most likely from Playwright's
+  `networkidle` wait not settling at a consistent point across fetches
+  rather than any real page change. Not reliably reproduced in three
+  follow-up controlled fetches, so not fixed — the trigger condition isn't
+  understood well enough to fix with confidence yet. The failure direction
+  is the safer one (wastes an LLM call re-extracting something that didn't
+  change; never silently misses a real change), but it means `--refresh`'s
+  actual false-positive rate on a real large batch is unmeasured. **Not**
+  implemented at all: field-level change detection (comparing actual
+  extracted values instead of page content) — would need running
+  extraction on every recheck regardless, defeating the point of a cheap
+  pre-check hash; see `state/README.md`.
 - **Atomic CSV writes (Failproofing #9) rewrite the whole file per append**
   — safe and fine at this pipeline's real scale, but would need revisiting
   (e.g. a real database) well before reaching tens of thousands of rows.

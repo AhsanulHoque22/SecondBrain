@@ -23,14 +23,21 @@ Three-tier cascade, cheapest first, escalating only when needed:
 
 from __future__ import annotations
 
+import hashlib
 import json
+import os
 import re
 import sys
+import tempfile
+import time
+from pathlib import Path
 
 import anthropic
 from bs4 import BeautifulSoup
 
 from schema import EXTRACTED_KEYS, REQUIRED_FIELDS
+
+DEFAULT_EXTRACTION_STATE_PATH = Path("state/extraction_state.json")
 
 # Cheapest model first ($1/$5 per MTok) — only escalate when the validator
 # below rejects the output. Sonnet ($3/$15) and Opus ($5/$25) exist purely
@@ -178,6 +185,69 @@ def clean_text_from_html(html: str) -> str:
     lines = [line.strip() for line in text.splitlines()]
     lines = [line for line in lines if line]
     return "\n".join(lines)
+
+
+def _now_iso() -> str:
+    return time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
+
+
+def content_hash(clean_text: str) -> str:
+    return "sha256:" + hashlib.sha256(clean_text.encode("utf-8")).hexdigest()
+
+
+def _load_extraction_state(state_path: Path) -> dict[str, dict]:
+    if not state_path.exists():
+        return {}
+    return json.loads(state_path.read_text(encoding="utf-8"))
+
+
+def _save_extraction_state(state_path: Path, state: dict[str, dict]) -> None:
+    """Atomic write (temp file + os.replace) — same pattern as
+    cleaner.append_to_csv and discover.py's discovery manifest."""
+    state_path.parent.mkdir(parents=True, exist_ok=True)
+    fd, tmp_path = tempfile.mkstemp(dir=state_path.parent, prefix=f".{state_path.name}.", suffix=".tmp")
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8") as f:
+            json.dump(state, f, indent=2, sort_keys=True)
+        os.replace(tmp_path, state_path)
+    except BaseException:
+        Path(tmp_path).unlink(missing_ok=True)
+        raise
+
+
+def has_content_changed(url: str, clean_text: str, state_path: Path = DEFAULT_EXTRACTION_STATE_PATH) -> bool:
+    """True if this URL has no prior extraction record (never checked
+    before — treated as needing extraction, not as an error) or its content
+    hash differs from what was last recorded.
+
+    Hashes clean_text_from_html's output, not the raw HTML: raw HTML is too
+    noisy for a pre-extraction cheap check (ads, trackers, per-request
+    markup variance would trigger false "changed" signals on pages where
+    nothing about the actual program data moved). clean_text is much closer
+    to what a human would call "the page content," and it's nearly free to
+    compute — no LLM call, no extra fetch beyond the one already needed to
+    check.
+    """
+    state = _load_extraction_state(state_path)
+    prior = state.get(url)
+    if prior is None:
+        return True
+    return prior.get("content_hash") != content_hash(clean_text)
+
+
+def record_extraction_state(
+    url: str, clean_text: str, extraction_method: str, state_path: Path = DEFAULT_EXTRACTION_STATE_PATH
+) -> None:
+    """Called after every successful extraction (new URL or refreshed one)
+    so a future has_content_changed() call has a baseline to compare
+    against."""
+    state = _load_extraction_state(state_path)
+    state[url] = {
+        "last_extracted_at": _now_iso(),
+        "content_hash": content_hash(clean_text),
+        "extraction_method": extraction_method,
+    }
+    _save_extraction_state(state_path, state)
 
 
 def extract_via_llm(

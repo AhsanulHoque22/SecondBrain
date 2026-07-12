@@ -9,14 +9,18 @@ and the Haiku->Sonnet->Opus escalation cascade (mocked — no live model
 access from tests, ever).
 """
 
+import json
 from unittest.mock import patch
 
 import pytest
 
 from extractor import (
     backfill_level,
+    content_hash,
     extract,
     extract_via_heuristics,
+    has_content_changed,
+    record_extraction_state,
     validate_extraction,
 )
 
@@ -221,3 +225,55 @@ def test_extract_falls_back_to_heuristic_when_all_tiers_fail():
 
     assert result["_extraction_method"] == "heuristic"
     assert result["_usage"] is None
+
+
+# ---------------------------------------------------------------------------
+# content_hash / has_content_changed / record_extraction_state — change detection
+# ---------------------------------------------------------------------------
+
+
+def test_content_hash_is_deterministic_and_sensitive_to_change():
+    a = content_hash("MSc in Testing at Test University")
+    b = content_hash("MSc in Testing at Test University")
+    c = content_hash("MSc in Testing at Test University, tuition raised to 20000 EUR")
+    assert a == b
+    assert a != c
+    assert a.startswith("sha256:")
+
+
+def test_has_content_changed_true_when_no_prior_record(tmp_path):
+    """No history yet is treated as needing extraction, not as an error —
+    covers both a genuinely new URL and a URL scraped before this feature
+    existed."""
+    state_path = tmp_path / "extraction_state.json"
+    assert has_content_changed("https://example.com/new", "some page text", state_path) is True
+
+
+def test_has_content_changed_false_when_hash_matches(tmp_path):
+    state_path = tmp_path / "extraction_state.json"
+    url = "https://example.com/program"
+    record_extraction_state(url, "MSc in Testing, tuition 15000 EUR", "llm-haiku", state_path)
+
+    assert has_content_changed(url, "MSc in Testing, tuition 15000 EUR", state_path) is False
+
+
+def test_has_content_changed_true_when_page_content_differs(tmp_path):
+    """The actual scenario this feature exists for: a program's page was
+    scraped once, then its data changed (e.g. tuition increased) — the next
+    check must recognize that and flag it for re-extraction."""
+    state_path = tmp_path / "extraction_state.json"
+    url = "https://example.com/program"
+    record_extraction_state(url, "MSc in Testing, tuition 15000 EUR", "llm-haiku", state_path)
+
+    assert has_content_changed(url, "MSc in Testing, tuition 20000 EUR", state_path) is True
+
+
+def test_record_extraction_state_roundtrip(tmp_path):
+    state_path = tmp_path / "extraction_state.json"
+    record_extraction_state("https://example.com/a", "page text", "llm-sonnet", state_path)
+
+    state = json.loads(state_path.read_text())
+    entry = state["https://example.com/a"]
+    assert entry["extraction_method"] == "llm-sonnet"
+    assert entry["content_hash"] == content_hash("page text")
+    assert "last_extracted_at" in entry

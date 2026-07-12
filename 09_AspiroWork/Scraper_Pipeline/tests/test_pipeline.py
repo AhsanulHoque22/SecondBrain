@@ -1,9 +1,11 @@
 """Pure-logic tests for pipeline.py — no network, no LLM calls."""
 
 import csv
+from unittest.mock import patch
 
 from cleaner import append_to_csv, clean_record
-from pipeline import RunResult, _load_existing_source_urls, _print_cost_report
+from collector import Collected
+from pipeline import RunResult, _load_existing_source_urls, _print_cost_report, refresh_if_changed
 
 
 # ---------------------------------------------------------------------------
@@ -54,3 +56,84 @@ def test_print_cost_report_sums_by_model(capsys):
 def test_run_result_defaults_usage_to_none():
     result = RunResult("OK example")
     assert result.usage is None
+
+
+# ---------------------------------------------------------------------------
+# refresh_if_changed — change-detection re-extraction path
+# ---------------------------------------------------------------------------
+
+
+def _fake_extraction(**overrides):
+    base = {
+        "program_image_url": None,
+        "university_name": "Test University",
+        "level": "MSc",
+        "program_name": "Program One",
+        "destination": None,
+        "location": None,
+        "campus_city": None,
+        "tuition_1st_year": None,
+        "application_fee": None,
+        "duration": None,
+        "success_rate": None,
+        "intake_terms": [],
+        "deadlines": [],
+        "prerequisites": [],
+        "must_requirements": [],
+        "tags": [],
+        "_extraction_method": "llm-haiku",
+        "_usage": None,
+    }
+    base.update(overrides)
+    return base
+
+
+def test_refresh_if_changed_skips_extraction_when_content_unchanged(tmp_path):
+    """The whole point of the feature: an unchanged page costs a fetch, not
+    an LLM call."""
+    csv_path = tmp_path / "programs.csv"
+    state_path = tmp_path / "extraction_state.json"
+    url = "https://example.com/1"
+
+    collected = Collected(url=url, html="<html>same content</html>", raw_path=tmp_path / "x.html", fetched_at="T1")
+    extract_calls = []
+
+    with patch("pipeline.collect", return_value=collected), patch(
+        "pipeline.extract", side_effect=lambda *a, **k: extract_calls.append(1) or _fake_extraction()
+    ):
+        # First pass establishes the baseline hash via run(), not refresh_if_changed
+        from pipeline import run
+
+        run(url, csv_path, tmp_path, state_path)
+        assert extract_calls == [1]
+
+        result = refresh_if_changed(url, csv_path, tmp_path, state_path)
+
+    assert extract_calls == [1]  # NOT called a second time — content didn't change
+    assert result.message.startswith("UNCHANGED")
+
+
+def test_refresh_if_changed_reextracts_and_updates_row_when_content_changed(tmp_path):
+    csv_path = tmp_path / "programs.csv"
+    state_path = tmp_path / "extraction_state.json"
+    url = "https://example.com/1"
+
+    collected_v1 = Collected(url=url, html="<html>v1</html>", raw_path=tmp_path / "x.html", fetched_at="T1")
+    collected_v2 = Collected(url=url, html="<html>v2 - tuition changed</html>", raw_path=tmp_path / "x.html", fetched_at="T2")
+
+    from pipeline import run
+
+    with patch("pipeline.collect", return_value=collected_v1), patch(
+        "pipeline.extract", return_value=_fake_extraction(tuition_1st_year="15,000 EUR")
+    ):
+        run(url, csv_path, tmp_path, state_path)
+
+    with patch("pipeline.collect", return_value=collected_v2), patch(
+        "pipeline.extract", return_value=_fake_extraction(tuition_1st_year="20,000 EUR")
+    ):
+        result = refresh_if_changed(url, csv_path, tmp_path, state_path)
+
+    assert result.message.startswith("UPDATED")
+    rows = list(csv.DictReader(csv_path.open()))
+    assert len(rows) == 1  # replaced in place, not appended
+    assert rows[0]["tuition_1st_year"] == "20,000 EUR"

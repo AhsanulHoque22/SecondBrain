@@ -6,6 +6,7 @@ Usage:
     python pipeline.py --url <url> --output output/programs.csv --raw-dir raw/
     python pipeline.py --url-file urls.txt --delay 2.0 --block-cooldown 60
     python pipeline.py --url-file urls.txt --no-resume   # reprocess URLs already in the output CSV
+    python pipeline.py --url-file urls.txt --refresh     # for already-done URLs, re-check for source-page changes instead of skipping
 """
 
 from __future__ import annotations
@@ -18,9 +19,16 @@ import time
 from dataclasses import dataclass
 from pathlib import Path
 
-from cleaner import append_to_csv, clean_record, validate_required
+from cleaner import append_to_csv, clean_record, upsert_to_csv, validate_required
 from collector import CollectionError, HardBlockError, collect
-from extractor import MODEL_PRICING, extract
+from extractor import (
+    DEFAULT_EXTRACTION_STATE_PATH,
+    MODEL_PRICING,
+    clean_text_from_html,
+    extract,
+    has_content_changed,
+    record_extraction_state,
+)
 
 DEFAULT_OUTPUT = Path("output/programs.csv")
 DEFAULT_RAW_DIR = Path("raw")
@@ -44,7 +52,9 @@ class RunResult:
     usage: dict | None = None
 
 
-def run(url: str, output_path: Path, raw_dir: Path) -> RunResult:
+def run(
+    url: str, output_path: Path, raw_dir: Path, extraction_state_path: Path = DEFAULT_EXTRACTION_STATE_PATH
+) -> RunResult:
     collected = collect(url, raw_dir)
     raw_fields = extract(collected.html, url)
     row = clean_record(raw_fields, url)
@@ -56,9 +66,41 @@ def run(url: str, output_path: Path, raw_dir: Path) -> RunResult:
     written = append_to_csv(row, output_path)
     method = raw_fields.get("_extraction_method", "unknown")
     usage = raw_fields.get("_usage")
+    # Record a content-hash baseline regardless of insert/duplicate — a
+    # future --refresh run needs this even for URLs first seen today.
+    record_extraction_state(url, clean_text_from_html(collected.html), method, extraction_state_path)
     if written:
         return RunResult(f"OK       {url}  ({method} extraction)", usage)
     return RunResult(f"DUPLICATE {url}  already in {output_path}", usage)
+
+
+def refresh_if_changed(
+    url: str, output_path: Path, raw_dir: Path, extraction_state_path: Path = DEFAULT_EXTRACTION_STATE_PATH
+) -> RunResult:
+    """For a URL already in the output CSV: re-fetch, and only pay for
+    re-extraction if the page's content actually changed since it was last
+    recorded (extractor.has_content_changed) — an unchanged page costs a
+    fetch, never an LLM call. A changed page gets re-extracted and the
+    existing CSV row replaced in place (cleaner.upsert_to_csv), not
+    appended as a second row for the same program."""
+    collected = collect(url, raw_dir)
+    clean_text = clean_text_from_html(collected.html)
+
+    if not has_content_changed(url, clean_text, extraction_state_path):
+        return RunResult(f"UNCHANGED {url}  no content change since last extraction")
+
+    raw_fields = extract(collected.html, url)
+    row = clean_record(raw_fields, url)
+
+    missing = validate_required(row)
+    if missing:
+        return RunResult(f"SKIPPED  {url}  missing required field(s) after re-check: {', '.join(missing)}")
+
+    outcome = upsert_to_csv(row, output_path)
+    method = raw_fields.get("_extraction_method", "unknown")
+    usage = raw_fields.get("_usage")
+    record_extraction_state(url, clean_text, method, extraction_state_path)
+    return RunResult(f"UPDATED  {url}  content changed, row {outcome} ({method} extraction)", usage)
 
 
 def _load_existing_source_urls(output_path: Path) -> set[str]:
@@ -113,6 +155,21 @@ def main() -> None:
         action="store_true",
         help="Reprocess URLs even if already present in the output CSV (resume is on by default)",
     )
+    parser.add_argument(
+        "--refresh",
+        action="store_true",
+        help=(
+            "For URLs already in the output CSV, re-fetch and check whether the source page "
+            "changed since it was last extracted; re-extract and update the row only if so, "
+            "instead of skipping outright (the default resume behavior)"
+        ),
+    )
+    parser.add_argument(
+        "--extraction-state",
+        type=Path,
+        default=DEFAULT_EXTRACTION_STATE_PATH,
+        help="Per-URL content-hash state used by --refresh (default: state/extraction_state.json)",
+    )
     args = parser.parse_args()
 
     urls = list(args.url)
@@ -131,12 +188,15 @@ def main() -> None:
     results: list[str] = []
     usages: list[dict] = []
     for i, url in enumerate(urls):
-        if url in already_done:
+        if url in already_done and not args.refresh:
             results.append(f"RESUMED  {url}  already in {args.output}")
+            if i < len(urls) - 1:
+                time.sleep(args.delay + random.uniform(0, DEFAULT_JITTER))
             continue
 
+        action = refresh_if_changed if (url in already_done and args.refresh) else run
         try:
-            result = run(url, args.output, args.raw_dir)
+            result = action(url, args.output, args.raw_dir, args.extraction_state)
             results.append(result.message)
             if result.usage:
                 usages.append(result.usage)
@@ -160,13 +220,15 @@ def main() -> None:
 
     ok = sum(1 for r in results if r.startswith("OK"))
     dup = sum(1 for r in results if r.startswith("DUPLICATE"))
+    updated = sum(1 for r in results if r.startswith("UPDATED"))
+    unchanged = sum(1 for r in results if r.startswith("UNCHANGED"))
     resumed = sum(1 for r in results if r.startswith("RESUMED"))
     skipped = sum(1 for r in results if r.startswith("SKIPPED"))
     blocked = sum(1 for r in results if r.startswith("BLOCKED"))
     failed = sum(1 for r in results if r.startswith("FAILED") or r.startswith("ERROR"))
     print(
-        f"\n{ok} written, {dup} duplicates, {resumed} resumed, {skipped} skipped, "
-        f"{blocked} blocked, {failed} failed -> {args.output}"
+        f"\n{ok} written, {dup} duplicates, {updated} updated, {unchanged} unchanged, "
+        f"{resumed} resumed, {skipped} skipped, {blocked} blocked, {failed} failed -> {args.output}"
     )
 
     _print_cost_report(usages)

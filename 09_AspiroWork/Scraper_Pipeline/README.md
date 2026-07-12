@@ -2,21 +2,22 @@
 
 ## Introduction
 
-Before this pipeline existed, scraping study-abroad program data (Netherlands,
-Malta — see `../Data Collection/`) was a manual process: fetch search-result
-pages by hand, extract program links, dispatch parallel agents to read each
-page and fill in a CSV row, then run a second verification pass to catch
-mistakes. It worked, but it didn't scale past a couple of countries and had
-no reusable code behind it.
+Before this pipeline existed, scraping study-abroad program data was a
+manual process: fetch search-result pages by hand, extract program links,
+then read each page — manually or with AI assistance — and fill in a CSV
+row, then run a second verification pass to catch mistakes. It worked, but
+it didn't scale past a couple of countries and had no reusable code behind
+it.
 
-This pipeline replaces that manual process with three small, single-purpose
-Python scripts — collect, extract, clean — chained by one CLI orchestrator.
-Point it at a list of program-page URLs and it produces the same 17-column
-CSV the manual process did, without a human reading every page.
+This pipeline replaces that manual process with small, single-purpose
+Python scripts — discover, collect, extract, clean — chained by one CLI
+orchestrator. Point it at a list of program-page URLs and it produces the
+same 17-column CSV the manual process did, without a human reading every
+page.
 
 ## What this pipeline does
 
-Given one or more URLs to individual master's-program pages, it:
+Given one or more URLs to individual program pages, it:
 
 1. Fetches and caches the raw HTML for each URL (clearing Cloudflare/WAF
    bot-protection automatically where needed).
@@ -28,14 +29,17 @@ Given one or more URLs to individual master's-program pages, it:
    a flat output CSV in the same schema already used across
    `Data Collection/`.
 
+It can also turn a search/listing page into that URL list for you first
+(mastersportal.com only, for now) — see Discover below.
+
 ## What it's used for
 
 Feeding `09_AspiroWork/Data Collection/` — the source data for AspiroBrain's
-study-abroad advisory database. Previously that data was scraped from
-mastersportal.com only, one country at a time, entirely by hand. This
-pipeline is the automated replacement: it's designed to work on
-mastersportal.com pages *and* on individual university sites directly (e.g.
-ox.ac.uk course pages) — anywhere a program's details live on one page.
+study-abroad advisory database. Previously that data was scraped one country
+at a time, entirely by hand. This pipeline is the automated replacement:
+it's designed to work on sites like mastersportal.com *and* on individual
+university sites directly (e.g. ox.ac.uk course pages) — anywhere a
+program's details live on one page.
 
 ## Architecture
 
@@ -107,7 +111,7 @@ it is fine — the collector still works for any site that doesn't block plain
 ### Run
 
 ```bash
-./.venv/bin/python pipeline.py --url "https://example.com/msc-program-page"
+./.venv/bin/python pipeline.py --url "https://www.mastersportal.com/studies/8798/legal-research.html"
 ./.venv/bin/python pipeline.py --url-file urls.txt
 ./.venv/bin/python pipeline.py --url-file urls.txt --output output/my_batch.csv --raw-dir raw/my_batch
 ```
@@ -117,6 +121,13 @@ Output: `output/programs.csv` by default. Raw HTML snapshots are cached in
 extraction can be re-run later without re-fetching. Each line printed during
 a run is one of `OK` / `DUPLICATE` / `SKIPPED` / `FAILED`, followed by a
 summary count.
+
+`--url` expects an individual program page. Pointing it at a search/listing
+page instead (e.g. `mastersportal.com/search/master/...`) will "succeed"
+with no crash but produce `SKIPPED` on every row — a listing page has no
+single `university_name`/`level`/`program_name` for the pipeline to
+extract. Use Discover below to turn a listing page into individual URLs
+first.
 
 ### Discover (optional — mastersportal.com only, for now)
 
@@ -202,8 +213,25 @@ discovery step. First attempt at building it used the wrong link pattern
 (`href="/studies/..."`) and found zero links on a page that plainly had real
 listings on it (confirmed via screenshot); the actual links turned out to be
 embedded as JSON data (`"url":"/studies/8997/....html"`), not `<a href>`
-tags — a bare regex on the raw HTML found all of them. Landed as `discover.py`,
-reusing `collector.py`'s existing fetch (no new dependency needed).
+tags — a bare regex on the raw HTML found all of them. Landed as
+`discover.py`, reusing `collector.py`'s existing fetch (no new dependency
+needed).
+
+**8. The `level` degree-prefix regex from #4 still missed most real
+mastersportal.com titles.** It only matched an abbreviation (`MSc`, `MPhil`,
+…) anchored at the very start of the program name — Oxford's convention
+("MSc in X"). mastersportal.com titles read differently, e.g. "Joint Master
+in Applied XR … at USTP" (unabbreviated "Master", not at the start) and
+"Legal Research LL.M. at Utrecht University" (a dotted abbreviation, also
+not at the start). Widened `level` backfill to three tiers, tried in order:
+the original anchored abbreviation match; a dotted-abbreviation search
+anywhere in the title (`LL.M`, `M.Sc`, …) — safe to search anywhere because
+the literal period makes false positives very unlikely; then a plain-word
+search anywhere (`Master`, `Bachelor`, `Doctorate`, …) — also safe as whole
+words. Deliberately did *not* widen the original anchored tier's bare
+2-letter forms (`MA`, `BA`) to search-anywhere, since those really do
+collide with normal English/place-name text (verified: "University of
+Massachusetts (MA)" does not falsely match `MA` under any tier).
 
 ## Tests done, and what came out of them
 
@@ -235,12 +263,16 @@ reusing `collector.py`'s existing fetch (no new dependency needed).
   Netherlands search, 2 pages — **40 unique program links** written to a
   URL file, 20 per page, correctly de-duplicated across pages. Fed a 3-URL
   sample of that output straight into `pipeline.py --url-file`: all 3
-  cleared the Cloudflare 403 wall and collected successfully (proving the
-  full discover → urls.txt → pipeline chain the user asked for actually
-  works end-to-end). Extraction on those 3 came back `SKIPPED` for `level`
-  under the heuristic-only path — mastersportal's titles don't follow the
-  "MSc in X" pattern the degree-prefix regex looks for, a known instance of
-  the heuristic-recall drawback below, not a discovery-stage bug.
+  cleared the Cloudflare 403 wall and collected successfully.
+- **`level` regex widening, live:** re-ran the same 3-URL mastersportal
+  sample after fix #8. Before: **2/3 written**, one `SKIPPED` on `level`
+  (the `LL.M.` title). After: **3/3 written** — the "Joint Master…" page
+  picked up `M.Sc` (found later in its own title, more precise than the
+  generic "Master" match), the other "Joint Master…" page got `Master`, and
+  the `LL.M.` page got `LL.M`. Also re-ran the isolated regex cases,
+  including both adversarial ones from the design (`"University of
+  Massachusetts (MA)"` and a title with no degree word at all,
+  `"Legal Research"`) — both still correctly return no match.
 
 ## Drawbacks / known limitations
 
@@ -248,18 +280,15 @@ reusing `collector.py`'s existing fetch (no new dependency needed).
   Everything above about it is verified via mocked responses, not a real
   batch — actual accuracy, actual escalation rate, and actual cost per page
   are unmeasured until it's run with a real `ANTHROPIC_API_KEY`.
-- **The zero-setup heuristic path has real gaps.** Even after the
-  `og:title`/`og:site_name` fix, it still can't reliably pull
-  `tuition_1st_year`, `duration`, `success_rate`, or `program_image_url` on
-  sites that don't expose them in a plain "Label: value" line — confirmed
-  empty on all 13 rows of the Oxford test batch. The `level` backfill regex
-  is similarly narrow: it only catches a degree abbreviation at the very
-  start of the program name ("MSc in X"), so it missed `level` on all 3
-  mastersportal.com pages tested, whose titles read like "Joint Master in X
-  ... at University Y" instead. This is the expected trade-off of the
-  zero-setup path, not a bug, but it means heuristic-only runs produce thin
-  data outside the required fields, and even those three aren't guaranteed
-  on every site's title convention.
+- **The zero-setup heuristic path still has real gaps**, even after fixes
+  #4 and #8: it can't reliably pull `tuition_1st_year`, `duration`,
+  `success_rate`, or `program_image_url` on sites that don't expose them in
+  a plain "Label: value" line (confirmed empty on all 13 rows of the Oxford
+  test batch), and `level` backfill only covers the degree-naming patterns
+  actually seen in testing (Oxford- and mastersportal-style) — a site with a
+  genuinely different convention could still come back empty. This is the
+  expected trade-off of the zero-setup path, not a bug, but it means
+  heuristic-only runs produce thinner data than the LLM cascade would.
 - **No coverage for a WAF that also fingerprints headless Chromium.** The
   Playwright fallback has only been proven against sites that block plain
   `requests` but don't detect a real browser. A site that blocks *both*

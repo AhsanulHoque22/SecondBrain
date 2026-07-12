@@ -51,8 +51,32 @@ NUMERIC_FIELDS = ("tuition_1st_year", "application_fee", "duration", "success_ra
 # Degree abbreviations that commonly open a program's <title>/og:title, e.g.
 # "MSc in Statistical Science | Oxford University" — used by the heuristic
 # fallback to backfill `level` when there's no JSON-LD to read it from.
+# Anchored to the start only: these are short enough (MA, BA...) that
+# matching them anywhere in the text risks false positives (e.g. "MA" as
+# the US-state abbreviation), so this tier stays conservative.
 DEGREE_LEVEL_PATTERN = re.compile(
     r"^(MSc|MPhil|MSt|MBA|MEng|MRes|LLM|PGCert|PGDip|PhD|DPhil|BSc|BEng|MA|BA)\b",
+    re.IGNORECASE,
+)
+
+# Unabbreviated degree words, searched anywhere in the program name (not
+# just the start) — sites like mastersportal.com put the university name
+# first, e.g. "Joint Master in Applied XR ... at University of X", so the
+# degree word isn't the first token. These words are unambiguous enough as
+# whole words that a search anywhere in the title is safe.
+DEGREE_WORD_PATTERN = re.compile(
+    r"\b(Master's|Masters|Master|Bachelor's|Bachelors|Bachelor|Doctorate|Doctoral)\b",
+    re.IGNORECASE,
+)
+
+# Dotted abbreviations ("LL.M.", "M.Sc."), searched anywhere — e.g.
+# mastersportal.com's "Legal Research LL.M. at Utrecht University". The
+# internal period is mandatory in the pattern (only the trailing one is
+# optional), which is what keeps this safe to search anywhere: unlike bare
+# "MA"/"BA" (DEGREE_LEVEL_PATTERN, anchored-only for that reason), a literal
+# ".", e.g. in "LL.M", isn't going to show up by coincidence.
+DEGREE_DOTTED_PATTERN = re.compile(
+    r"\b(LL\.M|M\.Sc|M\.A|M\.Phil|M\.St|M\.B\.A|M\.Eng|M\.Res|Ph\.D|D\.Phil|B\.Sc|B\.A|B\.Eng)\.?",
     re.IGNORECASE,
 )
 
@@ -240,6 +264,10 @@ def extract_via_heuristics(html: str, clean_text: str, url: str) -> dict:
 
     if not data["level"] and data["program_name"]:
         level_match = DEGREE_LEVEL_PATTERN.match(data["program_name"])
+        if not level_match:
+            level_match = DEGREE_DOTTED_PATTERN.search(data["program_name"])
+        if not level_match:
+            level_match = DEGREE_WORD_PATTERN.search(data["program_name"])
         if level_match:
             data["level"] = level_match.group(1)
 

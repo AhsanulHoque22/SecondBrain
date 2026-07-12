@@ -70,18 +70,26 @@ def fetch_html_playwright(url: str, timeout: int = DEFAULT_TIMEOUT) -> str:
         ) from exc
 
     timeout_ms = max(timeout, 30) * 1000   #headless nav + challenge wait needs more room than a plain GET
-    with sync_playwright() as p:
-        browser = p.chromium.launch(headless=True)
+    last_error: Exception | None = None
+    for attempt in range(1, MAX_RETRIES + 1):                #transient nav failures happen (network blips) — same retry budget as the requests path
         try:
-            page = browser.new_page(user_agent=USER_AGENT)
-            page.goto(url, timeout=timeout_ms, wait_until="domcontentloaded")
-            try:
-                page.wait_for_load_state("networkidle", timeout=timeout_ms)
-            except Exception:
-                pass   #some pages keep background requests alive forever; content is ready either way
-            return page.content()
-        finally:
-            browser.close()
+            with sync_playwright() as p:
+                browser = p.chromium.launch(headless=True)
+                try:
+                    page = browser.new_page(user_agent=USER_AGENT)
+                    page.goto(url, timeout=timeout_ms, wait_until="domcontentloaded")
+                    try:
+                        page.wait_for_load_state("networkidle", timeout=timeout_ms)
+                    except Exception:
+                        pass   #some pages keep background requests alive forever; content is ready either way
+                    return page.content()
+                finally:
+                    browser.close()
+        except Exception as exc:
+            last_error = exc
+            time.sleep(1.5 * attempt)
+
+    raise CollectionError(f"Headless-browser fetch of {url} failed after {MAX_RETRIES} attempts: {last_error}")
 
 #Main network function.
 def fetch_html(url: str, timeout: int = DEFAULT_TIMEOUT) -> str:

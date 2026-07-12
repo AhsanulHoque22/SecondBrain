@@ -27,6 +27,14 @@ from schema import EXTRACTED_KEYS
 
 MODEL = "claude-opus-4-8"
 
+# Degree abbreviations that commonly open a program's <title>/og:title, e.g.
+# "MSc in Statistical Science | Oxford University" — used by the heuristic
+# fallback to backfill `level` when there's no JSON-LD to read it from.
+DEGREE_LEVEL_PATTERN = re.compile(
+    r"^(MSc|MPhil|MSt|MBA|MEng|MRes|LLM|PGCert|PGDip|PhD|DPhil|BSc|BEng|MA|BA)\b",
+    re.IGNORECASE,
+)
+
 EXTRACTION_TOOL = {
     "name": "extract_program_fields",
     "description": (
@@ -163,6 +171,27 @@ def extract_via_heuristics(html: str, clean_text: str, url: str) -> dict:
     og_image = soup.find("meta", property="og:image")
     if og_image and og_image.get("content"):
         data["program_image_url"] = og_image["content"]
+
+    # JSON-LD Course/EducationalOccupationalProgram markup is rare in practice
+    # (confirmed absent on ox.ac.uk course pages during pipeline testing) —
+    # og:title/<title> and og:site_name are far more common and usually carry
+    # the same information, so fall back to those before giving up.
+    if not data["program_name"]:
+        og_title = soup.find("meta", property="og:title")
+        if og_title and og_title.get("content"):
+            data["program_name"] = og_title["content"].strip()
+        elif soup.title and soup.title.string:
+            data["program_name"] = soup.title.string.split("|")[0].strip()
+
+    if not data["university_name"]:
+        og_site = soup.find("meta", property="og:site_name")
+        if og_site and og_site.get("content"):
+            data["university_name"] = og_site["content"].strip()
+
+    if not data["level"] and data["program_name"]:
+        level_match = DEGREE_LEVEL_PATTERN.match(data["program_name"])
+        if level_match:
+            data["level"] = level_match.group(1)
 
     label_patterns = {
         "tuition_1st_year": r"Tuition[^:\n]*:\s*([^\n]+)",

@@ -43,6 +43,16 @@ MODEL_TAGS = {
     "claude-opus-4-8": "llm-opus",
 }
 
+# Standard list price, $ per million tokens (input, output). Deliberately
+# NOT using Sonnet 5's temporary introductory discount ($2/$10 through
+# 2026-08-31) here — a cost *estimate* that quietly becomes wrong the day
+# the discount ends is worse than one that's always a few cents pessimistic.
+MODEL_PRICING = {
+    "claude-haiku-4-5": (1.00, 5.00),
+    "claude-sonnet-5": (3.00, 15.00),
+    "claude-opus-4-8": (5.00, 25.00),
+}
+
 # Values a model might return that are semantically "nothing" but aren't the
 # null the schema asks for — treated the same as a missing required field.
 PLACEHOLDER_VALUES = {"n/a", "na", "none", "unknown", "not specified", "not available", "-", "tbd"}
@@ -170,7 +180,12 @@ def clean_text_from_html(html: str) -> str:
     return "\n".join(lines)
 
 
-def extract_via_llm(clean_text: str, url: str, model: str, feedback: list[str] | None = None) -> dict:
+def extract_via_llm(
+    clean_text: str, url: str, model: str, feedback: list[str] | None = None
+) -> tuple[dict, dict]:
+    """Returns (extracted_fields, usage) — usage is {"input_tokens": int,
+    "output_tokens": int} straight off the API response, so callers can
+    track real spend instead of estimating from characters sent."""
     client = anthropic.Anthropic()
     user_content = f"Source URL: {url}\n\nPage text:\n{clean_text[:MAX_INPUT_CHARS]}"
     if feedback:
@@ -195,10 +210,15 @@ def extract_via_llm(clean_text: str, url: str, model: str, feedback: list[str] |
         ],
     )
     tool_use = next(block for block in response.content if block.type == "tool_use")
-    return dict(tool_use.input)
+    usage = {"input_tokens": response.usage.input_tokens, "output_tokens": response.usage.output_tokens}
+    return dict(tool_use.input), usage
 
 
-def validate_extraction(data: dict) -> list[str]:
+def _digits_only(text: str) -> str:
+    return re.sub(r"\D", "", text)
+
+
+def validate_extraction(data: dict, clean_text: str) -> list[str]:
     """Deterministic (no LLM call) sanity check on an LLM extraction.
 
     Empty return means the extraction is trustworthy enough to keep. A
@@ -211,11 +231,43 @@ def validate_extraction(data: dict) -> list[str]:
         value = (data.get(field) or "").strip()
         if not value or value.lower() in PLACEHOLDER_VALUES:
             problems.append(f"{field} is required but missing or placeholder-like ({value!r})")
+
+    clean_text_digits = _digits_only(clean_text)
     for field in NUMERIC_FIELDS:
         value = data.get(field)
-        if value and not re.search(r"\d", value):
+        if not value:
+            continue
+        if not re.search(r"\d", value):
             problems.append(f"{field} = {value!r} has no digit — doesn't look like a real value")
+            continue
+        # Grounding check: the model was told to use only what's on the
+        # page, but strict-schema tool use only guarantees the *shape* is
+        # right, not that the value is real. Comparing digit-only substrings
+        # sidesteps formatting noise (currency symbols, "£15,000" vs
+        # "15000") while still catching a number that's simply not anywhere
+        # on the page. Skipped for very short digit runs (<3) — a 1-2 digit
+        # coincidental match (e.g. a duration of "2" years) is too likely to
+        # false-positive to be worth flagging.
+        value_digits = _digits_only(value)
+        if len(value_digits) >= 3 and value_digits not in clean_text_digits:
+            problems.append(
+                f"{field} = {value!r} doesn't appear anywhere in the source text "
+                "(not grounded in the page — possible hallucination)"
+            )
     return problems
+
+
+def backfill_level(program_name: str) -> str | None:
+    """Try the three level-detection tiers in order (anchored bare
+    abbreviation, dotted abbreviation anywhere, plain word anywhere).
+    Returns None if none matched — a genuinely absent degree word (e.g. a
+    program name with no level info at all) is expected, not an error."""
+    level_match = DEGREE_LEVEL_PATTERN.match(program_name)
+    if not level_match:
+        level_match = DEGREE_DOTTED_PATTERN.search(program_name)
+    if not level_match:
+        level_match = DEGREE_WORD_PATTERN.search(program_name)
+    return level_match.group(1) if level_match else None
 
 
 def extract_via_heuristics(html: str, clean_text: str, url: str) -> dict:
@@ -263,13 +315,9 @@ def extract_via_heuristics(html: str, clean_text: str, url: str) -> dict:
             data["university_name"] = og_site["content"].strip()
 
     if not data["level"] and data["program_name"]:
-        level_match = DEGREE_LEVEL_PATTERN.match(data["program_name"])
-        if not level_match:
-            level_match = DEGREE_DOTTED_PATTERN.search(data["program_name"])
-        if not level_match:
-            level_match = DEGREE_WORD_PATTERN.search(data["program_name"])
-        if level_match:
-            data["level"] = level_match.group(1)
+        backfilled = backfill_level(data["program_name"])
+        if backfilled:
+            data["level"] = backfilled
 
     # Gap between label and colon is capped at 30 chars (was unbounded) so a
     # later, unrelated colon far down the page — e.g. "Application fee
@@ -296,20 +344,25 @@ def extract_via_heuristics(html: str, clean_text: str, url: str) -> dict:
 
 
 def extract(html: str, url: str) -> dict:
+    """Returns the extracted-fields dict, plus two internal bookkeeping
+    keys: `_extraction_method` (which tier served the row) and `_usage`
+    (token usage + model, or None for the heuristic path — there's no API
+    call to bill)."""
     clean_text = clean_text_from_html(html)
 
     feedback: list[str] | None = None
     for model in MODEL_CASCADE:
         try:
-            data = extract_via_llm(clean_text, url, model=model, feedback=feedback)
+            data, usage = extract_via_llm(clean_text, url, model=model, feedback=feedback)
         except Exception as exc:  # this tier's call failed outright — try the next tier
             print(f"[extract] {model} call failed for {url} ({exc})", file=sys.stderr)
             feedback = None
             continue
 
-        problems = validate_extraction(data)
+        problems = validate_extraction(data, clean_text)
         if not problems:
             data["_extraction_method"] = MODEL_TAGS[model]
+            data["_usage"] = {"model": model, **usage}
             return data
         print(f"[extract] {model} output for {url} failed validation: {'; '.join(problems)}", file=sys.stderr)
         feedback = problems
@@ -318,4 +371,5 @@ def extract(html: str, url: str) -> dict:
     print(f"[extract] all LLM tiers failed for {url}; using heuristic fallback", file=sys.stderr)
     data = extract_via_heuristics(html, clean_text, url)
     data["_extraction_method"] = "heuristic"
+    data["_usage"] = None
     return data

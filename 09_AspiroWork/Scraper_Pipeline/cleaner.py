@@ -10,7 +10,9 @@ to the output CSV (skipping exact duplicate rows).
 from __future__ import annotations
 
 import csv
+import os
 import re
+import tempfile
 from datetime import date
 from pathlib import Path
 
@@ -108,14 +110,25 @@ def _row_key(row: dict) -> tuple:
 
 
 def append_to_csv(row: dict, csv_path: Path) -> bool:
-    """Append row to csv_path, skipping exact duplicates. Returns True if a row was written."""
-    csv_path.parent.mkdir(parents=True, exist_ok=True)
-    file_exists = csv_path.exists()
+    """Append row to csv_path, skipping exact duplicates. Returns True if a row was written.
 
+    Writes atomically: the full file (existing rows + the new row) is
+    written to a temp file in the same directory, then swapped in with
+    os.replace() — atomic on POSIX and Windows. A crash or kill mid-write
+    leaves the original file exactly as it was, never a truncated or
+    half-written CSV. Trade-off: this is an O(rows) rewrite per call rather
+    than a true O(1) append, which is the right call at this pipeline's
+    scale (hundreds to low thousands of program rows) but wouldn't be for a
+    much larger file.
+    """
+    csv_path.parent.mkdir(parents=True, exist_ok=True)
+
+    existing_rows: list[dict] = []
     existing_keys: set[tuple] = set()
-    if file_exists:
+    if csv_path.exists():
         with csv_path.open("r", newline="", encoding="utf-8") as f:
             for existing in csv.DictReader(f):
+                existing_rows.append(existing)
                 existing_keys.add(
                     (
                         (existing.get("university_name") or "").lower(),
@@ -127,9 +140,15 @@ def append_to_csv(row: dict, csv_path: Path) -> bool:
     if _row_key(row) in existing_keys:
         return False
 
-    with csv_path.open("a", newline="", encoding="utf-8") as f:
-        writer = csv.DictWriter(f, fieldnames=FIELDNAMES)
-        if not file_exists:
+    fd, tmp_path = tempfile.mkstemp(dir=csv_path.parent, prefix=f".{csv_path.name}.", suffix=".tmp")
+    try:
+        with os.fdopen(fd, "w", newline="", encoding="utf-8") as f:
+            writer = csv.DictWriter(f, fieldnames=FIELDNAMES)
             writer.writeheader()
-        writer.writerow(row)
+            writer.writerows(existing_rows)
+            writer.writerow(row)
+        os.replace(tmp_path, csv_path)
+    except BaseException:
+        Path(tmp_path).unlink(missing_ok=True)
+        raise
     return True

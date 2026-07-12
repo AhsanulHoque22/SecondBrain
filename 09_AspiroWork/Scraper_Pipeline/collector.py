@@ -10,6 +10,16 @@ now automatically retries once with a headless browser (Playwright), which
 executes the page's JS and clears most Cloudflare "checking your browser"
 challenges. If Playwright isn't installed, or the fallback is also
 blocked, the URL is reported as FAILED and the batch keeps going.
+
+There are two distinct kinds of "blocked" here, and this module tells them
+apart (confirmed both actually happen, in the same session, against the
+same site): a soft "checking your browser" JS challenge, which Playwright
+clears on its own — vs. a hard Cloudflare block page ("Sorry, you have
+been blocked"), which Playwright *fetches successfully* (200, real HTML)
+but which isn't the page content at all. Treating that as a normal
+successful fetch would silently cache a block page as if it were program
+data. `HardBlockError` (a `CollectionError` subclass) exists so callers
+can tell the two apart and back off harder on the real thing.
 """
 
 from __future__ import annotations  #Allows using modern type hints without immediately evaluating them.
@@ -33,6 +43,29 @@ MAX_RETRIES = 2
 #Custom Exception
 class CollectionError(Exception):
     """Raised when a URL could not be fetched after retries."""
+
+
+class HardBlockError(CollectionError):
+    """Raised when the response is a Cloudflare/WAF hard-block page, not the
+    real content. Distinct from a plain CollectionError so callers (e.g. the
+    pipeline's batch loop) can apply a much longer cooldown than a normal
+    retry — hitting this again immediately just deepens the block."""
+
+
+# Text that only appears on an actual block page, never on real program
+# content — confirmed against a real Cloudflare "Sorry, you have been
+# blocked" page during development. Deliberately narrow (exact phrases, not
+# just "blocked" or "cloudflare") to avoid ever mistaking real content for
+# a block page.
+HARD_BLOCK_MARKERS = (
+    "Sorry, you have been blocked",
+    "Attention Required! | Cloudflare",
+    "cf-error-details",
+)
+
+
+def _is_hard_block(html: str) -> bool:
+    return any(marker in html for marker in HARD_BLOCK_MARKERS)
 
 
 #Stores collection result
@@ -82,13 +115,23 @@ def fetch_html_playwright(url: str, timeout: int = DEFAULT_TIMEOUT) -> str:
                         page.wait_for_load_state("networkidle", timeout=timeout_ms)
                     except Exception:
                         pass   #some pages keep background requests alive forever; content is ready either way
-                    return page.content()
+                    html = page.content()
                 finally:
                     browser.close()
+            # A hard block still returns a 200 with real HTML — a Cloudflare
+            # block page, not the site's content. Playwright "succeeding"
+            # here is not the same thing as the fetch actually working.
+            if _is_hard_block(html):
+                last_error = HardBlockError(f"{url} returned a Cloudflare hard-block page")
+                time.sleep(1.5 * attempt)
+                continue
+            return html
         except Exception as exc:
             last_error = exc
             time.sleep(1.5 * attempt)
 
+    if isinstance(last_error, HardBlockError):
+        raise last_error
     raise CollectionError(f"Headless-browser fetch of {url} failed after {MAX_RETRIES} attempts: {last_error}")
 
 #Main network function.
@@ -105,6 +148,8 @@ def fetch_html(url: str, timeout: int = DEFAULT_TIMEOUT) -> str:
             continue
 
         if response.status_code == 200:
+            if _is_hard_block(response.text):   #block pages are usually served as 403, but not guaranteed
+                raise HardBlockError(f"{url} returned a Cloudflare hard-block page (status 200)")
             return response.text
         if response.status_code == 403:
             print(

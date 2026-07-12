@@ -94,6 +94,7 @@ program's details live on one page.
 | `canary.py` | — | Smoke test: known-good real URLs, run periodically to catch silent site-layout breakage |
 | `tests/` | — | `pytest` suite for every pure-logic piece above (56 tests, no network) |
 | `pytest.ini` | — | Points `pytest` at `tests/` |
+| `state/` | — | **Scaffold only, not implemented** — intended schema for cross-run discovery dedup + change-detection; see `state/README.md` |
 
 ## How to use it
 
@@ -542,6 +543,15 @@ cheaper to hit.
   + URL. Two different URLs that happen to describe the same program won't
   be caught by resume (though they'd still be caught as a `DUPLICATE` by
   `cleaner.py` if actually reprocessed).
+- **No duplicate-safe discovery storage, and no change-detection for
+  already-extracted programs — neither is implemented yet.**
+  `discover.py --output urls.txt` overwrites the file on every run, with no
+  memory of links found in a previous run; and `pipeline.py`'s resume
+  feature skips any URL already in the output CSV unconditionally, so a
+  program whose tuition/deadline/requirements changed on the source page
+  after it was first scraped will never be re-extracted. `state/` has the
+  file-level scaffolding (schema + design notes, no logic) for both —
+  see `state/README.md`.
 - **Atomic CSV writes (Failproofing #9) rewrite the whole file per append**
   — safe and fine at this pipeline's real scale, but would need revisiting
   (e.g. a real database) well before reaching tens of thousands of rows.

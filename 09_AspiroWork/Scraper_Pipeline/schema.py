@@ -1,11 +1,11 @@
-"""Canonical program schema — matches Appendix A (Program Entry Schema) plus
-tuition_currency and last_verified_date, added because they were flagged as
-the two cheapest, highest-leverage gaps in the CSVs already in
-`09_AspiroWork/Data Collection/`.
+"""Canonical program schema — one output row per program, 19 columns
+covering identity, cost, dates, and requirements, including
+tuition_currency (split out of the raw tuition string by cleaner.py) and
+last_verified_date (stamped at write time).
 
-Repeatable sections in Appendix A (Intakes, Prerequisites, Must Requirements,
-Tags) are flattened into one semicolon-separated cell per column, matching
-the convention already used in the existing scraped CSVs.
+Repeatable sections (Intakes, Prerequisites, Must Requirements, Tags) are
+flattened into one semicolon-separated cell per column rather than kept as
+nested structures, so the output stays a flat, spreadsheet-friendly CSV.
 """
 
 FIELDNAMES = [
@@ -30,7 +30,7 @@ FIELDNAMES = [
     "last_verified_date",
 ]
 
-# Starred (*) fields in Appendix A.
+# A row missing any of these gets skipped rather than written half-empty.
 REQUIRED_FIELDS = ["university_name", "level", "program_name"]
 
 # Fields the extractor should populate before the cleaner normalizes them.

@@ -1,6 +1,16 @@
 requests>=2.31
 beautifulsoup4>=4.12
 lxml>=5.0
-anthropic>=0.116
 playwright>=1.44
 pytest>=8.0
+
+# Optional: loads a local .env file automatically (see .env.example).
+# Without it, set environment variables directly instead.
+python-dotenv>=1.0
+
+# LLM provider SDK — install the one matching your LLM_PROVIDER setting.
+# Uncomment (or pip install separately) whichever you use; the other two
+# are never imported so they don't need to be installed.
+anthropic>=0.116       # LLM_PROVIDER=anthropic (default)
+# openai>=1.50          # LLM_PROVIDER=openai
+# google-generativeai>=0.8   # LLM_PROVIDER=google

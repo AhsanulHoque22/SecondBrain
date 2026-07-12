@@ -2,18 +2,20 @@
 
 Turns raw HTML into a dict of the fields in schema.EXTRACTED_KEYS.
 
-Three-tier cascade, cheapest first, escalating only when needed:
-- Tier 1 (Haiku 4.5): sends cleaned page text to Claude with a strict tool
-  schema, so extraction generalizes across arbitrary site layouts instead of
-  hand-written per-site selectors. The model is instructed to use null for
-  anything not present on the page — never invent a plausible-looking value.
-  A deterministic (non-LLM) validator checks the output; most well-structured
+Multi-tier cascade, cheapest/fastest model first, escalating only when
+needed:
+- Tier 1: sends cleaned page text to an LLM (see llm_providers.py for the
+  supported vendors) with a strict structured-output schema, so extraction
+  generalizes across arbitrary site layouts instead of hand-written
+  per-site selectors. The model is instructed to use null for anything not
+  present on the page — never invent a plausible-looking value. A
+  deterministic (non-LLM) validator checks the output; most well-structured
   pages pass here and stop.
-- Tier 2 (Sonnet 5) / Tier 3 (Opus 4.8): only run if the validator rejected
-  the previous tier's output. Each retry gets the validator's specific
-  complaints appended to the prompt, so escalation is a correction, not a
-  blind re-roll. Opus is the priciest tier but only fires on a double
-  failure, so it barely moves the aggregate bill.
+- Later tiers: only run if the validator rejected the previous tier's
+  output. Each retry gets the validator's specific complaints appended to
+  the prompt, so escalation is a correction, not a blind re-roll. The
+  models used at each tier, and how many tiers exist, are configured via
+  EXTRACTION_MODEL_CASCADE — see README.md.
 - Heuristic fallback (used if every LLM tier fails outright — no API
   credentials, network error — or every tier's output fails validation):
   JSON-LD (schema.org Course/EducationalOccupationalProgram), og:title/
@@ -32,33 +34,67 @@ import tempfile
 import time
 from pathlib import Path
 
-import anthropic
 from bs4 import BeautifulSoup
 
+import llm_providers
 from schema import EXTRACTED_KEYS, REQUIRED_FIELDS
 
 DEFAULT_EXTRACTION_STATE_PATH = Path("state/extraction_state.json")
 
-# Cheapest model first ($1/$5 per MTok) — only escalate when the validator
-# below rejects the output. Sonnet ($3/$15) and Opus ($5/$25) exist purely
-# for the minority of pages Haiku gets wrong; most batches should resolve
-# on tier 1 alone.
-MODEL_CASCADE = ["claude-haiku-4-5", "claude-sonnet-5", "claude-opus-4-8"]
+# Only the Anthropic path ships with a default cascade — it's the one
+# provider this pipeline has been exercised against live, so a default here
+# is a real, tested claim rather than a guess. Any other provider requires
+# EXTRACTION_MODEL_CASCADE to be set explicitly (see _model_cascade below)
+# rather than this module guessing a current model ID for a vendor it can't
+# verify against.
+DEFAULT_ANTHROPIC_CASCADE = ["claude-haiku-4-5", "claude-sonnet-5", "claude-opus-4-8"]
+
+# Human-readable tags for the well-known Anthropic cascade tiers, used to
+# label which tier produced a given row. A model not in this dict (any
+# custom cascade, any non-Anthropic provider) falls back to a generic
+# "llm:<model>" tag instead of raising — see _extraction_tag below.
 MODEL_TAGS = {
     "claude-haiku-4-5": "llm-haiku",
     "claude-sonnet-5": "llm-sonnet",
     "claude-opus-4-8": "llm-opus",
 }
 
-# Standard list price, $ per million tokens (input, output). Deliberately
-# NOT using Sonnet 5's temporary introductory discount ($2/$10 through
-# 2026-08-31) here — a cost *estimate* that quietly becomes wrong the day
-# the discount ends is worse than one that's always a few cents pessimistic.
+# Standard list price, $ per million tokens (input, output) — Anthropic
+# models only, since these are the only prices this project can vouch for.
+# A model not listed here (custom cascade, non-Anthropic provider) prices
+# at $0.00 in the cost report rather than guessing a number — see
+# pipeline.py's _print_cost_report, which already handles a missing key via
+# MODEL_PRICING.get(model, (0.0, 0.0)). Deliberately NOT using Sonnet 5's
+# temporary introductory discount ($2/$10 through 2026-08-31) here — a cost
+# *estimate* that quietly becomes wrong the day the discount ends is worse
+# than one that's always a few cents pessimistic.
 MODEL_PRICING = {
     "claude-haiku-4-5": (1.00, 5.00),
     "claude-sonnet-5": (3.00, 15.00),
     "claude-opus-4-8": (5.00, 25.00),
 }
+
+
+def _model_cascade() -> list[str]:
+    """Returns the ordered list of models to try. EXTRACTION_MODEL_CASCADE
+    (comma-separated model IDs) always wins when set — this is how a
+    non-Anthropic provider, or a custom Anthropic cascade, gets configured.
+    With no override, only the Anthropic provider has a built-in default;
+    every other provider must set the env var explicitly."""
+    override = os.environ.get("EXTRACTION_MODEL_CASCADE", "").strip()
+    if override:
+        return [m.strip() for m in override.split(",") if m.strip()]
+    if llm_providers.get_provider() == "anthropic":
+        return DEFAULT_ANTHROPIC_CASCADE
+    raise RuntimeError(
+        f"LLM_PROVIDER={llm_providers.get_provider()!r} has no built-in default model cascade. "
+        "Set EXTRACTION_MODEL_CASCADE to a comma-separated list of model IDs for this "
+        "provider (check the provider's own docs for current model names)."
+    )
+
+
+def _extraction_tag(model: str) -> str:
+    return MODEL_TAGS.get(model, f"llm:{model}")
 
 # Values a model might return that are semantically "nothing" but aren't the
 # null the schema asks for — treated the same as a missing required field.
@@ -97,72 +133,75 @@ DEGREE_DOTTED_PATTERN = re.compile(
     re.IGNORECASE,
 )
 
-EXTRACTION_TOOL = {
-    "name": "extract_program_fields",
-    "description": (
-        "Extract structured master's program data fields from the given webpage "
-        "text for an education database. Use null for any field not present on "
-        "the page (or an empty array for list fields) — never guess or infer a "
-        "plausible-sounding value."
-    ),
-    "strict": True,
-    "input_schema": {
-        "type": "object",
-        "properties": {
-            "program_image_url": {"type": ["string", "null"]},
-            "university_name": {"type": ["string", "null"]},
-            "level": {"type": ["string", "null"]},
-            "program_name": {"type": ["string", "null"]},
-            "destination": {"type": ["string", "null"]},
-            "location": {"type": ["string", "null"]},
-            "campus_city": {"type": ["string", "null"]},
-            "tuition_1st_year": {"type": ["string", "null"]},
-            "application_fee": {"type": ["string", "null"]},
-            "duration": {"type": ["string", "null"]},
-            "success_rate": {"type": ["string", "null"]},
-            "intake_terms": {"type": "array", "items": {"type": "string"}},
-            "deadlines": {"type": "array", "items": {"type": "string"}},
-            "prerequisites": {
-                "type": "array",
-                "items": {
-                    "type": "object",
-                    "properties": {
-                        "title": {"type": "string"},
-                        "description": {"type": ["string", "null"]},
-                    },
-                    "required": ["title", "description"],
-                    "additionalProperties": False,
+EXTRACTION_TOOL_NAME = "extract_program_fields"
+EXTRACTION_TOOL_DESCRIPTION = (
+    "Extract structured master's program data fields from the given webpage "
+    "text for an education database. Use null for any field not present on "
+    "the page (or an empty array for list fields) — never guess or infer a "
+    "plausible-sounding value."
+)
+
+# Provider-agnostic JSON Schema for the extraction output. Every provider
+# adapter in llm_providers.py wraps this the same way regardless of vendor
+# (Anthropic tool-use input_schema, OpenAI function-calling parameters,
+# Google's translated response_schema) — this is the one schema definition
+# all three read from.
+EXTRACTION_SCHEMA = {
+    "type": "object",
+    "properties": {
+        "program_image_url": {"type": ["string", "null"]},
+        "university_name": {"type": ["string", "null"]},
+        "level": {"type": ["string", "null"]},
+        "program_name": {"type": ["string", "null"]},
+        "destination": {"type": ["string", "null"]},
+        "location": {"type": ["string", "null"]},
+        "campus_city": {"type": ["string", "null"]},
+        "tuition_1st_year": {"type": ["string", "null"]},
+        "application_fee": {"type": ["string", "null"]},
+        "duration": {"type": ["string", "null"]},
+        "success_rate": {"type": ["string", "null"]},
+        "intake_terms": {"type": "array", "items": {"type": "string"}},
+        "deadlines": {"type": "array", "items": {"type": "string"}},
+        "prerequisites": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "title": {"type": "string"},
+                    "description": {"type": ["string", "null"]},
                 },
-            },
-            "must_requirements": {
-                "type": "array",
-                "items": {
-                    "type": "object",
-                    "properties": {
-                        "title": {"type": "string"},
-                        "description": {"type": ["string", "null"]},
-                    },
-                    "required": ["title", "description"],
-                    "additionalProperties": False,
-                },
-            },
-            "tags": {
-                "type": "array",
-                "items": {
-                    "type": "object",
-                    "properties": {
-                        "name": {"type": "string"},
-                        "category": {"type": ["string", "null"]},
-                        "details": {"type": ["string", "null"]},
-                    },
-                    "required": ["name", "category", "details"],
-                    "additionalProperties": False,
-                },
+                "required": ["title", "description"],
+                "additionalProperties": False,
             },
         },
-        "required": EXTRACTED_KEYS,
-        "additionalProperties": False,
+        "must_requirements": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "title": {"type": "string"},
+                    "description": {"type": ["string", "null"]},
+                },
+                "required": ["title", "description"],
+                "additionalProperties": False,
+            },
+        },
+        "tags": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "name": {"type": "string"},
+                    "category": {"type": ["string", "null"]},
+                    "details": {"type": ["string", "null"]},
+                },
+                "required": ["name", "category", "details"],
+                "additionalProperties": False,
+            },
+        },
     },
+    "required": EXTRACTED_KEYS,
+    "additionalProperties": False,
 }
 
 SYSTEM_PROMPT = (
@@ -255,8 +294,12 @@ def extract_via_llm(
 ) -> tuple[dict, dict]:
     """Returns (extracted_fields, usage) — usage is {"input_tokens": int,
     "output_tokens": int} straight off the API response, so callers can
-    track real spend instead of estimating from characters sent."""
-    client = anthropic.Anthropic()
+    track real spend instead of estimating from characters sent.
+
+    Thin wrapper over llm_providers.call_llm — kept as its own function
+    (rather than inlined into extract()) so the name and signature stay
+    stable for callers and tests that mock this one call site regardless of
+    which provider is configured underneath."""
     user_content = f"Source URL: {url}\n\nPage text:\n{clean_text[:MAX_INPUT_CHARS]}"
     if feedback:
         # Escalation retry — tell the stronger model exactly what the previous
@@ -266,22 +309,9 @@ def extract_via_llm(
             + "\n".join(f"- {problem}" for problem in feedback)
             + f"\n\n{user_content}"
         )
-    response = client.messages.create(
-        model=model,
-        max_tokens=4096,
-        system=SYSTEM_PROMPT,
-        tools=[EXTRACTION_TOOL],
-        tool_choice={"type": "tool", "name": "extract_program_fields"},
-        messages=[
-            {
-                "role": "user",
-                "content": user_content,
-            }
-        ],
+    return llm_providers.call_llm(
+        model, SYSTEM_PROMPT, user_content, EXTRACTION_SCHEMA, EXTRACTION_TOOL_NAME, EXTRACTION_TOOL_DESCRIPTION
     )
-    tool_use = next(block for block in response.content if block.type == "tool_use")
-    usage = {"input_tokens": response.usage.input_tokens, "output_tokens": response.usage.output_tokens}
-    return dict(tool_use.input), usage
 
 
 def _digits_only(text: str) -> str:
@@ -421,7 +451,7 @@ def extract(html: str, url: str) -> dict:
     clean_text = clean_text_from_html(html)
 
     feedback: list[str] | None = None
-    for model in MODEL_CASCADE:
+    for model in _model_cascade():
         try:
             data, usage = extract_via_llm(clean_text, url, model=model, feedback=feedback)
         except Exception as exc:  # this tier's call failed outright — try the next tier
@@ -431,7 +461,7 @@ def extract(html: str, url: str) -> dict:
 
         problems = validate_extraction(data, clean_text)
         if not problems:
-            data["_extraction_method"] = MODEL_TAGS[model]
+            data["_extraction_method"] = _extraction_tag(model)
             data["_usage"] = {"model": model, **usage}
             return data
         print(f"[extract] {model} output for {url} failed validation: {'; '.join(problems)}", file=sys.stderr)

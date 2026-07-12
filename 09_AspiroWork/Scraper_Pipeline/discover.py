@@ -47,6 +47,13 @@ from urllib.parse import urljoin, urlparse, parse_qs, urlencode, urlunparse
 
 from collector import CollectionError, fetch_html
 
+try:
+    from dotenv import load_dotenv
+
+    load_dotenv()  # optional: loads a local .env if python-dotenv is installed and one exists
+except ImportError:
+    pass
+
 PAGE_FETCH_DELAY = 1.5  # seconds between listing-page fetches — politeness, not a hard requirement
 DEFAULT_STATE_PATH = Path("state/discovered_urls.json")
 

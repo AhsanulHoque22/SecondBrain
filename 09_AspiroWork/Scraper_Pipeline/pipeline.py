@@ -30,6 +30,13 @@ from extractor import (
     record_extraction_state,
 )
 
+try:
+    from dotenv import load_dotenv
+
+    load_dotenv()  # optional: loads a local .env if python-dotenv is installed and one exists
+except ImportError:
+    pass
+
 DEFAULT_OUTPUT = Path("output/programs.csv")
 DEFAULT_RAW_DIR = Path("raw")
 

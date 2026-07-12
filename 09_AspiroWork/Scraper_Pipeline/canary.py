@@ -27,6 +27,13 @@ from cleaner import clean_record, validate_required
 from collector import CollectionError, collect
 from extractor import extract
 
+try:
+    from dotenv import load_dotenv
+
+    load_dotenv()  # optional: loads a local .env if python-dotenv is installed and one exists
+except ImportError:
+    pass
+
 # One known-good URL per supported site. Each comment records when/how it
 # was last confirmed working, so a future canary failure has a clear
 # "this used to work as of X" baseline instead of an unexplained regression.

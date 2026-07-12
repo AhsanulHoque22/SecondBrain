@@ -2,9 +2,9 @@
 
 Normalizes an extracted-fields dict into the final CSV row: splits currency
 out of the tuition string, joins repeatable fields into semicolon-separated
-cells (matching the convention already used in Data Collection/), validates
-the mandatory fields from Appendix A, stamps last_verified_date, and appends
-to the output CSV (skipping exact duplicate rows).
+cells, validates the required fields (schema.REQUIRED_FIELDS), stamps
+last_verified_date, and appends to the output CSV (skipping exact duplicate
+rows).
 """
 
 from __future__ import annotations

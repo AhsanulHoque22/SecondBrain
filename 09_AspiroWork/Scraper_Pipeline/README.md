@@ -1,45 +1,135 @@
 # Scraper Pipeline
 
-## Introduction
+A small, self-contained pipeline that turns program-listing pages and
+individual program pages into a clean, deduplicated CSV — without a human
+reading every page by hand. Point it at one URL, a file of URLs, or a
+search/listing page, and it fetches, extracts, normalizes, and writes the
+data for you.
 
-Before this pipeline existed, scraping study-abroad program data was a
-manual process: fetch search-result pages by hand, extract program links,
-then read each page — manually or with AI assistance — and fill in a CSV
-row, then run a second verification pass to catch mistakes. It worked, but
-it didn't scale past a couple of countries and had no reusable code behind
-it.
+It ships with **no fixed AI vendor or model** — you choose which LLM
+provider to use (or none at all) via configuration, described in the
+[User Manual](#user-manual) below.
 
-This pipeline replaces that manual process with small, single-purpose
-Python scripts — discover, collect, extract, clean — chained by one CLI
-orchestrator. Point it at a list of program-page URLs and it produces the
-same 17-column CSV the manual process did, without a human reading every
-page.
+## Features
 
-## What this pipeline does
+- **Four independently runnable stages** — discover, collect, extract,
+  clean — chained by one CLI orchestrator (`pipeline.py`), so you can run
+  the whole thing end-to-end or use any stage on its own.
+- **Multi-provider LLM extraction.** Structured-field extraction works
+  against Anthropic, OpenAI, or Google Gemini, selected by an environment
+  variable — no code changes needed to switch providers or models.
+  See [Provider status](#provider-status) for what's been verified.
+- **Cost-aware multi-tier model cascade.** Configure a list of models from
+  cheapest/fastest to most capable; a deterministic validator gates each
+  tier's output, and a page only escalates to a stronger (pricier) model
+  when the cheaper one's output actually fails validation.
+- **Zero-setup heuristic fallback.** With no LLM configured at all — or if
+  every configured tier fails — extraction falls back to JSON-LD, Open
+  Graph, and regex-based heuristics. Lower recall, but the pipeline never
+  simply stops.
+- **Deterministic output validation.** Every LLM extraction is checked for
+  required fields, correct numeric shape, and source-text grounding (a
+  numeric value's digits must actually appear on the page) before it's
+  accepted — catches empty and hallucinated fields without a second LLM
+  call.
+- **Cloudflare/WAF bypass.** Sites that return 403 to a plain HTTP request
+  are retried automatically through a headless-browser (Playwright)
+  fallback that executes the page's JavaScript.
+- **Hard-block detection.** A Cloudflare "you have been blocked" page is
+  detected and treated as a failure, not silently cached as if it were real
+  page content.
+- **Site discovery with pagination.** Turn a search/listing page into a
+  list of individual program URLs, walking multiple result pages and
+  de-duplicating as it goes.
+- **Cross-run discovery memory.** Every URL ever discovered is kept in a
+  persistent manifest, so re-running discovery against an overlapping
+  search only reports what's genuinely new.
+- **Change detection (`--refresh`).** Re-check an already-scraped URL
+  cheaply via a content hash, and only pay for re-extraction if the page's
+  content actually changed — the existing CSV row is updated in place, not
+  duplicated.
+- **Resume by default.** Interrupt a batch at any point (crash, block,
+  closed laptop) and rerun the same command — URLs already written to the
+  output CSV are skipped automatically.
+- **Rate limiting and block cooldown.** Configurable delay between
+  requests, plus a longer cooldown specifically after a hard block is
+  detected, before continuing to the next URL.
+- **Atomic, crash-safe writes.** Both the output CSV and all JSON state
+  files are written via a temp-file-then-rename pattern, so a crash
+  mid-write can never leave a corrupted file.
+- **Per-batch cost/token reporting.** Every LLM call's real token usage is
+  tracked and summarized per model at the end of a run, priced at standard
+  list rates.
+- **Deterministic, no-network test suite.** 80 `pytest` tests cover every
+  pure-logic component (validators, normalizers, regex tiers, schema
+  translation, cascade/escalation logic) with all network and LLM calls
+  mocked.
+- **Smoke-test script (`canary.py`).** Runs the real collect → extract path
+  against a small set of known-good URLs, so a supported site quietly
+  changing its layout gets caught before a real batch comes back empty.
+- **Optional `.env` support.** Configuration can be set as real environment
+  variables or in a local `.env` file (auto-loaded if `python-dotenv` is
+  installed).
 
-Given one or more URLs to individual program pages, it:
+## Limitations
 
-1. Fetches and caches the raw HTML for each URL (clearing Cloudflare/WAF
-   bot-protection automatically where needed).
-2. Extracts the Appendix A program fields (university, level, program name,
-   tuition, deadlines, requirements, tags, etc.) using an LLM cascade that
-   generalizes across arbitrary site layouts — no per-site selectors to
-   maintain — with a zero-setup heuristic fallback if no LLM is reachable.
-3. Normalizes, validates, and de-duplicates each record, then appends it to
-   a flat output CSV in the same schema already used across
-   `Data Collection/`.
-
-It can also turn a search/listing page into that URL list for you first
-(mastersportal.com only, for now) — see Discover below.
-
-## What it's used for
-
-Feeding `09_AspiroWork/Data Collection/` — the source data for AspiroBrain's
-study-abroad advisory database. Previously that data was scraped one country
-at a time, entirely by hand. This pipeline is the automated replacement:
-it's designed to work on sites like mastersportal.com *and* on individual
-university sites directly (e.g. ox.ac.uk course pages) — anywhere a
-program's details live on one page.
+- **Only the Anthropic provider has been run against a live API in this
+  project.** The OpenAI and Google Gemini adapters are implemented against
+  each vendor's documented API contract but have not been exercised against
+  a live account. Review their output on a handful of real pages before
+  trusting either for a full batch. See [Provider status](#provider-status).
+- **The heuristic fallback has real gaps.** It reliably reads
+  `university_name`, `program_name`, and a heuristic `level` guess, but
+  fields like `tuition_1st_year`, `duration`, `success_rate`, and
+  `program_image_url` are only picked up if the page exposes them as a
+  plain "Label: value" line or standard JSON-LD/Open Graph metadata. A page
+  with a genuinely different layout convention can come back with those
+  fields empty. This is the expected trade-off of a zero-setup fallback,
+  not a bug — it exists so the pipeline never simply stops, not to match
+  LLM-tier recall.
+- **No defense against a WAF that also fingerprints headless browsers.**
+  The Playwright fallback clears sites that block plain HTTP requests but
+  don't detect a real (if headless) browser. A site that blocks both will
+  still fail collection.
+- **URL discovery ships with one site pattern (mastersportal.com)
+  registered.** Adding a second site is meant to be a small, contained
+  change — see [Adding a new discovery site](#adding-a-new-discovery-site)
+  — but no second pattern has been built or tested. Pointing `discover.py`
+  at an unregistered domain raises a clear error rather than silently
+  returning nothing.
+- **Rate limiting is a flat delay, not adaptive.** `--delay` and
+  `--block-cooldown` are fixed values you set upfront, not a backoff that
+  tunes itself to how a site is actually responding.
+- **Source-grounding validation isn't perfect.** It only checks whether a
+  numeric value's digits appear somewhere on the page — a value the model
+  legitimately computed or reformatted (rather than copied verbatim) could
+  be flagged as "not grounded" even when it's correct, triggering an
+  unnecessary but harmless escalation.
+- **Resume keys on exact source URL only**, which is coarser than the
+  cleaner's own duplicate check (university + program name + URL). Two
+  different URLs describing the same program won't be caught by resume,
+  though they'd still be caught as a duplicate if actually reprocessed.
+- **`--refresh` change detection can occasionally report a false positive.**
+  It hashes the page's cleaned text, not the raw HTML — in testing, two
+  fetches of a genuinely unchanged real page landed on different hashes
+  once, most likely because of headless-browser render-timing variance
+  rather than an actual page change. Not reliably reproduced across
+  follow-up controlled fetches. The failure direction is the safer one
+  (occasionally re-extracts something that didn't change; should never
+  silently miss a real change), but the real false-positive rate on a large
+  batch is unmeasured. See `state/README.md` for the full design notes.
+- **Atomic CSV writes rewrite the whole file per append** — fine at the
+  scale this pipeline targets (hundreds to low thousands of rows), but
+  would need a real database well before tens of thousands of rows.
+- **Escalation adds latency, worst case one API call per cascade tier.** A
+  page that fails validation at every tier makes one sequential call per
+  tier before falling back to the heuristic path.
+- **`canary.py` isn't wired into a scheduler.** It exists and works, but
+  something has to actually run it — cron, CI, or manually — for it to
+  catch a layout regression.
+- **Flat CSV output only.** No structured database storage and no
+  versioned/immutable snapshotting of raw pages beyond the `raw/` HTML
+  cache.
 
 ## Architecture
 
@@ -67,14 +157,14 @@ program's details live on one page.
                                           ▼
    ┌─────────────────┐   ┌──────────────────────────────┐   ┌──────────────────┐
    │  1. COLLECT      │   │  2. EXTRACT                    │   │  3. CLEAN         │
-   │  collector.py    │──▶│  extractor.py                  │──▶│  cleaner.py       │
+   │  collector.py    │──▶│  extractor.py + llm_providers.py│──▶│  cleaner.py       │
    │                  │   │                                 │   │                  │
    │  requests GET    │   │  clean_text_from_html()         │   │  normalize fields │
    │       │403       │   │       │                          │   │  currency split   │
    │       ▼           │   │       ▼                          │   │  flatten repeats  │
-   │  Playwright        │   │  ┌─ Haiku 4.5  ──validator──┐   │   │  validate required │
-   │  headless fallback │   │  │ Sonnet 5   (on failure)  │   │   │  dedupe + append   │
-   │       │           │   │  │ Opus 4.8   (on failure)   │   │   │  (atomic write)    │
+   │  Playwright        │   │  ┌─ model tier 1 ──validator─┐   │   │  validate required │
+   │  headless fallback │   │  │ model tier 2  (on failure) │   │   │  dedupe + append   │
+   │       │           │   │  │ model tier N  (on failure) │   │   │  (atomic write)    │
    │       ▼           │   │  └───────────┬───────────────┘   │   │                  │
    │  hard-block check  │   │              │ all tiers failed  │   │                  │
    │       │           │   │              ▼                  │   │                  │
@@ -89,551 +179,281 @@ program's details live on one page.
 
 | File | Stage | Responsibility |
 |---|---|---|
-| `schema.py` | — | Canonical 17-field list + which 3 are required |
+| `schema.py` | — | Canonical output field list + which are required |
 | `discover.py` | Discover (optional) | Extract individual program links from a listing page (site-pattern registry), walk pagination, merge into a persistent cross-run manifest, write only new links |
 | `collector.py` | Collect | Fetch raw HTML, clear Cloudflare/WAF via a headless-browser fallback, detect hard blocks, cache to disk |
-| `extractor.py` | Extract | Haiku → Sonnet → Opus cascade with a free validator gate (required fields, numeric shape, source-grounding); heuristic fallback if no LLM is reachable |
+| `extractor.py` | Extract | Multi-tier model cascade with a deterministic validator gate (required fields, numeric shape, source-grounding); heuristic fallback if no LLM is reachable |
+| `llm_providers.py` | Extract | Provider adapter layer — dispatches an extraction call to Anthropic, OpenAI, or Google Gemini behind one common interface |
 | `cleaner.py` | Clean | Normalize, validate required fields, dedupe, atomically append to CSV |
 | `pipeline.py` | — | CLI orchestrator: delay/jitter, hard-block cooldown, resume-skip or `--refresh` change-check, cost/token report |
 | `canary.py` | — | Smoke test: known-good real URLs, run periodically to catch silent site-layout breakage |
-| `tests/` | — | `pytest` suite for every pure-logic piece above (73 tests, no network) |
+| `tests/` | — | `pytest` suite for every pure-logic piece above (80 tests, no network) |
 | `pytest.ini` | — | Points `pytest` at `tests/` |
+| `.env.example` | — | Template for the environment variables described below |
 | `state/discovered_urls.json` | — | Persistent cross-run discovery manifest, written/merged by `discover.py`. Git-tracked (see `state/README.md`) |
 | `state/extraction_state.json` | — | Per-URL content-hash record, written by `extractor.record_extraction_state()`, read by `pipeline.py --refresh`. Git-tracked (see `state/README.md`) |
 
-## How to use it
+## User Manual
 
-### Setup
+### Requirements
+
+- Python 3.10+
+- An API key for whichever LLM provider you choose (optional — see
+  [Running with no LLM configured](#running-with-no-llm-configured))
+
+### Installation
 
 ```bash
+git clone <this repository's URL>
+cd Scraper_Pipeline
+
 python3 -m venv .venv
 ./.venv/bin/pip install -r requirements.txt
 ./.venv/bin/playwright install chromium
 ```
 
-For LLM-based extraction (recommended — generalizes across arbitrary site
-layouts instead of relying on the weaker heuristic path), set
-`ANTHROPIC_API_KEY` or run `ant auth login`. Without either, every page falls
-straight through the LLM cascade to heuristic extraction — lower recall, but
-works with zero setup.
+`playwright install chromium` downloads the headless browser used only as
+the Cloudflare/WAF fallback. Skipping it is fine — the collector still
+works for any site that doesn't block plain HTTP requests; it just can't
+clear a bot-protection wall without it.
 
-The `playwright install chromium` step downloads the headless browser used
-only as the Cloudflare/WAF fallback (see Known limitations below). Skipping
-it is fine — the collector still works for any site that doesn't block plain
-`requests`; it just can't clear a bot-protection wall without it.
-
-### Run
+`requirements.txt` installs the `anthropic` SDK by default (Anthropic is
+the provider with a built-in default model cascade — see below). If you
+plan to use OpenAI or Google Gemini instead, also install that vendor's
+SDK:
 
 ```bash
-./.venv/bin/python pipeline.py --url "https://www.mastersportal.com/studies/8798/legal-research.html"
-./.venv/bin/python pipeline.py --url-file urls.txt
-./.venv/bin/python pipeline.py --url-file urls.txt --output output/my_batch.csv --raw-dir raw/my_batch
-./.venv/bin/python pipeline.py --url-file urls.txt --delay 2.0 --block-cooldown 60
-./.venv/bin/python pipeline.py --url-file urls.txt --no-resume   # reprocess URLs already in the output CSV
-./.venv/bin/python pipeline.py --url-file urls.txt --refresh     # for already-done URLs, re-check for source-page changes instead of skipping
+./.venv/bin/pip install openai              # if using LLM_PROVIDER=openai
+./.venv/bin/pip install google-generativeai # if using LLM_PROVIDER=google
 ```
 
-Output: `output/programs.csv` by default. Raw HTML snapshots are cached in
-`raw/` (one `.html` + `.meta.json` per URL, keyed by a hash of the URL), so
-extraction can be re-run later without re-fetching. Each line printed during
-a run is one of `OK` / `DUPLICATE` / `UPDATED` / `UNCHANGED` / `RESUMED` /
-`SKIPPED` / `BLOCKED` / `FAILED`, followed by a summary count and — if any
-LLM calls were made — a per-model token/cost report.
+### Configuration
 
-**Change-detection (`--refresh`).** By default, an already-done URL is
-skipped outright (`RESUMED`, no network). With `--refresh`, it's re-fetched
-instead, and `state/extraction_state.json` (content-hash record from the
-last extraction, `--extraction-state` to point it elsewhere) decides what
-happens next: unchanged page → `UNCHANGED`, no LLM call, no CSV write;
-changed page → re-extracted and the existing row **replaced in place**
-(not appended as a duplicate) → `UPDATED`. See `state/README.md` for the
-hash design and a real, live-confirmed limitation (occasional false
-`UPDATED` from fetch-to-fetch rendering variance, not just real data
-changes — see Drawbacks below).
+Copy `.env.example` to `.env` and fill in your values (auto-loaded on every
+run if `python-dotenv` is installed, which it is by default):
 
-`--url` expects an individual program page. Pointing it at a search/listing
-page instead (e.g. `mastersportal.com/search/master/...`) will "succeed"
-with no crash but produce `SKIPPED` on every row — a listing page has no
-single `university_name`/`level`/`program_name` for the pipeline to
-extract. Use Discover below to turn a listing page into individual URLs
-first.
+```bash
+cp .env.example .env
+```
 
-**Resuming a batch.** By default, any URL already present in the output
-CSV's `source_url` column is skipped entirely — no re-fetch, no
-re-extraction, no LLM spend — reported as `RESUMED`. This makes it cheap to
-rerun a batch that got interrupted partway (crash, hard block, closed
-laptop). Pass `--no-resume` to force reprocessing every URL regardless.
+| Variable | Required | Purpose |
+|---|---|---|
+| `LLM_PROVIDER` | No (defaults to `anthropic`) | Which vendor to use: `anthropic`, `openai`, or `google` |
+| `ANTHROPIC_API_KEY` / `OPENAI_API_KEY` / `GOOGLE_API_KEY` | Yes, for the provider you chose | Credential for that vendor's SDK |
+| `EXTRACTION_MODEL_CASCADE` | Yes, unless `LLM_PROVIDER=anthropic` | Comma-separated model IDs, cheapest/fastest first |
 
-**Politeness delay.** `--delay` (default 1.5s, plus up to 1s of random
-jitter) is applied between URLs in a batch. `--block-cooldown` (default 30s)
-is an *extra*, one-time sleep applied specifically after a hard Cloudflare
-block is detected, before continuing to the next URL — see Failproofing
-below for why this exists.
+**Model IDs are never hardcoded for OpenAI or Google in this project** —
+only the Anthropic cascade ships with a built-in default, because it's the
+only provider this pipeline has actually been run against. For any other
+provider, check that vendor's current documentation for valid model names
+and set `EXTRACTION_MODEL_CASCADE` yourself, for example:
 
-### Discover (optional — mastersportal.com only, for now)
+```bash
+LLM_PROVIDER=openai
+EXTRACTION_MODEL_CASCADE=<your-cheap-model>,<your-strong-model>
+```
 
-If you have a search/listing page URL instead of individual program URLs,
-generate a `urls.txt` first and feed it straight into the run above:
+Each configured model is tried in order; a model only escalates to the
+next one in the list if the deterministic validator rejects its output
+(missing required field, non-numeric value in a numeric field, or a value
+that doesn't appear anywhere in the source page).
+
+#### Provider status
+
+| Provider | Status |
+|---|---|
+| Anthropic | Exercised against the live API during this pipeline's development. Has a built-in default model cascade. |
+| OpenAI | Implemented against OpenAI's documented strict function-calling contract. Not exercised against a live account — verify on real pages before trusting it for a full batch. |
+| Google Gemini | Implemented against the documented `google-generativeai` structured-output contract, including a schema-translation step (Gemini's schema dialect differs from plain JSON Schema). The least-verified of the three — review carefully before relying on it. |
+
+#### Estimating cost
+
+Because each page is one independent, stateless API call — a page's cost
+never depends on how many other pages are in the batch, and nothing
+accumulates across a run — total cost scales linearly with page count and
+is straightforward to estimate: `(input tokens × input price) + (output
+tokens × output price)`, summed per model tier actually used, then across
+the batch. `pipeline.py` prints this automatically at the end of every run
+that made LLM calls (see [Reading a run's output](#reading-a-runs-output)).
+
+As a concrete, measured example using Anthropic's list pricing: a typical
+program page's cleaned text plus the extraction schema and prompt runs
+roughly 4,000–4,500 input tokens, and a typical structured extraction
+response is roughly 250 output tokens. At Claude Haiku pricing ($1/$5 per
+million input/output tokens) that's well under a cent per page when the
+cheapest tier resolves it; escalating to a stronger tier costs proportionally
+more per that tier's list price, but only fires on the pages the validator
+actually rejects. The exact numbers depend entirely on which provider and
+models you configure — check that vendor's current pricing.
+
+### Running with no LLM configured
+
+The pipeline never hard-requires an LLM. With no API key set for the
+configured provider (or with every configured tier failing for any other
+reason — network error, invalid key, rate limit), extraction falls through
+to the heuristic path automatically: JSON-LD (`schema.org` Course /
+EducationalOccupationalProgram markup), Open Graph tags, and label-based
+regex matching. Lower recall (see [Limitations](#limitations)), but zero
+setup and it never blocks a batch.
+
+### Quick start
+
+```bash
+./.venv/bin/python pipeline.py --url "https://example.com/programs/some-masters-degree"
+```
+
+This fetches the page, extracts the fields, cleans and validates them, and
+appends one row to `output/programs.csv`.
+
+### Use cases
+
+**Process a single URL:**
+
+```bash
+./.venv/bin/python pipeline.py --url "https://example.com/programs/some-masters-degree"
+```
+
+**Process a batch from a file** (one URL per line, `#`-prefixed lines
+ignored):
+
+```bash
+./.venv/bin/python pipeline.py --url-file urls.txt
+```
+
+**Custom output location and raw-HTML cache directory:**
+
+```bash
+./.venv/bin/python pipeline.py --url-file urls.txt --output output/my_batch.csv --raw-dir raw/my_batch
+```
+
+**Tune request pacing** — `--delay` (default 1.5s + up to 1s random
+jitter) between URLs, `--block-cooldown` (default 30s) as an extra sleep
+specifically after a hard block is detected:
+
+```bash
+./.venv/bin/python pipeline.py --url-file urls.txt --delay 2.0 --block-cooldown 60
+```
+
+**Reprocess URLs already in the output CSV** (resume is on by default —
+this opts out of it for one run):
+
+```bash
+./.venv/bin/python pipeline.py --url-file urls.txt --no-resume
+```
+
+**Re-check already-scraped URLs for source-page changes** instead of
+skipping them outright:
+
+```bash
+./.venv/bin/python pipeline.py --url-file urls.txt --refresh
+```
+
+Each already-done URL is re-fetched and its content hash compared against
+`state/extraction_state.json`. Unchanged → reported `UNCHANGED`, no LLM
+call, no CSV write. Changed → re-extracted and the existing row **replaced
+in place** (not appended as a duplicate) → reported `UPDATED`. Point
+`--extraction-state` elsewhere to use a different state file (default:
+`state/extraction_state.json`).
+
+**Discover program URLs from a search/listing page** (currently supports
+mastersportal.com — see [Adding a new discovery
+site](#adding-a-new-discovery-site) to extend it):
 
 ```bash
 ./.venv/bin/python discover.py --url "https://www.mastersportal.com/search/master/2-years/netherlands" --pages 5 --output urls.txt
 ./.venv/bin/python pipeline.py --url-file urls.txt
 ```
 
-`--pages N` walks `page=1..N` of the same search (20 results per page on
-mastersportal.com) and de-duplicates across pages. Site support is a small
-registry (`SITE_PATTERNS` in `discover.py`) — only mastersportal.com is
-registered today; pointing it at an unregistered domain raises a clear
-error rather than silently finding nothing.
-
-**Every link found is also merged into `state/discovered_urls.json`** — a
-persistent manifest, not overwritten between runs (`--state` to point it
-elsewhere). `urls.txt` only ever contains links that are *new* as of the
-most recent run; running `discover.py` again against the same or an
+`--pages N` walks `page=1..N` of the same search and de-duplicates across
+pages. Every link found is also merged into `state/discovered_urls.json` (a
+persistent manifest, not overwritten between runs — `--state` to point it
+elsewhere); `urls.txt` only ever contains links that are *new* as of the
+most recent run, so running `discover.py` again against the same or an
 overlapping search correctly reports 0 new links for anything already
-known instead of silently reproducing the same batch. See
-`state/README.md` for the full design.
+known. See `state/README.md` for the full design.
 
-### Testing
+**Run the test suite** (pure logic only, no network, no live LLM calls):
 
 ```bash
-./.venv/bin/python -m pytest              # 56 pure-logic tests, no network, ~2s
-./.venv/bin/python canary.py --verbose    # smoke test against real known-good URLs, hits the network
+./.venv/bin/python -m pytest
 ```
 
-Run `pytest` after any change to a regex, validator, or normalizer — it's
-what catches a regression before it silently ships in a real batch. Run
-`canary.py` periodically (there's no cron job wired up for it — see
-Failproofing below) to catch a supported site changing its layout before a
-real batch quietly comes back empty.
+Run this after any change to a regex, validator, normalizer, or provider
+adapter — it's what catches a regression before it ships in a real batch.
 
-## Challenges faced, and how they were solved
+**Run the smoke test** against known-good real URLs (hits the network,
+uses whichever LLM provider is currently configured):
 
-**1. Cloudflare/WAF blocked the collector outright.**
-mastersportal.com and ox.ac.uk both return 403 to a plain `requests` call
-with a real User-Agent header — the same wall that forced the original
-scraping work to be done by hand. Fixed by adding a headless-browser
-(Playwright) fallback that fires specifically on a 403: it executes the
-page's JavaScript, which clears most "checking your browser" challenges,
-then hands the resulting HTML back to the same caching path. Verified live
-against mastersportal.com: the plain-`requests` call 403s as expected, the
-fallback then pulls the real page (145KB of HTML) successfully.
+```bash
+./.venv/bin/python canary.py --verbose
+```
 
-**2. A mid-edit annotation pass had broken the collector.**
-Before this session's changes, `collector.py` had two live syntax errors
-from an in-progress pass of explanatory comments — `import return` instead
-of `import requests`, and an unterminated docstring at the end of the file.
-The module couldn't even be imported. Fixed both while keeping the
-educational comments intact.
+There's no scheduler wired up for this — run it manually, or wire it into
+your own cron job or CI pipeline, periodically to catch a supported site
+quietly changing its layout before a real batch comes back empty.
 
-**3. The headless-browser fallback had no retry of its own.**
-Running the pipeline against a real 13-URL batch of Oxford course pages
-surfaced two `net::ERR_NETWORK_CHANGED` failures — a one-off network blip,
-confirmed transient by re-fetching the same two URLs directly and getting
-them on the first try. The plain-`requests` path already retried transient
-failures; the Playwright fallback didn't. Fixed by giving it the same
-retry-with-backoff budget.
+### Reading a run's output
 
-**4. The heuristic extractor returned nothing on real (non-mastersportal)
-pages.** With no `ANTHROPIC_API_KEY` configured, extraction falls through to
-a heuristic path — and on the same 13-URL Oxford batch, every single row
-came back with the three *required* fields empty, because that path only
-ever read `university_name`/`program_name` from `schema.org` JSON-LD Course
-markup, which ox.ac.uk (and most ordinary sites) doesn't have. The data was
-sitting right there in standard `<title>`/`og:title`/`og:site_name` meta
-tags the heuristic never looked at. Fixed by adding those as fallbacks, plus
-a degree-prefix regex (`MSc`, `MPhil`, `MSt`, …) to backfill `level` from the
-program name.
+Each line printed during a run is one of:
 
-**5. A regex false-positive corrupted `application_fee`.** Once the fields
-above were being populated, `application_fee` on several Oxford rows came
-back as `"applicants from low-income countries;"` — an unrelated sentence
-elsewhere on the page that happened to sit after a colon. The label-to-colon
-gap in that regex was unbounded, so it matched the *nearest colon anywhere
-in the text* rather than one actually attached to the label. Fixed by
-capping the gap at 30 characters and rejecting any captured value with no
-digit in it (these fields are always numeric/currency, so a non-numeric
-capture is prose, not data).
+| Status | Meaning |
+|---|---|
+| `OK` | New row written |
+| `DUPLICATE` | Extracted successfully but an equivalent row already existed |
+| `UPDATED` | (`--refresh` only) Existing row replaced with changed data |
+| `UNCHANGED` | (`--refresh` only) No content change detected, nothing re-extracted |
+| `RESUMED` | URL already in the output CSV, skipped entirely |
+| `SKIPPED` | Extraction ran but a required field came back empty |
+| `BLOCKED` | A hard bot-protection block was detected |
+| `FAILED` / `ERROR` | Collection or an unexpected error stopped this URL |
 
-**6. Extraction always called the most expensive model, with no check on
-its output.** The extractor originally hardcoded `claude-opus-4-8`
-($5/$25 per MTok) for every single page, and accepted whatever it returned
-with no semantic validation — a "successful" API call with an empty required
-field went straight to the CSV uncaught. Redesigned as a 3-tier cascade
-(Haiku 4.5 → Sonnet 5 → Opus 4.8), cheapest first, gated by a free
-deterministic validator (checks required fields aren't empty/placeholder,
-numeric fields contain a digit). A page only pays for a stronger model if
-the cheaper one's output actually fails validation, and the escalation
-prompt carries the validator's specific complaints so the retry is a
-correction rather than a second blind guess.
+Followed by a summary count, and — if any LLM calls were made — a per-model
+token/cost report, priced at each configured model's standard list rate
+(models with no known price are reported at $0.00 rather than a guessed
+number).
 
-**7. Feeding the pipeline a search-results page silently produced nothing
-useful.** Pointing `pipeline.py` directly at a mastersportal.com search URL
-"worked" (no crash) but every URL came back `SKIPPED` — a search page lists
-~20 different programs, so there's no single `university_name`/`level`/
-`program_name` for it to extract, and both the LLM tiers and the heuristic
-path correctly refused to fabricate one. The real need was a separate
-discovery step. First attempt at building it used the wrong link pattern
-(`href="/studies/..."`) and found zero links on a page that plainly had real
-listings on it (confirmed via screenshot); the actual links turned out to be
-embedded as JSON data (`"url":"/studies/8997/....html"`), not `<a href>`
-tags — a bare regex on the raw HTML found all of them. Landed as
-`discover.py`, reusing `collector.py`'s existing fetch (no new dependency
-needed).
+### Output format
 
-**8. The `level` degree-prefix regex from #4 still missed most real
-mastersportal.com titles.** It only matched an abbreviation (`MSc`, `MPhil`,
-…) anchored at the very start of the program name — Oxford's convention
-("MSc in X"). mastersportal.com titles read differently, e.g. "Joint Master
-in Applied XR … at USTP" (unabbreviated "Master", not at the start) and
-"Legal Research LL.M. at Utrecht University" (a dotted abbreviation, also
-not at the start). Widened `level` backfill to three tiers, tried in order:
-the original anchored abbreviation match; a dotted-abbreviation search
-anywhere in the title (`LL.M`, `M.Sc`, …) — safe to search anywhere because
-the literal period makes false positives very unlikely; then a plain-word
-search anywhere (`Master`, `Bachelor`, `Doctorate`, …) — also safe as whole
-words. Deliberately did *not* widen the original anchored tier's bare
-2-letter forms (`MA`, `BA`) to search-anywhere, since those really do
-collide with normal English/place-name text (verified: "University of
-Massachusetts (MA)" does not falsely match `MA` under any tier).
+`output/programs.csv` (or wherever `--output` points) has one row per
+program with the columns defined in `schema.FIELDNAMES` — identity fields
+(university, level, program name), location, cost, dates, and repeatable
+sections (intake terms, deadlines, prerequisites, requirements, tags)
+flattened into semicolon-separated cells. `schema.REQUIRED_FIELDS`
+(`university_name`, `level`, `program_name`) must be non-empty for a row to
+be written at all; anything else missing is left blank.
 
-**9. mastersportal.com escalated from a soft challenge to a hard block
-mid-session.** While testing `discover.py` against the same site
-repeatedly, a Playwright fetch that had previously succeeded came back with
-an actual Cloudflare "Sorry, you have been blocked" page — a real,
-different HTML document, served with a normal 200 status, that the
-collector was silently treating as a successful fetch (it would have been
-cached and handed to the extractor as if it were program content). This is
-the concrete failure that motivated most of the Failproofing work below:
-`collector.py` had no way to tell "fetched real content" apart from
-"fetched a block page that happens to be valid HTML."
+Raw HTML snapshots are cached in `raw/` (one `.html` + `.meta.json` per
+URL, keyed by a hash of the URL), so extraction can be re-run later without
+re-fetching the page.
 
-**10. The content-hash change-detection check itself isn't perfectly
-stable, discovered while verifying it live.** `pipeline.py --refresh`
-worked exactly as intended for its actual purpose — re-extracting a real
-mastersportal.com program after its tuition changed correctly produced
-`UPDATED` with the new value replacing the old row. But in the same round
-of live testing, two fetches of a genuinely *unchanged* page landed on
-different content hashes once — not reproduced across three controlled
-follow-up fetches (including one with a deliberate 90-second gap, all
-three matching). Most likely cause: `fetch_html_playwright`'s
-`networkidle` wait doesn't always settle at the same point (see Failproofing
-#1's fallback code — the wait is wrapped in a try/except that just moves
-on), so two fetches of the identical page can capture slightly different
-DOM-render-completeness snapshots. Not fixed — the exact trigger couldn't
-be reliably reproduced to fix with confidence, and further probing risked
-another Cloudflare escalation like #9. Documented as a known limitation
-(Drawbacks below) rather than guessed at: the failure mode leans toward
-"occasionally wastes an LLM call re-extracting an unchanged page," never
-"misses a real change," which is the safer side to be wrong on.
+### Adding a new discovery site
 
-## Failproofing (this round)
+`discover.py`'s `SITE_PATTERNS` registry maps a domain to a small
+`SitePattern` entry: a regex for extracting program links out of a fetched
+listing page, and the pagination query-parameter name for that site. To
+add a new site, add one more entry there with that site's own link pattern
+— no other code needs to change. Pointing `discover.py` at a domain with no
+registered pattern raises a clear error rather than silently returning
+nothing.
 
-After the fixes above, the question became "what else can go wrong" —
-these ten items were brainstormed from the actual gaps already known at
-that point, then implemented and verified in this same session.
+### Troubleshooting
 
-1. **Detect a hard Cloudflare block distinctly from a soft 403.** `collector.py`
-   now checks fetched HTML against known block-page markers ("Sorry, you
-   have been blocked", "Attention Required! | Cloudflare", `cf-error-details`)
-   and raises `HardBlockError` — a `CollectionError` subclass — instead of
-   silently returning the block page as if it were content. Applied to
-   *both* fetch paths (plain `requests` 200s and the Playwright fallback),
-   since a block page isn't guaranteed to arrive with a 403. Verified: unit
-   test reproduces the exact real block-page text seen mid-session and
-   confirms it's caught; a second test confirms real page HTML never
-   false-positives.
-2. **Rate limiting + hard-block cooldown in `pipeline.py`.** There was
-   previously zero delay between URLs in a batch — the leading suspect for
-   why #9 above happened. Added `--delay` (default 1.5s + up to 1s jitter)
-   between every URL, and a separate, much longer `--block-cooldown`
-   (default 30s) that fires once when a `HardBlockError` is caught, before
-   continuing to the next URL — retrying immediately into an active block
-   just deepens it. Verified live (delay measurably slows a 2-URL batch)
-   and with a mocked `HardBlockError` (cooldown sleep fires, batch
-   continues afterward, `BLOCKED` is reported distinctly in the summary).
-3. **Resume / skip-already-done.** Before processing a URL, `pipeline.py`
-   now checks whether it's already in the output CSV's `source_url` column
-   and skips it immediately if so (`RESUMED`, no network/LLM call at all).
-   `--no-resume` forces reprocessing. Verified live: an identical 2-URL
-   batch took ~22s fresh and ~1.8s on rerun, both URLs correctly skipped;
-   `--no-resume` on the same batch correctly re-fetched both and fell
-   through to `cleaner.py`'s own content-based dedup (`DUPLICATE`).
-4. **Source-text grounding check in the validator.** `validate_extraction()`
-   previously only checked *shape* (non-empty, contains a digit) — a
-   plausible-but-wrong number would sail through untouched. Now, for any
-   numeric field with a 3+ digit value, it strips all extracted values and
-   the page's clean text down to digits-only and checks the value's digits
-   actually appear somewhere on the page; a value with no match is flagged
-   as "not grounded in the page — possible hallucination" and triggers
-   escalation, same as any other validation failure. Digit-only comparison
-   sidesteps formatting noise ("£15,000" vs "15000"); the 3-digit floor
-   avoids flagging every short number (a duration of "7 years") as a
-   coincidental non-match. Verified with unit tests: a grounded value
-   passes, an identical-shape ungrounded value is flagged, a short digit
-   run is correctly *not* flagged either way.
-5. **Live cascade test — still blocked.** Actually running the
-   Haiku→Sonnet→Opus cascade against the real API on a real batch needs
-   `ANTHROPIC_API_KEY`, which is not available in this environment (checked
-   again at the start of this round — still unset, no `ant` CLI either).
-   Real accuracy, real escalation rate, and real $ per program remain
-   unmeasured. Item 6 below (cost tracking) is ready to report on this the
-   moment credentials are available.
-6. **Per-call cost/token tracking + end-of-batch report.** `extract_via_llm`
-   now returns the API response's real `usage` (input/output tokens)
-   alongside the extracted fields; `extract()` attaches it as `data["_usage"]`
-   (model + token counts, or `None` on the heuristic path — no API call, no
-   cost). `pipeline.py` accumulates this across a batch and prints a
-   per-model breakdown plus a total, priced at standard list rates (not the
-   temporary Sonnet 5 introductory discount — a cost *estimate* that
-   silently goes wrong the day a discount expires is worse than one that's
-   always a few cents pessimistic). Verified with unit tests covering the
-   summing/formatting logic; can't be verified against real dollars without
-   #5 above.
-7. **A `pytest` suite for every pure-logic piece.** Every fix in this
-   session up to this point was verified with a one-off script written,
-   run, and thrown away — real confirmation in the moment, but nothing
-   stopping a future change from quietly breaking the same thing again.
-   Added `tests/` (56 tests) covering: the `level` three-tier regex
-   (including both real titles that exposed gaps #4/#8 and both
-   adversarial cases), the `application_fee` false-positive regression
-   from #5, the validator's required/numeric/grounding checks from #4
-   above, the full escalation cascade (mocked — tests never touch the live
-   API), `discover.py`'s link extraction + pagination + site registry,
-   `cleaner.py`'s normalizers + atomic-write behavior (#9 below), and
-   `collector.py`'s hash + hard-block detection. Small refactor alongside
-   this: the inline three-tier level-detection logic in
-   `extract_via_heuristics` was pulled out into its own `backfill_level()`
-   function so it could be tested directly instead of only indirectly
-   through a full HTML fixture. `pytest` added to `requirements.txt`.
-   Verified: `pytest` — 56 passed in ~2s.
-8. **A canary/smoke-test script.** `canary.py` hits one known-good real URL
-   per supported site (mastersportal.com, ox.ac.uk) through the actual
-   `collect()` → `extract()` path, using a throwaway temp directory so it
-   never touches the real `raw/` cache or output CSV, and exits non-zero if
-   either one stops producing the required fields — meant to catch a site
-   silently changing its layout before a real batch quietly comes back
-   empty. Not wired into cron or any scheduler (that would be a separate,
-   explicit ask). Verified live: both real canary URLs pass today; a mocked
-   failure correctly exits 1 with a clear stderr message, and an empty
-   canary list correctly exits 0.
-9. **Atomic CSV writes.** `cleaner.append_to_csv` previously opened the
-   output file in append mode and wrote directly — a crash or kill
-   mid-write could leave a truncated or partially-written row. Rewritten to
-   write the full file (existing rows + the new row) to a temp file in the
-   same directory, then swap it in with `os.replace()`, which is atomic on
-   both POSIX and Windows. Trade-off: this is an O(rows) rewrite per append
-   rather than true O(1) append — the right call at this pipeline's scale
-   (hundreds to low thousands of rows), not for a much larger file.
-   Verified with a unit test that injects a `RuntimeError` mid-write via a
-   monkeypatched `csv.DictWriter` and confirms the original file is
-   byte-for-byte unchanged afterward, with no leftover temp file.
-10. **`discover.py` refactored for multi-site extensibility.** The
-    mastersportal-only regex and `page=` pagination param were hardcoded
-    inline. Replaced with a `SITE_PATTERNS` registry keyed by domain (each
-    entry: link regex + pagination param name), so adding a second site
-    later is meant to be a small addition, not a rewrite — though no second
-    site's actual pattern has been discovered/tested yet, so only
-    mastersportal.com is registered. Pointing `discover.py` at an
-    unregistered domain now raises a clear, actionable error instead of
-    silently returning zero links. Verified live (same 20-links-per-page
-    result as before the refactor) and with unit tests, including the new
-    error path.
-
-## Cost estimation: old manual/agent system vs. this pipeline
-
-The old manual process (Netherlands/Malta CSVs — see `../Data Collection/`)
-ran into a hard **session/context limit**: a single agent session trying to
-work through 100 programs in one go accumulated too much context (fetched
-page content + reasoning + CSV-row output, for every program processed so
-far, all staying in the same conversation) and became unworkable well before
-finishing — which is why that process had to be split into 5 parallel
-agents of 20 programs each, run in two full passes (an initial scrape, then
-a full re-verification pass that re-fetched every page live).
-
-**The structural fix, not just the cost fix:** this pipeline's `extract()`
-call is stateless per page — each program is one isolated API call with
-just that page's text (capped at 15,000 characters) and zero memory of the
-other 99. Batch size and context limits are completely decoupled: 100
-programs and 10,000 programs cost the same *per program*, and neither can
-hit a session ceiling, because there's nothing accumulating across the
-batch to begin with.
-
-### Dollar cost, grounded in real numbers
-
-Measured against the actual code and actual pricing, not estimated in the
-abstract: both real pages fetched during this session (mastersportal.com,
-ox.ac.uk) exceeded the 15,000-char input cap, so that's the realistic
-per-call input size, not a hopeful average. System prompt + tool schema +
-URL wrapper + the capped page text ≈ 17,450 characters ≈ **~4,364 input
-tokens** per call (~4 chars/token); a typical structured extraction (17
-fields, a handful of list items) runs **~250 output tokens**.
-
-| Tier | Cost per program | Cost per 100 programs |
-|---|---|---|
-| Haiku 4.5 (typical, no escalation) | $0.0056 | **$0.56** |
-| Sonnet 5 (if escalated) | $0.0168 | $1.68 |
-| Opus 4.8 (if double-escalated) | $0.0281 | $2.81 |
-
-**Realistic range for a 100-program batch**, depending on how often the
-free validator (Failproofing #4) rejects the cheap tier's output:
-
-- **Best case** (everything resolves on Haiku): **~$0.56**
-- **Moderate case** (~20% need one escalation to Sonnet): **~$0.90**
-- **Absolute worst case** (every page fails twice, needs Opus): **~$5.00**
-  — a pessimistic ceiling, not an expectation
-
-For the old system there's no log to measure against (it ran in a prior
-session), so this is a reasoned estimate rather than a measured one, unlike
-the table above: those were general-purpose agent calls doing WebFetch +
-reasoning + CSV-writing per program, at Opus-tier pricing (the environment's
-default model), across **two full passes** — so whatever the per-program
-cost actually was, it was paid roughly twice, at the most expensive tier,
-with no cheap-first cascade at all. Order-of-magnitude, that plausibly lands
-in the **$3–$8+ range for 100 programs**.
-
-**Bottom line:** even this pipeline's worst-case ceiling (~$5) sits in the
-same ballpark as a *conservative* estimate of the old system's typical cost,
-and the realistic case (~$0.56–$0.90) is roughly 5–10x cheaper — on top of
-removing the session-limit problem entirely rather than just making it
-cheaper to hit.
-
-## Tests done, and what came out of them
-
-- **Playwright fallback, live:** fetched a real mastersportal.com program
-  page through the full `collect()` path — plain `requests` returned 403 as
-  expected, the headless-browser fallback then returned 145,058 bytes of
-  real HTML, correctly cached to disk.
-- **Full pipeline, live, real batch:** ran `pipeline.py` end-to-end against
-  13 real Oxford graduate-course URLs (deliberately chosen: a genuinely
-  Cloudflare-blocked, non-mastersportal site, spanning CS, physics,
-  education, migration studies, theology, linguistics, and music — not a toy
-  set). Result after the fixes above: **13/13 collected, 13/13 written to
-  the output CSV**, all with correct `university_name` ("Oxford
-  University"), `level` (MSc/MPhil/MSt), and `program_name` — via the
-  heuristic path, since this environment has no `ANTHROPIC_API_KEY`
-  configured. Re-ran a second time after the `application_fee` regex fix to
-  confirm the garbage value was gone and every other field stayed intact.
-- **Cascade/escalation logic:** since this environment can't reach the live
-  LLM tiers, the new Haiku→Sonnet→Opus logic was verified with mocked model
-  responses instead of a real API batch: a clean tier-1 (Haiku) result makes
-  **exactly one** API call and returns tagged `llm-haiku`; a tier-1 result
-  missing a required field is correctly rejected by the validator, escalates
-  to tier 2 (Sonnet) **with the validator's exact complaint attached to the
-  retry prompt**, and the corrected result returns tagged `llm-sonnet`.
-  Re-ran the same 13-URL Oxford batch afterward to confirm the cascade still
-  falls through cleanly to the heuristic path end-to-end when no credentials
-  are present.
-- **Discover, live:** ran `discover.py` against a real mastersportal.com
-  Netherlands search, 2 pages — **40 unique program links** written to a
-  URL file, 20 per page, correctly de-duplicated across pages. Fed a 3-URL
-  sample of that output straight into `pipeline.py --url-file`: all 3
-  cleared the Cloudflare 403 wall and collected successfully.
-- **`level` regex widening, live:** re-ran the same 3-URL mastersportal
-  sample after fix #8. Before: **2/3 written**, one `SKIPPED` on `level`
-  (the `LL.M.` title). After: **3/3 written** — the "Joint Master…" page
-  picked up `M.Sc` (found later in its own title, more precise than the
-  generic "Master" match), the other "Joint Master…" page got `Master`, and
-  the `LL.M.` page got `LL.M`. Also re-ran the isolated regex cases,
-  including both adversarial ones from the design (`"University of
-  Massachusetts (MA)"` and a title with no degree word at all,
-  `"Legal Research"`) — both still correctly return no match.
-- **Failproofing round, live + unit:** every item in that section above was
-  individually verified as described there. Full regression after all ten
-  items landed: `pytest` — **56 passed**, `canary.py --verbose` — **both
-  real URLs PASS**, all seven `.py` files parse cleanly.
-- **Cross-run discovery dedup, live:** ran `discover.py` twice against the
-  same real mastersportal.com Netherlands search. Run 1 (empty manifest):
-  20 links found, all new, `urls.txt` got 20 lines, manifest grew to 20
-  entries. Run 2 (same search, existing manifest): 20 links still found on
-  the page, but **0 reported as new** — `urls.txt` came back empty, exactly
-  the fix for the bug that motivated `state/`. Confirmed
-  `first_discovered_at` stayed fixed while `last_discovered_at` correctly
-  bumped on the rediscovered entries. Also verified the atomic-write
-  crash-safety on the manifest itself (same technique as
-  `cleaner.append_to_csv`) with a simulated mid-write failure. 7 new unit
-  tests added (63 total, all passing).
-- **Change-detection (`--refresh`), live:** ran `pipeline.py` on a real
-  mastersportal.com program to establish a baseline extraction + content
-  hash, then re-ran with `--refresh`. Confirmed the core mechanism works:
-  a version with a changed `tuition_1st_year` correctly produced `UPDATED`
-  and replaced the existing CSV row in place (not a duplicate second row).
-  Also surfaced a real limitation in the same testing round — see
-  Challenge #10 and Drawbacks — an unchanged page occasionally hashes
-  differently between two fetches, not reproduced across three controlled
-  follow-up fetches. 10 new unit tests added (73 total, all passing),
-  including the CSV upsert-in-place behavior and the unchanged-vs-changed
-  branching in `refresh_if_changed` (mocked collect/extract, no network in
-  the test suite itself).
-
-## Drawbacks / known limitations
-
-- **The Haiku/Sonnet/Opus cascade has never been run against the live API.**
-  Everything about it is verified via mocked responses, not a real batch —
-  actual accuracy, actual escalation rate, and actual cost per page are
-  unmeasured until it's run with a real `ANTHROPIC_API_KEY`. Cost tracking
-  (Failproofing #6) is ready to report on this the moment it happens.
-- **The zero-setup heuristic path still has real gaps**, even after fixes
-  #4 and #8: it can't reliably pull `tuition_1st_year`, `duration`,
-  `success_rate`, or `program_image_url` on sites that don't expose them in
-  a plain "Label: value" line (confirmed empty on all 13 rows of the Oxford
-  test batch), and `level` backfill only covers the degree-naming patterns
-  actually seen in testing (Oxford- and mastersportal-style) — a site with a
-  genuinely different convention could still come back empty. This is the
-  expected trade-off of the zero-setup path, not a bug, but it means
-  heuristic-only runs produce thinner data than the LLM cascade would.
-- **No coverage for a WAF that also fingerprints headless Chromium.** The
-  Playwright fallback has only been proven against sites that block plain
-  `requests` but don't detect a real browser. A site that blocks *both*
-  would still show up as `FAILED` — untested, unknown how common this is.
-- **URL discovery only covers mastersportal.com.** The `SITE_PATTERNS`
-  registry (Failproofing #10) makes adding a second site a smaller change
-  than before, but no second site's actual link pattern has been
-  discovered or tested — Oxford's own course-listing page, for example,
-  renders results via a JS widget that isn't captured the same way (a plain
-  Playwright fetch of it comes back empty even with a network-idle wait).
-- **Rate limiting is a flat delay, not adaptive.** `--delay`/`--block-cooldown`
-  (Failproofing #2) are fixed values you set upfront, not a backoff that
-  tunes itself to how a site is actually responding. A batch large enough
-  or fast enough could still trigger a hard block; the pipeline now detects
-  and reports that when it happens (Failproofing #1) rather than silently
-  caching a block page, but it doesn't prevent it outright.
-- **The source-grounding validator check (Failproofing #4) can't tell a
-  legitimately-derived number from a hallucinated one.** It only checks
-  whether a value's digits appear *somewhere* on the page — a genuinely
-  correct value the model computed or reformatted from other numbers on the
-  page (rather than copied verbatim) could be flagged as "not grounded"
-  even though it's right, triggering an unnecessary (but harmless, since
-  it's still validated with the *shape* check either way) escalation.
-- **Resume (Failproofing #3) keys on the exact source URL only** — coarser
-  than `cleaner.py`'s own dedup, which matches on university + program name
-  + URL. Two different URLs that happen to describe the same program won't
-  be caught by resume (though they'd still be caught as a `DUPLICATE` by
-  `cleaner.py` if actually reprocessed).
-- **Change-detection (`--refresh`) can occasionally trigger a false
-  `UPDATED`.** Confirmed live (Challenge #10): a content hash comparison
-  between two fetches of the *same, genuinely unchanged* real page
-  differed once during testing, most likely from Playwright's
-  `networkidle` wait not settling at a consistent point across fetches
-  rather than any real page change. Not reliably reproduced in three
-  follow-up controlled fetches, so not fixed — the trigger condition isn't
-  understood well enough to fix with confidence yet. The failure direction
-  is the safer one (wastes an LLM call re-extracting something that didn't
-  change; never silently misses a real change), but it means `--refresh`'s
-  actual false-positive rate on a real large batch is unmeasured. **Not**
-  implemented at all: field-level change detection (comparing actual
-  extracted values instead of page content) — would need running
-  extraction on every recheck regardless, defeating the point of a cheap
-  pre-check hash; see `state/README.md`.
-- **Atomic CSV writes (Failproofing #9) rewrite the whole file per append**
-  — safe and fine at this pipeline's real scale, but would need revisiting
-  (e.g. a real database) well before reaching tens of thousands of rows.
-- **Escalation adds latency, worst case 3x.** A page that fails validation
-  twice makes three sequential API calls before falling back to heuristic;
-  this should be rare in practice but hasn't been measured on a real batch.
-- **`canary.py` isn't wired into any scheduler.** It exists and works, but
-  someone (or some cron job) has to actually run it for it to catch
-  anything — it's a tool, not yet a monitor.
-- **Flat CSV output only.** No structured/database storage, no Bronze-style
-  immutable snapshotting — both were flagged as future work in
-  `../AspiroBrain_Data_Pipeline_Plan.md` but aren't part of this pipeline.
+- **Every row comes back `SKIPPED`.** You likely pointed `--url`/
+  `--url-file` at a search/listing page instead of individual program
+  pages — a listing page has no single program's data to extract. Run
+  `discover.py` on it first to get individual program URLs.
+- **A batch comes back mostly `FAILED`/`BLOCKED`.** The target site may
+  have escalated to a harder block than the Playwright fallback can clear,
+  or its layout may not match this pipeline's assumptions. Try increasing
+  `--delay` and `--block-cooldown` first; if that doesn't help, the site is
+  likely outside what this pipeline currently supports (see
+  [Limitations](#limitations)).
+- **Extraction always uses the heuristic path even with a provider
+  configured.** Check that the correct API key environment variable is set
+  for your `LLM_PROVIDER`, that the SDK for that provider is installed, and
+  check stderr output during the run — every LLM-tier failure is logged
+  there with the reason.
+- **`RuntimeError: ... has no built-in default model cascade`.** You set
+  `LLM_PROVIDER` to something other than `anthropic` without also setting
+  `EXTRACTION_MODEL_CASCADE`. Set it to a comma-separated list of that
+  provider's model IDs.

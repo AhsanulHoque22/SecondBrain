@@ -395,6 +395,64 @@ that point, then implemented and verified in this same session.
     result as before the refactor) and with unit tests, including the new
     error path.
 
+## Cost estimation: old manual/agent system vs. this pipeline
+
+The old manual process (Netherlands/Malta CSVs — see `../Data Collection/`)
+ran into a hard **session/context limit**: a single agent session trying to
+work through 100 programs in one go accumulated too much context (fetched
+page content + reasoning + CSV-row output, for every program processed so
+far, all staying in the same conversation) and became unworkable well before
+finishing — which is why that process had to be split into 5 parallel
+agents of 20 programs each, run in two full passes (an initial scrape, then
+a full re-verification pass that re-fetched every page live).
+
+**The structural fix, not just the cost fix:** this pipeline's `extract()`
+call is stateless per page — each program is one isolated API call with
+just that page's text (capped at 15,000 characters) and zero memory of the
+other 99. Batch size and context limits are completely decoupled: 100
+programs and 10,000 programs cost the same *per program*, and neither can
+hit a session ceiling, because there's nothing accumulating across the
+batch to begin with.
+
+### Dollar cost, grounded in real numbers
+
+Measured against the actual code and actual pricing, not estimated in the
+abstract: both real pages fetched during this session (mastersportal.com,
+ox.ac.uk) exceeded the 15,000-char input cap, so that's the realistic
+per-call input size, not a hopeful average. System prompt + tool schema +
+URL wrapper + the capped page text ≈ 17,450 characters ≈ **~4,364 input
+tokens** per call (~4 chars/token); a typical structured extraction (17
+fields, a handful of list items) runs **~250 output tokens**.
+
+| Tier | Cost per program | Cost per 100 programs |
+|---|---|---|
+| Haiku 4.5 (typical, no escalation) | $0.0056 | **$0.56** |
+| Sonnet 5 (if escalated) | $0.0168 | $1.68 |
+| Opus 4.8 (if double-escalated) | $0.0281 | $2.81 |
+
+**Realistic range for a 100-program batch**, depending on how often the
+free validator (Failproofing #4) rejects the cheap tier's output:
+
+- **Best case** (everything resolves on Haiku): **~$0.56**
+- **Moderate case** (~20% need one escalation to Sonnet): **~$0.90**
+- **Absolute worst case** (every page fails twice, needs Opus): **~$5.00**
+  — a pessimistic ceiling, not an expectation
+
+For the old system there's no log to measure against (it ran in a prior
+session), so this is a reasoned estimate rather than a measured one, unlike
+the table above: those were general-purpose agent calls doing WebFetch +
+reasoning + CSV-writing per program, at Opus-tier pricing (the environment's
+default model), across **two full passes** — so whatever the per-program
+cost actually was, it was paid roughly twice, at the most expensive tier,
+with no cheap-first cascade at all. Order-of-magnitude, that plausibly lands
+in the **$3–$8+ range for 100 programs**.
+
+**Bottom line:** even this pipeline's worst-case ceiling (~$5) sits in the
+same ballpark as a *conservative* estimate of the old system's typical cost,
+and the realistic case (~$0.56–$0.90) is roughly 5–10x cheaper — on top of
+removing the session-limit problem entirely rather than just making it
+cheaper to hit.
+
 ## Tests done, and what came out of them
 
 - **Playwright fallback, live:** fetched a real mastersportal.com program

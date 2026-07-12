@@ -96,7 +96,7 @@ EXTRACTION_TOOL = {
 }
 
 SYSTEM_PROMPT = (
-    "You extract structured master's program data from webpage text for an "
+    "You extract structured program data from webpage text for an "
     "education database that a study-abroad advisory assistant relies on. "
     "Only use information present in the provided text. If a field is not "
     "present, use null (or an empty array for list fields) — never guess or "

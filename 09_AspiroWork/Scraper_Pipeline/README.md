@@ -41,6 +41,14 @@ provider to use (or none at all) via configuration, described in the
 - **Site discovery with pagination.** Turn a search/listing page into a
   list of individual program URLs, walking multiple result pages and
   de-duplicating as it goes.
+- **Optional LLM-based discovery (`--llm-discovery`), for any site.** The
+  default discovery path needs a small regex pattern registered per site
+  (see [Limitations](#limitations)). `--llm-discovery` instead does a free,
+  generic pass to collect every same-domain URL-shaped candidate on the
+  page, then a small, cheap LLM call classifies which candidates are real
+  program pages — works on an unregistered site with no code changes, at a
+  fraction of a cent per listing page. See [Estimating discovery
+  cost](#estimating-discovery-cost).
 - **Cross-run discovery memory.** Every URL ever discovered is kept in a
   persistent manifest, so re-running discovery against an overlapping
   search only reports what's genuinely new.
@@ -60,7 +68,7 @@ provider to use (or none at all) via configuration, described in the
 - **Per-batch cost/token reporting.** Every LLM call's real token usage is
   tracked and summarized per model at the end of a run, priced at standard
   list rates.
-- **Deterministic, no-network test suite.** 80 `pytest` tests cover every
+- **Deterministic, no-network test suite.** 92 `pytest` tests cover every
   pure-logic component (validators, normalizers, regex tiers, schema
   translation, cascade/escalation logic) with all network and LLM calls
   mocked.
@@ -92,10 +100,18 @@ provider to use (or none at all) via configuration, described in the
   don't detect a real (if headless) browser. A site that blocks both will
   still fail collection.
 - **URL discovery ships with one site pattern (mastersportal.com)
-  registered.** Adding a second site is meant to be a small, contained
-  change — see [Adding a new discovery site](#adding-a-new-discovery-site)
-  — but no second pattern has been built or tested. Pointing `discover.py`
-  at an unregistered domain raises a clear error rather than silently
+  registered** for the free, deterministic path. Adding a second pattern is
+  meant to be a small, contained change — see [Adding a new discovery
+  site](#adding-a-new-discovery-site) — but no second pattern has been
+  built or tested. `--llm-discovery` (see
+  [Features](#features)/[Estimating discovery
+  cost](#estimating-discovery-cost)) works on an unregistered domain
+  without a pattern, at a small LLM cost — but multi-page pagination there
+  still needs a registered pattern to know the site's query-string
+  convention, so an unregistered domain with `--llm-discovery` and
+  `--pages > 1` collapses to fetching page 1 only rather than guessing a
+  pagination scheme. Pointing plain `discover.py` (no `--llm-discovery`) at
+  an unregistered domain still raises a clear error rather than silently
   returning nothing.
 - **Rate limiting is a flat delay, not adaptive.** `--delay` and
   `--block-cooldown` are fixed values you set upfront, not a backoff that
@@ -180,14 +196,14 @@ provider to use (or none at all) via configuration, described in the
 | File | Stage | Responsibility |
 |---|---|---|
 | `schema.py` | — | Canonical output field list + which are required |
-| `discover.py` | Discover (optional) | Extract individual program links from a listing page (site-pattern registry), walk pagination, merge into a persistent cross-run manifest, write only new links |
+| `discover.py` | Discover (optional) | Extract individual program links from a listing page — site-pattern registry by default, or `--llm-discovery` (generic candidate scan + LLM classification, any site) — walk pagination, merge into a persistent cross-run manifest, write only new links |
 | `collector.py` | Collect | Fetch raw HTML, clear Cloudflare/WAF via a headless-browser fallback, detect hard blocks, cache to disk |
 | `extractor.py` | Extract | Multi-tier model cascade with a deterministic validator gate (required fields, numeric shape, source-grounding); heuristic fallback if no LLM is reachable |
-| `llm_providers.py` | Extract | Provider adapter layer — dispatches an extraction call to Anthropic, OpenAI, or Google Gemini behind one common interface |
+| `llm_providers.py` | Extract, Discover | Provider adapter layer — dispatches a structured-output call to Anthropic, OpenAI, or Google Gemini behind one common interface; used by both `extractor.py` (field extraction) and `discover.py` (`--llm-discovery` link classification) |
 | `cleaner.py` | Clean | Normalize, validate required fields, dedupe, atomically append to CSV |
 | `pipeline.py` | — | CLI orchestrator: delay/jitter, hard-block cooldown, resume-skip or `--refresh` change-check, cost/token report |
 | `canary.py` | — | Smoke test: known-good real URLs, run periodically to catch silent site-layout breakage |
-| `tests/` | — | `pytest` suite for every pure-logic piece above (80 tests, no network) |
+| `tests/` | — | `pytest` suite for every pure-logic piece above (92 tests, no network) |
 | `pytest.ini` | — | Points `pytest` at `tests/` |
 | `.env.example` | — | Template for the environment variables described below |
 | `state/discovered_urls.json` | — | Persistent cross-run discovery manifest, written/merged by `discover.py`. Git-tracked (see `state/README.md`) |
@@ -241,6 +257,7 @@ cp .env.example .env
 | `LLM_PROVIDER` | No (defaults to `anthropic`) | Which vendor to use: `anthropic`, `openai`, or `google` |
 | `ANTHROPIC_API_KEY` / `OPENAI_API_KEY` / `GOOGLE_API_KEY` | Yes, for the provider you chose | Credential for that vendor's SDK |
 | `EXTRACTION_MODEL_CASCADE` | Yes, unless `LLM_PROVIDER=anthropic` | Comma-separated model IDs, cheapest/fastest first |
+| `DISCOVERY_MODEL` | Only if using `--llm-discovery` with a non-`anthropic` provider | Single model ID used to classify candidate links (no cascade — see [Estimating discovery cost](#estimating-discovery-cost)) |
 
 **Model IDs are never hardcoded for OpenAI or Google in this project** —
 only the Anthropic cascade ships with a built-in default, because it's the
@@ -285,6 +302,25 @@ cheapest tier resolves it; escalating to a stronger tier costs proportionally
 more per that tier's list price, but only fires on the pages the validator
 actually rejects. The exact numbers depend entirely on which provider and
 models you configure — check that vendor's current pricing.
+
+#### Estimating discovery cost
+
+`--llm-discovery` is a single, small classification call per listing page —
+much cheaper than extraction, by design. It never sends the raw page to the
+model: `extract_candidate_links` first does a free regex pass that pulls
+out every same-domain, page-like URL on the page (capped at 300
+candidates), and only that short list of paths — not the page content — is
+what gets sent to the LLM to classify. A page with zero link-shaped
+candidates makes no LLM call at all.
+
+At roughly 100–300 short candidate paths per listing page, that's typically
+under 5,000 input tokens and a few hundred output tokens (the ~20 selected
+program links) — at Claude Haiku pricing, **a fraction of a cent per
+listing page**, and each listing page typically discovers ~20 program URLs,
+so the marginal cost per discovered program is well under what extracting
+that program's page costs. `discover.py` prints its own per-model cost
+report at the end of any run that made an LLM call, the same way
+`pipeline.py` does for extraction.
 
 ### Running with no LLM configured
 
@@ -372,6 +408,20 @@ most recent run, so running `discover.py` again against the same or an
 overlapping search correctly reports 0 new links for anything already
 known. See `state/README.md` for the full design.
 
+**Discover on a site with no registered pattern**, using `--llm-discovery`
+instead of extending `SITE_PATTERNS`:
+
+```bash
+./.venv/bin/python discover.py --url "https://example.com/programs?country=netherlands" --llm-discovery --output urls.txt
+```
+
+Works on any site, no code changes — see [Estimating discovery
+cost](#estimating-discovery-cost) for what this actually costs, and
+[Limitations](#limitations) for the pagination caveat (`--pages > 1` on an
+unregistered domain collapses to page 1 only, since there's no known
+query-string convention to walk without guessing one). Override the model
+with `--llm-discovery-model` or the `DISCOVERY_MODEL` environment variable.
+
 **Run the test suite** (pure logic only, no network, no live LLM calls):
 
 ```bash
@@ -428,11 +478,22 @@ re-fetching the page.
 
 ### Adding a new discovery site
 
-`discover.py`'s `SITE_PATTERNS` registry maps a domain to a small
-`SitePattern` entry: a regex for extracting program links out of a fetched
-listing page, and the pagination query-parameter name for that site. To
-add a new site, add one more entry there with that site's own link pattern
-— no other code needs to change. Pointing `discover.py` at a domain with no
+Two options, depending on whether you want a free/deterministic pattern or
+zero setup:
+
+- **Register a `SitePattern`** (free, deterministic, requires inspecting
+  the site's HTML once). `discover.py`'s `SITE_PATTERNS` registry maps a
+  domain to a small `SitePattern` entry: a regex for extracting program
+  links out of a fetched listing page, and the pagination query-parameter
+  name for that site. Add one more entry with that site's own link pattern
+  — no other code needs to change.
+- **Use `--llm-discovery`** (small LLM cost, zero setup — see [Discover on
+  a site with no registered pattern](#use-cases) and [Estimating discovery
+  cost](#estimating-discovery-cost)). No `SitePattern` needed at all;
+  multi-page pagination is the one thing it can't do without a registered
+  pattern's `page_param`.
+
+Pointing plain `discover.py` (no `--llm-discovery`) at a domain with no
 registered pattern raises a clear error rather than silently returning
 nothing.
 
@@ -457,3 +518,13 @@ nothing.
   `LLM_PROVIDER` to something other than `anthropic` without also setting
   `EXTRACTION_MODEL_CASCADE`. Set it to a comma-separated list of that
   provider's model IDs.
+- **`RuntimeError: ... has no built-in default discovery model`.** Same
+  cause as above, for `--llm-discovery`: set `DISCOVERY_MODEL` to a single
+  model ID for your configured provider.
+- **`--llm-discovery` finds 0 links on a page you can see has listings.**
+  Check stderr for how many *candidates* were found before classification —
+  zero candidates means `extract_candidate_links`'s regex pass found
+  nothing URL-shaped on the page at all (possible on a heavily
+  client-rendered page that Playwright didn't fully render); a nonzero
+  candidate count with zero selected means the LLM classified all of them
+  as non-program links, worth spot-checking manually.

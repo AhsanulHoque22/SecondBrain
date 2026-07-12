@@ -1,7 +1,7 @@
 """Pure-logic tests for discover.py — no network."""
 
 import json
-from unittest.mock import patch
+from unittest.mock import Mock, patch
 
 import pytest
 
@@ -12,7 +12,9 @@ from discover import (
     _site_pattern_for,
     _with_page_param,
     discover,
+    extract_candidate_links,
     extract_program_links,
+    extract_program_links_via_llm,
 )
 
 
@@ -150,3 +152,163 @@ def test_discover_second_run_against_same_search_finds_nothing_new(tmp_path):
 
     manifest = _load_discovered_urls(state_path)
     assert len(manifest) == 2  # not duplicated, not lost
+
+
+# ---------------------------------------------------------------------------
+# extract_candidate_links — generic, site-agnostic first pass for --llm-discovery
+# ---------------------------------------------------------------------------
+
+
+def test_extract_candidate_links_finds_href_and_json_embedded_links():
+    html = (
+        '<a href="/studies/8798/legal-research.html">Legal Research</a>'
+        '<script>var data = {"url":"/studies/9001/data-science.html"};</script>'
+    )
+    candidates = extract_candidate_links(html, "https://www.example.com/search")
+    assert "https://www.example.com/studies/8798/legal-research.html" in candidates
+    assert "https://www.example.com/studies/9001/data-science.html" in candidates
+
+
+def test_extract_candidate_links_filters_asset_extensions():
+    html = '<img src="/assets/logo.png"><link rel="stylesheet" href="/assets/site.css">'
+    candidates = extract_candidate_links(html, "https://www.example.com/search")
+    assert candidates == []
+
+
+def test_extract_candidate_links_filters_other_domains():
+    html = '<a href="https://tracker.example.org/pixel.gif">ad</a>'
+    candidates = extract_candidate_links(html, "https://www.example.com/search")
+    assert candidates == []
+
+
+def test_extract_candidate_links_dedupes_and_caps():
+    html = "".join(f'<a href="/studies/{i}/x.html">x</a>' for i in range(10))
+    candidates = extract_candidate_links(html, "https://www.example.com/search", max_candidates=3)
+    assert len(candidates) == 3
+
+
+# ---------------------------------------------------------------------------
+# extract_program_links_via_llm — LLM classification of candidates
+# ---------------------------------------------------------------------------
+
+
+def test_extract_program_links_via_llm_no_candidates_makes_no_llm_call():
+    """The cheapest possible case: a page with nothing link-shaped on it
+    should never spend an LLM call finding that out."""
+    call_mock = Mock()
+    with patch("discover.llm_providers.call_llm", call_mock):
+        links, usage = extract_program_links_via_llm("<html><body>nothing here</body></html>", "https://example.com/search")
+    assert links == []
+    assert usage is None
+    call_mock.assert_not_called()
+
+
+def test_extract_program_links_via_llm_sends_paths_not_full_urls():
+    html = '<a href="/studies/1/a.html">A</a>'
+    captured = {}
+
+    def fake_call_llm(model, system_prompt, user_content, schema, tool_name, tool_description):
+        captured["user_content"] = user_content
+        return {"program_page_paths": ["/studies/1/a.html"]}, {"input_tokens": 10, "output_tokens": 5}
+
+    with patch("discover.llm_providers.call_llm", side_effect=fake_call_llm):
+        links, usage = extract_program_links_via_llm(html, "https://www.example.com/search")
+
+    assert links == ["https://www.example.com/studies/1/a.html"]
+    assert usage == {"model": "claude-haiku-4-5", "input_tokens": 10, "output_tokens": 5}
+    # The listing page's own URL is included once for context, but the
+    # candidate list itself must be paths only, not repeated full URLs.
+    candidate_section = captured["user_content"].split("Candidate link paths")[1]
+    assert "https://www.example.com" not in candidate_section
+    assert "/studies/1/a.html" in candidate_section
+
+
+def test_extract_program_links_via_llm_drops_hallucinated_paths():
+    """Defensive filter: a path the model returns that was never actually
+    offered as a candidate must never be trusted, even if well-formed."""
+    html = '<a href="/studies/1/a.html">A</a>'
+
+    def fake_call_llm(model, system_prompt, user_content, schema, tool_name, tool_description):
+        return (
+            {"program_page_paths": ["/studies/1/a.html", "/studies/999/invented.html"]},
+            {"input_tokens": 10, "output_tokens": 5},
+        )
+
+    with patch("discover.llm_providers.call_llm", side_effect=fake_call_llm):
+        links, _usage = extract_program_links_via_llm(html, "https://www.example.com/search")
+
+    assert links == ["https://www.example.com/studies/1/a.html"]
+
+
+def test_extract_program_links_via_llm_uses_discovery_model_override(monkeypatch):
+    monkeypatch.setenv("DISCOVERY_MODEL", "custom-model")
+    html = '<a href="/studies/1/a.html">A</a>'
+    captured = {}
+
+    def fake_call_llm(model, system_prompt, user_content, schema, tool_name, tool_description):
+        captured["model"] = model
+        return {"program_page_paths": []}, {"input_tokens": 1, "output_tokens": 1}
+
+    with patch("discover.llm_providers.call_llm", side_effect=fake_call_llm):
+        extract_program_links_via_llm(html, "https://www.example.com/search")
+
+    assert captured["model"] == "custom-model"
+
+
+def test_discovery_model_raises_for_non_anthropic_provider_with_no_override(monkeypatch):
+    monkeypatch.setenv("LLM_PROVIDER", "openai")
+    monkeypatch.delenv("DISCOVERY_MODEL", raising=False)
+    html = '<a href="/studies/1/a.html">A</a>'
+    with pytest.raises(RuntimeError, match="no built-in default discovery model"):
+        extract_program_links_via_llm(html, "https://www.example.com/search")
+
+
+# ---------------------------------------------------------------------------
+# discover(use_llm=True) — end-to-end, network and LLM mocked
+# ---------------------------------------------------------------------------
+
+
+def test_discover_with_llm_discovery_on_unregistered_domain(tmp_path):
+    """The actual feature this exists for: a domain with no SITE_PATTERNS
+    entry, which would otherwise raise ValueError outright, works via
+    --llm-discovery instead."""
+    state_path = tmp_path / "discovered_urls.json"
+    html = '<a href="/studies/1/a.html">A</a><a href="/studies/2/b.html">B</a>'
+
+    def fake_call_llm(model, system_prompt, user_content, schema, tool_name, tool_description):
+        return (
+            {"program_page_paths": ["/studies/1/a.html", "/studies/2/b.html"]},
+            {"input_tokens": 300, "output_tokens": 30},
+        )
+
+    with patch("discover.fetch_html", return_value=html), patch(
+        "discover.llm_providers.call_llm", side_effect=fake_call_llm
+    ):
+        links = discover("https://example.com/search", pages=1, state_path=state_path, use_llm=True)
+
+    assert len(links) == 2
+
+
+def test_discover_with_llm_discovery_falls_back_to_page_one_when_pagination_unknown(tmp_path):
+    """An unregistered domain has no known pagination query-param — rather
+    than guess one, multi-page requests silently collapse to a single fetch
+    instead of crashing or silently walking the wrong param."""
+    state_path = tmp_path / "discovered_urls.json"
+    html = '<a href="/studies/1/a.html">A</a>'
+    fetch_mock = Mock(return_value=html)
+
+    def fake_call_llm(model, system_prompt, user_content, schema, tool_name, tool_description):
+        return {"program_page_paths": ["/studies/1/a.html"]}, {"input_tokens": 10, "output_tokens": 5}
+
+    with patch("discover.fetch_html", fetch_mock), patch("discover.llm_providers.call_llm", side_effect=fake_call_llm):
+        discover("https://example.com/search", pages=5, state_path=state_path, use_llm=True)
+
+    assert fetch_mock.call_count == 1  # not 5 — collapsed to a single page fetch
+
+
+def test_discover_without_llm_still_raises_for_unregistered_domain(tmp_path):
+    """Unchanged behavior: without --llm-discovery, an unregistered domain
+    still raises immediately, same as before this feature existed."""
+    state_path = tmp_path / "discovered_urls.json"
+    with pytest.raises(ValueError, match="example.com"):
+        discover("https://example.com/search", pages=1, state_path=state_path, use_llm=False)

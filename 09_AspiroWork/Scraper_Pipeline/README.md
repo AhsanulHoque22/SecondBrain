@@ -17,6 +17,14 @@ layouts), set `ANTHROPIC_API_KEY` or run `ant auth login`. Without either,
 the pipeline automatically falls back to heuristic extraction (JSON-LD +
 label matching) — lower recall, but works with zero setup.
 
+Extraction is a cost/accuracy cascade, cheapest model first: Haiku 4.5 tries
+each page, a deterministic (free, no LLM call) validator checks the output,
+and only pages that fail validation escalate to Sonnet 5 then Opus 4.8 — the
+escalation prompt includes exactly what the validator rejected, so it's a
+correction, not a blind re-roll. Most pages should resolve on Haiku alone;
+`_extraction_method` in the output records which tier actually served each
+row (`llm-haiku` / `llm-sonnet` / `llm-opus` / `heuristic`).
+
 The `playwright install chromium` step downloads a headless browser used
 only as a fallback (see Known limitation below). Skipping it is fine — the
 collector still works for any site that doesn't block plain `requests`;
@@ -50,6 +58,6 @@ than crashing the batch.
 |---|---|
 | `schema.py` | Canonical field list + required fields |
 | `collector.py` | Collect — fetch + cache raw HTML |
-| `extractor.py` | Extract — LLM (Claude, strict tool schema) with heuristic fallback |
+| `extractor.py` | Extract — Haiku→Sonnet→Opus cascade (strict tool schema, validated) with heuristic fallback |
 | `cleaner.py` | Clean — normalize, validate, dedupe, append to CSV |
 | `pipeline.py` | CLI orchestrator |

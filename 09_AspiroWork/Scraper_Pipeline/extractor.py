@@ -2,16 +2,23 @@
 
 Turns raw HTML into a dict of the fields in schema.EXTRACTED_KEYS.
 
-Two modes:
-- LLM mode (used whenever the Claude API is reachable): sends cleaned page
-  text to Claude with a strict tool schema, so extraction generalizes across
-  arbitrary site layouts instead of hand-written per-site selectors. The
-  model is instructed to use null for anything not present on the page —
-  never invent a plausible-looking value.
-- Heuristic fallback (used if the LLM call fails for any reason — no API
-  credentials, network error, etc.): JSON-LD (schema.org Course /
-  EducationalOccupationalProgram) plus label/regex matching for common
-  patterns. Lower recall, but works with zero setup.
+Three-tier cascade, cheapest first, escalating only when needed:
+- Tier 1 (Haiku 4.5): sends cleaned page text to Claude with a strict tool
+  schema, so extraction generalizes across arbitrary site layouts instead of
+  hand-written per-site selectors. The model is instructed to use null for
+  anything not present on the page — never invent a plausible-looking value.
+  A deterministic (non-LLM) validator checks the output; most well-structured
+  pages pass here and stop.
+- Tier 2 (Sonnet 5) / Tier 3 (Opus 4.8): only run if the validator rejected
+  the previous tier's output. Each retry gets the validator's specific
+  complaints appended to the prompt, so escalation is a correction, not a
+  blind re-roll. Opus is the priciest tier but only fires on a double
+  failure, so it barely moves the aggregate bill.
+- Heuristic fallback (used if every LLM tier fails outright — no API
+  credentials, network error — or every tier's output fails validation):
+  JSON-LD (schema.org Course/EducationalOccupationalProgram), og:title/
+  og:site_name, and label/regex matching for common patterns. Lower recall,
+  but works with zero setup and never blocks the batch.
 """
 
 from __future__ import annotations
@@ -23,9 +30,23 @@ import sys
 import anthropic
 from bs4 import BeautifulSoup
 
-from schema import EXTRACTED_KEYS
+from schema import EXTRACTED_KEYS, REQUIRED_FIELDS
 
-MODEL = "claude-opus-4-8"
+# Cheapest model first ($1/$5 per MTok) — only escalate when the validator
+# below rejects the output. Sonnet ($3/$15) and Opus ($5/$25) exist purely
+# for the minority of pages Haiku gets wrong; most batches should resolve
+# on tier 1 alone.
+MODEL_CASCADE = ["claude-haiku-4-5", "claude-sonnet-5", "claude-opus-4-8"]
+MODEL_TAGS = {
+    "claude-haiku-4-5": "llm-haiku",
+    "claude-sonnet-5": "llm-sonnet",
+    "claude-opus-4-8": "llm-opus",
+}
+
+# Values a model might return that are semantically "nothing" but aren't the
+# null the schema asks for — treated the same as a missing required field.
+PLACEHOLDER_VALUES = {"n/a", "na", "none", "unknown", "not specified", "not available", "-", "tbd"}
+NUMERIC_FIELDS = ("tuition_1st_year", "application_fee", "duration", "success_rate")
 
 # Degree abbreviations that commonly open a program's <title>/og:title, e.g.
 # "MSc in Statistical Science | Oxford University" — used by the heuristic
@@ -125,10 +146,19 @@ def clean_text_from_html(html: str) -> str:
     return "\n".join(lines)
 
 
-def extract_via_llm(clean_text: str, url: str) -> dict:
+def extract_via_llm(clean_text: str, url: str, model: str, feedback: list[str] | None = None) -> dict:
     client = anthropic.Anthropic()
+    user_content = f"Source URL: {url}\n\nPage text:\n{clean_text[:MAX_INPUT_CHARS]}"
+    if feedback:
+        # Escalation retry — tell the stronger model exactly what the previous
+        # tier got wrong instead of just re-rolling with more capability.
+        user_content = (
+            "A previous extraction attempt had these problems — fix them:\n"
+            + "\n".join(f"- {problem}" for problem in feedback)
+            + f"\n\n{user_content}"
+        )
     response = client.messages.create(
-        model=MODEL,
+        model=model,
         max_tokens=4096,
         system=SYSTEM_PROMPT,
         tools=[EXTRACTION_TOOL],
@@ -136,12 +166,32 @@ def extract_via_llm(clean_text: str, url: str) -> dict:
         messages=[
             {
                 "role": "user",
-                "content": f"Source URL: {url}\n\nPage text:\n{clean_text[:MAX_INPUT_CHARS]}",
+                "content": user_content,
             }
         ],
     )
     tool_use = next(block for block in response.content if block.type == "tool_use")
     return dict(tool_use.input)
+
+
+def validate_extraction(data: dict) -> list[str]:
+    """Deterministic (no LLM call) sanity check on an LLM extraction.
+
+    Empty return means the extraction is trustworthy enough to keep. A
+    non-empty return triggers escalation to the next model tier, with these
+    problems fed back into the retry prompt so the stronger model corrects
+    them instead of guessing again from scratch.
+    """
+    problems = []
+    for field in REQUIRED_FIELDS:
+        value = (data.get(field) or "").strip()
+        if not value or value.lower() in PLACEHOLDER_VALUES:
+            problems.append(f"{field} is required but missing or placeholder-like ({value!r})")
+    for field in NUMERIC_FIELDS:
+        value = data.get(field)
+        if value and not re.search(r"\d", value):
+            problems.append(f"{field} = {value!r} has no digit — doesn't look like a real value")
+    return problems
 
 
 def extract_via_heuristics(html: str, clean_text: str, url: str) -> dict:
@@ -219,12 +269,25 @@ def extract_via_heuristics(html: str, clean_text: str, url: str) -> dict:
 
 def extract(html: str, url: str) -> dict:
     clean_text = clean_text_from_html(html)
-    try:
-        data = extract_via_llm(clean_text, url)
-        data["_extraction_method"] = "llm"
-        return data
-    except Exception as exc:  # deliberate fallback boundary, not silent — logged below
-        print(f"[extract] LLM extraction failed for {url} ({exc}); using heuristic fallback", file=sys.stderr)
-        data = extract_via_heuristics(html, clean_text, url)
-        data["_extraction_method"] = "heuristic"
-        return data
+
+    feedback: list[str] | None = None
+    for model in MODEL_CASCADE:
+        try:
+            data = extract_via_llm(clean_text, url, model=model, feedback=feedback)
+        except Exception as exc:  # this tier's call failed outright — try the next tier
+            print(f"[extract] {model} call failed for {url} ({exc})", file=sys.stderr)
+            feedback = None
+            continue
+
+        problems = validate_extraction(data)
+        if not problems:
+            data["_extraction_method"] = MODEL_TAGS[model]
+            return data
+        print(f"[extract] {model} output for {url} failed validation: {'; '.join(problems)}", file=sys.stderr)
+        feedback = problems
+
+    # deliberate fallback boundary, not silent — logged above per tier
+    print(f"[extract] all LLM tiers failed for {url}; using heuristic fallback", file=sys.stderr)
+    data = extract_via_heuristics(html, clean_text, url)
+    data["_extraction_method"] = "heuristic"
+    return data

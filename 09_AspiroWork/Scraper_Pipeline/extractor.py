@@ -193,16 +193,26 @@ def extract_via_heuristics(html: str, clean_text: str, url: str) -> dict:
         if level_match:
             data["level"] = level_match.group(1)
 
+    # Gap between label and colon is capped at 30 chars (was unbounded) so a
+    # later, unrelated colon far down the page — e.g. "Application fee
+    # waivers are available ... eligibility criteria:" on ox.ac.uk — can't
+    # get matched as if it were the label's own colon.
     label_patterns = {
-        "tuition_1st_year": r"Tuition[^:\n]*:\s*([^\n]+)",
-        "application_fee": r"Application [Ff]ee[^:\n]*:\s*([^\n]+)",
-        "duration": r"Duration[^:\n]*:\s*([^\n]+)",
-        "success_rate": r"Success [Rr]ate[^:\n]*:\s*([^\n]+)",
+        "tuition_1st_year": r"Tuition.{0,30}?:\s*([^\n]+)",
+        "application_fee": r"Application [Ff]ee.{0,30}?:\s*([^\n]+)",
+        "duration": r"Duration.{0,30}?:\s*([^\n]+)",
+        "success_rate": r"Success [Rr]ate.{0,30}?:\s*([^\n]+)",
     }
     for field, pattern in label_patterns.items():
         match = re.search(pattern, clean_text)
         if match:
-            data[field] = match.group(1).strip()
+            value = match.group(1).strip()
+            # These fields are always numeric/currency — a captured value with
+            # no digit is prose that happened to follow the label, not a real
+            # value (this is what let "applicants from low-income countries;"
+            # through as an application_fee on ox.ac.uk).
+            if re.search(r"\d", value):
+                data[field] = value
 
     return data
 

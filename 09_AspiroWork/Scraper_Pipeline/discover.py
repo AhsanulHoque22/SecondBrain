@@ -1,9 +1,16 @@
 """Stage 0 — Discover.
 
 Given a search/listing page URL, extracts the individual program-page links
-on it (and optionally walks `page=2..N` of the same search) and writes them
-one per line to a URL list file — ready to feed straight into
-`pipeline.py --url-file`.
+on it (and optionally walks `page=2..N` of the same search).
+
+Cross-run dedup: every link found is merged into a persistent manifest at
+state/discovered_urls.json (dedup key: exact URL match), so running this
+twice against the same or an overlapping search doesn't lose track of what
+was already found. --output (urls.txt) only ever contains links that are
+*new* as of this run — the small, immediately-actionable batch to hand to
+`pipeline.py --url-file`. See state/README.md for the full design (why
+there's no "processed" status here — pipeline.py's own resume feature is
+the single source of truth for that).
 
 Reuses collector.fetch_html (same requests -> 403 -> headless-browser
 fallback as the main pipeline) rather than a separate fetch path.
@@ -28,8 +35,11 @@ Usage:
 from __future__ import annotations
 
 import argparse
+import json
+import os
 import re
 import sys
+import tempfile
 import time
 from dataclasses import dataclass
 from pathlib import Path
@@ -38,6 +48,7 @@ from urllib.parse import urljoin, urlparse, parse_qs, urlencode, urlunparse
 from collector import CollectionError, fetch_html
 
 PAGE_FETCH_DELAY = 1.5  # seconds between listing-page fetches — politeness, not a hard requirement
+DEFAULT_STATE_PATH = Path("state/discovered_urls.json")
 
 
 @dataclass(frozen=True)
@@ -86,9 +97,64 @@ def _with_page_param(url: str, page: int, page_param: str) -> str:
     return urlunparse(parsed._replace(query=urlencode(query, doseq=True)))
 
 
-def discover(listing_url: str, pages: int) -> list[str]:
+def _now_iso() -> str:
+    return time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
+
+
+def _load_discovered_urls(state_path: Path) -> dict[str, dict]:
+    if not state_path.exists():
+        return {}
+    return json.loads(state_path.read_text(encoding="utf-8"))
+
+
+def _save_discovered_urls(state_path: Path, manifest: dict[str, dict]) -> None:
+    """Atomic write (temp file + os.replace) — same pattern as
+    cleaner.append_to_csv. This manifest accumulates across every future
+    run, so a crash mid-write must never corrupt what's already there."""
+    state_path.parent.mkdir(parents=True, exist_ok=True)
+    fd, tmp_path = tempfile.mkstemp(dir=state_path.parent, prefix=f".{state_path.name}.", suffix=".tmp")
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8") as f:
+            json.dump(manifest, f, indent=2, sort_keys=True)
+        os.replace(tmp_path, state_path)
+    except BaseException:
+        Path(tmp_path).unlink(missing_ok=True)
+        raise
+
+
+def _merge_into_manifest(
+    manifest: dict[str, dict], links: list[str], discovered_via: str, now: str
+) -> list[str]:
+    """Merges links into manifest in place. Dedup key is exact URL match —
+    mastersportal's program links carry no tracking params or fragments, so
+    there's nothing to normalize. Returns only the links that were new to
+    the manifest (not already a key) before this call — the actionable
+    output for a batch. A URL already present gets last_discovered_at
+    bumped, not duplicated or reset."""
+    new_links: list[str] = []
+    for link in links:
+        if link not in manifest:
+            manifest[link] = {
+                "first_discovered_at": now,
+                "last_discovered_at": now,
+                "discovered_via": discovered_via,
+            }
+            new_links.append(link)
+        else:
+            manifest[link]["last_discovered_at"] = now
+    return new_links
+
+
+def discover(listing_url: str, pages: int, state_path: Path = DEFAULT_STATE_PATH) -> list[str]:
+    """Walks the listing pages, merges every link found into the persistent
+    manifest at state_path, and returns only the links that are new as of
+    this run (see module docstring for why "new" and "not yet processed"
+    are deliberately different questions, answered by different files)."""
     site = _site_pattern_for(listing_url)
-    all_links: dict[str, None] = {}
+    manifest = _load_discovered_urls(state_path)
+    now = _now_iso()
+    new_links: dict[str, None] = {}  # preserves first-seen order, dedups across pages within this run
+
     for page_num in range(1, pages + 1):
         page_url = (
             _with_page_param(listing_url, page_num, site.page_param) if pages > 1 else listing_url
@@ -102,13 +168,19 @@ def discover(listing_url: str, pages: int) -> list[str]:
 
         links = extract_program_links(html, page_url, site.link_pattern)
         print(f"[discover] page {page_num}: {len(links)} program links", file=sys.stderr)
-        for link in links:
-            all_links.setdefault(link, None)
+        for link in _merge_into_manifest(manifest, links, listing_url, now):
+            new_links.setdefault(link, None)
 
         if page_num < pages:
             time.sleep(PAGE_FETCH_DELAY)
 
-    return list(all_links.keys())
+    _save_discovered_urls(state_path, manifest)
+    print(
+        f"[discover] manifest now has {len(manifest)} URLs total "
+        f"({len(new_links)} new this run) -> {state_path}",
+        file=sys.stderr,
+    )
+    return list(new_links.keys())
 
 
 def main() -> None:
@@ -117,12 +189,20 @@ def main() -> None:
     )
     parser.add_argument("--url", required=True, help="Search/listing page URL")
     parser.add_argument("--pages", type=int, default=1, help="Number of result pages to walk (page=1..N)")
-    parser.add_argument("--output", type=Path, default=Path("urls.txt"), help="Output file, one URL per line")
+    parser.add_argument(
+        "--output", type=Path, default=Path("urls.txt"), help="Output file — only links new as of this run"
+    )
+    parser.add_argument(
+        "--state",
+        type=Path,
+        default=DEFAULT_STATE_PATH,
+        help="Persistent cross-run discovery manifest (default: state/discovered_urls.json)",
+    )
     args = parser.parse_args()
 
-    links = discover(args.url, args.pages)
-    args.output.write_text("\n".join(links) + ("\n" if links else ""), encoding="utf-8")
-    print(f"\n{len(links)} unique program links written to {args.output}")
+    new_links = discover(args.url, args.pages, state_path=args.state)
+    args.output.write_text("\n".join(new_links) + ("\n" if new_links else ""), encoding="utf-8")
+    print(f"\n{len(new_links)} new program links written to {args.output}")
 
 
 if __name__ == "__main__":

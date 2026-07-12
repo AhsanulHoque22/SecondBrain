@@ -50,7 +50,9 @@ program's details live on one page.
    │                                              │
    │  listing/search URL  →  collector.fetch_html │
    │  → site-specific link regex (SITE_PATTERNS)  │
-   │  → walk page=1..N  →  dedupe  →  urls.txt    │
+   │  → walk page=1..N  →  merge into             │
+   │    state/discovered_urls.json (cross-run)    │
+   │  → urls.txt = only new links this run        │
    └─────────────────────┬───────────────────────┘
                          │  urls.txt
                          ▼
@@ -86,15 +88,16 @@ program's details live on one page.
 | File | Stage | Responsibility |
 |---|---|---|
 | `schema.py` | — | Canonical 17-field list + which 3 are required |
-| `discover.py` | Discover (optional) | Extract individual program links from a listing page (site-pattern registry), walk pagination, write a URL list |
+| `discover.py` | Discover (optional) | Extract individual program links from a listing page (site-pattern registry), walk pagination, merge into a persistent cross-run manifest, write only new links |
 | `collector.py` | Collect | Fetch raw HTML, clear Cloudflare/WAF via a headless-browser fallback, detect hard blocks, cache to disk |
 | `extractor.py` | Extract | Haiku → Sonnet → Opus cascade with a free validator gate (required fields, numeric shape, source-grounding); heuristic fallback if no LLM is reachable |
 | `cleaner.py` | Clean | Normalize, validate required fields, dedupe, atomically append to CSV |
 | `pipeline.py` | — | CLI orchestrator: delay/jitter, hard-block cooldown, resume-skip, cost/token report |
 | `canary.py` | — | Smoke test: known-good real URLs, run periodically to catch silent site-layout breakage |
-| `tests/` | — | `pytest` suite for every pure-logic piece above (56 tests, no network) |
+| `tests/` | — | `pytest` suite for every pure-logic piece above (63 tests, no network) |
 | `pytest.ini` | — | Points `pytest` at `tests/` |
-| `state/` | — | **Scaffold only, not implemented** — intended schema for cross-run discovery dedup + change-detection; see `state/README.md` |
+| `state/discovered_urls.json` | — | Persistent cross-run discovery manifest, written/merged by `discover.py`. Git-tracked (see `state/README.md`) |
+| `state/extraction_state.json` | — | **Scaffold only, not implemented** — intended schema for change-detection on already-extracted programs; see `state/README.md` |
 
 ## How to use it
 
@@ -168,6 +171,14 @@ mastersportal.com) and de-duplicates across pages. Site support is a small
 registry (`SITE_PATTERNS` in `discover.py`) — only mastersportal.com is
 registered today; pointing it at an unregistered domain raises a clear
 error rather than silently finding nothing.
+
+**Every link found is also merged into `state/discovered_urls.json`** — a
+persistent manifest, not overwritten between runs (`--state` to point it
+elsewhere). `urls.txt` only ever contains links that are *new* as of the
+most recent run; running `discover.py` again against the same or an
+overlapping search correctly reports 0 new links for anything already
+known instead of silently reproducing the same batch. See
+`state/README.md` for the full design.
 
 ### Testing
 
@@ -498,6 +509,17 @@ cheaper to hit.
   individually verified as described there. Full regression after all ten
   items landed: `pytest` — **56 passed**, `canary.py --verbose` — **both
   real URLs PASS**, all seven `.py` files parse cleanly.
+- **Cross-run discovery dedup, live:** ran `discover.py` twice against the
+  same real mastersportal.com Netherlands search. Run 1 (empty manifest):
+  20 links found, all new, `urls.txt` got 20 lines, manifest grew to 20
+  entries. Run 2 (same search, existing manifest): 20 links still found on
+  the page, but **0 reported as new** — `urls.txt` came back empty, exactly
+  the fix for the bug that motivated `state/`. Confirmed
+  `first_discovered_at` stayed fixed while `last_discovered_at` correctly
+  bumped on the rediscovered entries. Also verified the atomic-write
+  crash-safety on the manifest itself (same technique as
+  `cleaner.append_to_csv`) with a simulated mid-write failure. 7 new unit
+  tests added (63 total, all passing).
 
 ## Drawbacks / known limitations
 
@@ -543,14 +565,12 @@ cheaper to hit.
   + URL. Two different URLs that happen to describe the same program won't
   be caught by resume (though they'd still be caught as a `DUPLICATE` by
   `cleaner.py` if actually reprocessed).
-- **No duplicate-safe discovery storage, and no change-detection for
-  already-extracted programs — neither is implemented yet.**
-  `discover.py --output urls.txt` overwrites the file on every run, with no
-  memory of links found in a previous run; and `pipeline.py`'s resume
-  feature skips any URL already in the output CSV unconditionally, so a
-  program whose tuition/deadline/requirements changed on the source page
-  after it was first scraped will never be re-extracted. `state/` has the
-  file-level scaffolding (schema + design notes, no logic) for both —
+- **Change-detection for already-extracted programs is still not
+  implemented** (cross-run discovery dedup *is* — see below). `pipeline.py`'s
+  resume feature skips any URL already in the output CSV unconditionally,
+  so a program whose tuition/deadline/requirements changed on the source
+  page after it was first scraped will never be re-extracted. `state/` has
+  the file-level scaffolding (schema + design notes, no logic) for this —
   see `state/README.md`.
 - **Atomic CSV writes (Failproofing #9) rewrite the whole file per append**
   — safe and fine at this pipeline's real scale, but would need revisiting

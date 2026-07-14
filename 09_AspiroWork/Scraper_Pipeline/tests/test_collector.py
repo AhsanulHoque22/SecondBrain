@@ -1,6 +1,8 @@
 """Pure-logic tests for collector.py — no network."""
 
-from collector import CollectionError, HardBlockError, _is_hard_block, _url_hash
+from unittest.mock import Mock, patch
+
+from collector import CollectionError, HardBlockError, _is_hard_block, _url_hash, fetch_html
 
 
 def test_url_hash_is_deterministic_and_short():
@@ -36,3 +38,34 @@ def test_hard_block_error_is_a_collection_error():
     want the distinction (for the longer cooldown) need to catch
     HardBlockError first."""
     assert issubclass(HardBlockError, CollectionError)
+
+
+# ---------------------------------------------------------------------------
+# fetch_html — 429 retry/backoff (regression: previously raised immediately,
+# same as a permanent 4xx, instead of retrying like every other transient
+# failure path in this function)
+# ---------------------------------------------------------------------------
+
+
+def _fake_response(status_code, text="", headers=None):
+    response = Mock()
+    response.status_code = status_code
+    response.text = text
+    response.headers = headers or {}
+    return response
+
+
+def test_fetch_html_retries_after_429_then_succeeds():
+    responses = [_fake_response(429, headers={"Retry-After": "0"}), _fake_response(200, text="ok")]
+    with patch("collector.requests.get", side_effect=responses), patch("collector.time.sleep"):
+        assert fetch_html("https://example.com/rate-limited") == "ok"
+
+
+def test_fetch_html_raises_after_429_exhausts_retries():
+    responses = [_fake_response(429), _fake_response(429)]
+    with patch("collector.requests.get", side_effect=responses), patch("collector.time.sleep"):
+        try:
+            fetch_html("https://example.com/rate-limited")
+            assert False, "expected CollectionError"
+        except CollectionError as exc:
+            assert "429" in str(exc)

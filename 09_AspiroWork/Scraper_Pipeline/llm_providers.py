@@ -99,7 +99,13 @@ def _call_openai(
     except ImportError as exc:
         raise RuntimeError("openai package not installed. Run: pip install openai") from exc
 
-    client = openai.OpenAI()
+    # OPENAI_BASE_URL lets this same adapter target any OpenAI-compatible
+    # endpoint (e.g. Groq's free API serving open-weight models) without a
+    # separate provider implementation — the request/response shape (strict
+    # function-calling, tool_choice) is identical. Unset uses the openai
+    # SDK's own default (api.openai.com).
+    base_url = os.environ.get("OPENAI_BASE_URL", "").strip() or None
+    client = openai.OpenAI(base_url=base_url)
     response = client.chat.completions.create(
         model=model,
         messages=[

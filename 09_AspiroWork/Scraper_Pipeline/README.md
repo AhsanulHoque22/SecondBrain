@@ -121,10 +121,15 @@ provider to use (or none at all) via configuration, described in the
   legitimately computed or reformatted (rather than copied verbatim) could
   be flagged as "not grounded" even when it's correct, triggering an
   unnecessary but harmless escalation.
-- **Resume keys on exact source URL only**, which is coarser than the
-  cleaner's own duplicate check (university + program name + URL). Two
-  different URLs describing the same program won't be caught by resume,
-  though they'd still be caught as a duplicate if actually reprocessed.
+- **Resume and the cleaner's own duplicate check both key on university +
+  program name + source URL** — URL is part of both keys, not just
+  resume's. Two different URLs that describe the same real program are
+  treated as two separate rows by both: resume won't skip the second URL,
+  and the cleaner won't merge it into the first row either. Catching that
+  needs real entity resolution (fuzzy/embedding matching on university +
+  program name, ignoring the URL) — deliberately out of scope for this
+  pipeline; see the AspiroBrain Data Pipeline Plan's Phase 2
+  entity-resolution design for where that would live.
 - **`--refresh` change detection can occasionally report a false positive.**
   It hashes the page's cleaned text, not the raw HTML — in testing, two
   fetches of a genuinely unchanged real page landed on different hashes

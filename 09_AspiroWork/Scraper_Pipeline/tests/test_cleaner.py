@@ -31,6 +31,9 @@ from cleaner import (
         ("no currency info here", ""),
         (None, ""),
         ("", ""),
+        # Regression: C$/A$ both contain "$" — must not be mislabeled USD.
+        ("C$ 25,000", "CAD"),
+        ("A$ 30,000", "AUD"),
     ],
 )
 def test_normalize_currency(text, expected_code):

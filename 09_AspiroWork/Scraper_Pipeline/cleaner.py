@@ -18,12 +18,16 @@ from pathlib import Path
 
 from schema import FIELDNAMES, REQUIRED_FIELDS
 
+# Order matters: "C$"/"A$" must be checked before the bare "$" they both
+# contain, or "C$ 25,000" would match "$" first and get mislabeled USD
+# instead of CAD (the actual bug this ordering fixes — was previously
+# listed $ before C$/A$ with no test covering either).
 CURRENCY_SYMBOLS = {
     "€": "EUR",
     "£": "GBP",
-    "$": "USD",
     "C$": "CAD",
     "A$": "AUD",
+    "$": "USD",
     "kr": "SEK",
 }
 CURRENCY_CODES = ["EUR", "GBP", "USD", "CAD", "AUD", "SEK", "BDT", "NOK", "DKK", "CHF"]

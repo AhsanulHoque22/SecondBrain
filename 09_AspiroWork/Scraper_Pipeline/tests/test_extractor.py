@@ -137,6 +137,26 @@ def test_validate_extraction_flags_ungrounded_value():
     assert any("not grounded" in p for p in problems)
 
 
+def test_validate_extraction_flags_bundled_eu_non_eu_tuition():
+    """Regression test for the "tuition front-loading" bug the manual
+    scrape had to catch and fix by hand (AspiroBrain Data Pipeline Plan) —
+    a compound EU/Non-EU string has digits and both amounts are grounded,
+    so only a shape-specific check catches it."""
+    clean_text = (
+        "MSc in Testing at Test University. "
+        "Tuition: EU: 2695 EUR/yr; Non-EU: 18873 EUR/yr"
+    )
+    data = dict(BASE_FIELDS, tuition_1st_year="EU: 2695 EUR/yr; Non-EU: 18873 EUR/yr")
+    problems = validate_extraction(data, clean_text)
+    assert any("bundles multiple tuition tiers" in p for p in problems)
+
+
+def test_validate_extraction_passes_single_clean_tuition_figure():
+    clean_text = "MSc in Testing at Test University. Tuition: 18873 EUR/yr (non-EU)"
+    data = dict(BASE_FIELDS, tuition_1st_year="18873 EUR/yr")
+    assert validate_extraction(data, clean_text) == []
+
+
 def test_validate_extraction_skips_grounding_check_for_short_digit_runs():
     """A 1-2 digit value (e.g. "7 years") is too likely to coincidentally
     not appear verbatim even when correct — skip the grounding check rather

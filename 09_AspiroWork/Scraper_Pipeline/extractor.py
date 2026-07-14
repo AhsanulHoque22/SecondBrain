@@ -210,7 +210,11 @@ SYSTEM_PROMPT = (
     "Only use information present in the provided text. If a field is not "
     "present, use null (or an empty array for list fields) — never guess or "
     "infer a plausible-sounding value. A missing field reported honestly is "
-    "far better than an invented one."
+    "far better than an invented one. If a page lists separate tuition "
+    "rates for different applicant groups (e.g. EU vs non-EU, domestic vs "
+    "international), tuition_1st_year must be a single figure — the "
+    "non-EU/international rate, since that's the one a foreign applicant "
+    "actually pays — never multiple amounts joined together."
 )
 
 MAX_INPUT_CHARS = 15000
@@ -318,6 +322,25 @@ def _digits_only(text: str) -> str:
     return re.sub(r"\D", "", text)
 
 
+def _looks_like_bundled_tuition(value: str) -> bool:
+    """True if tuition_1st_year looks like it bundles multiple tiers (e.g.
+    "EU: 2695 EUR/yr; Non-EU: 18873 EUR/yr") instead of one first-year
+    figure — this is the exact "tuition front-loading" bug the manual
+    scrape had to catch and fix by hand (see AspiroBrain Data Pipeline
+    Plan). A bundled value still has digits and every amount is grounded in
+    the page, so the checks below in validate_extraction don't catch it —
+    this one specifically looks at shape (multiple amounts / tier labels),
+    not correctness of any single number."""
+    if ";" in value:
+        return True
+    has_eu = re.search(r"\beu\b", value, re.IGNORECASE)
+    has_non_eu = re.search(r"\bnon-?eu\b", value, re.IGNORECASE)
+    if has_eu and has_non_eu:
+        return True
+    amounts = re.findall(r"\d[\d,.]{2,}", value)
+    return len(amounts) > 1
+
+
 def validate_extraction(data: dict, clean_text: str) -> list[str]:
     """Deterministic (no LLM call) sanity check on an LLM extraction.
 
@@ -354,6 +377,14 @@ def validate_extraction(data: dict, clean_text: str) -> list[str]:
                 f"{field} = {value!r} doesn't appear anywhere in the source text "
                 "(not grounded in the page — possible hallucination)"
             )
+
+    tuition = (data.get("tuition_1st_year") or "").strip()
+    if tuition and _looks_like_bundled_tuition(tuition):
+        problems.append(
+            f"tuition_1st_year = {tuition!r} looks like it bundles multiple tuition "
+            "tiers (e.g. EU/Non-EU, or several amounts) instead of a single first-year "
+            "figure — return only the non-EU/international rate as one amount"
+        )
     return problems
 
 

@@ -3,6 +3,7 @@
 import csv
 from unittest.mock import patch
 
+import pipeline
 from cleaner import append_to_csv, clean_record
 from collector import Collected
 from pipeline import RunResult, _load_existing_source_urls, _print_cost_report, refresh_if_changed
@@ -56,6 +57,32 @@ def test_print_cost_report_sums_by_model(capsys):
 def test_run_result_defaults_usage_to_none():
     result = RunResult("OK example")
     assert result.usage is None
+
+
+# ---------------------------------------------------------------------------
+# main() — resumed URLs must not sleep (regression: previously slept
+# delay+jitter per resumed URL despite making no network call)
+# ---------------------------------------------------------------------------
+
+
+def test_resumed_urls_do_not_sleep(tmp_path):
+    csv_path = tmp_path / "programs.csv"
+    urls = ["https://example.com/1", "https://example.com/2"]
+    for i, url in enumerate(urls):
+        row = clean_record(
+            {"university_name": "Test University", "level": "MSc", "program_name": f"Testing {i}"},
+            url,
+        )
+        append_to_csv(row, csv_path)
+
+    argv = ["pipeline.py", "--output", str(csv_path)]
+    for url in urls:
+        argv.extend(["--url", url])
+
+    with patch("sys.argv", argv), patch("pipeline.time.sleep") as mock_sleep:
+        pipeline.main()
+
+    mock_sleep.assert_not_called()
 
 
 # ---------------------------------------------------------------------------

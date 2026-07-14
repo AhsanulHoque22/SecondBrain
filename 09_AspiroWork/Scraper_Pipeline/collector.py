@@ -164,6 +164,21 @@ def fetch_html(url: str, timeout: int = DEFAULT_TIMEOUT) -> str:
                 raise CollectionError(
                     f"{url} returned 403 and the headless-browser fallback also failed: {exc}"
                 ) from exc
+        if response.status_code == 429:
+            # The one status code that most needs a backoff, not an
+            # immediate failure — previously fell through to the final
+            # `raise` below with zero retry. Honor Retry-After when the
+            # server sends one; otherwise back off same as a 5xx.
+            retry_after = response.headers.get("Retry-After")
+            wait = float(retry_after) if retry_after and retry_after.strip().isdigit() else 1.5 * attempt
+            print(
+                f"[collect] {url} returned 429 (rate limited); waiting {wait:.1f}s before retry",
+                file=sys.stderr,
+            )
+            last_error = CollectionError(f"{url} returned 429 (rate limited)")
+            time.sleep(wait)
+            continue
+
         if response.status_code >= 500:
             last_error = CollectionError(f"{url} returned {response.status_code}")
             time.sleep(1.5 * attempt)

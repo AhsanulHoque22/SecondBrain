@@ -196,9 +196,11 @@ def main() -> None:
     usages: list[dict] = []
     for i, url in enumerate(urls):
         if url in already_done and not args.refresh:
+            # No network call happens for a resumed URL — nothing to be
+            # polite to, so no delay. Previously slept here anyway, which
+            # made a large resumed rerun take just as long as a real batch
+            # for zero actual work.
             results.append(f"RESUMED  {url}  already in {args.output}")
-            if i < len(urls) - 1:
-                time.sleep(args.delay + random.uniform(0, DEFAULT_JITTER))
             continue
 
         action = refresh_if_changed if (url in already_done and args.refresh) else run

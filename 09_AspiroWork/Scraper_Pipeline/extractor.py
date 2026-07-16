@@ -104,7 +104,24 @@ DEFAULT_BACKEND_CASCADES: dict[str, list[str]] = {
     # dead model ID — left in the cascade since an older/differently
     # provisioned account may still have access to it.
     "google": ["gemini-2.0-flash", "gemini-2.5-flash", "gemini-2.5-pro"],
-    "groq": ["llama-3.1-8b-instant", "llama-3.3-70b-versatile"],
+    # All six live-tested against a real Groq free-tier key with a strict
+    # tool-calling schema (the same shape EXTRACTION_SCHEMA uses) — every
+    # one returned valid structured output. Ordered smallest/fastest first,
+    # escalating in roughly increasing parameter count/capability. Pulled
+    # from GET /openai/v1/models on that key; the account also listed
+    # Whisper (audio-only), Orpheus (text-to-speech), Llama Prompt Guard
+    # (a safety classifier, not a generation model), and groq/compound(-mini)
+    # (an agentic meta-model with its own built-in tools that could conflict
+    # with this pipeline's own tool-calling schema) — all excluded as
+    # unsuited to structured-field extraction, not because they failed.
+    "groq": [
+        "llama-3.1-8b-instant",
+        "meta-llama/llama-4-scout-17b-16e-instruct",
+        "openai/gpt-oss-20b",
+        "qwen/qwen3-32b",
+        "llama-3.3-70b-versatile",
+        "openai/gpt-oss-120b",
+    ],
     # deepseek-chat is the only tier: deepseek-reasoner (R1) doesn't support
     # function/tool calling, so it can't serve this pipeline's structured-
     # output extraction at all, cheap or not.

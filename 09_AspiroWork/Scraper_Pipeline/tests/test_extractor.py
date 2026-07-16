@@ -14,7 +14,9 @@ from unittest.mock import patch
 
 import pytest
 
+import extractor
 from extractor import (
+    DEFAULT_ANTHROPIC_CASCADE,
     backfill_level,
     content_hash,
     extract,
@@ -194,11 +196,12 @@ def _fake_llm_result(**overrides):
     return base
 
 
-def test_extract_stops_at_tier_one_on_clean_result():
+def test_extract_stops_at_tier_one_on_clean_result(monkeypatch):
+    monkeypatch.setenv("ANTHROPIC_API_KEY", "sk-fake-key-for-test")
     calls = []
 
-    def fake_llm(clean_text, url, model, feedback=None):
-        calls.append(model)
+    def fake_llm(clean_text, url, backend, model, feedback=None):
+        calls.append((backend, model))
         return _fake_llm_result(university_name="Oxford", level="MSc", program_name="MSc in Testing"), {
             "input_tokens": 300,
             "output_tokens": 50,
@@ -207,15 +210,21 @@ def test_extract_stops_at_tier_one_on_clean_result():
     with patch("extractor.extract_via_llm", side_effect=fake_llm):
         result = extract("<html></html>", "https://example.com/happy")
 
-    assert calls == ["claude-haiku-4-5"]
+    assert calls == [("anthropic", "claude-haiku-4-5")]
     assert result["_extraction_method"] == "llm-haiku"
-    assert result["_usage"] == {"model": "claude-haiku-4-5", "input_tokens": 300, "output_tokens": 50}
+    assert result["_usage"] == {
+        "model": "claude-haiku-4-5",
+        "backend": "anthropic",
+        "input_tokens": 300,
+        "output_tokens": 50,
+    }
 
 
-def test_extract_escalates_with_feedback_on_validation_failure():
+def test_extract_escalates_with_feedback_on_validation_failure(monkeypatch):
+    monkeypatch.setenv("ANTHROPIC_API_KEY", "sk-fake-key-for-test")
     calls = []
 
-    def fake_llm(clean_text, url, model, feedback=None):
+    def fake_llm(clean_text, url, backend, model, feedback=None):
         calls.append((model, feedback))
         if model == "claude-haiku-4-5":
             # missing university_name -> validator should reject this
@@ -235,9 +244,35 @@ def test_extract_escalates_with_feedback_on_validation_failure():
     assert result["_extraction_method"] == "llm-sonnet"
 
 
-def test_extract_falls_back_to_heuristic_when_all_tiers_fail():
-    def fake_llm(clean_text, url, model, feedback=None):
+def test_extract_falls_back_to_heuristic_when_all_tiers_fail(monkeypatch):
+    """Configured but every call fails outright (bad key, network error,
+    exhausted quota) — distinct from test_extract_falls_back_to_heuristic_
+    with_no_backend_configured below, where nothing is even attempted."""
+    monkeypatch.setenv("ANTHROPIC_API_KEY", "sk-fake-key-for-test")
+    calls = []
+
+    def fake_llm(clean_text, url, backend, model, feedback=None):
+        calls.append((backend, model))
         raise RuntimeError("simulated API failure")
+
+    html = "<html><head><title>Legal Research</title></head><body></body></html>"
+    with patch("extractor.extract_via_llm", side_effect=fake_llm):
+        result = extract(html, "https://example.com/no-credentials")
+
+    assert calls == [("anthropic", m) for m in DEFAULT_ANTHROPIC_CASCADE]
+    assert result["_extraction_method"] == "heuristic"
+    assert result["_usage"] is None
+
+
+def test_extract_falls_back_to_heuristic_with_no_backend_configured(monkeypatch):
+    """No credential set at all for the active backend (or chain) — the new
+    pre-filter in _backend_chain skips straight to heuristic without
+    attempting a single call, since there's nothing to call with."""
+    monkeypatch.delenv("ANTHROPIC_API_KEY", raising=False)
+    monkeypatch.setenv("LLM_PROVIDER", "anthropic")
+
+    def fake_llm(clean_text, url, backend, model, feedback=None):
+        raise AssertionError("should never be called — no backend is configured")
 
     html = "<html><head><title>Legal Research</title></head><body></body></html>"
     with patch("extractor.extract_via_llm", side_effect=fake_llm):
@@ -245,6 +280,92 @@ def test_extract_falls_back_to_heuristic_when_all_tiers_fail():
 
     assert result["_extraction_method"] == "heuristic"
     assert result["_usage"] is None
+
+
+# ---------------------------------------------------------------------------
+# _backend_chain / _cascade_for_backend — cross-backend fallback config
+# ---------------------------------------------------------------------------
+
+
+def test_cascade_for_backend_uses_builtin_default_for_verified_backend(monkeypatch):
+    monkeypatch.delenv("GROQ_MODEL_CASCADE", raising=False)
+    monkeypatch.delenv("EXTRACTION_MODEL_CASCADE", raising=False)
+    assert extractor._cascade_for_backend("groq") == extractor.DEFAULT_BACKEND_CASCADES["groq"]
+
+
+def test_cascade_for_backend_prefers_explicit_backend_env_var(monkeypatch):
+    monkeypatch.setenv("GROQ_MODEL_CASCADE", "custom-model-a,custom-model-b")
+    assert extractor._cascade_for_backend("groq") == ["custom-model-a", "custom-model-b"]
+
+
+def test_cascade_for_backend_raises_when_nothing_configured_for_unverified_backend(monkeypatch):
+    monkeypatch.delenv("OPENAI_MODEL_CASCADE", raising=False)
+    monkeypatch.delenv("EXTRACTION_MODEL_CASCADE", raising=False)
+    monkeypatch.delenv("LLM_PROVIDER", raising=False)  # provider defaults to anthropic, so "openai" != primary
+    with pytest.raises(RuntimeError, match="no model cascade configured"):
+        extractor._cascade_for_backend("openai")
+
+
+def test_backend_chain_defaults_to_single_legacy_provider(monkeypatch):
+    monkeypatch.delenv("LLM_BACKEND_CHAIN", raising=False)
+    monkeypatch.setenv("LLM_PROVIDER", "anthropic")
+    monkeypatch.setenv("ANTHROPIC_API_KEY", "sk-fake-key-for-test")
+    assert extractor._backend_chain() == [("anthropic", m) for m in DEFAULT_ANTHROPIC_CASCADE]
+
+
+def test_backend_chain_skips_unconfigured_backends(monkeypatch):
+    monkeypatch.setenv("LLM_BACKEND_CHAIN", "groq,anthropic")
+    monkeypatch.delenv("GROQ_API_KEY", raising=False)  # groq: no key -> skipped entirely
+    monkeypatch.setenv("ANTHROPIC_API_KEY", "sk-fake-key-for-test")
+    assert extractor._backend_chain() == [("anthropic", m) for m in DEFAULT_ANTHROPIC_CASCADE]
+
+
+def test_backend_chain_combines_multiple_configured_backends_in_order(monkeypatch):
+    monkeypatch.setenv("LLM_BACKEND_CHAIN", "groq,anthropic")
+    monkeypatch.setenv("GROQ_API_KEY", "gsk-fake-key-for-test")
+    monkeypatch.setenv("ANTHROPIC_API_KEY", "sk-fake-key-for-test")
+    chain = extractor._backend_chain()
+    assert chain[: len(extractor.DEFAULT_BACKEND_CASCADES["groq"])] == [
+        ("groq", m) for m in extractor.DEFAULT_BACKEND_CASCADES["groq"]
+    ]
+    assert chain[-len(DEFAULT_ANTHROPIC_CASCADE) :] == [("anthropic", m) for m in DEFAULT_ANTHROPIC_CASCADE]
+
+
+def test_backend_chain_skips_unknown_backend_name(monkeypatch):
+    monkeypatch.setenv("LLM_BACKEND_CHAIN", "not-a-real-backend,anthropic")
+    monkeypatch.setenv("ANTHROPIC_API_KEY", "sk-fake-key-for-test")
+    assert extractor._backend_chain() == [("anthropic", m) for m in DEFAULT_ANTHROPIC_CASCADE]
+
+
+def test_extract_falls_through_to_second_backend_when_first_is_entirely_unreachable(monkeypatch):
+    """The actual "try a few others before aborting" behavior: backend A
+    (e.g. a Gemini key blocked by zero quota) fails outright on every one
+    of its models, and extract() moves on to backend B instead of dropping
+    straight to the heuristic path."""
+    monkeypatch.setenv("LLM_BACKEND_CHAIN", "google,anthropic")
+    monkeypatch.setenv("GOOGLE_API_KEY", "fake-google-key")
+    monkeypatch.setenv("ANTHROPIC_API_KEY", "sk-fake-key-for-test")
+
+    calls = []
+
+    def fake_llm(clean_text, url, backend, model, feedback=None):
+        calls.append((backend, model))
+        if backend == "google":
+            raise RuntimeError("429 RESOURCE_EXHAUSTED — simulated zero quota")
+        return _fake_llm_result(university_name="Oxford", level="MSc", program_name="MSc in Testing"), {
+            "input_tokens": 300,
+            "output_tokens": 50,
+        }
+
+    with patch("extractor.extract_via_llm", side_effect=fake_llm):
+        result = extract("<html></html>", "https://example.com/failover")
+
+    assert calls[: len(extractor.DEFAULT_BACKEND_CASCADES["google"])] == [
+        ("google", m) for m in extractor.DEFAULT_BACKEND_CASCADES["google"]
+    ]
+    assert calls[-1] == ("anthropic", "claude-haiku-4-5")
+    assert result["_extraction_method"] == "llm-haiku"
+    assert result["_usage"]["backend"] == "anthropic"
 
 
 # ---------------------------------------------------------------------------

@@ -16,9 +16,15 @@ provider to use (or none at all) via configuration, described in the
   clean — chained by one CLI orchestrator (`pipeline.py`), so you can run
   the whole thing end-to-end or use any stage on its own.
 - **Multi-provider LLM extraction.** Structured-field extraction works
-  against Anthropic, OpenAI, or Google Gemini, selected by an environment
-  variable — no code changes needed to switch providers or models.
-  See [Provider status](#provider-status) for what's been verified.
+  against Anthropic, OpenAI, Google Gemini, Groq, or DeepSeek, selected by
+  an environment variable — no code changes needed to switch providers or
+  models. See [Provider status](#provider-status) for what's been verified.
+- **Cross-backend fallback chain (`LLM_BACKEND_CHAIN`).** Chain several
+  independently configured backends — e.g. Groq, then Gemini, then
+  DeepSeek, then Anthropic — so one backend being unreachable (bad key,
+  zero quota, unfunded balance) doesn't abort the batch; extraction just
+  moves on to the next backend. See [Multi-backend fallback
+  chain](#multi-backend-fallback-chain-recommended).
 - **Cost-aware multi-tier model cascade.** Configure a list of models from
   cheapest/fastest to most capable; a deterministic validator gates each
   tier's output, and a page only escalates to a stronger (pricier) model
@@ -81,11 +87,16 @@ provider to use (or none at all) via configuration, described in the
 
 ## Limitations
 
-- **Only the Anthropic provider has been run against a live API in this
-  project.** The OpenAI and Google Gemini adapters are implemented against
-  each vendor's documented API contract but have not been exercised against
-  a live account. Review their output on a handful of real pages before
-  trusting either for a full batch. See [Provider status](#provider-status).
+- **No backend has produced a verified real extraction yet except
+  Anthropic.** Google Gemini and DeepSeek have both been exercised live —
+  authentication and the request/response contract confirmed working — but
+  every attempt so far was rejected at the account level (Gemini: 0
+  free-tier quota; DeepSeek: unfunded balance) before any real page
+  content came back. OpenAI and Groq are implemented against each vendor's
+  documented contract but have not been run against a live account at all.
+  Review actual output on a handful of real pages before trusting any
+  non-Anthropic backend for a full batch. See [Provider
+  status](#provider-status).
 - **The heuristic fallback has real gaps.** It reliably reads
   `university_name`, `program_name`, and a heuristic `level` guess, but
   fields like `tuition_1st_year`, `duration`, `success_rate`, and
@@ -244,8 +255,8 @@ plan to use OpenAI or Google Gemini instead, also install that vendor's
 SDK:
 
 ```bash
-./.venv/bin/pip install openai              # if using LLM_PROVIDER=openai
-./.venv/bin/pip install google-generativeai # if using LLM_PROVIDER=google
+./.venv/bin/pip install openai              # if using LLM_PROVIDER=openai, or "groq"/"deepseek" in LLM_BACKEND_CHAIN
+./.venv/bin/pip install google-generativeai # if using LLM_PROVIDER=google, or "google" in LLM_BACKEND_CHAIN
 ```
 
 ### Configuration
@@ -259,10 +270,13 @@ cp .env.example .env
 
 | Variable | Required | Purpose |
 |---|---|---|
-| `LLM_PROVIDER` | No (defaults to `anthropic`) | Which vendor to use: `anthropic`, `openai`, or `google` |
+| `LLM_PROVIDER` | No (defaults to `anthropic`) | Single-backend mode: which vendor to use — `anthropic`, `openai`, or `google`. Ignored if `LLM_BACKEND_CHAIN` is set. |
 | `ANTHROPIC_API_KEY` / `OPENAI_API_KEY` / `GOOGLE_API_KEY` | Yes, for the provider you chose | Credential for that vendor's SDK |
 | `EXTRACTION_MODEL_CASCADE` | Yes, unless `LLM_PROVIDER=anthropic` | Comma-separated model IDs, cheapest/fastest first |
-| `DISCOVERY_MODEL` | Only if using `--llm-discovery` with a non-`anthropic` provider | Single model ID used to classify candidate links (no cascade — see [Estimating discovery cost](#estimating-discovery-cost)) |
+| `LLM_BACKEND_CHAIN` | No | Multi-backend mode (recommended) — comma-separated backend names tried in order, e.g. `groq,google,deepseek,anthropic`. See [Multi-backend fallback chain](#multi-backend-fallback-chain-recommended). |
+| `GROQ_API_KEY` / `DEEPSEEK_API_KEY` | Only if that backend is in `LLM_BACKEND_CHAIN` | Credential for that backend, independent of `OPENAI_API_KEY`/`OPENAI_BASE_URL` |
+| `{BACKEND}_MODEL_CASCADE` (e.g. `GROQ_MODEL_CASCADE`) | Only for a backend in `LLM_BACKEND_CHAIN` with no built-in default | Per-backend model cascade, same format as `EXTRACTION_MODEL_CASCADE` |
+| `DISCOVERY_MODEL` | Only if using `--llm-discovery` with a non-`anthropic` provider | Single model ID used to classify candidate links (no cascade — see [Estimating discovery cost](#estimating-discovery-cost)). Discovery is still single-backend only (reads `LLM_PROVIDER`), not part of the fallback chain. |
 
 **Model IDs are never hardcoded for OpenAI or Google in this project** —
 only the Anthropic cascade ships with a built-in default, because it's the
@@ -280,13 +294,61 @@ next one in the list if the deterministic validator rejects its output
 (missing required field, non-numeric value in a numeric field, or a value
 that doesn't appear anywhere in the source page).
 
+#### Multi-backend fallback chain (recommended)
+
+Single-backend mode above has one failure mode that matters in practice: if
+the one configured provider is unreachable for any account-level reason —
+zero free-tier quota, an unfunded pay-as-you-go balance, a revoked key — the
+*entire* LLM path is unreachable for the whole batch, and every page falls
+straight to the heuristic extractor even though a different, working key
+would have handled it fine.
+
+`LLM_BACKEND_CHAIN` fixes this by trying several **independently
+configured** backends in order, each with its own credentials, before
+falling through to the heuristic path:
+
+```bash
+LLM_BACKEND_CHAIN=groq,google,deepseek,anthropic
+
+GROQ_API_KEY=...       # genuinely free tier, no billing — put first
+GOOGLE_API_KEY=...     # free tier IF the key's project has billing/quota enabled
+DEEPSEEK_API_KEY=...   # pay-as-you-go only, needs a funded balance
+ANTHROPIC_API_KEY=...  # paid, most-verified backend — good last resort
+```
+
+Setting `LLM_BACKEND_CHAIN` overrides `LLM_PROVIDER` entirely. Each backend
+in the chain contributes its own model cascade — cheapest tier of backend 1,
+then its next tier, ..., then backend 2's cascade, and so on — configured
+the same way as single-backend mode but with a backend-specific variable
+name: `{BACKEND}_MODEL_CASCADE` (`GROQ_MODEL_CASCADE`,
+`GOOGLE_MODEL_CASCADE`, `DEEPSEEK_MODEL_CASCADE`,
+`ANTHROPIC_MODEL_CASCADE`). Backends this pipeline has been exercised
+against live (see [Provider status](#provider-status)) have a built-in
+default and don't require this to be set.
+
+A backend with no API key configured is skipped automatically — it's safe
+to list more backends in the chain than you've actually configured keys
+for. A backend whose call fails outright (bad key, network error, quota
+exhausted, insufficient balance) is logged to stderr and the chain moves to
+the next entry, same as escalating between tiers of a single provider's
+cascade always has. Only once every backend in the chain is either
+unconfigured or has failed on every one of its models does extraction drop
+to the heuristic path.
+
+`groq` and `deepseek` are both OpenAI-compatible endpoints (same SDK as the
+plain `openai` backend, just a different base URL and key) — see
+`llm_providers.py`'s `BACKENDS` registry for the full list and exactly how
+each backend's credentials are resolved.
+
 #### Provider status
 
-| Provider | Status |
+| Backend | Status |
 |---|---|
-| Anthropic | Exercised against the live API during this pipeline's development. Has a built-in default model cascade. |
-| OpenAI | Implemented against OpenAI's documented strict function-calling contract. Not exercised against a live account — verify on real pages before trusting it for a full batch. |
-| Google Gemini | Implemented against the documented `google-generativeai` structured-output contract, including a schema-translation step (Gemini's schema dialect differs from plain JSON Schema). The least-verified of the three — review carefully before relying on it. |
+| Anthropic | Exercised against the live API repeatedly during this pipeline's development. Has a built-in default model cascade. |
+| OpenAI | Implemented against OpenAI's documented strict function-calling contract. Not exercised against a live OpenAI account — verify on real pages before trusting it for a full batch. |
+| Google Gemini | Implemented against the documented `google-generativeai` structured-output contract, including a schema-translation step (Gemini's schema dialect differs from plain JSON Schema). Exercised live end-to-end — authentication and schema translation both confirmed working — but every attempt so far has been rejected at the account level with a 0-quota free-tier error. Confirm the key's project has billing/quota enabled before trusting real output. |
+| Groq | Same request/response contract as OpenAI above (OpenAI-compatible endpoint). Not yet exercised against a live account. Genuinely free tier, no billing required — the best default first link in a fallback chain once verified. |
+| DeepSeek | Same request/response contract as OpenAI above. Exercised live — authentication and the request shape both confirmed working — but rejected with `402 Insufficient Balance`. No free tier; the account needs a funded balance before it will serve any request. |
 
 #### Estimating cost
 
@@ -330,9 +392,11 @@ report at the end of any run that made an LLM call, the same way
 ### Running with no LLM configured
 
 The pipeline never hard-requires an LLM. With no API key set for the
-configured provider (or with every configured tier failing for any other
-reason — network error, invalid key, rate limit), extraction falls through
-to the heuristic path automatically: JSON-LD (`schema.org` Course /
+configured provider — or, in multi-backend mode, no key set for *any*
+backend in `LLM_BACKEND_CHAIN` — or with every configured tier across every
+configured backend failing for any other reason (network error, invalid
+key, rate limit, exhausted quota, unfunded balance), extraction falls
+through to the heuristic path automatically: JSON-LD (`schema.org` Course /
 EducationalOccupationalProgram markup), Open Graph tags, and label-based
 regex matching. Lower recall (see [Limitations](#limitations)), but zero
 setup and it never blocks a batch.

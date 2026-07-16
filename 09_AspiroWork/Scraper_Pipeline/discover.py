@@ -208,7 +208,7 @@ def extract_candidate_links(
 
 
 def _discovery_model(explicit: str | None = None) -> str:
-    """Same rule as extractor._model_cascade: only the Anthropic provider
+    """Same rule as extractor._cascade_for_backend: only the Anthropic provider
     gets a built-in default (the only one this call has been run against
     live). Any other provider must set DISCOVERY_MODEL explicitly rather
     than have this module guess a current model ID for a vendor it can't

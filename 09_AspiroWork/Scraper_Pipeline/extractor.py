@@ -16,11 +16,22 @@ needed:
   the prompt, so escalation is a correction, not a blind re-roll. The
   models used at each tier, and how many tiers exist, are configured via
   EXTRACTION_MODEL_CASCADE — see README.md.
-- Heuristic fallback (used if every LLM tier fails outright — no API
-  credentials, network error — or every tier's output fails validation):
-  JSON-LD (schema.org Course/EducationalOccupationalProgram), og:title/
-  og:site_name, and label/regex matching for common patterns. Lower recall,
-  but works with zero setup and never blocks the batch.
+- Cross-backend fallback (LLM_BACKEND_CHAIN, optional): the tier list above
+  is normally all within one provider (e.g. three Anthropic models). Set
+  LLM_BACKEND_CHAIN to a comma-separated list of backend names (e.g.
+  "groq,google,deepseek,anthropic") to chain several *independently
+  configured* backends — each contributes its own model cascade, and the
+  whole sequence is tried in order before falling through to the heuristic
+  tier. This is what makes a single unreachable backend (bad key, zero
+  quota, no billing) a non-blocking event instead of an aborted run — see
+  _backend_chain below. Unset means the original single-backend behavior:
+  just LLM_PROVIDER's own cascade.
+- Heuristic fallback (used if every LLM tier across every configured
+  backend fails outright — no API credentials, network error, exhausted
+  quota — or every tier's output fails validation): JSON-LD (schema.org
+  Course/EducationalOccupationalProgram), og:title/og:site_name, and
+  label/regex matching for common patterns. Lower recall, but works with
+  zero setup and never blocks the batch.
 """
 
 from __future__ import annotations
@@ -43,16 +54,17 @@ DEFAULT_EXTRACTION_STATE_PATH = Path("state/extraction_state.json")
 
 # Only the Anthropic path ships with a default cascade — it's the one
 # provider this pipeline has been exercised against live, so a default here
-# is a real, tested claim rather than a guess. Any other provider requires
-# EXTRACTION_MODEL_CASCADE to be set explicitly (see _model_cascade below)
-# rather than this module guessing a current model ID for a vendor it can't
-# verify against.
+# is a real, tested claim rather than a guess. Any other backend requires
+# EXTRACTION_MODEL_CASCADE (single-backend mode) or {BACKEND}_MODEL_CASCADE
+# (multi-backend chain) to be set explicitly — see _cascade_for_backend
+# below — rather than this module guessing a current model ID for a vendor
+# it can't verify against.
 DEFAULT_ANTHROPIC_CASCADE = ["claude-haiku-4-5", "claude-sonnet-5", "claude-opus-4-8"]
 
 # Human-readable tags for the well-known Anthropic cascade tiers, used to
 # label which tier produced a given row. A model not in this dict (any
-# custom cascade, any non-Anthropic provider) falls back to a generic
-# "llm:<model>" tag instead of raising — see _extraction_tag below.
+# custom cascade, any non-Anthropic backend) falls back to a generic
+# "llm:<backend>:<model>" tag instead of raising — see _extraction_tag below.
 MODEL_TAGS = {
     "claude-haiku-4-5": "llm-haiku",
     "claude-sonnet-5": "llm-sonnet",
@@ -75,26 +87,96 @@ MODEL_PRICING = {
 }
 
 
-def _model_cascade() -> list[str]:
-    """Returns the ordered list of models to try. EXTRACTION_MODEL_CASCADE
-    (comma-separated model IDs) always wins when set — this is how a
-    non-Anthropic provider, or a custom Anthropic cascade, gets configured.
-    With no override, only the Anthropic provider has a built-in default;
-    every other provider must set the env var explicitly."""
-    override = os.environ.get("EXTRACTION_MODEL_CASCADE", "").strip()
+# Built-in default cascades for backends whose current model IDs this
+# pipeline has actually exercised live — auth and request shape both
+# confirmed working end-to-end, even where an account-level limit (zero
+# quota, no billing) blocked seeing real output. Every other backend must
+# set {BACKEND}_MODEL_CASCADE (e.g. OPENAI_MODEL_CASCADE) explicitly rather
+# than have this module guess a current model ID for a vendor it can't
+# verify against — same policy as the original single-provider cascade.
+DEFAULT_BACKEND_CASCADES: dict[str, list[str]] = {
+    "anthropic": DEFAULT_ANTHROPIC_CASCADE,
+    # Live-tested against a real (new) Google Cloud key: gemini-2.0-flash
+    # and gemini-2.5-pro both returned a real 429 RESOURCE_EXHAUSTED (valid
+    # model ID, blocked only by account-level zero quota). gemini-2.5-flash
+    # returned 404 "no longer available to new users" on that same key —
+    # apparently restricted for newly created accounts specifically, not a
+    # dead model ID — left in the cascade since an older/differently
+    # provisioned account may still have access to it.
+    "google": ["gemini-2.0-flash", "gemini-2.5-flash", "gemini-2.5-pro"],
+    "groq": ["llama-3.1-8b-instant", "llama-3.3-70b-versatile"],
+    # deepseek-chat is the only tier: deepseek-reasoner (R1) doesn't support
+    # function/tool calling, so it can't serve this pipeline's structured-
+    # output extraction at all, cheap or not.
+    "deepseek": ["deepseek-chat"],
+}
+
+
+def _cascade_for_backend(backend: str) -> list[str]:
+    """Returns the ordered list of models to try for one backend.
+    {BACKEND}_MODEL_CASCADE (e.g. GROQ_MODEL_CASCADE) always wins when set.
+    Otherwise, for whichever backend is the primary LLM_PROVIDER, falls
+    back to the legacy EXTRACTION_MODEL_CASCADE var so existing
+    single-backend .env files keep working unchanged. With neither set,
+    falls back to this module's own built-in default for a backend this
+    pipeline has verified live (DEFAULT_BACKEND_CASCADES); any other
+    backend raises, same as the original single-provider behavior."""
+    override = os.environ.get(f"{backend.upper()}_MODEL_CASCADE", "").strip()
     if override:
         return [m.strip() for m in override.split(",") if m.strip()]
-    if llm_providers.get_provider() == "anthropic":
-        return DEFAULT_ANTHROPIC_CASCADE
+    if backend == llm_providers.get_provider():
+        legacy = os.environ.get("EXTRACTION_MODEL_CASCADE", "").strip()
+        if legacy:
+            return [m.strip() for m in legacy.split(",") if m.strip()]
+    if backend in DEFAULT_BACKEND_CASCADES:
+        return DEFAULT_BACKEND_CASCADES[backend]
     raise RuntimeError(
-        f"LLM_PROVIDER={llm_providers.get_provider()!r} has no built-in default model cascade. "
-        "Set EXTRACTION_MODEL_CASCADE to a comma-separated list of model IDs for this "
-        "provider (check the provider's own docs for current model names)."
+        f"Backend {backend!r} has no model cascade configured. Set "
+        f"{backend.upper()}_MODEL_CASCADE to a comma-separated list of model IDs for "
+        "this backend (check its own docs for current model names)."
     )
 
 
-def _extraction_tag(model: str) -> str:
-    return MODEL_TAGS.get(model, f"llm:{model}")
+def _backend_chain() -> list[tuple[str, str]]:
+    """Returns the ordered list of (backend, model) attempts across every
+    configured backend — the cross-backend fallback chain.
+
+    Set LLM_BACKEND_CHAIN (comma-separated backend names, e.g.
+    "groq,google,deepseek,anthropic") to try several independent backends
+    in order — each contributes its own model cascade via
+    _cascade_for_backend — before extract() gives up and drops to the
+    heuristic extractor. This is the "try a few others before aborting"
+    behavior: a backend that's entirely unreachable (bad key, zero quota,
+    no billing) no longer aborts the run, it just contributes zero usable
+    attempts and the chain moves on.
+
+    Unset means the original single-backend behavior: just LLM_PROVIDER's
+    own cascade (what _model_cascade used to return on its own).
+
+    A backend with no credential configured is skipped, not attempted —
+    no point burning a call (and a stderr line) on a backend nobody set a
+    key for. A backend that's misconfigured in a way that *would* block it
+    outright even in legacy single-backend mode (no cascade available at
+    all — see _cascade_for_backend) still raises, since that's a genuine
+    setup mistake worth surfacing loudly rather than silently dropping.
+    """
+    override = os.environ.get("LLM_BACKEND_CHAIN", "").strip()
+    backends = [b.strip() for b in override.split(",") if b.strip()] if override else [llm_providers.get_provider()]
+
+    chain: list[tuple[str, str]] = []
+    for backend in backends:
+        if backend not in llm_providers.BACKENDS:
+            print(f"[extract] skipping unknown backend {backend!r} in LLM_BACKEND_CHAIN", file=sys.stderr)
+            continue
+        if not llm_providers.is_backend_configured(backend):
+            print(f"[extract] skipping backend {backend!r} — no credential configured", file=sys.stderr)
+            continue
+        chain.extend((backend, model) for model in _cascade_for_backend(backend))
+    return chain
+
+
+def _extraction_tag(backend: str, model: str) -> str:
+    return MODEL_TAGS.get(model, f"llm:{backend}:{model}")
 
 # Values a model might return that are semantically "nothing" but aren't the
 # null the schema asks for — treated the same as a missing required field.
@@ -294,16 +376,16 @@ def record_extraction_state(
 
 
 def extract_via_llm(
-    clean_text: str, url: str, model: str, feedback: list[str] | None = None
+    clean_text: str, url: str, backend: str, model: str, feedback: list[str] | None = None
 ) -> tuple[dict, dict]:
     """Returns (extracted_fields, usage) — usage is {"input_tokens": int,
     "output_tokens": int} straight off the API response, so callers can
     track real spend instead of estimating from characters sent.
 
-    Thin wrapper over llm_providers.call_llm — kept as its own function
-    (rather than inlined into extract()) so the name and signature stay
-    stable for callers and tests that mock this one call site regardless of
-    which provider is configured underneath."""
+    Thin wrapper over llm_providers.call_llm_via_backend — kept as its own
+    function (rather than inlined into extract()) so the name and signature
+    stay stable for callers and tests that mock this one call site
+    regardless of which backend is configured underneath."""
     user_content = f"Source URL: {url}\n\nPage text:\n{clean_text[:MAX_INPUT_CHARS]}"
     if feedback:
         # Escalation retry — tell the stronger model exactly what the previous
@@ -313,8 +395,8 @@ def extract_via_llm(
             + "\n".join(f"- {problem}" for problem in feedback)
             + f"\n\n{user_content}"
         )
-    return llm_providers.call_llm(
-        model, SYSTEM_PROMPT, user_content, EXTRACTION_SCHEMA, EXTRACTION_TOOL_NAME, EXTRACTION_TOOL_DESCRIPTION
+    return llm_providers.call_llm_via_backend(
+        backend, model, SYSTEM_PROMPT, user_content, EXTRACTION_SCHEMA, EXTRACTION_TOOL_NAME, EXTRACTION_TOOL_DESCRIPTION
     )
 
 
@@ -482,24 +564,24 @@ def extract(html: str, url: str) -> dict:
     clean_text = clean_text_from_html(html)
 
     feedback: list[str] | None = None
-    for model in _model_cascade():
+    for backend, model in _backend_chain():
         try:
-            data, usage = extract_via_llm(clean_text, url, model=model, feedback=feedback)
-        except Exception as exc:  # this tier's call failed outright — try the next tier
-            print(f"[extract] {model} call failed for {url} ({exc})", file=sys.stderr)
+            data, usage = extract_via_llm(clean_text, url, backend, model, feedback=feedback)
+        except Exception as exc:  # this backend/tier's call failed outright — try the next one
+            print(f"[extract] {backend}:{model} call failed for {url} ({exc})", file=sys.stderr)
             feedback = None
             continue
 
         problems = validate_extraction(data, clean_text)
         if not problems:
-            data["_extraction_method"] = _extraction_tag(model)
-            data["_usage"] = {"model": model, **usage}
+            data["_extraction_method"] = _extraction_tag(backend, model)
+            data["_usage"] = {"model": model, "backend": backend, **usage}
             return data
-        print(f"[extract] {model} output for {url} failed validation: {'; '.join(problems)}", file=sys.stderr)
+        print(f"[extract] {backend}:{model} output for {url} failed validation: {'; '.join(problems)}", file=sys.stderr)
         feedback = problems
 
-    # deliberate fallback boundary, not silent — logged above per tier
-    print(f"[extract] all LLM tiers failed for {url}; using heuristic fallback", file=sys.stderr)
+    # deliberate fallback boundary, not silent — logged above per backend/tier
+    print(f"[extract] all LLM backends/tiers failed for {url}; using heuristic fallback", file=sys.stderr)
     data = extract_via_heuristics(html, clean_text, url)
     data["_extraction_method"] = "heuristic"
     data["_usage"] = None

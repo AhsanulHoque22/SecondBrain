@@ -51,25 +51,25 @@ CANARY_URLS = [
 ]
 
 
-# Which env var carries the credential for each provider llm_providers.py
-# supports — used only to tell "no LLM configured, heuristic is expected"
-# apart from "LLM configured but silently not working," see
-# _llm_should_be_reachable below.
-LLM_CREDENTIAL_ENV = {
-    "anthropic": "ANTHROPIC_API_KEY",
-    "openai": "OPENAI_API_KEY",
-    "google": "GOOGLE_API_KEY",
-}
+def _active_backends() -> list[str]:
+    """The backend(s) actually in play for this run: LLM_BACKEND_CHAIN's
+    list if set (extractor.py's cross-backend fallback chain), otherwise
+    just the single legacy LLM_PROVIDER backend — mirrors
+    extractor._backend_chain's own resolution of "what's configured"."""
+    override = os.environ.get("LLM_BACKEND_CHAIN", "").strip()
+    if override:
+        return [b.strip() for b in override.split(",") if b.strip()]
+    return [llm_providers.get_provider()]
 
 
 def _llm_should_be_reachable() -> bool:
-    """True if the configured provider has a credential set. If so, a
-    canary run that still falls back to the heuristic path is a real
-    problem worth failing on (bad key, wrong model cascade, every tier's
-    validator rejecting the output) — not the same as "no LLM configured,
-    heuristic is the expected path," which is not a failure."""
-    env_var = LLM_CREDENTIAL_ENV.get(llm_providers.get_provider())
-    return bool(env_var and os.environ.get(env_var))
+    """True if at least one active backend (see _active_backends) has a
+    credential set. If so, a canary run that still falls back to the
+    heuristic path is a real problem worth failing on (bad key, wrong model
+    cascade, every tier's validator rejecting the output) — not the same as
+    "no LLM configured, heuristic is the expected path," which is not a
+    failure."""
+    return any(llm_providers.is_backend_configured(backend) for backend in _active_backends())
 
 
 def check_url(url: str, raw_dir: Path) -> tuple[bool, str]:
@@ -86,11 +86,10 @@ def check_url(url: str, raw_dir: Path) -> tuple[bool, str]:
         return False, f"missing required field(s): {', '.join(missing)} (via {method})"
     if method == "heuristic" and _llm_should_be_reachable():
         return False, (
-            f"fell back to heuristic extraction even though "
-            f"{llm_providers.get_provider()!r} has a credential configured — "
-            "the LLM path isn't actually working (check the API key, model "
-            "cascade, and the stderr output above for the real per-tier "
-            "failure reason)"
+            f"fell back to heuristic extraction even though {_active_backends()} has a "
+            "credential configured — the LLM path isn't actually working (check the "
+            "API key(s), model cascade(s), and the stderr output above for the real "
+            "per-backend/per-tier failure reason)"
         )
     return True, f"OK (via {method})"
 

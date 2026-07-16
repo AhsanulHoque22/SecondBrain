@@ -35,15 +35,26 @@ Verification status — read before trusting a backend in production:
   attempt so far has been rejected at the account level with a 0-quota
   free-tier error — see BACKENDS' "google" comment. Review actual output
   once a key with real quota is available.
-- groq (family="openai", different base URL/key): exercised live
-  end-to-end with a real free-tier key — real structured extraction
-  confirmed. The cheapest cascade tier (llama-3.1-8b-instant) failed
-  strict schema validation on a real page (extra fields not in the
-  schema); the cascade correctly escalated to llama-3.3-70b-versatile,
-  which produced a correct result. Currently the most reliable free
-  backend — see _throttle/_retry_on_rate_limit above for the rate-limit
-  handling this backend specifically needs (30 req/min, 6,000 tokens/min,
-  org-wide).
+- groq (family="openai", different base URL/key): exercised live across a
+  full real 100-URL batch — 98% LLM-extracted, only 2% fell to heuristic.
+  Currently the most reliable free backend. Two things learned only from
+  that live run, not documented by the account's stated limits (30
+  req/min, 1,000 req/day, 6,000 tokens/min, org-wide):
+  (1) individual models can carry their OWN separate daily token budget on
+  top of those org-wide numbers — openai/gpt-oss-20b hit a hard 200,000
+  TPD (tokens-per-day) wall mid-testing, confirmed via the API's own error
+  message. This is a slow-recovering limit (Groq reported ~17 minutes),
+  unlike the per-minute ones — see _is_daily_rate_limit, which detects
+  this specific case and skips the short exponential backoff entirely
+  rather than wasting ~35s per URL retrying something that can't recover
+  that fast.
+  (2) cascade tier order matters a lot for latency, not just cost: ordering
+  by "cheapest/smallest model first" (the convention for a paid API, to
+  minimize $) is actively counterproductive on a free tier, where cost is
+  $0 regardless of which tier answers — a weak model tried first only adds
+  latency for every URL that has to escalate past it. Reordered to
+  descending empirical win rate instead (see extractor.DEFAULT_BACKEND_
+  CASCADES's "groq" comment for the measured numbers).
 - deepseek (family="openai", different base URL/key): same request/response
   contract as openai above. Exercised live — authentication and the
   request shape both confirmed working — but rejected with 402 Insufficient
@@ -184,6 +195,16 @@ def _throttle(backend: str, estimated_tokens: int) -> None:
     _last_call_at[backend] = time.monotonic()
 
 
+def _is_daily_rate_limit(exc: BaseException) -> bool:
+    """True if a rate-limit error's message identifies it as a per-day
+    quota (RPD/TPD) rather than a per-minute one. Text-matching the message
+    is a heuristic, not a typed field — vendor SDKs don't expose a
+    structured "which window" attribute — but it's cheap and the failure
+    mode of a false negative is just falling back to the old
+    always-retry-a-few-times behavior, not a crash."""
+    return "per day" in str(exc).lower()
+
+
 def _retry_on_rate_limit(fn, exception_types: tuple[type[BaseException], ...]):
     """Calls fn() (a zero-arg callable), retrying with exponential backoff
     up to RATE_LIMIT_MAX_RETRIES times if it raises one of
@@ -195,6 +216,22 @@ def _retry_on_rate_limit(fn, exception_types: tuple[type[BaseException], ...]):
         try:
             return fn()
         except exception_types as exc:
+            if _is_daily_rate_limit(exc):
+                # A per-day quota (RPD/TPD) — confirmed live on Groq's free
+                # tier: a model can carry its own separate daily token
+                # budget (e.g. 200,000 TPD for openai/gpt-oss-20b) on top
+                # of the per-minute limits, and Groq reports waits of
+                # 15+ minutes for these to recover. None of that recovers
+                # within this function's exponential backoff (max ~35s
+                # total), so retrying here only wastes time before the
+                # fallback chain moves to the next backend/tier anyway —
+                # skip straight there instead.
+                print(
+                    f"[llm_providers] daily rate limit hit ({exc.__class__.__name__}) — "
+                    "won't recover within a short backoff, skipping retry",
+                    file=sys.stderr,
+                )
+                raise
             if attempt == RATE_LIMIT_MAX_RETRIES:
                 raise
             print(

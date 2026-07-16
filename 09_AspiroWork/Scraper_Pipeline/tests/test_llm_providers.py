@@ -225,3 +225,32 @@ def test_retry_on_rate_limit_does_not_retry_other_exception_types():
         llm_providers._retry_on_rate_limit(fails_with_wrong_type, (ValueError,))
     assert calls["n"] == 1
     mock_sleep.assert_not_called()
+
+
+def test_is_daily_rate_limit_detects_per_day_message():
+    exc = ValueError(
+        "Rate limit reached for model `openai/gpt-oss-20b` ... on tokens per day (TPD): "
+        "Limit 200000, Used 198525, Requested 3866. Please try again in 17m12.912s."
+    )
+    assert llm_providers._is_daily_rate_limit(exc) is True
+
+
+def test_is_daily_rate_limit_false_for_per_minute_message():
+    exc = ValueError("Rate limit reached on requests per minute (RPM). Please try again in 2s.")
+    assert llm_providers._is_daily_rate_limit(exc) is False
+
+
+def test_retry_on_rate_limit_skips_backoff_for_daily_limit():
+    """A per-day quota won't recover within any short backoff this
+    function is willing to wait through — it should propagate immediately
+    on the first attempt, not burn through the full retry budget first."""
+    calls = {"n": 0}
+
+    def hits_daily_limit():
+        calls["n"] += 1
+        raise ValueError("exceeded tokens per day (TPD) limit, try again in 17m")
+
+    with patch("time.sleep") as mock_sleep, pytest.raises(ValueError, match="tokens per day"):
+        llm_providers._retry_on_rate_limit(hits_daily_limit, (ValueError,))
+    assert calls["n"] == 1  # no retries attempted at all
+    mock_sleep.assert_not_called()

@@ -372,6 +372,33 @@ published rate limit. A backend with no `rate_limit` entry (Anthropic,
 OpenAI, Google, DeepSeek — all either paid or without a public free-tier
 ceiling worth pacing for) isn't throttled.
 
+**Per-model daily caps — not covered by the numbers above, found live.**
+Individual Groq models can carry their own separate daily token budget on
+top of the org-wide limits: `openai/gpt-oss-20b` hit a hard **200,000
+tokens/day** wall partway through a real 100-URL batch, confirmed via the
+API's own error message (`Limit 200000, Used 198525 ... try again in
+17m12s`). This is a slow-recovering limit — proactive pacing can't prevent
+it (it's not tied to the per-minute window), and the usual short
+exponential backoff can't wait it out either. `_is_daily_rate_limit` in
+`llm_providers.py` detects this specific case (checks the error message for
+"per day") and skips the backoff entirely, letting the fallback chain move
+to the next tier immediately instead of wasting ~35s per URL retrying
+something that won't recover for minutes. If you see a backend fail on
+every URL for a stretch, check the error message for "per day" — it likely
+means that specific model's daily budget is temporarily exhausted from
+earlier testing, not that something is broken.
+
+**Cascade order matters more than "cheapest first" on a free tier.** The
+convention of ordering a model cascade cheapest/fastest-first exists to
+minimize $ cost on a *paid* API — on Groq's free tier, cost is $0
+regardless of which tier answers, so a model that fails most of the time
+tried first only adds latency for nothing. `extractor.DEFAULT_BACKEND_
+CASCADES`'s `"groq"` entry is ordered by **measured win rate** from a real
+100-URL run instead (see that comment for the numbers) — originally
+ordered smallest-model-first, that put the two weakest performers ahead of
+the model that actually won 42% of the time, so most URLs paid for two
+wasted rate-limit-throttled calls before reaching it.
+
 #### Provider status
 
 | Backend | Status |

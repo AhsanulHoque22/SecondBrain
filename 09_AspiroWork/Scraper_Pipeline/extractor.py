@@ -570,6 +570,20 @@ def extract_via_heuristics(html: str, clean_text: str, url: str) -> dict:
             if re.search(r"\d", value):
                 data[field] = value
 
+    # The LLM path gets this check via validate_extraction (which rejects
+    # and escalates to a stronger tier on a bundled value); heuristic has no
+    # further tier to escalate to, so the only safe move is to null the
+    # field out rather than keep a merged EU/non-EU-style figure masquerading
+    # as a single first-year amount — same "missing beats wrong" philosophy
+    # validate_extraction already applies to the LLM tiers.
+    if data["tuition_1st_year"] and _looks_like_bundled_tuition(data["tuition_1st_year"]):
+        print(
+            f"[extract] heuristic tuition_1st_year for {url} looked bundled "
+            f"({data['tuition_1st_year']!r}) — dropping rather than keeping a merged figure",
+            file=sys.stderr,
+        )
+        data["tuition_1st_year"] = None
+
     return data
 
 

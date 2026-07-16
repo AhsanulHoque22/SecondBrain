@@ -93,6 +93,24 @@ def test_application_fee_matches_close_colon_value():
     assert data["application_fee"] == "£75"
 
 
+def test_heuristic_nulls_out_bundled_tuition_instead_of_keeping_it():
+    """The LLM path escalates to a stronger tier on a bundled EU/non-EU
+    tuition figure (validate_extraction); heuristic has no further tier to
+    escalate to, so it must null the field instead of keeping a merged
+    value that looks like a single first-year figure but isn't."""
+    html = "<html><head><title>Test Program</title></head><body></body></html>"
+    clean_text = "Tuition: EU: 2695 EUR/yr; Non-EU: 18873 EUR/yr"
+    data = extract_via_heuristics(html, clean_text, "https://example.com/test")
+    assert data["tuition_1st_year"] is None
+
+
+def test_heuristic_keeps_a_clean_single_tuition_figure():
+    html = "<html><head><title>Test Program</title></head><body></body></html>"
+    clean_text = "Tuition: 28000 GBP per year"
+    data = extract_via_heuristics(html, clean_text, "https://example.com/test")
+    assert data["tuition_1st_year"] == "28000 GBP per year"
+
+
 # ---------------------------------------------------------------------------
 # validate_extraction — required fields, numeric shape, grounding
 # ---------------------------------------------------------------------------

@@ -112,7 +112,20 @@ def main() -> None:
     for method, count in sorted(method_counts.items(), key=lambda kv: -kv[1]):
         pct = 100 * count / attempted
         print(f"  {method:30} {count:4}  ({pct:5.1f}%)")
+
+    # LLM vs heuristic split — the top-line reliability number: how much of
+    # the batch actually came from a real LLM extraction (grounding +
+    # bundled-tuition checks applied via validate_extraction) vs. the
+    # zero-setup fallback (lower recall, no grounding check, though the
+    # bundled-tuition guard now applies there too — see extract_via_heuristics).
     heuristic_count = method_counts.get("heuristic", 0)
+    not_attempted_count = method_counts.get("not attempted", 0)
+    llm_count = attempted - heuristic_count - not_attempted_count
+    print("\n  --- LLM vs heuristic split ---")
+    print(f"  LLM-extracted:        {llm_count:4}  ({100 * llm_count / attempted:5.1f}%)")
+    print(f"  Heuristic fallback:    {heuristic_count:4}  ({100 * heuristic_count / attempted:5.1f}%)")
+    if not_attempted_count:
+        print(f"  Not attempted yet:     {not_attempted_count:4}  ({100 * not_attempted_count / attempted:5.1f}%)")
     if heuristic_count:
         print(
             f"\n  Note: {heuristic_count} row(s) came from the zero-setup heuristic fallback, "

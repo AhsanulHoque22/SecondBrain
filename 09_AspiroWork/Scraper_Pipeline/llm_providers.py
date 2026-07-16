@@ -35,8 +35,15 @@ Verification status — read before trusting a backend in production:
   attempt so far has been rejected at the account level with a 0-quota
   free-tier error — see BACKENDS' "google" comment. Review actual output
   once a key with real quota is available.
-- groq (family="openai", different base URL/key): same request/response
-  contract as openai above, not yet exercised live in this project.
+- groq (family="openai", different base URL/key): exercised live
+  end-to-end with a real free-tier key — real structured extraction
+  confirmed. The cheapest cascade tier (llama-3.1-8b-instant) failed
+  strict schema validation on a real page (extra fields not in the
+  schema); the cascade correctly escalated to llama-3.3-70b-versatile,
+  which produced a correct result. Currently the most reliable free
+  backend — see _throttle/_retry_on_rate_limit above for the rate-limit
+  handling this backend specifically needs (30 req/min, 6,000 tokens/min,
+  org-wide).
 - deepseek (family="openai", different base URL/key): same request/response
   contract as openai above. Exercised live — authentication and the
   request shape both confirmed working — but rejected with 402 Insufficient
@@ -47,6 +54,8 @@ from __future__ import annotations
 
 import json
 import os
+import sys
+import time
 
 
 def get_provider() -> str:
@@ -73,11 +82,15 @@ BACKENDS: dict[str, dict] = {
     "openai": {"family": "openai", "api_key_env": "OPENAI_API_KEY", "base_url_env": "OPENAI_BASE_URL"},
     # Groq's free tier serves open-weight models behind an OpenAI-compatible
     # endpoint — genuinely free, no billing required, which makes it the
-    # best default first link in a free-tier fallback chain.
+    # best default first link in a free-tier fallback chain. "rate_limit"
+    # is the published free-tier ceiling (org-wide, not per-key) — see
+    # _throttle below for how it's enforced proactively, on top of the
+    # reactive backoff-and-retry every backend gets on an actual 429.
     "groq": {
         "family": "openai",
         "api_key_env": "GROQ_API_KEY",
         "base_url": "https://api.groq.com/openai/v1",
+        "rate_limit": {"requests_per_minute": 30, "tokens_per_minute": 6000},
     },
     # DeepSeek is also OpenAI-compatible, but pay-as-you-go only (no free
     # tier) — a request against an unfunded account fails with 402
@@ -116,6 +129,83 @@ def _backend_credentials(backend: str) -> tuple[str | None, str | None]:
     return api_key, base_url
 
 
+# --- Rate-limit handling ---------------------------------------------------
+# Two layers, for two different failure modes:
+#  1. Proactive pacing (_throttle) — sleeps *before* a call so a backend
+#     with a published free-tier ceiling (currently just Groq: 30
+#     requests/min, 6,000 tokens/min) is never even asked to go over it.
+#     This matters more than it sounds: a single extraction prompt runs
+#     ~4,000-4,500 tokens (see README "Estimating cost"), which is most of
+#     Groq's whole per-minute token budget on its own — pure request-count
+#     pacing (1 every 2s for 30/min) isn't enough by itself.
+#  2. Reactive backoff (_retry_on_rate_limit) — if a 429 gets through
+#     anyway (a burst from another process against the same org-wide
+#     limit, a token estimate that ran a bit low), retry the *same*
+#     backend/model with exponential backoff a few times before giving up.
+#     This is deliberately narrow: only a rate-limit error is worth
+#     waiting out. An auth error or an insufficient-balance error won't
+#     fix itself by waiting, so those still propagate immediately and let
+#     extractor.py's cascade move on to the next backend/tier, same as
+#     before.
+_last_call_at: dict[str, float] = {}
+
+RATE_LIMIT_MAX_RETRIES = 3
+RATE_LIMIT_BASE_DELAY_SECONDS = 5.0
+
+
+def _estimate_tokens(*texts: str) -> int:
+    """Rough, deliberately conservative token estimate (~4 characters per
+    token) from the actual text about to be sent — not a fixed assumption,
+    so a short page paces faster than a page near MAX_INPUT_CHARS. Good
+    enough for pacing purposes; it doesn't need to be exact, just not wildly
+    optimistic."""
+    return max(1, sum(len(t) for t in texts) // 4)
+
+
+def _throttle(backend: str, estimated_tokens: int) -> None:
+    """Sleeps just long enough before a call to keep `backend` under its
+    published free-tier rate limit (BACKENDS[backend]["rate_limit"]) — both
+    the request-count and token-count ceilings. No-op for a backend with no
+    published limit (paid tiers, or one this pipeline doesn't have numbers
+    for)."""
+    limits = BACKENDS.get(backend, {}).get("rate_limit")
+    if not limits:
+        return
+    min_interval = max(
+        60.0 / limits["requests_per_minute"],
+        (estimated_tokens / limits["tokens_per_minute"]) * 60.0,
+    )
+    last = _last_call_at.get(backend)
+    now = time.monotonic()
+    if last is not None:
+        wait = min_interval - (now - last)
+        if wait > 0:
+            time.sleep(wait)
+    _last_call_at[backend] = time.monotonic()
+
+
+def _retry_on_rate_limit(fn, exception_types: tuple[type[BaseException], ...]):
+    """Calls fn() (a zero-arg callable), retrying with exponential backoff
+    up to RATE_LIMIT_MAX_RETRIES times if it raises one of
+    exception_types. Any other exception propagates immediately on the
+    first attempt — see the module-level comment above for why only
+    rate-limit errors get this treatment."""
+    delay = RATE_LIMIT_BASE_DELAY_SECONDS
+    for attempt in range(RATE_LIMIT_MAX_RETRIES + 1):
+        try:
+            return fn()
+        except exception_types as exc:
+            if attempt == RATE_LIMIT_MAX_RETRIES:
+                raise
+            print(
+                f"[llm_providers] rate limited ({exc.__class__.__name__}) — "
+                f"retrying in {delay:.0f}s (attempt {attempt + 1}/{RATE_LIMIT_MAX_RETRIES})",
+                file=sys.stderr,
+            )
+            time.sleep(delay)
+            delay *= 2
+
+
 def call_llm_via_backend(
     backend: str,
     model: str,
@@ -133,6 +223,7 @@ def call_llm_via_backend(
     config = BACKENDS.get(backend)
     if config is None:
         raise ValueError(f"Unknown backend {backend!r} — expected one of {sorted(BACKENDS)}.")
+    _throttle(backend, _estimate_tokens(system_prompt, user_content, json.dumps(schema)))
     api_key, base_url = _backend_credentials(backend)
     family = config["family"]
     if family == "anthropic":
@@ -197,13 +288,16 @@ def _call_anthropic(
         "strict": True,
         "input_schema": schema,
     }
-    response = client.messages.create(
-        model=model,
-        max_tokens=4096,
-        system=system_prompt,
-        tools=[tool],
-        tool_choice={"type": "tool", "name": tool_name},
-        messages=[{"role": "user", "content": user_content}],
+    response = _retry_on_rate_limit(
+        lambda: client.messages.create(
+            model=model,
+            max_tokens=4096,
+            system=system_prompt,
+            tools=[tool],
+            tool_choice={"type": "tool", "name": tool_name},
+            messages=[{"role": "user", "content": user_content}],
+        ),
+        (anthropic.RateLimitError,),
     )
     tool_use = next(block for block in response.content if block.type == "tool_use")
     usage = {"input_tokens": response.usage.input_tokens, "output_tokens": response.usage.output_tokens}
@@ -242,24 +336,27 @@ def _call_openai(
     if base_url is None:
         base_url = os.environ.get("OPENAI_BASE_URL", "").strip() or None
     client = openai.OpenAI(api_key=api_key, base_url=base_url)
-    response = client.chat.completions.create(
-        model=model,
-        messages=[
-            {"role": "system", "content": system_prompt},
-            {"role": "user", "content": user_content},
-        ],
-        tools=[
-            {
-                "type": "function",
-                "function": {
-                    "name": tool_name,
-                    "description": tool_description,
-                    "parameters": schema,
-                    "strict": True,
-                },
-            }
-        ],
-        tool_choice={"type": "function", "function": {"name": tool_name}},
+    response = _retry_on_rate_limit(
+        lambda: client.chat.completions.create(
+            model=model,
+            messages=[
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": user_content},
+            ],
+            tools=[
+                {
+                    "type": "function",
+                    "function": {
+                        "name": tool_name,
+                        "description": tool_description,
+                        "parameters": schema,
+                        "strict": True,
+                    },
+                }
+            ],
+            tool_choice={"type": "function", "function": {"name": tool_name}},
+        ),
+        (openai.RateLimitError,),
     )
     tool_call = response.choices[0].message.tool_calls[0]
     data = json.loads(tool_call.function.arguments)
@@ -321,6 +418,7 @@ def _call_google(
 ) -> tuple[dict, dict]:
     try:
         import google.generativeai as genai
+        from google.api_core.exceptions import ResourceExhausted
     except ImportError as exc:
         raise RuntimeError(
             "google-generativeai package not installed. Run: pip install google-generativeai"
@@ -338,7 +436,16 @@ def _call_google(
         response_mime_type="application/json",
         response_schema=_to_gemini_schema(schema),
     )
-    response = generative_model.generate_content(user_content, generation_config=generation_config)
+    # Note: Google raises the same ResourceExhausted (429) for a genuinely
+    # transient per-minute rate limit and for a permanently exhausted
+    # account-level quota — these can't be told apart from the exception
+    # alone, so a real zero-quota account still pays the bounded retry cost
+    # (a few tens of seconds, RATE_LIMIT_MAX_RETRIES attempts) before this
+    # propagates and extractor.py's cascade moves to the next backend.
+    response = _retry_on_rate_limit(
+        lambda: generative_model.generate_content(user_content, generation_config=generation_config),
+        (ResourceExhausted,),
+    )
     data = json.loads(response.text)
     usage = {
         "input_tokens": response.usage_metadata.prompt_token_count,

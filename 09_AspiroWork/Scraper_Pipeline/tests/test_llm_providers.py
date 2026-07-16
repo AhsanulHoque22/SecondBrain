@@ -130,3 +130,98 @@ def test_call_llm_via_backend_dispatches_google_family(monkeypatch):
 def test_call_llm_via_backend_raises_on_unknown_backend():
     with pytest.raises(ValueError, match="Unknown backend"):
         llm_providers.call_llm_via_backend("not-a-real-backend", "some-model", "sys", "user", {}, "tool", "desc")
+
+
+# ---------------------------------------------------------------------------
+# Rate-limit handling — _estimate_tokens / _throttle / _retry_on_rate_limit
+# ---------------------------------------------------------------------------
+
+
+def test_estimate_tokens_scales_with_input_length():
+    small = llm_providers._estimate_tokens("short")
+    large = llm_providers._estimate_tokens("x" * 4000)
+    assert small < large
+    assert large == 1000  # 4000 chars / 4 chars-per-token
+
+
+def test_estimate_tokens_sums_multiple_texts():
+    assert llm_providers._estimate_tokens("aaaa", "bbbb") == llm_providers._estimate_tokens("aaaabbbb")
+
+
+def test_throttle_is_no_op_for_backend_without_rate_limit(monkeypatch):
+    """anthropic/google/deepseek/openai have no published free-tier limit
+    in BACKENDS — _throttle must never sleep for them."""
+    monkeypatch.setattr(llm_providers, "_last_call_at", {})
+    with patch("time.sleep") as mock_sleep:
+        llm_providers._throttle("anthropic", estimated_tokens=100000)
+    mock_sleep.assert_not_called()
+
+
+def test_throttle_does_not_sleep_on_first_call(monkeypatch):
+    monkeypatch.setattr(llm_providers, "_last_call_at", {})
+    with patch("time.sleep") as mock_sleep:
+        llm_providers._throttle("groq", estimated_tokens=100)
+    mock_sleep.assert_not_called()
+
+
+def test_throttle_sleeps_to_respect_requests_per_minute(monkeypatch):
+    """30 requests/min -> minimum 2s between calls. A tiny token estimate
+    means the RPM floor, not the TPM ceiling, is what's driving the wait
+    here."""
+    monkeypatch.setattr(llm_providers, "_last_call_at", {"groq": 1000.0})
+    with patch("time.monotonic", return_value=1000.5), patch("time.sleep") as mock_sleep:
+        llm_providers._throttle("groq", estimated_tokens=10)
+    mock_sleep.assert_called_once()
+    (waited,), _ = mock_sleep.call_args
+    assert waited == pytest.approx(1.5, abs=0.01)  # 2.0s floor - 0.5s already elapsed
+
+
+def test_throttle_sleeps_to_respect_tokens_per_minute(monkeypatch):
+    """A near-cap token estimate (4500 of Groq's 6,000 TPM) should demand a
+    much longer wait than the bare 2s RPM floor."""
+    monkeypatch.setattr(llm_providers, "_last_call_at", {"groq": 1000.0})
+    with patch("time.monotonic", return_value=1000.0), patch("time.sleep") as mock_sleep:
+        llm_providers._throttle("groq", estimated_tokens=4500)
+    mock_sleep.assert_called_once()
+    (waited,), _ = mock_sleep.call_args
+    assert waited == pytest.approx(45.0, abs=0.01)  # 4500/6000 * 60s
+
+
+def test_retry_on_rate_limit_retries_then_succeeds():
+    calls = {"n": 0}
+
+    def flaky():
+        calls["n"] += 1
+        if calls["n"] < 3:
+            raise ValueError("simulated rate limit")
+        return "ok"
+
+    with patch("time.sleep") as mock_sleep:
+        result = llm_providers._retry_on_rate_limit(flaky, (ValueError,))
+    assert result == "ok"
+    assert calls["n"] == 3
+    assert mock_sleep.call_count == 2  # backoff before attempt 2 and attempt 3
+
+
+def test_retry_on_rate_limit_raises_after_exhausting_retries():
+    def always_fails():
+        raise ValueError("simulated rate limit")
+
+    with patch("time.sleep"), pytest.raises(ValueError, match="simulated rate limit"):
+        llm_providers._retry_on_rate_limit(always_fails, (ValueError,))
+
+
+def test_retry_on_rate_limit_does_not_retry_other_exception_types():
+    """Only the named rate-limit exception type(s) get retried — an auth
+    error or insufficient-balance error won't fix itself by waiting, so it
+    must propagate on the first attempt."""
+    calls = {"n": 0}
+
+    def fails_with_wrong_type():
+        calls["n"] += 1
+        raise RuntimeError("not a rate limit")
+
+    with patch("time.sleep") as mock_sleep, pytest.raises(RuntimeError, match="not a rate limit"):
+        llm_providers._retry_on_rate_limit(fails_with_wrong_type, (ValueError,))
+    assert calls["n"] == 1
+    mock_sleep.assert_not_called()

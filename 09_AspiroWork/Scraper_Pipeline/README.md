@@ -87,15 +87,15 @@ provider to use (or none at all) via configuration, described in the
 
 ## Limitations
 
-- **No backend has produced a verified real extraction yet except
-  Anthropic.** Google Gemini and DeepSeek have both been exercised live —
-  authentication and the request/response contract confirmed working — but
-  every attempt so far was rejected at the account level (Gemini: 0
-  free-tier quota; DeepSeek: unfunded balance) before any real page
-  content came back. OpenAI and Groq are implemented against each vendor's
-  documented contract but have not been run against a live account at all.
-  Review actual output on a handful of real pages before trusting any
-  non-Anthropic backend for a full batch. See [Provider
+- **Anthropic and Groq are the only backends with a verified real
+  extraction so far.** Google Gemini and DeepSeek have both been exercised
+  live — authentication and the request/response contract confirmed
+  working — but every attempt so far was rejected at the account level
+  (Gemini: 0 free-tier quota; DeepSeek: unfunded balance) before any real
+  page content came back. OpenAI is implemented against the vendor's
+  documented contract but hasn't been run against a live account at all.
+  Review actual output on a handful of real pages before trusting Gemini,
+  DeepSeek, or OpenAI for a full batch. See [Provider
   status](#provider-status).
 - **The heuristic fallback has real gaps.** It reliably reads
   `university_name`, `program_name`, and a heuristic `level` guess, but
@@ -340,6 +340,38 @@ plain `openai` backend, just a different base URL and key) — see
 `llm_providers.py`'s `BACKENDS` registry for the full list and exactly how
 each backend's credentials are resolved.
 
+##### Rate limits (Groq's free tier)
+
+Groq's free tier is genuinely free (no billing) but capped: **30
+requests/minute, 1,000 requests/day, 6,000 tokens/minute**, enforced
+org-wide (shared across every key under the same Groq account, not per-key).
+A single extraction prompt runs roughly 4,000–4,500 tokens (see [Estimating
+cost](#estimating-cost)) — most of the whole per-minute token budget in one
+request — so request-count pacing alone (1 every 2s for 30/min) isn't
+enough; the binding constraint in practice is usually tokens/minute, not
+requests/minute.
+
+`llm_providers.py` handles this two ways, automatically, for any backend
+with a `rate_limit` entry in the `BACKENDS` registry (currently just groq):
+
+- **Proactive pacing** — before every call, sleeps just long enough to stay
+  under both the requests/minute and tokens/minute ceilings, using the
+  *actual* size of the prompt about to be sent (not a fixed assumption) —
+  a short page paces faster than one near `MAX_INPUT_CHARS`.
+- **Reactive backoff** — if a 429 gets through anyway (a burst from another
+  process sharing the same org-wide limit), the same backend/model is
+  retried with exponential backoff up to 3 times before the failure
+  propagates to the fallback chain. This is deliberately narrow: only a
+  rate-limit error gets retried this way — an auth error or an
+  insufficient-balance error won't fix itself by waiting, so those still
+  propagate immediately and let the chain move on to the next backend, same
+  as before.
+
+No configuration needed to get this — it's automatic for any backend with a
+published rate limit. A backend with no `rate_limit` entry (Anthropic,
+OpenAI, Google, DeepSeek — all either paid or without a public free-tier
+ceiling worth pacing for) isn't throttled.
+
 #### Provider status
 
 | Backend | Status |
@@ -347,7 +379,7 @@ each backend's credentials are resolved.
 | Anthropic | Exercised against the live API repeatedly during this pipeline's development. Has a built-in default model cascade. |
 | OpenAI | Implemented against OpenAI's documented strict function-calling contract. Not exercised against a live OpenAI account — verify on real pages before trusting it for a full batch. |
 | Google Gemini | Implemented against the documented `google-generativeai` structured-output contract, including a schema-translation step (Gemini's schema dialect differs from plain JSON Schema). Exercised live end-to-end — authentication and schema translation both confirmed working — but every attempt so far has been rejected at the account level with a 0-quota free-tier error. Confirm the key's project has billing/quota enabled before trusting real output. |
-| Groq | Same request/response contract as OpenAI above (OpenAI-compatible endpoint). Not yet exercised against a live account. Genuinely free tier, no billing required — the best default first link in a fallback chain once verified. |
+| Groq | Exercised live end-to-end — real structured extraction confirmed. The cheapest tier (`llama-3.1-8b-instant`) failed strict schema validation on a real page (returned extra fields not in the schema) and the cascade correctly escalated to `llama-3.3-70b-versatile`, which produced a correct result. Genuinely free tier, no billing required — currently the most reliable free default first link in a fallback chain. See [Rate limits](#rate-limits-groqs-free-tier) for the pacing/backoff behavior this pipeline applies automatically. |
 | DeepSeek | Same request/response contract as OpenAI above. Exercised live — authentication and the request shape both confirmed working — but rejected with `402 Insufficient Balance`. No free tier; the account needs a funded balance before it will serve any request. |
 
 #### Estimating cost

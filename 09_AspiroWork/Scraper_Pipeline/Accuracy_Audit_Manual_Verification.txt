@@ -1,0 +1,285 @@
+MANUAL ACCURACY AUDIT — programs_test_1.csv (rows 1–20)
+Method: Each row's source_url was matched to the pipeline's own cached raw
+HTML (09_AspiroWork/Scraper_Pipeline/raw/*.html, fetched 2026-07-16, the same
+snapshot the extractor actually ran on — live re-fetching of mastersportal.com
+returned HTTP 403 during this audit). Raw HTML was cleaned with the pipeline's
+own clean_text_from_html() logic and compared field-by-field against the CSV
+row. No changes were made to programs_test_1.csv.
+
+Rows audited: 1–20. Errors found in 19 of 20 rows (row 8 had no hard errors).
+
+====================================================================
+PART 1 — CRITICAL: WRONG VALUES (not just missing — actively incorrect)
+====================================================================
+
+1. ROW 9 (Molecular Chemistry M.Sc., Radboud University) — tuition/fee
+   column-shift.
+   - tuition_1st_year: BLANK  (should be "2,775,483 BDT / year")
+   - tuition_currency: BLANK  (should be "BDT")
+   - application_fee: "2,775,483"  <- this is literally the tuition amount,
+     mislabeled. The source page has NO "application fee" anywhere — it was
+     never mentioned. The tuition figure was extracted correctly as a
+     number but written into the wrong column.
+   - success_rate: "Top 1% worldwide"  <- this is the "Studyportals
+     University Meta Ranking" badge, not an admission/graduate success
+     rate. Every other row in the batch (1,3,4,5,6,7,10,11,12,13,20, etc.)
+     shows the identical "Top X% worldwide" ranking on its own page and
+     correctly leaves success_rate blank. Row 9 is the outlier that
+     mislabeled the ranking as a success rate.
+   - must_requirements also drops the page's English-test requirement
+     (TOEFL iBT 90 / IELTS 6.5) entirely — see Part 2.
+
+2. ROW 20 (Literary Studies (Research) M.A., Radboud University) — wrong
+   tuition figure/currency.
+   - tuition_1st_year: "15,063 EUR"  <- WRONG. This is the small-print
+     "≈ 15,063 EUR / year" approximate-conversion note shown next to the
+     real tuition line. The actual displayed tuition (identical page
+     layout/values to row 12, same university/city) is "2,120,681 BDT /
+     year" (Non-residents rate) — that is the figure every other Radboud
+     row in this batch correctly extracted.
+   - tuition_currency: "EUR"  <- should be "BDT", consequence of the above.
+
+These two rows show the tuition figure being picked from the wrong part of
+the page (application_fee slot for row 9; the parenthetical EUR estimate
+instead of the primary BDT figure for row 20). Given tuition is presumably
+one of the fields a user would filter/sort on, these are the two most
+consequential errors in the sample.
+
+====================================================================
+PART 2 — SYSTEMATIC OMISSION: English test-score requirement dropped
+====================================================================
+
+The page shows a concrete numeric requirement (e.g. "TOEFL iBT 90 OR IELTS
+6.5") in a dedicated "English requirements" widget on every one of these 20
+programme pages. In 5 of 20 rows this number is missing entirely from both
+prerequisites and must_requirements, even though sibling rows on the exact
+same university page template captured it correctly:
+
+- Row 6  (Arts and Culture M.A., Radboud)              — TOEFL 90 / IELTS 6.5 missing entirely (both requirement fields blank)
+- Row 9  (Molecular Chemistry M.Sc., Radboud)          — TOEFL 90 / IELTS 6.5 missing (only the two academic-background bullets kept)
+- Row 10 (Linguistics and Comm. Sciences M.A., Radboud) — TOEFL 100 / IELTS 7 missing; must_requirements instead contains
+  meaningless placeholder text: "Academic requirements; English requirements; Other requirements: ..." —
+  the section HEADERS themselves ("Academic requirements", "English requirements") were captured as bare, content-free
+  requirement titles instead of the actual numbers.
+- Row 12 (Historical Studies (Research) M.A., Radboud)  — TOEFL 100 / IELTS 7 missing; must_requirements instead contains
+  only the boilerplate disclaimer "We are not aware of any specific GRE, GMAT or GPA grading score requirements for
+  this programme" — i.e. a sentence that says there is NO requirement was kept, while the real English-score
+  requirement was dropped.
+- Row 18 (Sustainable Business and Innovation M.Sc., Utrecht) — TOEFL 93 / IELTS 6.5 missing entirely.
+
+For comparison, rows 1,2,3,4,5,7,8,11,13,14,15,16,17,19,20 all captured the
+English test scores correctly (in either prerequisites or
+must_requirements). This is a real, inconsistent extraction gap, not a
+source-data issue — the number is present verbatim on all 5 pages.
+
+====================================================================
+PART 3 — SYSTEMATIC OMISSION: "tags" column
+====================================================================
+
+Every one of the 20 pages has a "Disciplines" section (e.g. "Public
+Health", "Chemistry", "Literature") that maps directly to the tags column.
+Only 4 of 20 rows captured it:
+
+  Populated correctly:  Row 2, Row 8, Row 9, Row 16
+  Populated partially:  Row 17 (captured "Marine Science" but dropped the
+                         page's other listed discipline, "Natural Resource
+                         Management")
+  Blank despite discipline tag(s) clearly present on page:
+    Row 1  (missing "Public Health")
+    Row 3  (missing "International Law")
+    Row 4  (missing "Biomedical Science; Health Sciences; Epidemiology")
+    Row 5  (missing "Drama; Dance")
+    Row 6  (missing "Area & Cultural Studies; Art History; Management of
+            Creative Industries")
+    Row 7  (missing "Theology and Religious Studies")
+    Row 10 (missing "Communication Studies; Linguistics")
+    Row 11 (missing "Area & Cultural Studies; Sociology")
+    Row 12 (missing "History")
+    Row 13 (missing "Physics; Astronomy & Space Sciences")
+    Row 14 (missing "Nutrition & Dietetics; Health Sciences")
+    Row 15 (missing "Design; General Engineering & Technology")
+    Row 18 (missing "Business Administration; Sustainable Development;
+            Innovation Management")
+    Row 19 (missing "Physics; General Engineering & Technology")
+    Row 20 (missing "Literature")
+
+That's 15 full misses + 1 partial miss out of 20 — a 75% failure rate on
+this column across the sample.
+
+====================================================================
+PART 4 — "location" / "campus_city" inconsistency
+====================================================================
+
+The page's "Campus Location" widget always reads "<City>, <Country>". The
+CSV should consistently render this as location = "<City>, <Country>" (or
+"<Country>" alone only for genuinely multi-city joint programmes) and
+campus_city = "<City>" alone. In practice the split is inconsistent even
+across near-identical Radboud/Wageningen/Saxion single-city pages:
+
+  Row 4:  location "Nijmegen, Netherlands"  — correct
+  Row 6:  location "Nijmegen, Netherlands"  — correct
+  Row 9:  location "Nijmegen"               — missing ", Netherlands"
+  Row 10: location "Nijmegen, Netherlands"  — correct
+  Row 11: location "Netherlands"            — missing "Nijmegen,"
+  Row 12: location "Nijmegen, Netherlands"  — correct
+  Row 13: location "Nijmegen, Netherlands"  — correct
+  Row 14: location "Netherlands"            — missing "Wageningen,"
+  Row 15: location "Wageningen, Netherlands" — correct
+  Row 16: location "Netherlands"            — missing "Wageningen,"
+  Row 17: location "Wageningen, Netherlands" — correct
+  Row 19: location "Netherlands"            — missing "Enschede,"
+  Row 20: location "Netherlands", but campus_city "Nijmegen, Netherlands"
+          — the two fields' content is swapped/overlapping: campus_city
+          should be just "Nijmegen", location should be "Nijmegen,
+          Netherlands".
+
+Row 2 (the GRACE joint programme, Austria/Latvia/Netherlands) has BOTH
+location and campus_city blank, even though the page clearly lists all
+three campus cities and countries (Sankt Pölten/Austria, Valmiera/Latvia,
+Enschede/Netherlands) — see Part 6.
+
+====================================================================
+PART 5 — "intake_terms" missing the year
+====================================================================
+
+The page always states "Starting September <year>". Several rows dropped
+the year, keeping only the month name:
+
+  Row 2:  "September"        (page: "September 2027")
+  Row 5:  "September"        (page: "September 2027")
+  Row 13: "September"        (page: "September 2027")
+  Row 16: "September"        (page: "September 2027")
+  Row 17: "September"        (page: "September 2027")
+  Row 18: "September"        (page: "September 2027")
+
+Rows 1,3,4,6,7,8,9,10,11,12,14,15,19,20 all correctly kept the year. This
+is a real loss of precision (a user can't tell 2026 intake from 2027 intake
+from these six rows alone).
+
+====================================================================
+PART 6 — ROW 2 (Joint Master in Applied XR / GRACE) — multiple misses
+====================================================================
+
+This joint programme (USTP – University of Applied Sciences St. Pölten +
+Saxion University of Applied Sciences + Vidzeme University of Applied
+Sciences, taught in Austria/Netherlands/Latvia) is the most incomplete row
+in the sample relative to its own source page:
+
+- university_name: "USTP – University of Applied Sciences St. Pölten" only
+  <- WRONG/INCOMPLETE. The page's own "About" text names all three
+  partner universities: "...from USTP – University of Applied Sciences
+  St. Pölten, Saxion University of Applied Sciences, and Vidzeme
+  University of Applied Sciences." Row 1 (a different joint programme on
+  the same platform) correctly listed all of its partner universities —
+  row 2 did not.
+- location: BLANK  <- should be "Austria, Latvia, Netherlands" (the page's
+  Campus Location widget lists Sankt Pölten/Austria, Valmiera/Latvia,
+  Enschede/Netherlands).
+- campus_city: BLANK  <- should be "Sankt Pölten, Valmiera, Enschede".
+- intake_terms: "September" — missing year (see Part 5).
+- must_requirements contains an entry that is not an admission
+  requirement at all: "Student insurance: Student Insurance via
+  Studyportals Partner." This is Studyportals' own travel/health
+  insurance upsell/advertisement block on the page ("Studyportals
+  partnered with Aon..."), not a university admission requirement. It was
+  folded into must_requirements as if it were one.
+
+====================================================================
+PART 7 — Other individual-row content issues
+====================================================================
+
+- Row 3 (Legal Research LL.M., Utrecht): level = "Master's". The page's
+  own degree badge/title literally reads "LL.M." (matching the program
+  name "Legal Research LL.M."), not the generic "Master's" — every other
+  row in the sample preserves the literal degree abbreviation shown on the
+  page (M.Sc., M.A., M.Sc, Master). This one substitutes a generalized
+  label instead. Also tags blank (Part 3).
+
+- Row 5 (Contemporary Theatre, Dance and Dramaturgy M.A., Utrecht):
+  must_requirements drops 2 of the page's 5 admission bullet points —
+  "You have the necessary social and communication skills..." and "You
+  are able to express yourself in proficient English, both orally and in
+  written texts, as evidenced in your writing sample, motivation letter
+  and interview" are both missing, even though bullets 1–3 (Bachelor's
+  diploma, motivation/writing sample, research-methods knowledge) were
+  captured.
+
+- Row 9 (Molecular Chemistry M.Sc., Radboud): besides the tuition/fee and
+  success_rate errors in Part 1, must_requirements also drops 3 of the
+  page's 5 "Other requirements" bullets (research-methods familiarity,
+  English proficiency statement, Pre-Master's fallback for HBO Bachelor's
+  holders) in addition to the missing English test scores.
+
+- Row 10 (Linguistics and Communication Sciences (Research) M.A.,
+  Radboud): deadlines duplicates information rather than deduping it —
+  "May 2027; Apr 2027; Jul 2027; 1st May (with housing support) to 1st
+  July; 1st April (with housing support); 31 January for non-EU/EEA
+  students applying for a scholarship" contains both the abbreviated
+  dates AND the full prose restating the same May/Apr/Jul dates. Rows 4,
+  6, 9, 11, 12, 13 (identical Radboud "More details" deadline block) only
+  kept one representation each, so row 10 is inconsistent with its own
+  near-identical siblings. See also Part 2 for its must_requirements
+  placeholder-header bug.
+
+- Row 16 (Plant Biotechnology M.Sc., Wageningen): the page's "Academic
+  requirements" widget is NOT the usual "we are not aware of any
+  GRE/GMAT/GPA requirement" boilerplate seen on every other page in the
+  batch — this one specifically states "GPA ... Required." That
+  substantive, program-specific fact (GPA is required, unlike every other
+  program sampled) is missing entirely from both prerequisites and
+  must_requirements. Also location missing city (Part 4).
+
+- Row 17 (Aquaculture and Marine Resource Management M.Sc., Wageningen):
+  tags only captured 1 of the page's 2 listed disciplines (see Part 3).
+
+- Row 20: see Part 1 (tuition/currency) and Part 4 (location/campus_city
+  swap). Also tags blank.
+
+====================================================================
+SUMMARY TABLE
+====================================================================
+
+Row  Critical error (wrong value)   Missing English   Missing/partial tags  Other issues
+1    -                              -                 missing (Public Health) -
+2    university_name incomplete;   -                 - (no discipline tag  location/campus_city blank;
+     location & campus_city blank                    on this page)          bogus insurance "requirement";
+                                                                             intake_terms missing year
+3    -                              -                 missing (Intl. Law)   level "Master's" vs literal "LL.M."
+4    -                              -                 missing               -
+5    -                              -                 missing               must_requirements drops 2 of 5 bullets
+6    -                              MISSING (90/6.5)  missing               -
+7    -                              -                 missing               must_requirements drops 1 minor bullet
+8    -                              -                 (captured correctly)  -
+9    tuition blank + shifted into   MISSING (90/6.5)  (captured correctly)  success_rate mislabels site ranking;
+     application_fee; wrong                                                 must_requirements drops 3 of 5 bullets
+     tuition/location suffix
+10   -                              MISSING (100/7,   missing               deadlines duplicated/redundant
+                                    placeholder junk
+                                    kept instead)
+11   -                              -                 missing               location missing city ("Netherlands" only)
+12   -                              MISSING (100/7,   missing               -
+                                    boilerplate kept
+                                    instead)
+13   -                              -                 missing               intake_terms missing year
+14   -                              -                 missing               location missing city
+15   -                              -                 missing               -
+16   -                              -                 (captured correctly, "GPA required" fact dropped;
+                                                       best of the batch)   location missing city; intake_terms
+                                                                            missing year
+17   -                              -                 partial (1 of 2)     intake_terms missing year
+18   -                              MISSING (93/6.5)  missing               intake_terms missing year
+19   -                              -                 missing               location missing city
+20   WRONG tuition value/currency  -                  missing               location/campus_city content swapped
+
+====================================================================
+NOT flagged as errors (checked and found accurate)
+====================================================================
+- BDT tuition figures themselves: verified against the raw page — BDT is
+  the currency mastersportal.com natively displays for this scraping
+  session (site is geo-pricing to a Bangladeshi nationality/visitor), not
+  a pipeline hallucination. All BDT amounts other than rows 9 and 20
+  matched the page's "Non-residents" tuition line exactly.
+- Deadlines, durations, campus counts, and program names were accurate in
+  every row checked except where explicitly noted above.
+- application_fee is correctly blank in 19 of 20 rows — none of the 20
+  source pages actually list an application fee.

@@ -104,24 +104,26 @@ DEFAULT_BACKEND_CASCADES: dict[str, list[str]] = {
     # dead model ID — left in the cascade since an older/differently
     # provisioned account may still have access to it.
     "google": ["gemini-2.0-flash", "gemini-2.5-flash", "gemini-2.5-pro"],
-    # All six live-tested against a real Groq free-tier key with a strict
-    # tool-calling schema (the same shape EXTRACTION_SCHEMA uses) — every
-    # one returned valid structured output. Pulled from GET
+    # Originally all six live-tested against a real Groq free-tier key with
+    # a strict tool-calling schema (the same shape EXTRACTION_SCHEMA uses)
+    # — every one returned valid structured output. Pulled from GET
     # /openai/v1/models on that key; the account also listed Whisper
     # (audio-only), Orpheus (text-to-speech), Llama Prompt Guard (a safety
-    # classifier, not a generation model), and groq/compound(-mini) (an
+    # classifier, not a generation model), groq/compound(-mini) (an
     # agentic meta-model with its own built-in tools that could conflict
-    # with this pipeline's own tool-calling schema) — all excluded as
-    # unsuited to structured-field extraction, not because they failed.
+    # with this pipeline's own tool-calling schema), and gpt-oss-safeguard
+    # (a moderation-focused variant, same reasoning as the guard models) —
+    # all excluded as unsuited to structured-field extraction, not because
+    # they failed.
     #
     # Ordered by empirical win rate on a real 100-URL mastersportal.com
     # batch, NOT by "cheapest first" — that convention exists to minimize
     # $ cost on a paid API, but Groq's free tier costs $0 regardless of
     # which tier answers, so a weak model tried first only adds latency
-    # for nothing. Measured tier-that-actually-won distribution across all
-    # 100 URLs: gpt-oss-20b 42%, llama-4-scout 21%, qwen3-32b 12%,
-    # llama-3.1-8b-instant 10%, llama-3.3-70b-versatile 7%, gpt-oss-120b
-    # 6% (2% fell through to heuristic). Originally ordered
+    # for nothing. Measured tier-that-actually-won distribution across that
+    # original 100-URL batch: gpt-oss-20b 42%, llama-4-scout 21%, qwen3-32b
+    # 12%, llama-3.1-8b-instant 10%, llama-3.3-70b-versatile 7%,
+    # gpt-oss-120b 6% (2% fell through to heuristic). Originally ordered
     # smallest-model-first (llama-3.1-8b-instant, llama-4-scout,
     # gpt-oss-20b, ...) — that put the two weakest performers first,
     # meaning ~72% of URLs paid for 2 wasted rate-limit-throttled calls
@@ -130,10 +132,24 @@ DEFAULT_BACKEND_CASCADES: dict[str, list[str]] = {
     # greedy-by-marginal-success-probability strategy that minimizes
     # expected attempts per URL — cutting most URLs from 3 throttled calls
     # down to 1.
+    #
+    # Since then, a live canary run (2026-07-21) surfaced two of those six
+    # as dead: meta-llama/llama-4-scout-17b-16e-instruct and qwen/qwen3-32b
+    # both now 404 "does not exist or you do not have access to it" against
+    # GET /openai/v1/models on the same key — Groq had retired/renamed them.
+    # qwen/qwen3-32b's slot is filled by its apparent successor,
+    # qwen/qwen3.6-27b (confirmed live via GET /openai/v1/models and a real
+    # tool-calling round-trip against EXTRACTION_SCHEMA on 2026-07-21 — see
+    # the accompanying regression test) — no equivalent win-rate data exists
+    # for it yet, so it keeps qwen3-32b's old position rather than being
+    # reordered on a guess. llama-4-scout has no offered successor on this
+    # account, so its slot is simply removed instead of left pointing at a
+    # guaranteed-404 model — a missing tier costs nothing (the cascade just
+    # has one fewer rung), while a dead one silently wastes a call (and a
+    # throttle wait) on every single URL before ever reaching a working tier.
     "groq": [
         "openai/gpt-oss-20b",
-        "meta-llama/llama-4-scout-17b-16e-instruct",
-        "qwen/qwen3-32b",
+        "qwen/qwen3.6-27b",
         "llama-3.1-8b-instant",
         "llama-3.3-70b-versatile",
         "openai/gpt-oss-120b",

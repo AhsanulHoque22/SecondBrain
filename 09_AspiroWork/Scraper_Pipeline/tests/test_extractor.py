@@ -519,6 +519,19 @@ def test_cascade_for_backend_raises_when_nothing_configured_for_unverified_backe
         extractor._cascade_for_backend("openai")
 
 
+def test_default_groq_cascade_has_no_known_dead_model_ids():
+    """Regression test for the real bug found via a live canary run
+    (2026-07-21): meta-llama/llama-4-scout-17b-16e-instruct and
+    qwen/qwen3-32b both started 404ing ("does not exist or you do not have
+    access to it") against Groq's own GET /openai/v1/models — Groq had
+    retired/renamed them since this cascade was last live-tested. A dead
+    model ID silently wastes a call (and a throttle wait) on every single
+    URL before the cascade ever reaches a working tier, and nothing before
+    this test would have caught that regressing again."""
+    known_dead_model_ids = {"meta-llama/llama-4-scout-17b-16e-instruct", "qwen/qwen3-32b"}
+    assert not known_dead_model_ids & set(extractor.DEFAULT_BACKEND_CASCADES["groq"])
+
+
 def test_backend_chain_defaults_to_single_legacy_provider(monkeypatch):
     monkeypatch.delenv("LLM_BACKEND_CHAIN", raising=False)
     monkeypatch.setenv("LLM_PROVIDER", "anthropic")

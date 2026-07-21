@@ -187,6 +187,112 @@ def test_validate_extraction_skips_grounding_check_for_short_digit_runs():
 
 
 # ---------------------------------------------------------------------------
+# validate_extraction — regression checks for the manual accuracy audit
+# (Accuracy_Audit_Manual_Verification.txt) findings on programs_test_1.csv
+# ---------------------------------------------------------------------------
+
+
+def test_validate_extraction_flags_approximate_conversion_tuition():
+    """Row 20: tuition_1st_year was the '≈ 15,063 EUR / year' parenthetical
+    conversion note instead of the page's primary '2,120,681 BDT / year'
+    figure — the '≈' character is never legitimately part of a real value."""
+    clean_text = "Tuition: 2,120,681 BDT / year (≈ 15,063 EUR / year)"
+    data = dict(BASE_FIELDS, tuition_1st_year="≈ 15,063 EUR")
+    problems = validate_extraction(data, clean_text)
+    assert any("approximate/converted estimate" in p for p in problems)
+
+
+def test_validate_extraction_flags_tuition_shifted_into_application_fee():
+    """Row 9: tuition_1st_year was left blank while the tuition figure was
+    written into application_fee instead — the page had no real application
+    fee at all."""
+    clean_text = "Tuition: 2,775,483 BDT / year"
+    data = dict(BASE_FIELDS, tuition_1st_year=None, application_fee="2,775,483")
+    problems = validate_extraction(data, clean_text)
+    assert any("written into application_fee by mistake" in p for p in problems)
+
+
+def test_validate_extraction_flags_ranking_badge_as_success_rate():
+    """Row 9: the 'Studyportals University Meta Ranking' badge ('Top 1%
+    worldwide') was mislabeled as success_rate, which is an admission/
+    graduate-outcome statistic, not a site ranking."""
+    clean_text = "Studyportals University Meta Ranking: Top 1% worldwide"
+    data = dict(BASE_FIELDS, success_rate="Top 1% worldwide")
+    problems = validate_extraction(data, clean_text)
+    assert any("site ranking badge" in p for p in problems)
+
+
+def test_validate_extraction_flags_intake_terms_missing_year():
+    """Rows 2, 5, 13, 16, 17, 18: intake_terms kept only the month
+    ('September'), dropping the year the page actually printed."""
+    clean_text = "Starting September 2027"
+    data = dict(BASE_FIELDS, intake_terms=["September"])
+    problems = validate_extraction(data, clean_text)
+    assert any("has no year" in p for p in problems)
+
+
+def test_validate_extraction_passes_intake_terms_with_year():
+    clean_text = "Starting September 2027"
+    data = dict(BASE_FIELDS, intake_terms=["September 2027"])
+    assert validate_extraction(data, clean_text) == []
+
+
+def test_validate_extraction_flags_empty_tags_with_disciplines_section():
+    """15 of 20 rows in the audit left tags blank despite the page's own
+    'Disciplines' section clearly listing one or more subject tags."""
+    clean_text = "Disciplines\nPublic Health"
+    data = dict(BASE_FIELDS, tags=[])
+    problems = validate_extraction(data, clean_text)
+    assert any("Disciplines" in p for p in problems)
+
+
+def test_validate_extraction_flags_blank_location_with_campus_section():
+    """Row 2 (GRACE joint programme): both location and campus_city were
+    left blank even though the page's Campus Location widget listed all
+    three partner cities/countries."""
+    clean_text = "Campus Location\nSankt Pölten, Austria\nValmiera, Latvia\nEnschede, Netherlands"
+    data = dict(BASE_FIELDS, location="", campus_city="")
+    problems = validate_extraction(data, clean_text)
+    assert any("Campus Location" in p for p in problems)
+
+
+def test_validate_extraction_flags_swapped_location_campus_city():
+    """Row 20: location was 'Netherlands' (missing the city) while
+    campus_city held 'Nijmegen, Netherlands' (the full pair) — the two
+    fields' content was swapped/overlapping."""
+    clean_text = "Campus Location: Nijmegen, Netherlands"
+    data = dict(BASE_FIELDS, location="Netherlands", campus_city="Nijmegen, Netherlands")
+    problems = validate_extraction(data, clean_text)
+    assert any("look inconsistent" in p for p in problems)
+
+
+def test_validate_extraction_passes_correctly_split_location():
+    clean_text = "Campus Location: Nijmegen, Netherlands"
+    data = dict(BASE_FIELDS, location="Nijmegen, Netherlands", campus_city="Nijmegen")
+    assert validate_extraction(data, clean_text) == []
+
+
+def test_validate_extraction_flags_dropped_english_test_score():
+    """Rows 6, 9, 10, 12, 18: a concrete 'TOEFL iBT 90 / IELTS 6.5'
+    requirement on the page was dropped entirely from both requirement
+    fields."""
+    clean_text = "English requirements: TOEFL iBT 90 or IELTS 6.5"
+    data = dict(BASE_FIELDS, prerequisites=[], must_requirements=[{"title": "Bachelor's diploma", "description": None}])
+    problems = validate_extraction(data, clean_text)
+    assert any("TOEFL/IELTS score" in p for p in problems)
+
+
+def test_validate_extraction_passes_captured_english_test_score():
+    clean_text = "English requirements: TOEFL iBT 90 or IELTS 6.5"
+    data = dict(
+        BASE_FIELDS,
+        prerequisites=[],
+        must_requirements=[{"title": "English requirements", "description": "TOEFL iBT 90 or IELTS 6.5"}],
+    )
+    assert validate_extraction(data, clean_text) == []
+
+
+# ---------------------------------------------------------------------------
 # extract() — the Haiku -> Sonnet -> Opus escalation cascade (mocked)
 # ---------------------------------------------------------------------------
 

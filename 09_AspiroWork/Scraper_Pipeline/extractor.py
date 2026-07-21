@@ -329,7 +329,51 @@ SYSTEM_PROMPT = (
     "rates for different applicant groups (e.g. EU vs non-EU, domestic vs "
     "international), tuition_1st_year must be a single figure — the "
     "non-EU/international rate, since that's the one a foreign applicant "
-    "actually pays — never multiple amounts joined together."
+    "actually pays — never multiple amounts joined together.\n\n"
+    "Field-specific rules, each written to fix a specific mistake seen in "
+    "manual audits of past extractions on this page template:\n"
+    "- tuition_1st_year vs application_fee: these are different fields. "
+    "application_fee is what a page explicitly labels as a fee charged to "
+    "submit an application — never the tuition amount. Do not put the "
+    "tuition figure in application_fee, and do not set application_fee at "
+    "all unless the page names an actual application fee.\n"
+    "- tuition_1st_year vs a converted estimate: some pages show a primary "
+    "tuition figure plus a parenthetical approximate conversion into "
+    "another currency (e.g. '(≈ 15,063 EUR/year)' next to the real "
+    "displayed price). tuition_1st_year is always the primary displayed "
+    "figure, never the parenthetical/approximate conversion.\n"
+    "- success_rate is an admission or graduate-outcome statistic. A site "
+    "ranking badge (e.g. 'Top 1% worldwide', a 'University Meta Ranking') "
+    "is not a success rate — if the only rate-like number on the page is a "
+    "ranking position, leave success_rate null.\n"
+    "- English test-score requirements (e.g. 'TOEFL iBT 90', 'IELTS 6.5') "
+    "must always be captured verbatim in prerequisites or "
+    "must_requirements when present on the page. Never drop the number, "
+    "and never substitute a bare section header (e.g. 'English "
+    "requirements' with no score) or an unrelated boilerplate sentence in "
+    "its place.\n"
+    "- Capture every bullet point under a requirements section "
+    "(academic, English, other) — do not stop partway through the list. "
+    "Do not include unrelated upsell/advertising content (e.g. student "
+    "insurance partner offers) as if it were an admission requirement.\n"
+    "- tags must include every discipline/subject-area label the page "
+    "lists (e.g. a 'Disciplines' section) — capture all of them, not just "
+    "the first one.\n"
+    "- location must be '<City>, <Country>' exactly as the page's campus "
+    "location section states it; for a joint/multi-campus programme with "
+    "several cities, include every city/country. campus_city must be the "
+    "city name(s) alone, with no country. Never leave both blank if the "
+    "page names a campus location.\n"
+    "- intake_terms must always include the year exactly as printed (e.g. "
+    "'September 2027'), never truncated to just the month.\n"
+    "- university_name must list every partner university named for a "
+    "joint/dual programme, not just the first one mentioned.\n"
+    "- level must be the literal degree abbreviation shown in the page's "
+    "own title or degree badge (e.g. 'LL.M.', 'M.Sc.'), never a generic "
+    "substitute like 'Master's'.\n"
+    "- deadlines must be deduplicated: if the page states the same "
+    "deadline both as a short date and again in full prose, include that "
+    "date once, not both representations."
 )
 
 MAX_INPUT_CHARS = 15000
@@ -500,6 +544,72 @@ def validate_extraction(data: dict, clean_text: str) -> list[str]:
             "tiers (e.g. EU/Non-EU, or several amounts) instead of a single first-year "
             "figure — return only the non-EU/international rate as one amount"
         )
+
+    # "≈ 15,063 EUR / year" next to the real tuition line is a parenthetical
+    # conversion estimate, not the primary displayed figure — a model that
+    # copies it verbatim keeps the "≈" character, which is otherwise never a
+    # legitimate part of a tuition value.
+    if tuition and "≈" in tuition:
+        problems.append(
+            f"tuition_1st_year = {tuition!r} looks like an approximate/converted "
+            "estimate (contains '≈'), not the page's primary tuition figure"
+        )
+
+    application_fee = (data.get("application_fee") or "").strip()
+    if not tuition and application_fee and re.search(r"\btuition\b", clean_text, re.IGNORECASE):
+        problems.append(
+            f"tuition_1st_year is blank but application_fee = {application_fee!r} is set, "
+            "and the page mentions 'Tuition' — check that the tuition figure wasn't "
+            "written into application_fee by mistake"
+        )
+
+    success_rate = (data.get("success_rate") or "").strip()
+    if re.search(r"\btop\s+\d+%", success_rate, re.IGNORECASE):
+        problems.append(
+            f"success_rate = {success_rate!r} looks like a site ranking badge (e.g. "
+            "'Top 1% worldwide'), not an admission/graduate success rate — leave "
+            "success_rate null unless the page states an actual rate"
+        )
+
+    intake_terms = data.get("intake_terms") or []
+    if intake_terms and not any(re.search(r"\b(19|20)\d{2}\b", term) for term in intake_terms):
+        problems.append(
+            f"intake_terms = {intake_terms!r} has no year in any entry — the year must "
+            "be kept (e.g. 'September 2027', not just 'September')"
+        )
+
+    if not (data.get("tags") or []) and re.search(r"\bDisciplines\b", clean_text):
+        problems.append(
+            "tags is empty but the page has a 'Disciplines' section — every listed "
+            "discipline must be captured as a tags entry"
+        )
+
+    location = (data.get("location") or "").strip()
+    campus_city = (data.get("campus_city") or "").strip()
+    if not location and not campus_city and re.search(r"\bCampus Location\b", clean_text, re.IGNORECASE):
+        problems.append(
+            "location and campus_city are both blank but the page has a 'Campus "
+            "Location' section — this should never be left blank"
+        )
+    elif location and campus_city and "," not in location and campus_city.lower() not in location.lower():
+        problems.append(
+            f"location = {location!r} and campus_city = {campus_city!r} look "
+            "inconsistent (location should read '<City>, <Country>' and campus_city "
+            "should be the city alone) — check they weren't swapped or truncated"
+        )
+
+    has_english_score = bool(re.search(r"\b(TOEFL|IELTS)\b.{0,15}?\d", clean_text, re.IGNORECASE))
+    if has_english_score:
+        requirement_text = " ".join(
+            f"{(item.get('title') or '')} {(item.get('description') or '')}"
+            for item in (data.get("prerequisites") or []) + (data.get("must_requirements") or [])
+        )
+        if not re.search(r"\b(TOEFL|IELTS)\b", requirement_text, re.IGNORECASE):
+            problems.append(
+                "the page states a TOEFL/IELTS score but it's missing from both "
+                "prerequisites and must_requirements — capture the number verbatim"
+            )
+
     return problems
 
 

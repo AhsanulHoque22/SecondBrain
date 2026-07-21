@@ -328,6 +328,31 @@ def test_validate_extraction_does_not_flag_scholarship_ad_as_english_requirement
     assert not any("TOEFL/IELTS score" in p for p in problems)
 
 
+def test_validate_extraction_flags_studyportals_insurance_upsell_in_requirements():
+    """Regression test: found live (2026-07-21) on the GRACE joint
+    programme (row 2, the same page from the original manual audit's Part
+    6) — despite an explicit prompt instruction against it, a model still
+    folded mastersportal.com's own insurance-upsell ad block into
+    must_requirements as if it were a real admission requirement. The
+    prompt alone didn't stop it, so this needs a deterministic backstop
+    that forces escalation."""
+    data = dict(
+        BASE_FIELDS,
+        prerequisites=[],
+        must_requirements=[
+            {"title": "Bachelor's diploma", "description": None},
+            {"title": "Student Insurance via Studyportals Partner", "description": None},
+        ],
+    )
+    problems = validate_extraction(data, "")
+    assert any("Studyportals Partner" in p for p in problems)
+
+
+def test_validate_extraction_passes_requirements_without_insurance_upsell():
+    data = dict(BASE_FIELDS, prerequisites=[], must_requirements=[{"title": "Bachelor's diploma", "description": None}])
+    assert validate_extraction(data, "") == []
+
+
 # ---------------------------------------------------------------------------
 # extract() — the Haiku -> Sonnet -> Opus escalation cascade (mocked)
 # ---------------------------------------------------------------------------

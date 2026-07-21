@@ -648,6 +648,24 @@ def validate_extraction(data: dict, clean_text: str) -> list[str]:
                 "prerequisites and must_requirements — capture the number verbatim"
             )
 
+    # mastersportal.com's own "Student Insurance via Studyportals Partner"
+    # upsell block gets folded into must_requirements/prerequisites as if it
+    # were an admission requirement — confirmed both in the original manual
+    # audit (Part 6) and again live (2026-07-21) even after adding an
+    # explicit prompt instruction against it, so it needs a deterministic
+    # backstop that actually forces escalation rather than relying on the
+    # prompt alone.
+    all_requirement_text = " ".join(
+        f"{(item.get('title') or '')} {(item.get('description') or '')}"
+        for item in (data.get("prerequisites") or []) + (data.get("must_requirements") or [])
+    )
+    if re.search(r"studyportals partner", all_requirement_text, re.IGNORECASE):
+        problems.append(
+            "prerequisites/must_requirements contains the 'Student Insurance via "
+            "Studyportals Partner' upsell block — this is an ad, not an admission "
+            "requirement, and must be dropped"
+        )
+
     return problems
 
 

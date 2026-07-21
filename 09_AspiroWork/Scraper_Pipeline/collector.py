@@ -25,7 +25,9 @@ can tell the two apart and back off harder on the real thing.
 from __future__ import annotations  #Allows using modern type hints without immediately evaluating them.
 import hashlib                      #generate unique filename from URL
 import json                         #save metadata
+import os                           #atomic replace for raw cache writes
 import sys                          #stderr logging for the playwright fallback
+import tempfile                     #temp file for atomic raw cache writes
 import time                         #timestamps and retry delays
 from dataclasses import dataclass   #easy data container
 from pathlib import Path            #safer file handling
@@ -189,21 +191,37 @@ def fetch_html(url: str, timeout: int = DEFAULT_TIMEOUT) -> str:
     raise CollectionError(f"Failed to fetch {url} after {MAX_RETRIES} attempts: {last_error}")
 
 
+def _write_atomic(path: Path, content: str) -> None:
+    """Temp file + os.replace — same pattern as cleaner.append_to_csv and
+    extractor's state file. A crash mid-write (disk full, kill -9) previously
+    could leave a truncated .html file on disk that a later run's
+    has_content_changed() / re-extraction would silently treat as the real
+    cached page — this makes that class of corruption impossible instead of
+    just unlikely."""
+    path.parent.mkdir(parents=True, exist_ok=True)
+    fd, tmp_path = tempfile.mkstemp(dir=path.parent, prefix=f".{path.name}.", suffix=".tmp")
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8") as f:
+            f.write(content)
+        os.replace(tmp_path, path)
+    except BaseException:
+        Path(tmp_path).unlink(missing_ok=True)
+        raise
+
+
 def save_raw(url: str, html: str, raw_dir: Path) -> Path:   #Responsible for disk storage.
-    raw_dir.mkdir(parents=True, exist_ok=True)              #Create Directory. Ex: data/raw/ created automaticllly 
+    raw_dir.mkdir(parents=True, exist_ok=True)              #Create Directory. Ex: data/raw/ created automaticllly
     file_id = _url_hash(url)                                #Generate Filename
     html_path = raw_dir / f"{file_id}.html"                 #Ex: data/raw/9c4a1d82ab12ef45.html
     meta_path = raw_dir / f"{file_id}.meta.json"            #Ex: data/raw/9c4a1d82ab12ef45.meta.json
 
     fetched_at = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()) #Ex: 2026-07-11T15:30:00Z
 
-    #Save HTML -> Writes raw page source.
-    html_path.write_text(html, encoding="utf-8")
+    #Save HTML -> Writes raw page source, atomically.
+    _write_atomic(html_path, html)
 
-    #Save Metadata -> Saved as JSON.
-    meta_path.write_text(
-        json.dumps({"url": url, "fetched_at": fetched_at}, indent=2), encoding="utf-8"
-    )
+    #Save Metadata -> Saved as JSON, atomically.
+    _write_atomic(meta_path, json.dumps({"url": url, "fetched_at": fetched_at}, indent=2))
     return html_path        #Returns location of saved HTML file.
 
 

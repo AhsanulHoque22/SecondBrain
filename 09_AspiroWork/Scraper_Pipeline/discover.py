@@ -303,7 +303,20 @@ def _now_iso() -> str:
 def _load_discovered_urls(state_path: Path) -> dict[str, dict]:
     if not state_path.exists():
         return {}
-    return json.loads(state_path.read_text(encoding="utf-8"))
+    try:
+        return json.loads(state_path.read_text(encoding="utf-8"))
+    except json.JSONDecodeError as exc:
+        # See extractor._load_extraction_state's identical guard: writes here
+        # are atomic, so corruption implies something outside this pipeline
+        # touched the file. Losing the manifest just means URLs look "new"
+        # again (re-discovered, not lost); crashing the whole discovery run
+        # over one bad file is worse.
+        print(
+            f"[discover] {state_path} is corrupted ({exc}) — starting from an empty "
+            "manifest instead of crashing; delete or fix the file to silence this",
+            file=sys.stderr,
+        )
+        return {}
 
 
 def _save_discovered_urls(state_path: Path, manifest: dict[str, dict]) -> None:
@@ -392,7 +405,18 @@ def discover(
             continue
 
         if use_llm:
-            links, usage = extract_program_links_via_llm(html, page_url, model=llm_model)
+            try:
+                links, usage = extract_program_links_via_llm(html, page_url, model=llm_model)
+            except Exception as exc:
+                # Unlike the CollectionError above (a fetch problem), this is
+                # an LLM-call problem (bad/missing API key, rate limit past
+                # its retries, malformed JSON from a weak model) — but it
+                # deserves the exact same treatment: one page's classification
+                # failing shouldn't abort a multi-page walk that's otherwise
+                # fine. Previously this propagated uncaught out of discover()
+                # and crashed the whole run over a single bad page.
+                print(f"[discover] page {page_num} LLM classification failed: {exc}", file=sys.stderr)
+                continue
             if usage:
                 usages.append(usage)
         else:

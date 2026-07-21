@@ -15,6 +15,7 @@ from unittest.mock import patch
 import pytest
 
 import extractor
+from cleaner import clean_record
 from extractor import (
     DEFAULT_ANTHROPIC_CASCADE,
     backfill_level,
@@ -368,7 +369,7 @@ def test_extract_escalates_with_feedback_on_validation_failure(monkeypatch):
     assert result["_extraction_method"] == "llm-sonnet"
 
 
-def test_extract_falls_back_to_heuristic_when_all_tiers_fail(monkeypatch):
+def test_extract_falls_back_to_heuristic_when_all_tiers_fail(monkeypatch, capsys):
     """Configured but every call fails outright (bad key, network error,
     exhausted quota) — distinct from test_extract_falls_back_to_heuristic_
     with_no_backend_configured below, where nothing is even attempted."""
@@ -386,12 +387,18 @@ def test_extract_falls_back_to_heuristic_when_all_tiers_fail(monkeypatch):
     assert calls == [("anthropic", m) for m in DEFAULT_ANTHROPIC_CASCADE]
     assert result["_extraction_method"] == "heuristic"
     assert result["_usage"] is None
+    assert "all LLM backends/tiers failed" in capsys.readouterr().err
 
 
-def test_extract_falls_back_to_heuristic_with_no_backend_configured(monkeypatch):
+def test_extract_falls_back_to_heuristic_with_no_backend_configured(monkeypatch, capsys):
     """No credential set at all for the active backend (or chain) — the new
     pre-filter in _backend_chain skips straight to heuristic without
-    attempting a single call, since there's nothing to call with."""
+    attempting a single call, since there's nothing to call with. Regression:
+    this used to print the exact same "all LLM backends/tiers failed"
+    message as the case above, even though zero calls were ever attempted —
+    real confusion when debugging why a batch never called the LLM (e.g.
+    .env silently not loaded), since the message implied real attempts had
+    been made and failed."""
     monkeypatch.delenv("ANTHROPIC_API_KEY", raising=False)
     monkeypatch.setenv("LLM_PROVIDER", "anthropic")
 
@@ -404,6 +411,88 @@ def test_extract_falls_back_to_heuristic_with_no_backend_configured(monkeypatch)
 
     assert result["_extraction_method"] == "heuristic"
     assert result["_usage"] is None
+    stderr = capsys.readouterr().err
+    assert "no LLM backend is configured" in stderr
+    assert "all LLM backends/tiers failed" not in stderr
+
+
+# ---------------------------------------------------------------------------
+# _coerce_extracted_shapes — defensive normalization of a loosely-typed LLM
+# response, so a weak/free-tier model's malformed output can't crash
+# cleaner.py's normalize_* helpers downstream (AttributeError deep in
+# clean_record, turning one odd response into a whole-URL ERROR)
+# ---------------------------------------------------------------------------
+
+
+def test_coerce_extracted_shapes_nulls_out_wrong_typed_scalar():
+    data = extractor._coerce_extracted_shapes(dict(BASE_FIELDS, university_name=["Test University"]))
+    assert data["university_name"] is None
+
+
+def test_coerce_extracted_shapes_keeps_valid_scalar():
+    data = extractor._coerce_extracted_shapes(dict(BASE_FIELDS))
+    assert data["university_name"] == "Test University"
+
+
+def test_coerce_extracted_shapes_empties_non_list_repeatable_field():
+    data = extractor._coerce_extracted_shapes(dict(BASE_FIELDS, intake_terms="September 2027"))
+    assert data["intake_terms"] == []
+
+
+def test_coerce_extracted_shapes_drops_non_str_items_from_repeatable_field():
+    data = extractor._coerce_extracted_shapes(dict(BASE_FIELDS, deadlines=["May 2027", 2027, None]))
+    assert data["deadlines"] == ["May 2027"]
+
+
+def test_coerce_extracted_shapes_drops_non_dict_items_from_requirement_pairs():
+    """Regression shape: a model returning bare strings instead of
+    {"title":..., "description":...} objects for must_requirements —
+    normalize_requirement_pairs would crash calling .get() on a string."""
+    data = extractor._coerce_extracted_shapes(
+        dict(BASE_FIELDS, must_requirements=[{"title": "Bachelor's", "description": None}, "TOEFL 90"])
+    )
+    assert data["must_requirements"] == [{"title": "Bachelor's", "description": None}]
+
+
+def test_coerce_extracted_shapes_drops_non_dict_items_from_tags():
+    data = extractor._coerce_extracted_shapes(dict(BASE_FIELDS, tags=[{"name": "Physics", "category": None, "details": None}, "Chemistry"]))
+    assert data["tags"] == [{"name": "Physics", "category": None, "details": None}]
+
+
+def test_coerce_extracted_shapes_does_not_crash_cleaner_on_malformed_llm_output():
+    """End-to-end guard: feed clean_record the exact kind of malformed shape
+    a loosely-typed model could produce and confirm it no longer raises."""
+    malformed = dict(
+        BASE_FIELDS,
+        tags=["Physics", "Chemistry"],  # should be list[dict], not list[str]
+        must_requirements=["Bachelor's diploma"],  # same issue
+        intake_terms="September 2027",  # should be a list, not a bare string
+    )
+    coerced = extractor._coerce_extracted_shapes(malformed)
+    row = clean_record(coerced, "https://example.com/test")
+    assert row["tags"] == ""
+    assert row["must_requirements"] == ""
+    assert row["intake_terms"] == ""
+
+
+# ---------------------------------------------------------------------------
+# _load_extraction_state — corrupted state file must not crash the batch
+# ---------------------------------------------------------------------------
+
+
+def test_load_extraction_state_recovers_from_corrupted_json(tmp_path, capsys):
+    state_path = tmp_path / "extraction_state.json"
+    state_path.write_text("{not valid json", encoding="utf-8")
+    result = extractor._load_extraction_state(state_path)
+    assert result == {}
+    assert "corrupted" in capsys.readouterr().err
+
+
+def test_load_extraction_state_reads_valid_state(tmp_path):
+    state_path = tmp_path / "extraction_state.json"
+    state_path.write_text('{"https://example.com": {"content_hash": "sha256:abc"}}', encoding="utf-8")
+    result = extractor._load_extraction_state(state_path)
+    assert result == {"https://example.com": {"content_hash": "sha256:abc"}}
 
 
 # ---------------------------------------------------------------------------

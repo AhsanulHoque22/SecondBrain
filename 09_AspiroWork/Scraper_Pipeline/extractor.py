@@ -400,7 +400,21 @@ def content_hash(clean_text: str) -> str:
 def _load_extraction_state(state_path: Path) -> dict[str, dict]:
     if not state_path.exists():
         return {}
-    return json.loads(state_path.read_text(encoding="utf-8"))
+    try:
+        return json.loads(state_path.read_text(encoding="utf-8"))
+    except json.JSONDecodeError as exc:
+        # Writes are atomic (temp file + os.replace), so this should only
+        # happen from something outside this pipeline touching the file —
+        # a hand edit, a different tool, disk-level corruption. Treating it
+        # as "no prior state" costs some redundant re-extraction (every URL
+        # looks new again); crashing the whole batch on the very first URL
+        # over one bad state file is a far worse trade.
+        print(
+            f"[extract] {state_path} is corrupted ({exc}) — starting from empty state "
+            "instead of crashing; delete or fix the file to silence this",
+            file=sys.stderr,
+        )
+        return {}
 
 
 def _save_extraction_state(state_path: Path, state: dict[str, dict]) -> None:
@@ -713,6 +727,52 @@ def extract_via_heuristics(html: str, clean_text: str, url: str) -> dict:
     return data
 
 
+def _coerce_extracted_shapes(data: dict) -> dict:
+    """Defensively normalizes an LLM's raw parsed output to the shape
+    everything downstream (validate_extraction, cleaner.py) assumes.
+
+    The strict-schema tool-calling contract is supposed to guarantee this
+    shape already, but "strict" is enforced by the vendor's API, not by this
+    codebase — and the weaker free-tier models this pipeline's cascade
+    actually falls back to (Groq's smaller tiers in particular; see
+    llm_providers.py's per-backend verification notes) have already been
+    observed not fully honoring tool_choice. Without this, a single
+    wrong-shaped field (e.g. tags returned as a list of bare strings instead
+    of {"name":...} objects) would crash cleaner.py's normalize_* helpers
+    with an AttributeError deep inside clean_record — turning one odd model
+    response into a whole-URL ERROR instead of a value that's simply
+    dropped and re-escalated like any other validation problem.
+    """
+    for field in ("program_image_url", "university_name", "level", "program_name",
+                  "destination", "location", "campus_city", "tuition_1st_year",
+                  "application_fee", "duration", "success_rate"):
+        value = data.get(field)
+        if value is not None and not isinstance(value, str):
+            data[field] = None
+
+    for field in ("intake_terms", "deadlines"):
+        items = data.get(field)
+        if not isinstance(items, list):
+            data[field] = []
+        else:
+            data[field] = [item for item in items if isinstance(item, str)]
+
+    for field in ("prerequisites", "must_requirements"):
+        items = data.get(field)
+        if not isinstance(items, list):
+            data[field] = []
+        else:
+            data[field] = [item for item in items if isinstance(item, dict)]
+
+    tags = data.get("tags")
+    if not isinstance(tags, list):
+        data["tags"] = []
+    else:
+        data["tags"] = [item for item in tags if isinstance(item, dict)]
+
+    return data
+
+
 def extract(html: str, url: str) -> dict:
     """Returns the extracted-fields dict, plus two internal bookkeeping
     keys: `_extraction_method` (which tier served the row) and `_usage`
@@ -720,8 +780,11 @@ def extract(html: str, url: str) -> dict:
     call to bill)."""
     clean_text = clean_text_from_html(html)
 
+    backend_chain = _backend_chain()
+    attempted = False
     feedback: list[str] | None = None
-    for backend, model in _backend_chain():
+    for backend, model in backend_chain:
+        attempted = True
         try:
             data, usage = extract_via_llm(clean_text, url, backend, model, feedback=feedback)
         except Exception as exc:  # this backend/tier's call failed outright — try the next one
@@ -729,6 +792,7 @@ def extract(html: str, url: str) -> dict:
             feedback = None
             continue
 
+        data = _coerce_extracted_shapes(data)
         problems = validate_extraction(data, clean_text)
         if not problems:
             data["_extraction_method"] = _extraction_tag(backend, model)
@@ -737,8 +801,22 @@ def extract(html: str, url: str) -> dict:
         print(f"[extract] {backend}:{model} output for {url} failed validation: {'; '.join(problems)}", file=sys.stderr)
         feedback = problems
 
-    # deliberate fallback boundary, not silent — logged above per backend/tier
-    print(f"[extract] all LLM backends/tiers failed for {url}; using heuristic fallback", file=sys.stderr)
+    # Distinguish "every attempt genuinely failed" from "there was never
+    # anything to attempt" (no backend in LLM_BACKEND_CHAIN/LLM_PROVIDER had
+    # a credential configured at all) — the two look identical downstream
+    # (heuristic fallback either way) but mean very different things when
+    # debugging why a batch isn't using the LLM path: one says "check your
+    # API keys/model cascade," the other says "this is expected, nothing is
+    # actually broken."
+    if attempted:
+        print(f"[extract] all LLM backends/tiers failed for {url}; using heuristic fallback", file=sys.stderr)
+    else:
+        print(
+            f"[extract] no LLM backend is configured/credentialed for {url} "
+            "(check LLM_BACKEND_CHAIN/LLM_PROVIDER and the matching API key env "
+            "var, and that .env is actually being loaded) — using heuristic fallback",
+            file=sys.stderr,
+        )
     data = extract_via_heuristics(html, clean_text, url)
     data["_extraction_method"] = "heuristic"
     data["_usage"] = None

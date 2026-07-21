@@ -1,8 +1,9 @@
 """Pure-logic tests for collector.py — no network."""
 
+import json
 from unittest.mock import Mock, patch
 
-from collector import CollectionError, HardBlockError, _is_hard_block, _url_hash, fetch_html
+from collector import CollectionError, HardBlockError, _is_hard_block, _url_hash, fetch_html, save_raw
 
 
 def test_url_hash_is_deterministic_and_short():
@@ -69,3 +70,36 @@ def test_fetch_html_raises_after_429_exhausts_retries():
             assert False, "expected CollectionError"
         except CollectionError as exc:
             assert "429" in str(exc)
+
+
+# ---------------------------------------------------------------------------
+# save_raw — atomic writes (regression: previously wrote directly with
+# Path.write_text, so a crash mid-write could leave a truncated .html file
+# on disk that a later run would silently treat as the real cached page)
+# ---------------------------------------------------------------------------
+
+
+def test_save_raw_writes_html_and_meta(tmp_path):
+    html_path = save_raw("https://example.com/program", "<html>content</html>", tmp_path)
+    assert html_path.read_text(encoding="utf-8") == "<html>content</html>"
+    meta_path = tmp_path / f"{_url_hash('https://example.com/program')}.meta.json"
+    meta = json.loads(meta_path.read_text(encoding="utf-8"))
+    assert meta["url"] == "https://example.com/program"
+    assert "fetched_at" in meta
+
+
+def test_save_raw_leaves_no_partial_file_on_write_failure(tmp_path):
+    """A crash partway through the write (disk full, kill -9) must never
+    leave a truncated file at the real path — os.replace only swaps in a
+    fully-written temp file, so a failure before that point leaves nothing
+    behind at all rather than something corrupt."""
+    with patch("collector.os.replace", side_effect=OSError("simulated disk failure")):
+        try:
+            save_raw("https://example.com/program", "<html>content</html>", tmp_path)
+            assert False, "expected OSError to propagate"
+        except OSError:
+            pass
+    html_path = tmp_path / f"{_url_hash('https://example.com/program')}.html"
+    assert not html_path.exists()
+    # No leftover .tmp files either — _write_atomic cleans up on failure.
+    assert list(tmp_path.glob("*.tmp")) == []

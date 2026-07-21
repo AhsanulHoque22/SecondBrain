@@ -78,8 +78,18 @@ def check_url(url: str, raw_dir: Path) -> tuple[bool, str]:
     except CollectionError as exc:
         return False, f"collect failed: {exc}"
 
-    raw_fields = extract(collected.html, url)
-    row = clean_record(raw_fields, url)
+    try:
+        raw_fields = extract(collected.html, url)
+        row = clean_record(raw_fields, url)
+    except Exception as exc:
+        # A canary's whole job is to be a safe, unattended health check —
+        # an unexpected exception here (a genuinely new bug in extract() or
+        # clean_record(), not accounted for by their own internal fallbacks)
+        # must not crash the script before the other URLs get checked, and
+        # must still be reported as the FAIL it obviously is rather than an
+        # unhandled traceback with no summary line at all.
+        return False, f"extract/clean raised unexpectedly: {exc!r}"
+
     missing = validate_required(row)
     method = raw_fields.get("_extraction_method", "unknown")
     if missing:

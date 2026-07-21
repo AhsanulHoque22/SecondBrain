@@ -163,6 +163,13 @@ _last_call_at: dict[str, float] = {}
 RATE_LIMIT_MAX_RETRIES = 3
 RATE_LIMIT_BASE_DELAY_SECONDS = 5.0
 
+# None of the three vendor clients had an explicit timeout before — a stalled
+# TCP connection or a server that accepts the request but never responds
+# would hang this call (and the whole batch behind it) indefinitely, with no
+# way for extractor.py's cascade to ever move on to the next tier. A bounded
+# timeout turns that into an ordinary "this tier failed" event instead.
+REQUEST_TIMEOUT_SECONDS = 60.0
+
 
 def _estimate_tokens(*texts: str) -> int:
     """Rough, deliberately conservative token estimate (~4 characters per
@@ -318,7 +325,7 @@ def _call_anthropic(
     # api_key=None is equivalent to omitting it — the SDK itself falls back
     # to reading ANTHROPIC_API_KEY, so the legacy call_llm() path (which
     # never passes this kwarg) behaves exactly as before.
-    client = anthropic.Anthropic(api_key=api_key)
+    client = anthropic.Anthropic(api_key=api_key, timeout=REQUEST_TIMEOUT_SECONDS)
     tool = {
         "name": tool_name,
         "description": tool_description,
@@ -336,7 +343,16 @@ def _call_anthropic(
         ),
         (anthropic.RateLimitError,),
     )
-    tool_use = next(block for block in response.content if block.type == "tool_use")
+    tool_use = next((block for block in response.content if block.type == "tool_use"), None)
+    if tool_use is None:
+        # tool_choice forces the tool, but a model can still stop early (e.g.
+        # hitting max_tokens mid-call, or a content-filter refusal) and
+        # return no tool_use block at all — bare `next()` on the generator
+        # would then raise a bare StopIteration, which is both a confusing
+        # error for whoever reads the log and (pre-PEP 479) risks being
+        # swallowed/misinterpreted differently than a normal exception.
+        stop_reason = getattr(response, "stop_reason", "unknown")
+        raise RuntimeError(f"Anthropic response for {model!r} had no tool_use block (stop_reason={stop_reason!r})")
     usage = {"input_tokens": response.usage.input_tokens, "output_tokens": response.usage.output_tokens}
     return dict(tool_use.input), usage
 
@@ -372,7 +388,7 @@ def _call_openai(
     # multiple OpenAI-compatible backends can be configured side by side.
     if base_url is None:
         base_url = os.environ.get("OPENAI_BASE_URL", "").strip() or None
-    client = openai.OpenAI(api_key=api_key, base_url=base_url)
+    client = openai.OpenAI(api_key=api_key, base_url=base_url, timeout=REQUEST_TIMEOUT_SECONDS)
     response = _retry_on_rate_limit(
         lambda: client.chat.completions.create(
             model=model,
@@ -395,8 +411,24 @@ def _call_openai(
         ),
         (openai.RateLimitError,),
     )
-    tool_call = response.choices[0].message.tool_calls[0]
-    data = json.loads(tool_call.function.arguments)
+    # tool_choice forces the tool, but weaker/free-tier models (this is the
+    # adapter Groq and DeepSeek both go through) have been observed not
+    # fully honoring it — a bare `.tool_calls[0]` on a None or empty list
+    # would raise an unhelpful TypeError/IndexError with no indication of
+    # what actually happened.
+    tool_calls = response.choices[0].message.tool_calls
+    if not tool_calls:
+        finish_reason = getattr(response.choices[0], "finish_reason", "unknown")
+        content_preview = (response.choices[0].message.content or "")[:200]
+        raise RuntimeError(
+            f"{model!r} returned no tool call (finish_reason={finish_reason!r}); "
+            f"message content was: {content_preview!r}"
+        )
+    tool_call = tool_calls[0]
+    try:
+        data = json.loads(tool_call.function.arguments)
+    except json.JSONDecodeError as exc:
+        raise RuntimeError(f"{model!r} returned unparseable tool-call arguments: {exc}") from exc
     usage = {
         "input_tokens": response.usage.prompt_tokens,
         "output_tokens": response.usage.completion_tokens,
@@ -480,10 +512,25 @@ def _call_google(
     # (a few tens of seconds, RATE_LIMIT_MAX_RETRIES attempts) before this
     # propagates and extractor.py's cascade moves to the next backend.
     response = _retry_on_rate_limit(
-        lambda: generative_model.generate_content(user_content, generation_config=generation_config),
+        lambda: generative_model.generate_content(
+            user_content,
+            generation_config=generation_config,
+            request_options={"timeout": REQUEST_TIMEOUT_SECONDS},
+        ),
         (ResourceExhausted,),
     )
-    data = json.loads(response.text)
+    try:
+        # response.text itself raises (not just returns empty) when every
+        # candidate was blocked by a safety filter or the model returned no
+        # candidates at all — that's a real, distinct failure mode worth its
+        # own message rather than an opaque SDK ValueError.
+        response_text = response.text
+    except ValueError as exc:
+        raise RuntimeError(f"{model!r} returned no usable content (likely blocked by a safety filter): {exc}") from exc
+    try:
+        data = json.loads(response_text)
+    except json.JSONDecodeError as exc:
+        raise RuntimeError(f"{model!r} returned unparseable JSON: {exc}") from exc
     usage = {
         "input_tokens": response.usage_metadata.prompt_token_count,
         "output_tokens": response.usage_metadata.candidates_token_count,

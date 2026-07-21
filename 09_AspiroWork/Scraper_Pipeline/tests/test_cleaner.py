@@ -46,6 +46,14 @@ def test_normalize_currency_preserves_original_amount_text():
     assert amount == "15,000 EUR"
 
 
+def test_normalize_currency_does_not_crash_on_non_string_input():
+    """A wrong-typed value (e.g. a loosely-typed model returning a number
+    instead of a string) previously crashed on `.strip()` since `not text`
+    is False for any truthy non-str value too."""
+    assert normalize_currency(12345) == ("", "")
+    assert normalize_currency(["15,000 EUR"]) == ("", "")
+
+
 # ---------------------------------------------------------------------------
 # normalize_repeatable / normalize_requirement_pairs / normalize_tag_entries
 # ---------------------------------------------------------------------------
@@ -73,6 +81,42 @@ def test_normalize_tag_entries_formats_category_and_details():
     ]
     result = normalize_tag_entries(items)
     assert result == "Scholarship (Funding): Merit-based; STEM"
+
+
+def test_normalize_repeatable_drops_non_string_items_instead_of_crashing():
+    """A malformed LLM response (e.g. tags/intake_terms items not shaped as
+    expected) previously crashed on `.strip()` for any non-str item."""
+    result = normalize_repeatable(["Fall 2027", 2027, None, {"not": "a string"}])
+    assert result == "Fall 2027"
+
+
+def test_normalize_requirement_pairs_drops_non_dict_items_instead_of_crashing():
+    items = [{"title": "Bachelor's degree", "description": None}, "TOEFL 90"]
+    assert normalize_requirement_pairs(items) == "Bachelor's degree"
+
+
+def test_normalize_tag_entries_drops_non_dict_items_instead_of_crashing():
+    items = [{"name": "STEM", "category": None, "details": None}, "Physics"]
+    assert normalize_tag_entries(items) == "STEM"
+
+
+# ---------------------------------------------------------------------------
+# clean_record — must not crash on a wrong-typed scalar field
+# ---------------------------------------------------------------------------
+
+
+def test_clean_record_treats_non_string_scalar_as_missing_instead_of_crashing():
+    """`(value or "").strip()` crashes on any non-None, non-str truthy value
+    — a wrong-shaped LLM response (e.g. university_name returned as a list)
+    previously took down the whole row instead of just losing that field."""
+    raw = {
+        "university_name": ["Test University"],  # wrong type
+        "level": "MSc",
+        "program_name": "MSc in Testing",
+    }
+    row = clean_record(raw, "https://example.com/1")
+    assert row["university_name"] == ""
+    assert row["level"] == "MSc"
 
 
 # ---------------------------------------------------------------------------

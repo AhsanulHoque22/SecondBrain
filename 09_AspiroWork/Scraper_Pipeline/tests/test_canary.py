@@ -69,3 +69,18 @@ def test_check_url_passes_when_llm_tier_actually_used():
         ok, detail = check_url("https://example.com/1", Path("."))
     assert ok is True
     assert "llm-haiku" in detail
+
+
+def test_check_url_reports_fail_instead_of_crashing_on_unexpected_error():
+    """Regression: canary.py's whole job is to be a safe, unattended health
+    check — an unexpected exception from extract()/clean_record() previously
+    propagated straight out of check_url() (and then main()), crashing the
+    script before any other canary URL got checked, and with no summary line
+    reported at all. It must come back as an ordinary FAIL instead."""
+    with patch(
+        "canary.collect",
+        return_value=Collected(url="https://example.com/1", html="<html></html>", raw_path=Path("x"), fetched_at="T1"),
+    ), patch("canary.extract", side_effect=RuntimeError("simulated unexpected bug")):
+        ok, detail = check_url("https://example.com/1", Path("."))
+    assert ok is False
+    assert "unexpectedly" in detail

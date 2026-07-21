@@ -3,7 +3,7 @@ schema translation. No network, no live LLM calls, no vendor SDKs required
 to be installed (the anthropic/openai/google call paths are only exercised
 via extractor.py's mocked cascade tests, never live from this suite)."""
 
-from unittest.mock import patch
+from unittest.mock import MagicMock, PropertyMock, patch
 
 import pytest
 
@@ -238,6 +238,100 @@ def test_is_daily_rate_limit_detects_per_day_message():
 def test_is_daily_rate_limit_false_for_per_minute_message():
     exc = ValueError("Rate limit reached on requests per minute (RPM). Please try again in 2s.")
     assert llm_providers._is_daily_rate_limit(exc) is False
+
+
+def test_call_anthropic_passes_request_timeout():
+    """No client previously set a request timeout at all — a stalled
+    connection could hang this call (and the whole batch behind it)
+    forever, with no way for extractor.py's cascade to move to the next
+    tier."""
+    fake_response = MagicMock(
+        content=[MagicMock(type="tool_use", input={"x": 1})],
+        usage=MagicMock(input_tokens=1, output_tokens=1),
+    )
+    with patch("anthropic.Anthropic") as mock_client_cls:
+        mock_client_cls.return_value.messages.create.return_value = fake_response
+        llm_providers._call_anthropic("claude-haiku-4-5", "sys", "user", {}, "tool", "desc")
+    _, kwargs = mock_client_cls.call_args
+    assert kwargs["timeout"] == llm_providers.REQUEST_TIMEOUT_SECONDS
+
+
+def test_call_anthropic_raises_clear_error_when_no_tool_use_block():
+    """tool_choice forces the tool, but a model can still stop early (max
+    tokens mid-call, a content-filter refusal) and return no tool_use block
+    — regression: a bare `next()` on the generator raised an opaque
+    StopIteration instead of a clear, catchable error."""
+    fake_response = MagicMock(content=[MagicMock(type="text", text="I cannot comply")], stop_reason="refusal")
+    with patch("anthropic.Anthropic") as mock_client_cls:
+        mock_client_cls.return_value.messages.create.return_value = fake_response
+        with pytest.raises(RuntimeError, match="no tool_use block"):
+            llm_providers._call_anthropic("claude-haiku-4-5", "sys", "user", {}, "tool", "desc")
+
+
+def test_call_openai_passes_request_timeout():
+    fake_tool_call = MagicMock()
+    fake_tool_call.function.arguments = "{}"
+    fake_response = MagicMock(
+        choices=[MagicMock(message=MagicMock(tool_calls=[fake_tool_call]))],
+        usage=MagicMock(prompt_tokens=1, completion_tokens=1),
+    )
+    with patch("openai.OpenAI") as mock_client_cls:
+        mock_client_cls.return_value.chat.completions.create.return_value = fake_response
+        llm_providers._call_openai("some-model", "sys", "user", {}, "tool", "desc")
+    _, kwargs = mock_client_cls.call_args
+    assert kwargs["timeout"] == llm_providers.REQUEST_TIMEOUT_SECONDS
+
+
+def test_call_openai_raises_clear_error_when_no_tool_call():
+    """Regression: Groq/DeepSeek's weaker free-tier models (routed through
+    this same adapter) have been observed not fully honoring tool_choice —
+    a bare `.tool_calls[0]` on an empty/None list raised an opaque
+    TypeError/IndexError with no indication of what actually happened."""
+    fake_message = MagicMock(tool_calls=None, content="I cannot comply")
+    fake_response = MagicMock(choices=[MagicMock(message=fake_message, finish_reason="stop")])
+    with patch("openai.OpenAI") as mock_client_cls:
+        mock_client_cls.return_value.chat.completions.create.return_value = fake_response
+        with pytest.raises(RuntimeError, match="no tool call"):
+            llm_providers._call_openai("some-model", "sys", "user", {}, "tool", "desc")
+
+
+def test_call_openai_raises_clear_error_on_malformed_json():
+    fake_tool_call = MagicMock()
+    fake_tool_call.function.arguments = "{not valid json"
+    fake_response = MagicMock(choices=[MagicMock(message=MagicMock(tool_calls=[fake_tool_call]))])
+    with patch("openai.OpenAI") as mock_client_cls:
+        mock_client_cls.return_value.chat.completions.create.return_value = fake_response
+        with pytest.raises(RuntimeError, match="unparseable"):
+            llm_providers._call_openai("some-model", "sys", "user", {}, "tool", "desc")
+
+
+def test_call_google_passes_request_timeout():
+    fake_response = MagicMock(text="{}", usage_metadata=MagicMock(prompt_token_count=1, candidates_token_count=1))
+    with patch("google.generativeai.GenerativeModel") as mock_model_cls, patch("google.generativeai.configure"):
+        mock_model_cls.return_value.generate_content.return_value = fake_response
+        llm_providers._call_google("gemini-2.0-flash", "sys", "user", {}, "tool", "desc")
+    _, kwargs = mock_model_cls.return_value.generate_content.call_args
+    assert kwargs["request_options"] == {"timeout": llm_providers.REQUEST_TIMEOUT_SECONDS}
+
+
+def test_call_google_raises_clear_error_when_blocked_by_safety_filter():
+    """response.text itself raises ValueError (not just returns empty) when
+    every candidate was blocked by a safety filter — this deserves its own
+    message, not an opaque SDK ValueError surfacing from deep inside."""
+    fake_response = MagicMock()
+    type(fake_response).text = PropertyMock(side_effect=ValueError("no candidates"))
+    with patch("google.generativeai.GenerativeModel") as mock_model_cls, patch("google.generativeai.configure"):
+        mock_model_cls.return_value.generate_content.return_value = fake_response
+        with pytest.raises(RuntimeError, match="safety filter"):
+            llm_providers._call_google("gemini-2.0-flash", "sys", "user", {}, "tool", "desc")
+
+
+def test_call_google_raises_clear_error_on_malformed_json():
+    fake_response = MagicMock(text="{not valid json")
+    with patch("google.generativeai.GenerativeModel") as mock_model_cls, patch("google.generativeai.configure"):
+        mock_model_cls.return_value.generate_content.return_value = fake_response
+        with pytest.raises(RuntimeError, match="unparseable"):
+            llm_providers._call_google("gemini-2.0-flash", "sys", "user", {}, "tool", "desc")
 
 
 def test_retry_on_rate_limit_skips_backoff_for_daily_limit():

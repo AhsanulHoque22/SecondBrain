@@ -34,7 +34,7 @@ CURRENCY_CODES = ["EUR", "GBP", "USD", "CAD", "AUD", "SEK", "BDT", "NOK", "DKK",
 
 
 def normalize_currency(text: str | None) -> tuple[str, str]:
-    if not text:
+    if not isinstance(text, str) or not text.strip():
         return "", ""
     text = text.strip()
     for code in CURRENCY_CODES:
@@ -49,7 +49,14 @@ def normalize_currency(text: str | None) -> tuple[str, str]:
 def normalize_repeatable(items: list[str]) -> str:
     seen: list[str] = []
     for item in items:
-        cleaned = (item or "").strip()
+        # Defensive: a non-str item (e.g. a wrong-shaped LLM response that
+        # slipped past extractor._coerce_extracted_shapes, or a future
+        # caller that doesn't go through extract() at all) would otherwise
+        # crash on `.strip()` — dropping it is the same "missing beats
+        # wrong/broken" call the rest of this pipeline already makes.
+        if not isinstance(item, str):
+            continue
+        cleaned = item.strip()
         if cleaned and cleaned not in seen:
             seen.append(cleaned)
     return "; ".join(seen)
@@ -58,6 +65,8 @@ def normalize_repeatable(items: list[str]) -> str:
 def normalize_requirement_pairs(items: list[dict]) -> str:
     parts = []
     for item in items:
+        if not isinstance(item, dict):
+            continue
         title = (item.get("title") or "").strip()
         description = (item.get("description") or "").strip()
         if not title:
@@ -69,6 +78,8 @@ def normalize_requirement_pairs(items: list[dict]) -> str:
 def normalize_tag_entries(items: list[dict]) -> str:
     parts = []
     for item in items:
+        if not isinstance(item, dict):
+            continue
         name = (item.get("name") or "").strip()
         if not name:
             continue
@@ -83,22 +94,30 @@ def validate_required(row: dict) -> list[str]:
     return [field for field in REQUIRED_FIELDS if not row.get(field)]
 
 
+def _as_str(value) -> str:
+    """`(value or "").strip()` crashes on any non-None, non-str truthy value
+    (an int, list, dict — anything a loosely-typed model or a future caller
+    that skips extractor._coerce_extracted_shapes might hand in). Same
+    "drop rather than crash" call as normalize_repeatable/_pairs/_tags above."""
+    return value.strip() if isinstance(value, str) else ""
+
+
 def clean_record(raw: dict, url: str) -> dict:
     tuition_amount, tuition_currency = normalize_currency(raw.get("tuition_1st_year"))
 
     return {
-        "program_image_url": (raw.get("program_image_url") or "").strip(),
-        "university_name": (raw.get("university_name") or "").strip(),
-        "level": (raw.get("level") or "").strip(),
-        "program_name": (raw.get("program_name") or "").strip(),
-        "destination": (raw.get("destination") or "").strip(),
-        "location": (raw.get("location") or "").strip(),
-        "campus_city": (raw.get("campus_city") or "").strip(),
+        "program_image_url": _as_str(raw.get("program_image_url")),
+        "university_name": _as_str(raw.get("university_name")),
+        "level": _as_str(raw.get("level")),
+        "program_name": _as_str(raw.get("program_name")),
+        "destination": _as_str(raw.get("destination")),
+        "location": _as_str(raw.get("location")),
+        "campus_city": _as_str(raw.get("campus_city")),
         "tuition_1st_year": tuition_amount,
         "tuition_currency": tuition_currency,
-        "application_fee": (raw.get("application_fee") or "").strip(),
-        "duration": (raw.get("duration") or "").strip(),
-        "success_rate": (raw.get("success_rate") or "").strip(),
+        "application_fee": _as_str(raw.get("application_fee")),
+        "duration": _as_str(raw.get("duration")),
+        "success_rate": _as_str(raw.get("success_rate")),
         "intake_terms": normalize_repeatable(raw.get("intake_terms") or []),
         "deadlines": normalize_repeatable(raw.get("deadlines") or []),
         "prerequisites": normalize_requirement_pairs(raw.get("prerequisites") or []),

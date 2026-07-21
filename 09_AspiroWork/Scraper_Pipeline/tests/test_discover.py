@@ -98,6 +98,14 @@ def test_load_discovered_urls_empty_when_missing(tmp_path):
     assert _load_discovered_urls(tmp_path / "does_not_exist.json") == {}
 
 
+def test_load_discovered_urls_recovers_from_corrupted_json(tmp_path, capsys):
+    state_path = tmp_path / "discovered_urls.json"
+    state_path.write_text("{not valid json", encoding="utf-8")
+    result = _load_discovered_urls(state_path)
+    assert result == {}
+    assert "corrupted" in capsys.readouterr().err
+
+
 def test_save_and_load_discovered_urls_roundtrip(tmp_path):
     state_path = tmp_path / "discovered_urls.json"
     manifest = {"https://example.com/a": {"first_discovered_at": "T1"}}
@@ -312,3 +320,32 @@ def test_discover_without_llm_still_raises_for_unregistered_domain(tmp_path):
     state_path = tmp_path / "discovered_urls.json"
     with pytest.raises(ValueError, match="example.com"):
         discover("https://example.com/search", pages=1, state_path=state_path, use_llm=False)
+
+
+def test_discover_with_llm_discovery_survives_one_page_failing(tmp_path):
+    """Regression: an LLM classification failure on one page (bad key, rate
+    limit past its retries, malformed JSON from a weak model) previously
+    propagated straight out of discover() uncaught, aborting the whole
+    multi-page walk — even though the exact same problem on the fetch side
+    (CollectionError) has always just skipped that page and moved on."""
+    state_path = tmp_path / "discovered_urls.json"
+    html_ok = '<a href="/studies/1/a.html">A</a>'
+    fetch_mock = Mock(return_value=html_ok)
+
+    calls = {"n": 0}
+
+    def flaky_call_llm(model, system_prompt, user_content, schema, tool_name, tool_description):
+        calls["n"] += 1
+        if calls["n"] == 1:
+            raise RuntimeError("simulated malformed model output")
+        return {"program_page_paths": ["/studies/1/a.html"]}, {"input_tokens": 10, "output_tokens": 5}
+
+    with patch("discover.fetch_html", fetch_mock), patch(
+        "discover.llm_providers.call_llm", side_effect=flaky_call_llm
+    ):
+        # A registered domain (mastersportal.com) so pages=2 isn't collapsed
+        # to a single fetch by the unregistered-pagination fallback.
+        links = discover("https://www.mastersportal.com/search", pages=2, state_path=state_path, use_llm=True)
+
+    assert fetch_mock.call_count == 2  # both pages were still fetched
+    assert links == ["https://www.mastersportal.com/studies/1/a.html"]  # page 2's result survived page 1's failure

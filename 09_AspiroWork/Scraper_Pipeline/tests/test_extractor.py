@@ -293,6 +293,41 @@ def test_validate_extraction_passes_captured_english_test_score():
     assert validate_extraction(data, clean_text) == []
 
 
+def test_validate_extraction_does_not_flag_scholarship_ad_as_english_requirement():
+    """Regression test for a real false positive found live (2026-07-21) on
+    two mastersportal.com program pages: a Studyportals scholarship/test-
+    prep ad widget ("The Annual IELTS from 6 to 9 Scholarship", "Cathoven
+    IELTS Preparation... Register for TOEFL now!") is not the programme's
+    own English requirement — it's unrelated marketing boilerplate, same
+    category of bug as the "Student Insurance via Studyportals Partner"
+    must_requirements contamination found in the original manual audit.
+    Both real pages had NO actual English-score requirement at all (one
+    model correctly reported "we are not aware of any English requirements
+    for this programme"), but this check rejected every LLM tier's output
+    over it, forcing an unnecessary fall-through to the heuristic
+    extractor."""
+    clean_text = (
+        "The Annual IELTS from 6 to 9 Scholarship\n"
+        "IELTS from 6 to 9\n"
+        "Cathoven IELTS Preparation\n"
+        "Get your real, reliable IELTS score in seconds, free, with accurate scoring.\n"
+        "Discover your IELTS Score now!\n"
+        "TOEFL\n"
+        "Stand out with the English test trusted by top universities and employers worldwide. "
+        "Take TOEFL and open doors to your future!\n"
+        "Register for TOEFL now!\n"
+    )
+    data = dict(
+        BASE_FIELDS,
+        prerequisites=[],
+        must_requirements=[
+            {"title": "English requirements", "description": "We are not aware of any English requirements for this programme"}
+        ],
+    )
+    problems = validate_extraction(data, clean_text)
+    assert not any("TOEFL/IELTS score" in p for p in problems)
+
+
 # ---------------------------------------------------------------------------
 # extract() — the Haiku -> Sonnet -> Opus escalation cascade (mocked)
 # ---------------------------------------------------------------------------

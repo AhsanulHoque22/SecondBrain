@@ -628,7 +628,15 @@ def validate_extraction(data: dict, clean_text: str) -> list[str]:
             "should be the city alone) — check they weren't swapped or truncated"
         )
 
-    has_english_score = bool(re.search(r"\b(TOEFL|IELTS)\b.{0,15}?\d", clean_text, re.IGNORECASE))
+    # (?!\s+from\b) excludes mastersportal.com's own scholarship/test-prep ad
+    # widgets ("The Annual IELTS from 6 to 9 Scholarship", "IELTS from 6 to
+    # 9") — confirmed live (2026-07-21) to false-positive this check on pages
+    # with no real English-score requirement at all, rejecting every LLM
+    # tier's (correct) output and forcing a fall-through to the heuristic
+    # extractor. A genuine requirement is stated as "IELTS 6.5"/"IELTS: 6.5"/
+    # "TOEFL iBT 90" — never "<test> from <low> to <high>", which is
+    # specifically the scholarship-eligibility-range phrasing.
+    has_english_score = bool(re.search(r"\b(TOEFL|IELTS)\b(?!\s+from\b).{0,15}?\d", clean_text, re.IGNORECASE))
     if has_english_score:
         requirement_text = " ".join(
             f"{(item.get('title') or '')} {(item.get('description') or '')}"

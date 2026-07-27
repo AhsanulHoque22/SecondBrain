@@ -10,9 +10,9 @@ Tracker for all job/program applications. Each application gets its own subfolde
 
 ## Shared assets
 
-- ![[Ahsanul_Hoque_CV.pdf]] — original CV PDF, kept as a frozen snapshot (no longer updated)
-- `Ahsanul_Hoque_CV_LaTeX.tex` — **living CV source**, now the up-to-date version. Styled to match the original's look (sans-serif, left-aligned header, all-caps section rules). Includes Scraper Pipeline and Second Brain projects, added 2026-07-27, not present in the original PDF. Compile with `latexmk -pdf Ahsanul_Hoque_CV_LaTeX.tex`
-- ![[Ahsanul_Hoque_CV_LaTeX.pdf]] — compiled output of the current source; this is the CV to actually send out
+- ![[Ahsanul_Hoque_CV.pdf]] — **the CV**, single canonical file. Compiled output of `Ahsanul_Hoque_CV_LaTeX.tex`; this is what actually gets sent out.
+- `Ahsanul_Hoque_CV_LaTeX.tex` — editable LaTeX source. Edit this, then recompile and overwrite `Ahsanul_Hoque_CV.pdf`: `latexmk -pdf Ahsanul_Hoque_CV_LaTeX.tex && cp Ahsanul_Hoque_CV_LaTeX.pdf Ahsanul_Hoque_CV.pdf && rm Ahsanul_Hoque_CV_LaTeX.pdf`
+  - 2026-07-27: rebuilt to match the original hand-made PDF's look (sans-serif, left-aligned header, all-caps section rules), then added Scraper Pipeline and Second Brain projects. `Ahsanul_Hoque_CV.pdf` now *is* this LaTeX output — no separate frozen original is kept.
 
 ## Applications
 

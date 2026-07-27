@@ -1,66 +1,73 @@
-\documentclass[10pt,a4paper]{article}
+\documentclass[10.5pt,a4paper]{article}
 
-\usepackage[margin=0.65in]{geometry}
+\usepackage[margin=0.85in, top=0.75in, bottom=0.75in]{geometry}
 \usepackage{titlesec}
 \usepackage{enumitem}
 \usepackage{hyperref}
 \usepackage{xcolor}
 \usepackage[T1]{fontenc}
+\usepackage{helvet}
 
-\definecolor{accent}{HTML}{2A2A2A}
+\renewcommand{\familydefault}{\sfdefault}
+\definecolor{ink}{HTML}{000000}
+\definecolor{rule}{HTML}{BFBFBF}
 
 \pagestyle{empty}
 \setlength{\parindent}{0pt}
+\linespread{1.12}\selectfont
+\sloppy
 
-% Section formatting
-\titleformat{\section}{\large\bfseries\color{accent}}{}{0em}{}[\titlerule]
-\titlespacing*{\section}{0pt}{10pt}{6pt}
+% Section formatting: ALL CAPS, bold, thin rule underneath
+\titleformat{\section}{\normalsize\bfseries}{}{0em}{}[{\color{rule}\titlerule}]
+\titlespacing*{\section}{0pt}{11pt}{6pt}
 
 % Tight lists for bullet points
 \newenvironment{tightitemize}{
-  \begin{itemize}[leftmargin=14pt, itemsep=1pt, parsep=0pt, topsep=2pt]
+  \begin{itemize}[leftmargin=15pt, itemsep=2pt, parsep=0pt, topsep=3pt]
 }{
   \end{itemize}
 }
 
-% Entry header: title/org on left, dates/location on right
-\newcommand{\entry}[4]{%
-  \textbf{#1} \hfill \textbf{#2}\\
-  \textit{#3} \hfill \textit{#4}\\[2pt]
+% Entry: "Bold Title | Date" on one line, italic location/stack below
+\newcommand{\entry}[3]{%
+  \textbf{#1} \textbar\ #2\\
+  \textit{#3}%
 }
 
 \newcommand{\entrysimple}[2]{%
-  \textbf{#1} \hfill \textit{#2}\\[2pt]
+  \textbf{#1} \textbar\ \textit{#2}\\[1pt]
+}
+
+\newcommand{\entrybold}[2]{%
+  \textbf{#1 \textbar\ #2}%
 }
 
 \hypersetup{
   colorlinks=true,
-  urlcolor=accent,
-  linkcolor=accent
+  urlcolor=ink,
+  linkcolor=ink
 }
 
 \begin{document}
 
 % ---------- Header ----------
-\begin{center}
-  {\LARGE \bfseries Ahsanul Hoque}\\[3pt]
-  {\small Founder and CEO, Livora \textbar\ Software Engineer (Full-Stack, AI and Embedded Systems)}\\[4pt]
-  {\small
-    Chattogram, Bangladesh \textbar\
-    \href{mailto:ahsanulhoque22701048@gmail.com}{ahsanulhoque22701048@gmail.com} \textbar\
-    \href{https://linkedin.com/in/ahsanul-hoque-a31a3235b}{linkedin.com/in/ahsanul-hoque-a31a3235b} \textbar\
-    \href{https://github.com/AhsanulHoque22}{github.com/AhsanulHoque22}
-  }
-\end{center}
+{\Large \bfseries Ahsanul Hoque}\\[2pt]
+{\bfseries Founder and CEO, Livora \textbar\ Software Engineer (Full-Stack, AI and Embedded Systems)}\\[5pt]
+{\small
+  Chattogram, Bangladesh \textbar\
+  \href{mailto:ahsanulhoque22701048@gmail.com}{ahsanulhoque22701048@gmail.com} \textbar\
+  \href{https://linkedin.com/in/ahsanul-hoque-a31a3235b}{linkedin.com/in/ahsanul-hoque-a31a3235b} \textbar\\
+  \href{https://github.com/AhsanulHoque22}{github.com/AhsanulHoque22}
+}
 
 % ---------- Summary ----------
-\section*{Summary}
+\section*{SUMMARY}
 Computer Science undergraduate (University of Chittagong, expected 2026) and Founder/CEO of Livora, a full-stack AI-powered healthcare platform that won 2nd place and an incubation package at the ITBI Student Startup Pitch Fest 2026 (CUET). Ships production-grade full-stack and applied-AI systems across healthcare, e-commerce, embedded/IoT, and data engineering. Comfortable across the stack: React/TypeScript frontends, Node.js/Express APIs, SQL data modeling, LLM/RAG integration, and embedded systems (ESP32, LoRa).
 
 % ---------- Experience ----------
-\section*{Experience}
+\section*{EXPERIENCE}
 
-\entry{Founder and CEO -- Livora (Self-employed)}{May 2026 -- Present}{}{Chattogram, Bangladesh (Hybrid)}
+\entry{Founder and CEO - Livora (Self-employed)}{May 2026 - Present}{Chattogram, Bangladesh (Hybrid)}
 \begin{tightitemize}
   \item Lead product, engineering, and business strategy for Livora, an AI-powered healthcare platform serving patients, doctors, lab technicians, and hospital administrators
   \item Won 2nd place at the ITBI Student Startup Pitch Fest 2026 (CUET), securing 6 months of free incubation space, mentoring, and startup-ecosystem support worth BDT 100,000
@@ -68,32 +75,32 @@ Computer Science undergraduate (University of Chittagong, expected 2026) and Fou
 \end{tightitemize}
 
 % ---------- Skills ----------
-\section*{Skills}
-\textbf{Languages:} Python, C++, TypeScript, JavaScript, SQL\\[3pt]
-\textbf{Web and Backend:} React, Node.js, Express, Prisma, Sequelize, REST APIs, Socket.IO\\[3pt]
-\textbf{AI / LLM:} LLM Integration (Google Gemini), RAG (Retrieval-Augmented Generation), Prompt Injection Defense, Langfuse (LLM Observability), OCR (Tesseract), Speech-to-Text (Deepgram)\\[3pt]
-\textbf{Data and Infrastructure:} PostgreSQL, MySQL, Redis, Docker, HL7 / FHIR / DICOM (healthcare interoperability), Cloudinary, Pino, Sentry\\[3pt]
-\textbf{Embedded and IoT:} ESP32, Arduino, FreeRTOS, LoRaWAN, Raspberry Pi, ThingSpeak\\[3pt]
+\section*{SKILLS}
+\textbf{Languages:} Python, C++, TypeScript, JavaScript, SQL\\[4pt]
+\textbf{Web and Backend:} React, Node.js, Express, Prisma, Sequelize, REST APIs, Socket.IO\\[4pt]
+\textbf{AI / LLM:} LLM Integration (Google Gemini), RAG (Retrieval-Augmented Generation), Prompt Injection Defense, Langfuse (LLM Observability), OCR (Tesseract), Speech-to-Text (Deepgram)\\[4pt]
+\textbf{Data and Infrastructure:} PostgreSQL, MySQL, Redis, Docker, HL7 / FHIR / DICOM (healthcare interoperability), Cloudinary, Pino, Sentry\\[4pt]
+\textbf{Embedded and IoT:} ESP32, Arduino, FreeRTOS, LoRaWAN, Raspberry Pi, ThingSpeak\\[4pt]
 \textbf{Other:} Data Structures and Algorithms, Competitive Programming, Blockchain Fundamentals, Project Management
 
 % ---------- Projects ----------
-\section*{Projects}
+\section*{PROJECTS}
 
-\entrysimple{Livora -- AI-Powered Healthcare Platform}{Oct 2025 -- Present}
+\entrysimple{Livora - AI-Powered Healthcare Platform}{Oct 2025 - Present}
 \textit{React, TypeScript, Node.js, PostgreSQL, LLM/RAG, Socket.IO}
 \begin{tightitemize}
   \item Building a full-stack clinical platform covering appointment booking, voice-driven prescriptions, lab order/result management with payments, DICOM/FHIR and HL7 ingestion, and multi-disciplinary team (MDT) video consultations
   \item Implemented a persistent AI memory system and a RAG-based health assistant with medicine safety checks, risk stratification, and prompt-injection defenses; instrumented with Langfuse and Sentry
 \end{tightitemize}
 
-\entrysimple{ResCris -- Long-Range Emergency and Crisis Management Network}{2025}
+\entrysimple{ResCris - Long-Range Emergency and Crisis Management Network}{2025}
 \textit{ESP32, LoRa (SX1278), GPS, Embedded Systems}
 \begin{tightitemize}
   \item Built an internet-independent emergency communication system using LoRaWAN for disaster response, with real-time SOS reporting, GPS-based tracking, and a multi-gateway architecture
   \item Presented at Chittagong Science Carnival 4.0 with a teammate
 \end{tightitemize}
 
-\entrysimple{Aurora Gadgets -- Full-Stack E-Commerce Platform}{Apr 2026 -- May 2026}
+\entrysimple{Aurora Gadgets - Full-Stack E-Commerce Platform}{Apr 2026 - May 2026}
 \textit{React, TypeScript, Express, Prisma, MySQL, Docker}
 \begin{tightitemize}
   \item Built a complete storefront and admin system covering products, categories, brands, cart, and checkout with category-based product attributes
@@ -113,20 +120,20 @@ Computer Science undergraduate (University of Chittagong, expected 2026) and Fou
   \item Built an inventory, billing, and sales-analytics system for a retail client
 \end{tightitemize}
 
-\entrysimple{Sales Data Warehouse and BI Reporting}{Aug 2025 -- Sep 2025}
+\entrysimple{Sales Data Warehouse and BI Reporting}{Aug 2025 - Sep 2025}
 \textit{SQL, Python, Jupyter Notebook}
 \begin{tightitemize}
   \item Designed and built a modern SQL data warehouse from scratch, consolidating sales data via ETL and dimensional modeling
   \item Built interactive BI dashboards with Python (Pandas, Matplotlib, Seaborn) for trend and segmentation analysis
 \end{tightitemize}
 
-\entrysimple{AgroEdge AI -- Precision Agriculture Platform}{Jan 2026 -- Apr 2026}
+\entrysimple{AgroEdge AI - Precision Agriculture Platform}{Jan 2026 - Apr 2026}
 \textit{Python, Raspberry Pi, ThingSpeak}
 \begin{tightitemize}
   \item Built an AI-first precision-agriculture stack: data pipeline, irrigation model training, edge inference, and a Raspberry Pi dashboard integrated with ThingSpeak
 \end{tightitemize}
 
-\entrysimple{WaifOS -- Multitasking OS for ESP32}{Mar 2025 -- May 2025}
+\entrysimple{WaifOS - Multitasking OS for ESP32}{Mar 2025 - May 2025}
 \textit{C++, Arduino, FreeRTOS}
 \begin{tightitemize}
   \item Built a lightweight multitasking operating system for ESP32 featuring an app menu, display rendering, and input handling
@@ -134,24 +141,24 @@ Computer Science undergraduate (University of Chittagong, expected 2026) and Fou
 \end{tightitemize}
 
 % ---------- Education ----------
-\section*{Education}
-\entrysimple{University of Chittagong -- B.Sc. in Computer Science and Engineering}{2022 -- 2026 (Expected)}
-\entrysimple{Govt. City College, Chattogram -- Higher Secondary Certificate, Science (GPA 5.00)}{2019 -- 2022}
-\entrysimple{Chittagong Collegiate School -- Secondary School Certificate, Science (GPA 5.00)}{2013 -- 2019}
+\section*{EDUCATION}
+\entrybold{University of Chittagong - B.Sc. in Computer Science and Engineering}{2022 - 2026 (Expected)}\\[2pt]
+\entrybold{Govt. City College, Chattogram - Higher Secondary Certificate, Science (GPA 5.00)}{2019 - 2022}\\[2pt]
+\entrybold{Chittagong Collegiate School - Secondary School Certificate, Science (GPA 5.00)}{2013 - 2019}
 
 % ---------- Awards ----------
-\section*{Awards and Achievements}
+\section*{AWARDS AND ACHIEVEMENTS}
 \begin{tightitemize}
-  \item 2nd Place, ITBI Student Startup Pitch Fest 2026, CUET -- for Livora (incl. incubation support)
+  \item 2nd Place, ITBI Student Startup Pitch Fest 2026, CUET - for Livora (incl. incubation support)
   \item 1st Place, Robo Soccer, EEE Fest 2025, University of Chittagong
   \item Runner-up, Hackathon Segment, Chittagong Science Carnival (hosted by CUSS)
   \item 1st Runner-up, Robo Soccer, Bangabandhu Innovation Fair 2024, Premier University
-  \item Champion, ETE DecaHz -- SDG-focused idea competition (algae-based circular economy model)
+  \item Champion, ETE DecaHz - SDG-focused idea competition (algae-based circular economy model)
   \item 2nd Runner-up, Intra-Department Programming Contest, 22nd Batch
 \end{tightitemize}
 
 % ---------- Leadership ----------
-\section*{Leadership and Activities}
+\section*{LEADERSHIP AND ACTIVITIES}
 \begin{tightitemize}
   \item President, N-Cube (Science Club), Chittagong Collegiate School
   \item Joint Secretary, Debating Society, Chittagong Collegiate School

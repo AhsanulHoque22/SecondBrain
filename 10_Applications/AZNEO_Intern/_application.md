@@ -17,16 +17,15 @@ status: preparing
 
 ![[Ahsanul_Hoque_CV_AZNEO.pdf]]
 
-Source: `Ahsanul_Hoque_CV_AZNEO.tex` — forked from the [[../Ahsanul_Hoque_CV_LaTeX|main CV]], same header/summary/skills/education/awards. Only the **Projects** section is reordered to lead with what maps to AZNEO's actual service lines, instead of the general-purpose chronological/flagship ordering:
+Source: `Ahsanul_Hoque_CV_AZNEO.tex` — forked from the [[../Ahsanul_Hoque_CV_LaTeX|main CV]], same header/summary/skills/education/awards. **Projects** section reordered to lead with what maps to AZNEO's service lines (ERP/POS, eCommerce, IoT & AI Lab) instead of the general-purpose ordering; current order (2026-07-27, hand-adjusted after the initial pass) is Livora, AgroEdge AI, ResCris, WaifOS, then a page break, then Second Brain, Scraper Pipeline, Sales Data Warehouse, Aurora Gadgets, Warehouse Management and Billing System, Agri Supply Chain — the least-aligned entry (blockchain) pushed to the very bottom.
 
-1. **Warehouse Management and Billing System** — inventory/billing/sales-analytics for a retail client → direct match to their ERP Solution / Azneo POS product line.
-2. **Aurora Gadgets** — full-stack e-commerce storefront + admin → matches eCommerce + Web Application services.
-3. **AgroEdge AI** — Raspberry Pi + edge inference stack → matches IoT & AI Lab.
-4. Livora (flagship, full-stack + AI) — kept prominent but not first; healthcare vertical isn't AZNEO's business, but it's still the strongest overall proof of shipping ability.
-5. ResCris, WaifOS — more IoT/embedded, reinforce the AI Lab / hardware fit.
-6. Second Brain, Scraper Pipeline — general AI/automation, still relevant to "IoT & AI Lab" framing.
-7. Sales Data Warehouse, Agri Supply Chain (blockchain) — least aligned, pushed to the bottom.
+## Cover letter
+
+![[Ahsanul_Hoque_Cover_Letter_AZNEO.pdf]]
+
+Source: `Ahsanul_Hoque_Cover_Letter_AZNEO.tex`. Addressed to the Chairman. Written to name the actual context directly: Livora was already pitched to AZNEO and there's informal interest, but nothing formal yet — the letter states that plainly rather than pretending this is a cold application, then makes the contribution case concrete by mapping specific shipped projects (retail billing system → ERP/POS, Aurora Gadgets → eCommerce, the three embedded/IoT builds → IoT & AI Lab) directly onto AZNEO's service lines, closing on wanting to build, not just observe.
 
 ## Notes
 
 - Careers page (`/career`) had no listed openings at time of research (2026-07-27) — apply via direct outreach (`info@az-neo.com`) or LinkedIn.
+- Cover letter states the Livora/AZNEO conversation is informal and unformalized — keep that framing accurate if the deal status changes before this is actually sent.

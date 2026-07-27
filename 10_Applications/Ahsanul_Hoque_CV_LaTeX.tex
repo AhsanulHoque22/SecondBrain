@@ -1,6 +1,6 @@
 \documentclass[10.5pt,a4paper]{article}
 
-\usepackage[margin=0.85in, top=0.75in, bottom=0.75in]{geometry}
+\usepackage[margin=0.75in, top=0.6in, bottom=0.6in]{geometry}
 \usepackage{titlesec}
 \usepackage{enumitem}
 \usepackage{hyperref}
@@ -14,16 +14,16 @@
 
 \pagestyle{empty}
 \setlength{\parindent}{0pt}
-\linespread{1.12}\selectfont
+\linespread{1.06}\selectfont
 \sloppy
 
 % Section formatting: ALL CAPS, bold, thin rule underneath
 \titleformat{\section}{\normalsize\bfseries}{}{0em}{}[{\color{rule}\titlerule}]
-\titlespacing*{\section}{0pt}{11pt}{6pt}
+\titlespacing*{\section}{0pt}{8pt}{5pt}
 
 % Tight lists for bullet points
 \newenvironment{tightitemize}{
-  \begin{itemize}[leftmargin=15pt, itemsep=2pt, parsep=0pt, topsep=3pt]
+  \begin{itemize}[leftmargin=15pt, itemsep=1pt, parsep=0pt, topsep=2pt]
 }{
   \end{itemize}
 }
@@ -76,11 +76,11 @@ Computer Science undergraduate (University of Chittagong, expected 2026) and Fou
 
 % ---------- Skills ----------
 \section*{SKILLS}
-\textbf{Languages:} Python, C++, TypeScript, JavaScript, SQL\\[4pt]
-\textbf{Web and Backend:} React, Node.js, Express, Prisma, Sequelize, REST APIs, Socket.IO\\[4pt]
-\textbf{AI / LLM:} LLM Integration (Google Gemini), RAG (Retrieval-Augmented Generation), Prompt Injection Defense, Langfuse (LLM Observability), OCR (Tesseract), Speech-to-Text (Deepgram)\\[4pt]
-\textbf{Data and Infrastructure:} PostgreSQL, MySQL, Redis, Docker, HL7 / FHIR / DICOM (healthcare interoperability), Cloudinary, Pino, Sentry\\[4pt]
-\textbf{Embedded and IoT:} ESP32, Arduino, FreeRTOS, LoRaWAN, Raspberry Pi, ThingSpeak\\[4pt]
+\textbf{Languages:} Python, C++, TypeScript, JavaScript, SQL\\[2pt]
+\textbf{Web and Backend:} React, Node.js, Express, Prisma, Sequelize, REST APIs, Socket.IO\\[2pt]
+\textbf{AI / LLM:} LLM Integration (Google Gemini), RAG (Retrieval-Augmented Generation), Prompt Injection Defense, Langfuse (LLM Observability), OCR (Tesseract), Speech-to-Text (Deepgram)\\[2pt]
+\textbf{Data and Infrastructure:} PostgreSQL, MySQL, Redis, Docker, HL7 / FHIR / DICOM (healthcare interoperability), Cloudinary, Pino, Sentry\\[2pt]
+\textbf{Embedded and IoT:} ESP32, Arduino, FreeRTOS, LoRaWAN, Raspberry Pi, ThingSpeak\\[2pt]
 \textbf{Other:} Data Structures and Algorithms, Competitive Programming, Blockchain Fundamentals, Project Management
 
 % ---------- Projects ----------
@@ -91,6 +91,20 @@ Computer Science undergraduate (University of Chittagong, expected 2026) and Fou
 \begin{tightitemize}
   \item Building a full-stack clinical platform covering appointment booking, voice-driven prescriptions, lab order/result management with payments, DICOM/FHIR and HL7 ingestion, and multi-disciplinary team (MDT) video consultations
   \item Implemented a persistent AI memory system and a RAG-based health assistant with medicine safety checks, risk stratification, and prompt-injection defenses; instrumented with Langfuse and Sentry
+\end{tightitemize}
+
+\entrysimple{Scraper Pipeline - AI-Powered Web Scraping and Extraction System}{Jul 2026 - Present}
+\textit{Python, Playwright, Anthropic/OpenAI/Gemini/Groq/DeepSeek, pytest}
+\begin{tightitemize}
+  \item Built a 4-stage pipeline (discover, collect, extract, clean) with a cost-aware multi-tier LLM cascade and cross-provider fallback chain that only escalates to a costlier model when deterministic validation of the cheaper tier's output fails
+  \item Implemented Cloudflare/WAF bypass via headless-browser fallback, crash-safe atomic writes, resume-by-default batch processing, and a 92-test no-network suite covering every pure-logic component
+\end{tightitemize}
+
+\entrysimple{Second Brain - Autonomous AI Agent for Productivity and Automation}{May 2026 - Present}
+\textit{Claude Code, Python, Telegram Bot API, Git, Cron}
+\begin{tightitemize}
+  \item Built an autonomous AI agent that runs study, startup, and daily-task workflows from a git-versioned Obsidian vault, with a Telegram bot as a mobile interface for logging progress, marking tasks done, and queuing background jobs
+  \item Orchestrated 4 scheduled cron jobs (morning briefing, logging nudge, nightly re-planning, overnight task runner) atop a compiled knowledge-caching layer that processes source material once and serves every later query from cache
 \end{tightitemize}
 
 \entrysimple{ResCris - Long-Range Emergency and Crisis Management Network}{2025}

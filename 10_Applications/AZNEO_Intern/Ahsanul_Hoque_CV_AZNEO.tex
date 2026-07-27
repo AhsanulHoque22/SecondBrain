@@ -1,0 +1,184 @@
+\documentclass[10.5pt,a4paper]{article}
+
+\usepackage[margin=0.75in, top=0.6in, bottom=0.6in]{geometry}
+\usepackage{titlesec}
+\usepackage{enumitem}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage[T1]{fontenc}
+\usepackage{helvet}
+
+\renewcommand{\familydefault}{\sfdefault}
+\definecolor{ink}{HTML}{000000}
+\definecolor{rule}{HTML}{BFBFBF}
+
+\pagestyle{empty}
+\setlength{\parindent}{0pt}
+\linespread{1.06}\selectfont
+\sloppy
+
+% Section formatting: ALL CAPS, bold, thin rule underneath
+\titleformat{\section}{\normalsize\bfseries}{}{0em}{}[{\color{rule}\titlerule}]
+\titlespacing*{\section}{0pt}{8pt}{5pt}
+
+% Tight lists for bullet points
+\newenvironment{tightitemize}{
+  \begin{itemize}[leftmargin=15pt, itemsep=1pt, parsep=0pt, topsep=2pt]
+}{
+  \end{itemize}
+}
+
+% Entry: "Bold Title | Date" on one line, italic location/stack below
+\newcommand{\entry}[3]{%
+  \textbf{#1} \textbar\ #2\\
+  \textit{#3}%
+}
+
+\newcommand{\entrysimple}[2]{%
+  \textbf{#1} \textbar\ \textit{#2}\\[1pt]
+}
+
+\newcommand{\entrybold}[2]{%
+  \textbf{#1 \textbar\ #2}%
+}
+
+\hypersetup{
+  colorlinks=true,
+  urlcolor=ink,
+  linkcolor=ink
+}
+
+\begin{document}
+
+% ---------- Header ----------
+{\huge \bfseries Ahsanul Hoque}\\[2pt]
+{\bfseries Founder and CEO, Livora \textbar\ Software Engineer (Full-Stack, AI and Embedded Systems)}\\[5pt]
+{\small
+  Chattogram, Bangladesh \textbar\
+  \href{mailto:ahsanulhoque22701048@gmail.com}{ahsanulhoque22701048@gmail.com} \textbar\
+  \href{https://linkedin.com/in/ahsanul-hoque-a31a3235b}{linkedin.com/in/ahsanul-hoque-a31a3235b} \textbar\\
+  \href{https://github.com/AhsanulHoque22}{github.com/AhsanulHoque22}
+}
+
+% ---------- Summary ----------
+\section*{SUMMARY}
+Computer Science undergraduate (University of Chittagong, expected 2026) and Founder/CEO of Livora, a full-stack AI-powered healthcare platform that won 2nd place and an incubation package at the ITBI Student Startup Pitch Fest 2026 (CUET). Ships production-grade full-stack and applied-AI systems across healthcare, e-commerce, embedded/IoT, and data engineering. Comfortable across the stack: React/TypeScript frontends, Node.js/Express APIs, SQL data modeling, LLM/RAG integration, and embedded systems (ESP32, LoRa).
+
+% ---------- Experience ----------
+\section*{EXPERIENCE}
+
+\entry{Founder and CEO - Livora (Self-employed)}{May 2026 - Present}{Chattogram, Bangladesh (Hybrid)}
+\begin{tightitemize}
+  \item Lead product, engineering, and business strategy for Livora, an AI-powered healthcare platform serving patients, doctors, lab technicians, and hospital administrators
+  \item Won 2nd place at the ITBI Student Startup Pitch Fest 2026 (CUET), securing 6 months of free incubation space, mentoring, and startup-ecosystem support worth BDT 100,000
+  \item Conducted an AI training workshop on the platform for practicing surgeons in Chittagong
+\end{tightitemize}
+
+% ---------- Skills ----------
+\section*{SKILLS}
+\textbf{Languages:} Python, C++, TypeScript, JavaScript, SQL\\[2pt]
+\textbf{Web and Backend:} React, Node.js, Express, Prisma, Sequelize, REST APIs, Socket.IO\\[2pt]
+\textbf{AI / LLM:} LLM Integration (Google Gemini), RAG (Retrieval-Augmented Generation), Prompt Injection Defense, Langfuse (LLM Observability), OCR (Tesseract), Speech-to-Text (Deepgram)\\[2pt]
+\textbf{Data and Infrastructure:} PostgreSQL, MySQL, Redis, Docker, HL7 / FHIR / DICOM (healthcare interoperability), Cloudinary, Pino, Sentry\\[2pt]
+\textbf{Embedded and IoT:} ESP32, STM32, Arduino, FreeRTOS, LoRaWAN, Raspberry Pi, ThingSpeak\\[2pt]
+\textbf{Other:} Data Structures and Algorithms, Competitive Programming, Blockchain Fundamentals, Project Management
+
+% ---------- Projects ----------
+% Reordered for AZNEO LIMITED (ERP/Retail POS, Web App, eCommerce, Software Dev,
+% IoT & AI Lab, Hardware & Networking) -- most-aligned projects lead.
+\section*{PROJECTS}
+
+\entrysimple{Warehouse Management and Billing System}{Freelance}
+\textit{Node.js, MySQL}
+\begin{tightitemize}
+  \item Built an inventory, billing, and sales-analytics system for a retail client
+\end{tightitemize}
+
+\entrysimple{Aurora Gadgets - Full-Stack E-Commerce Platform}{Apr 2026 - May 2026}
+\textit{React, TypeScript, Express, Prisma, MySQL, Docker}
+\begin{tightitemize}
+  \item Built a complete storefront and admin system covering products, categories, brands, cart, and checkout with category-based product attributes
+  \item Containerized the application with Docker for reproducible deployment
+\end{tightitemize}
+
+\entrysimple{AgroEdge AI - Precision Agriculture Platform}{Jan 2026 - Apr 2026}
+\textit{Python, Raspberry Pi, ThingSpeak}
+\begin{tightitemize}
+  \item Built an AI-first precision-agriculture stack: data pipeline, irrigation model training, edge inference, and a Raspberry Pi dashboard integrated with ThingSpeak
+\end{tightitemize}
+
+\entrysimple{Livora - AI-Powered Healthcare Platform}{Oct 2025 - Present}
+\textit{React, TypeScript, Node.js, PostgreSQL, LLM/RAG, Socket.IO}
+\begin{tightitemize}
+  \item Building a full-stack clinical platform covering appointment booking, voice-driven prescriptions, lab order/result management with payments, DICOM/FHIR and HL7 ingestion, and multi-disciplinary team (MDT) video consultations
+  \item Implemented a persistent AI memory system and a RAG-based health assistant with medicine safety checks, risk stratification, and prompt-injection defenses; instrumented with Langfuse and Sentry
+\end{tightitemize}
+
+\entrysimple{ResCris - Long-Range Emergency and Crisis Management Network}{2025}
+\textit{ESP32, LoRa (SX1278), GPS, Embedded Systems}
+\begin{tightitemize}
+  \item Built an internet-independent emergency communication system using LoRaWAN for disaster response, with real-time SOS reporting, GPS-based tracking, and a multi-gateway architecture
+  \item Presented at Chittagong Science Carnival 4.0 with a teammate
+\end{tightitemize}
+
+\entrysimple{WaifOS - Multitasking OS for ESP32}{Mar 2025 - May 2025}
+\textit{C++, Arduino, FreeRTOS}
+\begin{tightitemize}
+  \item Built a lightweight multitasking operating system for ESP32 featuring an app menu, display rendering, and input handling
+  \item Implemented WiFi connectivity and concurrent task scheduling on constrained embedded hardware
+\end{tightitemize}
+
+\entrysimple{Second Brain - Autonomous AI Agent for Productivity and Automation}{May 2026 - Present}
+\textit{Claude Code, Python, Telegram Bot API, Git, Cron}
+\begin{tightitemize}
+  \item Built an autonomous AI agent that runs study, startup, and daily-task workflows from a git-versioned Obsidian vault, with a Telegram bot as a mobile interface for logging progress, marking tasks done, and queuing background jobs
+  \item Orchestrated 4 scheduled cron jobs (morning briefing, logging nudge, nightly re-planning, overnight task runner) atop a compiled knowledge-caching layer that processes source material once and serves every later query from cache
+\end{tightitemize}
+
+\entrysimple{Scraper Pipeline - AI-Powered Web Scraping and Extraction System}{Jul 2026 - Present}
+\textit{Python, Playwright, Anthropic/OpenAI/Gemini/Groq/DeepSeek, pytest}
+\begin{tightitemize}
+  \item Built a 4-stage pipeline (discover, collect, extract, clean) with a cost-aware multi-tier LLM cascade and cross-provider fallback chain that only escalates to a costlier model when deterministic validation of the cheaper tier's output fails
+  \item Implemented Cloudflare/WAF bypass via headless-browser fallback, crash-safe atomic writes, resume-by-default batch processing, and a 92-test no-network suite covering every pure-logic component
+\end{tightitemize}
+
+\entrysimple{Sales Data Warehouse and BI Reporting}{Aug 2025 - Sep 2025}
+\textit{SQL, Python, Jupyter Notebook}
+\begin{tightitemize}
+  \item Designed and built a modern SQL data warehouse from scratch, consolidating sales data via ETL and dimensional modeling
+  \item Built interactive BI dashboards with Python (Pandas, Matplotlib, Seaborn) for trend and segmentation analysis
+\end{tightitemize}
+
+\entrysimple{Agri Supply Chain Transparency Platform}{2025}
+\textit{Blockchain}
+\begin{tightitemize}
+  \item Designed a blockchain-based platform to make farm-to-consumer pricing transparent and verifiable, aimed at closing the margin gap between farmer income and consumer prices
+  \item Runner-up, Hackathon Segment, Chittagong Science Carnival (hosted by CUSS)
+\end{tightitemize}
+
+% ---------- Education ----------
+\section*{EDUCATION}
+\entrybold{University of Chittagong - B.Sc. in Computer Science and Engineering}{2022 - 2026 (Expected)}\\[2pt]
+\entrybold{Govt. City College, Chattogram - Higher Secondary Certificate, Science (GPA 5.00)}{2019 - 2022}\\[2pt]
+\entrybold{Chittagong Collegiate School - Secondary School Certificate, Science (GPA 5.00)}{2013 - 2019}
+
+% ---------- Awards ----------
+\section*{AWARDS AND ACHIEVEMENTS}
+\begin{tightitemize}
+  \item 2nd Place, ITBI Student Startup Pitch Fest 2026, CUET - for Livora (incl. incubation support)
+  \item 1st Place, Robo Soccer, EEE Fest 2025, University of Chittagong
+  \item Runner-up, Hackathon Segment, Chittagong Science Carnival (hosted by CUSS)
+  \item 1st Runner-up, Robo Soccer, Bangabandhu Innovation Fair 2024, Premier University
+  \item Finalist, Bangabandhu Innovation Grant (BIG), 2023
+  \item Champion, ETE DecaHz - SDG-focused idea competition (algae-based circular economy model)
+  \item 2nd Runner-up, Intra-Department Programming Contest, 22nd Batch
+\end{tightitemize}
+
+% ---------- Leadership ----------
+\section*{LEADERSHIP AND ACTIVITIES}
+\begin{tightitemize}
+  \item President, N-Cube (Science Club), Chittagong Collegiate School
+  \item Joint Secretary, Debating Society, Chittagong Collegiate School
+\end{tightitemize}
+
+\end{document}

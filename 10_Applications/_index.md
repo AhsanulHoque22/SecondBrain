@@ -16,4 +16,4 @@ Tracker for all job/program applications. Each application gets its own subfolde
 
 ## Applications
 
-*(none yet — create a subfolder per application, e.g. `10_Applications/[Company_Role]/`)*
+- [[AZNEO_Intern/_application|AZNEO Limited — Intern]] — status: preparing. Chattogram BPO/software company (ERP/POS, Web App, eCommerce, IoT & AI Lab). CV projects reordered to lead with retail/e-commerce/IoT work.

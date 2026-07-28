@@ -1,0 +1,21 @@
+{
+  "date": "2026-07-28",
+  "day_window": {"start": "06:00", "end": "23:00"},
+  "fixed_blocks": [
+    {"name": "Fajr Prayer", "start": "06:00", "end": "06:20", "task_type": "prayer"},
+    {"name": "Guest Lecture: Agentic AI (attend class)", "start": "11:00", "end": "12:00", "task_type": "class"},
+    {"name": "Dhuhr Prayer", "start": "13:10", "end": "13:30", "task_type": "prayer"},
+    {"name": "Asr Prayer", "start": "16:45", "end": "17:05", "task_type": "prayer"},
+    {"name": "Maghrib Prayer", "start": "19:15", "end": "19:35", "task_type": "prayer"},
+    {"name": "Isha Prayer", "start": "20:45", "end": "21:05", "task_type": "prayer"}
+  ],
+  "flexible_tasks": [
+    {"name": "Prep slides for guest lecture", "duration_min": 45, "priority": "high", "must_be_before": "11:00", "task_type": "class_prep"},
+    {"name": "Reply to client email", "duration_min": 20, "priority": "high", "task_type": "email"},
+    {"name": "Deep work: research reading", "duration_min": 120, "priority": "high", "task_type": "deep_work"},
+    {"name": "Public speaking practice", "duration_min": 60, "priority": "high", "task_type": "skill"},
+    {"name": "Startup deep-work block", "duration_min": 120, "priority": "medium", "hard_cap_min": 120, "task_type": "startup"},
+    {"name": "Gym", "duration_min": 60, "priority": "medium", "task_type": "health"},
+    {"name": "Admin / inbox catch-up", "duration_min": 45, "priority": "low", "task_type": "admin"}
+  ]
+}

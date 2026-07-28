@@ -1,0 +1,11 @@
+To: Jamil Rahman <jamil@example-client.com>
+Subject: Re: Question about report deadline
+
+Hi Jamil,
+
+Friday still works for the Q3 analytics report, no need to push it.
+I'll loop in the design lead today for the chart formatting so it's
+settled well before the sprint review.
+
+Talk tomorrow,
+Ahsanul

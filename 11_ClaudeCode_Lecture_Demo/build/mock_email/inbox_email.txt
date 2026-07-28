@@ -1,0 +1,13 @@
+From: Jamil Rahman <jamil@example-client.com>
+To: ahsanul@example.com
+Subject: Question about report deadline
+Date: 2026-07-27 18:42
+
+Hi Ahsanul,
+
+Quick question before the sprint review tomorrow: can we still get the
+Q3 analytics report by Friday, or should we push it to early next week?
+Also, could you loop in the design lead on the chart formatting?
+
+Thanks,
+Jamil

@@ -17,3 +17,4 @@ Tracker for all job/program applications. Each application gets its own subfolde
 ## Applications
 
 - [[AZNEO_Intern/_application|AZNEO Limited — Intern]] — status: preparing. Chattogram BPO/software company (ERP/POS, Web App, eCommerce, IoT & AI Lab). CV projects reordered to lead with retail/e-commerce/IoT work.
+- [[GenAILabs_FullStackEngineer/_application|GenAILabs — Full Stack Engineer]] — status: preparing. Remote, entry-level. CV reordered to lead with full-stack web + AI/ML work; added the Nascenia AI Hackathon project (new, found via GitHub research).

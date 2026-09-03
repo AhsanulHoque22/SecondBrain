@@ -1,6 +1,6 @@
 \documentclass[10.5pt,a4paper]{article}
 
-\usepackage[margin=0.75in, top=0.6in, bottom=0.6in]{geometry}
+\usepackage[margin=0.7in, top=0.45in, bottom=0.45in]{geometry}
 \usepackage{titlesec}
 \usepackage{enumitem}
 \usepackage{hyperref}
@@ -14,16 +14,16 @@
 
 \pagestyle{empty}
 \setlength{\parindent}{0pt}
-\linespread{1.06}\selectfont
+\linespread{1.0}\selectfont
 \sloppy
 
 % Section formatting: ALL CAPS, bold, thin rule underneath
 \titleformat{\section}{\normalsize\bfseries}{}{0em}{}[{\color{rule}\titlerule}]
-\titlespacing*{\section}{0pt}{8pt}{5pt}
+\titlespacing*{\section}{0pt}{6pt}{4pt}
 
 % Tight lists for bullet points
 \newenvironment{tightitemize}{
-  \begin{itemize}[leftmargin=15pt, itemsep=1pt, parsep=0pt, topsep=2pt]
+  \begin{itemize}[leftmargin=15pt, itemsep=0pt, parsep=0pt, topsep=1pt]
 }{
   \end{itemize}
 }
@@ -91,6 +91,21 @@ Computer Science undergraduate (University of Chittagong, expected 2026) and Fou
 \begin{tightitemize}
   \item Building a full-stack clinical platform covering appointment booking, voice-driven prescriptions, lab order/result management with payments, DICOM/FHIR and HL7 ingestion, and multi-disciplinary team (MDT) video consultations
   \item Implemented a persistent AI memory system and a RAG-based health assistant with medicine safety checks, risk stratification, and prompt-injection defenses; instrumented with Langfuse and Sentry
+\end{tightitemize}
+
+\entrysimple{Vision-Based Autonomous Navigation for a Quadrotor in GPS-Denied Environments}{Aug 2026 - Present}
+\textit{Python, PyBullet, NumPy, A*/RRT*, PID Control, IEEE LaTeX}
+\begin{tightitemize}
+  \item Designed a full perception-planning-control pipeline for GPS-denied quadrotor navigation using only onboard depth-camera vision, simulated in PyBullet
+  \item Benchmarked A* against RRT* across 60 trials (3 obstacle densities x 2 planners x 10 trials); A* won on success rate and path efficiency (1.03x optimal vs 1.06-1.11x) with about 30x lower planning latency (36ms vs approx. 1.1-1.2s)
+  \item Wrote up the full study as a 5-page IEEE conference paper with experimental results and figures generated from the sweep data
+\end{tightitemize}
+
+\entrysimple{Bengali Medical Dialogue Generation - Nascenia AI Hackathon}{Aug 2026}
+\textit{Python, PyTorch, LoRA, NLP}
+\begin{tightitemize}
+  \item Fine-tuned an LLM under 3B parameters (LoRA on Qwen3-1.7B) to generate doctor-style responses in Bengali to patient questions for a Kaggle competition hosted by Nascenia
+  \item Evaluated TF-IDF retrieval, retrieval+generation hybrids, semantic retrieval, and model-soup ensembling; documented what worked and why
 \end{tightitemize}
 
 \entrysimple{Scraper Pipeline - AI-Powered Web Scraping and Extraction System}{Jul 2026 - Present}

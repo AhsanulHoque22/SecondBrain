@@ -95,16 +95,19 @@ navLinks.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => 
 /* ---------- Canvas: constellation / particle network background ---------- */
 const canvas = document.getElementById('bg-canvas');
 const ctx = canvas.getContext('2d');
-let w, h, particles;
+/* named bgW/bgH, not w/h: Lenis's dist build isn't IIFE-wrapped and
+   declares a top-level `function w(...)`, so a global `let w` here
+   collides with it — SyntaxError, and it takes this whole file down. */
+let bgW, bgH, particles;
 const mouse = { x: -9999, y: -9999 };
 
 function resize() {
-  w = canvas.width = window.innerWidth;
-  h = canvas.height = window.innerHeight;
-  const count = Math.min(90, Math.floor((w * h) / 18000));
+  bgW = canvas.width = window.innerWidth;
+  bgH = canvas.height = window.innerHeight;
+  const count = Math.min(90, Math.floor((bgW * bgH) / 18000));
   particles = Array.from({ length: count }, () => ({
-    x: Math.random() * w,
-    y: Math.random() * h,
+    x: Math.random() * bgW,
+    y: Math.random() * bgH,
     vx: (Math.random() - 0.5) * 0.3,
     vy: (Math.random() - 0.5) * 0.3,
   }));
@@ -114,11 +117,11 @@ window.addEventListener('mousemove', (e) => { mouse.x = e.clientX; mouse.y = e.c
 resize();
 
 function tick() {
-  ctx.clearRect(0, 0, w, h);
+  ctx.clearRect(0, 0, bgW, bgH);
   for (const p of particles) {
     p.x += p.vx; p.y += p.vy;
-    if (p.x < 0 || p.x > w) p.vx *= -1;
-    if (p.y < 0 || p.y > h) p.vy *= -1;
+    if (p.x < 0 || p.x > bgW) p.vx *= -1;
+    if (p.y < 0 || p.y > bgH) p.vy *= -1;
     const dx = p.x - mouse.x, dy = p.y - mouse.y;
     const dist = Math.sqrt(dx * dx + dy * dy);
     if (dist < 140) { p.x += dx / dist * 0.6; p.y += dy / dist * 0.6; }

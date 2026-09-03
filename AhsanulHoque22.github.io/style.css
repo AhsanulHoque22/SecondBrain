@@ -166,7 +166,12 @@ main{position:relative;z-index:2;}
 .section-title{font-size:clamp(2rem,4vw,3.2rem);font-weight:800;letter-spacing:-.02em;}
 
 /* ABOUT */
-.about-grid{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:start;}
+.about-grid{display:grid;grid-template-columns:220px 1fr 1fr;gap:60px;align-items:start;}
+.about-photo{grid-row:1/3;}
+.about-photo img{
+  width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:24px;
+  display:block;background:var(--bg-elev);border:1px solid var(--line);
+}
 .about-text{font-size:1.15rem;line-height:1.75;color:var(--ink-dim);grid-column:span 1;}
 .about-text strong{color:var(--ink);}
 .stat-grid{grid-column:1/-1;display:flex;gap:60px;margin-top:20px;flex-wrap:wrap;}
@@ -229,16 +234,16 @@ main{position:relative;z-index:2;}
 .skills-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:40px;}
 .skill-group h3{font-family:var(--mono);color:var(--ink-dim);font-size:.85rem;margin-bottom:16px;text-transform:uppercase;letter-spacing:.5px;}
 
-/* AWARDS — iOS grouped-list card */
-.awards-list{
-  background:var(--bg-elev);border:1px solid var(--line);border-radius:24px;overflow:hidden;
+/* AWARDS — photo grid, each a rounded iOS-style card */
+.awards-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;}
+.award-card{
+  background:var(--bg-elev);border:1px solid var(--line);border-radius:20px;overflow:hidden;
 }
-.awards-list li{
-  display:flex;gap:24px;padding:20px 24px;border-top:1px solid var(--line);
-  font-size:1.05rem;color:var(--ink-dim);
-}
-.awards-list li:first-child{border-top:none;}
-.awards-list .year{font-family:var(--mono);color:var(--cyan);width:50px;flex-shrink:0;}
+.award-card img{width:100%;aspect-ratio:4/3;object-fit:cover;display:block;}
+.award-card figcaption{padding:16px 18px;font-size:.95rem;color:var(--ink-dim);line-height:1.5;}
+.award-card .year{font-family:var(--mono);color:var(--cyan);display:block;font-size:.8rem;margin-bottom:4px;}
+.award-card-text{display:flex;align-items:center;min-height:120px;}
+.award-card-text figcaption{padding:24px;}
 
 /* CONTACT */
 .contact-section{text-align:center;}
@@ -282,11 +287,14 @@ footer{
   #nav-toggle.active span:nth-child(2){opacity:0;}
   #nav-toggle.active span:nth-child(3){transform:translateY(-7px) rotate(-45deg);}
   .about-grid{grid-template-columns:1fr;}
+  .about-photo{grid-row:auto;max-width:200px;margin:0 auto 10px;}
   .project-card{grid-template-columns:40px 1fr;}
   .project-links{grid-column:2;text-align:left;}
   .skills-grid{grid-template-columns:1fr 1fr;}
+  .awards-grid{grid-template-columns:1fr 1fr;}
   .hero-meta{flex-direction:column;gap:6px;bottom:110px;}
 }
 @media (max-width:520px){
   .skills-grid{grid-template-columns:1fr;}
+  .awards-grid{grid-template-columns:1fr;}
 }

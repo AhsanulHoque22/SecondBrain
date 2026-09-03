@@ -79,6 +79,9 @@ addEventListener('DOMContentLoaded', () => setTimeout(() => {
       <h2 class="section-title reveal-up">About</h2>
     </div>
     <div class="about-grid">
+      <div class="about-photo reveal-up">
+        <img src="headshot.jpg" alt="Ahsanul Hoque" loading="lazy">
+      </div>
       <p class="about-text reveal-up">
         Final-year Computer Science &amp; Engineering student at the University of Chittagong who builds
         full production-grade products, not class assignments. Comfortable across the stack — React/TypeScript
@@ -88,9 +91,10 @@ addEventListener('DOMContentLoaded', () => setTimeout(() => {
       </p>
       <p class="about-text reveal-up">
         Currently building <strong>Livora</strong>, an AI-powered healthcare platform connecting patients,
-        doctors, lab technicians, and hospital administrators — 2nd place and an incubation package at the
-        ITBI Student Startup Pitch Fest 2026 (CUET). Outside of code: former President of a school science club
-        and Joint Secretary of its debating society.
+        doctors, lab technicians, and hospital administrators — Champion at the JnU AI &amp; IT Fest
+        Brainchild 2.0, and 2nd place with an incubation package at the ITBI Student Startup Pitch Fest 2026
+        (CUET). Outside of code: former President of a school science club and Joint Secretary of its
+        debating society.
       </p>
       <div class="stat-grid reveal-up">
         <div class="stat"><span class="stat-num" data-count="20">0</span><span class="stat-label">Public &amp; private repos</span></div>
@@ -112,9 +116,10 @@ addEventListener('DOMContentLoaded', () => setTimeout(() => {
         <div class="timeline-body">
           <h3>Founder &amp; CEO <span class="at">@ Livora</span></h3>
           <p>Lead product, engineering, and business strategy for an AI-powered healthcare platform serving
-             patients, doctors, lab technicians, and hospital administrators. Won 2nd place at the ITBI Student
-             Startup Pitch Fest 2026 (CUET), securing 6 months of free incubation, mentoring, and ecosystem
-             support worth BDT 100,000. Ran an AI training workshop for practicing surgeons in Chittagong.</p>
+             patients, doctors, lab technicians, and hospital administrators. Won Champion at the JnU AI &amp;
+             IT Fest Brainchild 2.0 and 2nd place at the ITBI Student Startup Pitch Fest 2026 (CUET), the
+             latter securing 6 months of free incubation, mentoring, and ecosystem support worth BDT 100,000.
+             Ran an AI training workshop for practicing surgeons in Chittagong.</p>
           <div class="tag-row">
             <span>React</span><span>TypeScript</span><span>Node.js</span><span>PostgreSQL</span><span>RAG</span><span>Socket.IO</span>
           </div>
@@ -146,7 +151,8 @@ addEventListener('DOMContentLoaded', () => setTimeout(() => {
           <p>Full-stack AI-powered healthcare platform — appointment booking, voice-driven prescriptions,
              lab order/result management with payments, DICOM/FHIR/HL7 ingestion, MDT video consultations,
              a RAG-based health assistant with medicine safety checks, and prompt-injection defenses.
-             Instrumented with Langfuse and Sentry.</p>
+             Instrumented with Langfuse and Sentry. Champion at JnU AI &amp; IT Fest Brainchild 2.0 and
+             2nd place at the ITBI Student Startup Pitch Fest 2026 (CUET).</p>
           <div class="tag-row"><span>React</span><span>TypeScript</span><span>Node.js</span><span>PostgreSQL</span><span>LLM/RAG</span><span>Socket.IO</span></div>
         </div>
         <div class="project-links">
@@ -319,14 +325,35 @@ addEventListener('DOMContentLoaded', () => setTimeout(() => {
       <span class="section-num">—</span>
       <h2 class="section-title reveal-up">Recognition</h2>
     </div>
-    <ul class="awards-list">
-      <li class="reveal-up"><span class="year">2026</span>2nd Place, ITBI Student Startup Pitch Fest, CUET — for Livora</li>
-      <li class="reveal-up"><span class="year">2025</span>1st Place, Robo Soccer, EEE Fest, University of Chittagong</li>
-      <li class="reveal-up"><span class="year">2025</span>Runner-up, Hackathon Segment, Chittagong Science Carnival (CUSS)</li>
-      <li class="reveal-up"><span class="year">2024</span>1st Runner-up, Robo Soccer, Bangabandhu Innovation Fair, Premier University</li>
-      <li class="reveal-up"><span class="year">2023</span>Finalist, Bangabandhu Innovation Grant (BIG)</li>
-      <li class="reveal-up"><span class="year">—</span>Champion, ETE DecaHz — SDG-focused idea competition</li>
-    </ul>
+    <div class="awards-grid">
+      <figure class="award-card reveal-up">
+        <img src="award-jnu-brainchild.jpg" alt="Team Livora receiving the Champion award at JnU AI & IT Fest Brainchild 2.0" loading="lazy">
+        <figcaption><span class="year">2026</span>Champion, JnU AI &amp; IT Fest Brainchild 2.0 — for Livora</figcaption>
+      </figure>
+      <figure class="award-card reveal-up">
+        <img src="award-itbi-pitchfest.jpg" alt="Team Livora with the 2nd place certificate at the ITBI Student Startup Pitch Fest 2026" loading="lazy">
+        <figcaption><span class="year">2026</span>2nd Place, ITBI Student Startup Pitch Fest, CUET — for Livora</figcaption>
+      </figure>
+      <figure class="award-card reveal-up">
+        <img src="award-eee-fest-robosoccer.jpg" alt="1st Place plaque, Gaming (Soccer Bot) segment, EEE Fest 2025" loading="lazy">
+        <figcaption><span class="year">2025</span>1st Place, Robo Soccer, EEE Fest, University of Chittagong</figcaption>
+      </figure>
+      <figure class="award-card reveal-up">
+        <img src="award-cuss-hackathon.jpg" alt="Runner-up trophy and medal, Hackathon Segment, Chittagong Science Carnival" loading="lazy">
+        <figcaption><span class="year">2025</span>Runner-up, Hackathon Segment, Chittagong Science Carnival (CUSS)</figcaption>
+      </figure>
+      <figure class="award-card reveal-up">
+        <img src="award-bangabandhu-fair.jpg" alt="Team photo at the Bangabandhu Innovation Fair 2024 robo soccer competition" loading="lazy">
+        <figcaption><span class="year">2024</span>1st Runner-up, Robo Soccer, Bangabandhu Innovation Fair, Premier University</figcaption>
+      </figure>
+      <figure class="award-card award-card-text reveal-up">
+        <figcaption><span class="year">2023</span>Finalist, Bangabandhu Innovation Grant (BIG)</figcaption>
+      </figure>
+      <figure class="award-card reveal-up">
+        <img src="award-ete-decahz.jpg" alt="Receiving the Champion certificate at ETE DecaHz, an SDG-focused idea competition" loading="lazy">
+        <figcaption><span class="year">2022</span>Champion, ETE DecaHz — SDG-focused idea competition</figcaption>
+      </figure>
+    </div>
   </section>
 
   <!-- CONTACT -->
@@ -339,6 +366,8 @@ addEventListener('DOMContentLoaded', () => setTimeout(() => {
       <div class="contact-links reveal-up">
         <a href="https://github.com/AhsanulHoque22" target="_blank" rel="noopener">GitHub</a>
         <a href="https://linkedin.com/in/ahsanul-hoque-a31a3235b" target="_blank" rel="noopener">LinkedIn</a>
+        <a href="https://web.facebook.com/ahsanulhoque.ratul/" target="_blank" rel="noopener">Facebook</a>
+        <a href="https://wa.me/8801834123393" target="_blank" rel="noopener">WhatsApp</a>
       </div>
     </div>
   </section>

@@ -10,6 +10,14 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
+<script>
+/* Safety net independent of GSAP/script.js: if the animation stack fails to
+   load or throws (CDN blocked, ad blocker, network error), reveal all
+   content anyway so the page never stays blank. */
+addEventListener('DOMContentLoaded', () => setTimeout(() => {
+  document.querySelectorAll('.reveal-up,.reveal-line').forEach((el) => el.classList.add('is-visible'));
+}, 2500));
+</script>
 </head>
 <body>
 

@@ -788,6 +788,7 @@ navLinks.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => 
   }, { rootMargin: '-40% 0px -50% 0px', threshold: 0 });
 
   items.forEach((el) => {
+    if (!el.dataset.section) return; /* e.g. the résumé download pill: an action, not a section */
     const section = document.getElementById(el.dataset.section);
     if (section) sectionObserver.observe(section);
     el.addEventListener('click', () => setActive(el.dataset.section));

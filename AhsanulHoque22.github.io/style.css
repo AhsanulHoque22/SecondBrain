@@ -427,6 +427,9 @@ footer{
 .reveal-up.is-visible,.reveal-line.is-visible{opacity:1;transform:none;}
 
 @media (max-width:860px){
+  /* the floating bottom tab bar (below) replaces the top bar's job on
+     phone, hamburger included; the résumé link moves into that bar */
+  #navbar{display:none;}
   .nav-links,.nav-cta{display:none;}
   .nav-links.open{
     display:flex;flex-direction:column;position:fixed;inset:0 0 0 auto;width:70vw;
@@ -465,6 +468,7 @@ footer{
   }
   .tab-bar-item.is-active{background:rgba(201,162,39,.16);color:var(--gold);padding:9px 13px;}
   .tab-bar-item.is-active .tab-bar-label{max-width:100px;opacity:1;margin-left:7px;}
+  .tab-bar-resume{margin-left:4px;padding-left:11px;border-left:1px solid var(--line);}
   .section{padding:90px 6vw;}
   .about-grid{grid-template-columns:1fr;}
   .now-grid{grid-template-columns:1fr;}
@@ -476,7 +480,7 @@ footer{
   .stack-card{height:min(60vh,480px);}
   .stack-graph{height:70vh;}
   .awards-grid{grid-template-columns:1fr 1fr;}
-  #hero{padding:100px 5vw 30px;}
+  #hero{padding:30px 5vw 30px;}
   .hero-tagline{text-align:left;}
   .hero-stage{min-height:220px;}
   .hero-bottom-row{flex-direction:column;align-items:flex-start;}

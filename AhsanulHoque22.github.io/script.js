@@ -44,7 +44,7 @@ try {
       .to('[data-parallax-layer="4"]', { yPercent: -15, ease: 'none' }, 0) /* role title */
       /* sharp at rest; only picks up a blurred edge once you scroll (see
          .hero-photo-blur's radial mask, which keeps the center sharp). */
-      .to('.hero-photo-blur', { '--edge-blur': 14, ease: 'none' }, 0);
+      .to('.hero-photo-blur', { '--edge-blur': 9, ease: 'none' }, 0);
   }
 } catch (e) {
   console.error('GSAP failed to load. Animations disabled, rest of the page still works:', e);

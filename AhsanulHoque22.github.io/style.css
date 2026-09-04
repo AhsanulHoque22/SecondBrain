@@ -146,17 +146,24 @@ main{position:relative;z-index:2;}
    as a sharp portrait with a blurred rim rather than one uniformly soft
    image. The edge-blur radius itself is driven by scroll (see script.js's
    parallax timeline): 0 at rest, growing as the hero scrolls past. */
+/* the sharp and blurred copies each fade out on their OWN before the
+   image's actual rectangular bounds (not just where the other layer's
+   mask happens to start), so the portrait dissolves into the page
+   background at every edge instead of hard-cutting to a rectangle
+   once the blur ring's mask runs out. */
 .hero-photo{
   position:absolute;left:50%;bottom:0;transform:translateX(-50%);
   z-index:1;height:100%;max-height:560px;display:block;
   filter:grayscale(.2) contrast(1.05) brightness(.96) drop-shadow(0 20px 30px rgba(0,0,0,.5));
+  -webkit-mask-image:radial-gradient(ellipse 62% 70% at 50% 40%, #000 0%, #000 42%, transparent 68%);
+  mask-image:radial-gradient(ellipse 62% 70% at 50% 40%, #000 0%, #000 42%, transparent 68%);
 }
 .hero-photo-blur{
   z-index:2;pointer-events:none;
   --edge-blur:0;
-  filter:blur(calc(var(--edge-blur) * 1px)) grayscale(.2) contrast(1.05) brightness(.96);
-  -webkit-mask-image:radial-gradient(ellipse 55% 62% at 50% 38%, transparent 55%, black 100%);
-  mask-image:radial-gradient(ellipse 55% 62% at 50% 38%, transparent 55%, black 100%);
+  filter:blur(calc(var(--edge-blur) * 1px)) grayscale(.2) contrast(1.05) brightness(.92);
+  -webkit-mask-image:radial-gradient(ellipse 62% 70% at 50% 40%, transparent 32%, #000 56%, #000 82%, transparent 100%);
+  mask-image:radial-gradient(ellipse 62% 70% at 50% 40%, transparent 32%, #000 56%, #000 82%, transparent 100%);
 }
 .hero-role-big{
   position:absolute;right:0;bottom:4%;z-index:2;text-align:right;

@@ -496,14 +496,14 @@ navLinks.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => 
     'Other': '#9aa5b7',
   };
 
-  const HUB_R = 24;
-  const TECH_R = 17;
+  const HUB_R = 19;
+  const TECH_R = 13;
 
   /* an ellipse, not a circle: the box is landscape, so spreading hubs
      wider than they are tall uses more of it before zoomToFit scales in */
   const hubAngle = (cat) => CATEGORIES.indexOf(cat) * (2 * Math.PI / CATEGORIES.length);
-  const hubX = (cat) => 230 * Math.cos(hubAngle(cat));
-  const hubY = (cat) => 150 * Math.sin(hubAngle(cat));
+  const hubX = (cat) => 185 * Math.cos(hubAngle(cat));
+  const hubY = (cat) => 120 * Math.sin(hubAngle(cat));
 
   const nodes = CATEGORIES.map((cat) => (
     { id: cat, type: 'category', r: HUB_R, x: hubX(cat), y: hubY(cat) }
@@ -544,6 +544,18 @@ navLinks.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => 
 
   const highlightNodes = new Set();
   const highlightLinks = new Set();
+
+  /* every node is clamped to this radius from the origin every tick (see
+     onEngineTick below), so the true maximum extent of the graph is
+     always known ahead of time: MAX_R plus the biggest node's own radius
+     and the collision gap. The view is fitted directly from that fixed
+     number instead of guessing when the physics has "settled" (the
+     collision pass below keeps nudging positions every tick, which can
+     keep the simulation from ever cleanly reaching d3-force's own
+     stopped state, so onEngineStop / a delayed zoomToFit can't be
+     trusted to fire at a moment that still matches the current layout). */
+  const MAX_R = 220;
+  const FIT_R = MAX_R + HUB_R + 6;
 
   const Graph = ForceGraph()(container)
     .graphData({ nodes, links })
@@ -643,22 +655,12 @@ navLinks.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => 
       Graph.nodeColor(Graph.nodeColor()).linkColor(Graph.linkColor()).linkWidth(Graph.linkWidth());
     })
     .onEngineTick(() => {
-      /* hard-clamp every node to a fixed radius from the origin so the
-         layout can never drift past the container's edge, no matter how
-         the charge/link forces settle or a drag reheats the simulation */
-      const MAX_R = 270;
-      nodes.forEach((n) => {
-        const d = Math.sqrt(n.x * n.x + n.y * n.y);
-        if (d > MAX_R) {
-          const k = MAX_R / d;
-          n.x *= k;
-          n.y *= k;
-        }
-      });
-
-      /* manual collision pass: push any pair of circles apart so nodes
-         never render overlapping, regardless of how charge/link settle */
-      const GAP = 4;
+      /* manual collision pass first: push any pair of circles apart so
+         nodes never render overlapping, regardless of how charge/link
+         settle. Runs BEFORE the boundary clamp below (not after) since a
+         collision push can move a node past the boundary; clamping only
+         before the push let that pass through unfixed every tick. */
+      const GAP = 3;
       for (let i = 0; i < nodes.length; i++) {
         for (let j = i + 1; j < nodes.length; j++) {
           const a = nodes[i], b = nodes[j];
@@ -675,22 +677,33 @@ navLinks.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => 
           }
         }
       }
-    })
-    .onEngineStop(() => Graph.zoomToFit(400, 55));
 
-  Graph.d3Force('charge').strength(-200);
-  Graph.d3Force('link').distance(78);
+      /* hard-clamp every node to a fixed radius from the origin, last,
+         so nothing (physics settling OR the collision push above OR a
+         drag reheat) can ever leave a node past the container's edge */
+      nodes.forEach((n) => {
+        const d = Math.sqrt(n.x * n.x + n.y * n.y);
+        if (d > MAX_R) {
+          const k = MAX_R / d;
+          n.x *= k;
+          n.y *= k;
+        }
+      });
+    });
 
-  /* fit to the (now-reasonable) initial layout right away, then again
-     a couple of times as the physics settle: onEngineStop alone can fire
-     earlier than expected when the page is busy elsewhere (scroll
-     animations, the WebGL background), so this doesn't depend on it */
-  Graph.zoomToFit(0, 55);
-  setTimeout(() => Graph.zoomToFit(300, 55), 400);
-  setTimeout(() => Graph.zoomToFit(300, 55), 1600);
+  Graph.d3Force('charge').strength(-150);
+  Graph.d3Force('link').distance(58);
+
+  function fitView() {
+    const scale = Math.min(container.clientWidth, container.clientHeight) / (FIT_R * 2);
+    Graph.centerAt(0, 0, 0);
+    Graph.zoom(scale, 0);
+  }
+  fitView();
 
   window.addEventListener('resize', () => {
     Graph.width(container.clientWidth).height(container.clientHeight);
+    fitView();
   });
 
   /* subtle 3D tilt that follows the cursor instead of a zoom control */

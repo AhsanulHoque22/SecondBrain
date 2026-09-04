@@ -257,18 +257,7 @@ main{position:relative;z-index:2;}
   position:relative;width:min(680px,92vw);height:min(560px,84vh);
   perspective:2000px;
 }
-.drawer-box{
-  position:absolute;left:50%;bottom:0;transform:translateX(-50%);
-  width:104%;height:64px;border-radius:10px 10px 20px 20px;
-  background:linear-gradient(180deg,#363b43,#1e2126);
-  box-shadow:inset 0 2px 6px rgba(255,255,255,.08),inset 0 -10px 16px rgba(0,0,0,.55),0 30px 60px rgba(0,0,0,.55);
-}
-.drawer-box-label{
-  position:absolute;left:50%;bottom:18px;transform:translateX(-50%);
-  background:#15171b;color:#c9cdd3;font-family:var(--mono);font-size:.72rem;
-  letter-spacing:3px;padding:7px 20px;border-radius:4px;border:1px solid rgba(255,255,255,.08);
-}
-.folder-stack{position:absolute;inset:0 0 56px 0;transform-style:preserve-3d;}
+.folder-stack{position:absolute;inset:0;transform-style:preserve-3d;}
 .folder{
   position:absolute;left:50%;top:0;width:100%;max-width:620px;
   transform:translateX(-50%);transform-origin:center top;
@@ -371,7 +360,6 @@ footer{
      stack of folders that expand in place on tap. */
   .drawer-pin{position:static;height:auto;min-height:0;overflow:visible;padding:10px 0;}
   .drawer-3d{position:static;width:100%;height:auto;perspective:none;}
-  .drawer-box{display:none;}
   .folder-stack{position:static;inset:auto;display:flex;flex-direction:column;gap:14px;}
   .folder{position:static;left:auto;top:auto;max-width:100%;transform:none !important;}
   .skills-grid{grid-template-columns:1fr 1fr;}

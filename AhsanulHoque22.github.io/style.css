@@ -84,6 +84,13 @@ main{position:relative;z-index:2;}
 #nav-toggle span{width:22px;height:2px;background:var(--ink);transition:transform .25s,opacity .25s;}
 .resume-mobile{display:none;}
 
+/* MOBILE TAB BAR: a floating pill nav (see index.html) shown only below
+   the mobile breakpoint; icon-only until a section is active, then its
+   label springs open next to the icon. Active state driven by the
+   scroll-spy in script.js, not by click alone, so it tracks scroll
+   position the same way a native app tab bar would. */
+.tab-bar{display:none;}
+
 /* HERO: a framed "poster" card (gold-on-charcoal), modeled on a
    reference mockup: a top ticker of specialties, name + tagline on one
    row, a giant background word behind the portrait with the role title
@@ -435,6 +442,29 @@ footer{
   #nav-toggle.active span:nth-child(1){transform:translateY(7px) rotate(45deg);}
   #nav-toggle.active span:nth-child(2){opacity:0;}
   #nav-toggle.active span:nth-child(3){transform:translateY(-7px) rotate(-45deg);}
+  body{padding-bottom:76px;}
+  .tab-bar{
+    display:flex;align-items:center;gap:2px;
+    position:fixed;left:50%;bottom:14px;transform:translateX(-50%);z-index:110;
+    max-width:94vw;overflow-x:auto;-ms-overflow-style:none;scrollbar-width:none;
+    background:rgba(9,8,7,.88);border:1px solid var(--panel-border);border-radius:980px;
+    padding:6px;box-shadow:0 20px 40px rgba(0,0,0,.5);
+    backdrop-filter:blur(20px) saturate(160%);-webkit-backdrop-filter:blur(20px) saturate(160%);
+  }
+  .tab-bar::-webkit-scrollbar{display:none;}
+  .tab-bar-item{
+    display:flex;align-items:center;flex-shrink:0;
+    padding:9px;border-radius:980px;color:rgba(255,255,255,.55);
+    transition:background .3s var(--ease),color .3s var(--ease),padding .3s var(--ease);
+  }
+  .tab-bar-item svg{width:19px;height:19px;flex-shrink:0;display:block;}
+  .tab-bar-label{
+    max-width:0;opacity:0;margin-left:0;overflow:hidden;white-space:nowrap;
+    font-family:var(--sans);font-size:.72rem;font-weight:600;
+    transition:max-width .35s var(--ease),opacity .2s var(--ease),margin-left .3s var(--ease);
+  }
+  .tab-bar-item.is-active{background:rgba(201,162,39,.16);color:var(--gold);padding:9px 13px;}
+  .tab-bar-item.is-active .tab-bar-label{max-width:100px;opacity:1;margin-left:7px;}
   .section{padding:90px 6vw;}
   .about-grid{grid-template-columns:1fr;}
   .now-grid{grid-template-columns:1fr;}

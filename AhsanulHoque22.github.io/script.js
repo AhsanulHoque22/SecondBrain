@@ -767,3 +767,29 @@ navLinks.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => 
     svg.appendChild(line);
   });
 })();
+
+/* MOBILE TAB BAR: scroll-spy driving which pill shows its label. Runs
+   unconditionally (the bar itself is only visible below the mobile
+   breakpoint via CSS); IntersectionObserver's own cost is negligible
+   either way. */
+(function () {
+  const tabBar = document.getElementById('tab-bar');
+  if (!tabBar) return;
+  const items = Array.from(tabBar.querySelectorAll('.tab-bar-item'));
+
+  function setActive(id) {
+    items.forEach((el) => el.classList.toggle('is-active', el.dataset.section === id));
+  }
+
+  const sectionObserver = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) setActive(entry.target.id);
+    });
+  }, { rootMargin: '-40% 0px -50% 0px', threshold: 0 });
+
+  items.forEach((el) => {
+    const section = document.getElementById(el.dataset.section);
+    if (section) sectionObserver.observe(section);
+    el.addEventListener('click', () => setActive(el.dataset.section));
+  });
+})();

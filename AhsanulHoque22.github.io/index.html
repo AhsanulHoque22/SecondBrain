@@ -42,6 +42,40 @@ addEventListener('DOMContentLoaded', () => setTimeout(() => {
   <button id="nav-toggle" aria-label="Menu"><span></span><span></span><span></span></button>
 </nav>
 
+<!-- MOBILE TAB BAR: floating pill bottom nav, icons only until a section
+     becomes active (scroll-spy below), matching desktop's 7 section
+     links. Hidden above the mobile breakpoint (see style.css). -->
+<nav id="tab-bar" class="tab-bar" aria-label="Section navigation">
+  <a href="#about" class="tab-bar-item" data-section="about" aria-label="About">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+    <span class="tab-bar-label">About</span>
+  </a>
+  <a href="#now" class="tab-bar-item" data-section="now" aria-label="Now">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-2.48a2 2 0 0 0-1.93 1.46l-2.35 8.36a.25.25 0 0 1-.48 0L9.24 2.18a.25.25 0 0 0-.48 0l-2.35 8.36A2 2 0 0 1 4.49 12H2"/></svg>
+    <span class="tab-bar-label">Now</span>
+  </a>
+  <a href="#experience" class="tab-bar-item" data-section="experience" aria-label="Experience">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 20V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/><rect width="20" height="14" x="2" y="6" rx="2"/></svg>
+    <span class="tab-bar-label">Experience</span>
+  </a>
+  <a href="#education" class="tab-bar-item" data-section="education" aria-label="Education">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.42 10.922a1 1 0 0 0-.019-1.838L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.08a1 1 0 0 0 0 1.832l8.57 3.908a2 2 0 0 0 1.66 0z"/><path d="M22 10v6"/><path d="M6 12.5V16a6 3 0 0 0 12 0v-3.5"/></svg>
+    <span class="tab-bar-label">Education</span>
+  </a>
+  <a href="#projects" class="tab-bar-item" data-section="projects" aria-label="Work">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/></svg>
+    <span class="tab-bar-label">Work</span>
+  </a>
+  <a href="#skills" class="tab-bar-item" data-section="skills" aria-label="Stack">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20v2"/><path d="M12 2v2"/><path d="M17 20v2"/><path d="M17 2v2"/><path d="M2 12h2"/><path d="M2 17h2"/><path d="M2 7h2"/><path d="M20 12h2"/><path d="M20 17h2"/><path d="M20 7h2"/><path d="M7 20v2"/><path d="M7 2v2"/><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="8" y="8" width="8" height="8" rx="1"/></svg>
+    <span class="tab-bar-label">Stack</span>
+  </a>
+  <a href="#contact" class="tab-bar-item" data-section="contact" aria-label="Contact">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 7-8.991 5.727a2 2 0 0 1-2.009 0L2 7"/><rect x="2" y="4" width="20" height="16" rx="2"/></svg>
+    <span class="tab-bar-label">Contact</span>
+  </a>
+</nav>
+
 <main>
 
   <!-- HERO -->

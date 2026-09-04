@@ -499,16 +499,28 @@ navLinks.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => 
   const HUB_R = 24;
   const TECH_R = 17;
 
-  const nodes = CATEGORIES.map((cat, i) => {
-    const angle = i * (2 * Math.PI / CATEGORIES.length);
-    /* an ellipse, not a circle: the box is landscape, so spreading hubs
-       wider than they are tall uses more of it before zoomToFit scales in */
-    return { id: cat, type: 'category', r: HUB_R, x: 230 * Math.cos(angle), y: 150 * Math.sin(angle) };
-  });
+  /* an ellipse, not a circle: the box is landscape, so spreading hubs
+     wider than they are tall uses more of it before zoomToFit scales in */
+  const hubAngle = (cat) => CATEGORIES.indexOf(cat) * (2 * Math.PI / CATEGORIES.length);
+  const hubX = (cat) => 230 * Math.cos(hubAngle(cat));
+  const hubY = (cat) => 150 * Math.sin(hubAngle(cat));
+
+  const nodes = CATEGORIES.map((cat) => (
+    { id: cat, type: 'category', r: HUB_R, x: hubX(cat), y: hubY(cat) }
+  ));
   const links = [];
   const logoCache = {};
   TECH.forEach(([name, home, extras, slug]) => {
-    nodes.push({ id: name, type: 'tech', home, r: TECH_R, color: CATEGORY_FALLBACK[home] });
+    /* every tech node also starts already spread toward its home hub
+       (not at d3-force's default near-origin spawn point), so the graph
+       looks right immediately rather than depending on how many physics
+       ticks actually run before the layout is considered "settled" */
+    const jitterX = (Math.random() - 0.5) * 60;
+    const jitterY = (Math.random() - 0.5) * 60;
+    nodes.push({
+      id: name, type: 'tech', home, r: TECH_R, color: CATEGORY_FALLBACK[home],
+      x: hubX(home) * 0.6 + jitterX, y: hubY(home) * 0.6 + jitterY,
+    });
     links.push({ source: name, target: home });
     extras.forEach((cat) => links.push({ source: name, target: cat }));
     if (slug && !logoCache[slug]) {
@@ -668,6 +680,14 @@ navLinks.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => 
 
   Graph.d3Force('charge').strength(-200);
   Graph.d3Force('link').distance(78);
+
+  /* fit to the (now-reasonable) initial layout right away, then again
+     a couple of times as the physics settle: onEngineStop alone can fire
+     earlier than expected when the page is busy elsewhere (scroll
+     animations, the WebGL background), so this doesn't depend on it */
+  Graph.zoomToFit(0, 55);
+  setTimeout(() => Graph.zoomToFit(300, 55), 400);
+  setTimeout(() => Graph.zoomToFit(300, 55), 1600);
 
   window.addEventListener('resize', () => {
     Graph.width(container.clientWidth).height(container.clientHeight);

@@ -4,7 +4,7 @@ tags:
   - applications
 company: PEN Group
 role: React & AI Application Developer
-status: preparing
+status: applied
 ---
 
 # PEN Group — React & AI Application Developer
@@ -31,4 +31,4 @@ Source: `Ahsanul_Hoque_CV_PENGroupReactAI.tex` — forked from the [[../Ahsanul_
 ## Submission
 
 - Method: LinkedIn Easy Apply.
-- Status: pending.
+- Status: **applied** 2026-09-04.

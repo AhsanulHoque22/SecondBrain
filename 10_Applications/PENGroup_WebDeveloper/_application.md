@@ -4,7 +4,7 @@ tags:
   - applications
 company: PEN Group
 role: Web Developer
-status: preparing
+status: applied
 ---
 
 # PEN Group — Web Developer
@@ -31,4 +31,4 @@ Source: `Ahsanul_Hoque_CV_PENGroupWeb.tex` — forked from the [[../Ahsanul_Hoqu
 ## Submission
 
 - Method: LinkedIn Easy Apply.
-- Status: pending.
+- Status: **applied** 2026-09-04.

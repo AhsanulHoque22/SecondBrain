@@ -4,7 +4,7 @@ tags:
   - applications
 company: GenAILabs
 role: Full Stack Engineer
-status: preparing
+status: applied
 ---
 
 # GenAILabs — Full Stack Engineer
@@ -32,5 +32,9 @@ Source: `Ahsanul_Hoque_CV_GenAILabs.tex` — forked from the [[../Ahsanul_Hoque_
 
 ## Notes
 
-- No cover letter written yet — ask if one is wanted before submitting.
 - GenAILabs' "cloud platforms (AWS/GCP/Azure) is highly beneficial" qualification isn't backed by anything in the repos reviewed — didn't fabricate cloud experience; CI/CD (GitHub Actions) and Docker are the closest genuine adjacent skills and are what's listed.
+
+## Submission
+
+- Method: LinkedIn Easy Apply.
+- Status: **applied** — LinkedIn shows "Application submitted" (checked 2026-09-03, dated ~1 week prior, so around 2026-08-27). This tracker had been left at "preparing" with a stale note about no cover letter; LinkedIn's own status is the source of truth here. Posting is now closed ("No longer accepting applications").

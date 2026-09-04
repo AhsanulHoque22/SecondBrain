@@ -4,7 +4,7 @@ tags:
   - applications
 company: ZattWorld Solutions
 role: Full-Stack Developer
-status: preparing
+status: closed (not applied)
 ---
 
 # ZattWorld Solutions — Full-Stack Developer
@@ -31,4 +31,4 @@ Source: `Ahsanul_Hoque_CV_ZattWorld.tex` — forked from the [[../Ahsanul_Hoque_
 ## Submission
 
 - Method: LinkedIn Apply (not Easy Apply — "Responses managed off LinkedIn", may redirect externally).
-- Status: pending.
+- Status: **closed, not applied** — checked 2026-09-03, listing now shows "No longer accepting applications." Missed this one; CV stays here for reference.

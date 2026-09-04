@@ -709,3 +709,69 @@ navLinks.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => 
     container.style.transform = 'perspective(1400px) rotateX(0deg) rotateY(0deg)';
   });
 })();
+
+/* BUILD ACTIVITY CHART: a small smoothed multi-series area chart drawn
+   straight into the inline SVG, no charting library. Data is real GitHub
+   commit counts (Aug 29 - Sep 4, 2026) pulled once via `gh api` across
+   the actively-developed repos, not a live-fetched dashboard. */
+(function () {
+  const svg = document.getElementById('activity-chart');
+  if (!svg) return;
+
+  const SERIES = [
+    { hex: '#c9a227', data: [5, 0, 0, 0, 0, 0, 0] },   /* Livora */
+    { hex: '#57c2a8', data: [0, 0, 0, 0, 0, 14, 10] }, /* Second Brain */
+    { hex: '#c084e8', data: [0, 0, 0, 0, 6, 11, 27] }, /* Portfolio */
+  ];
+  const N = 7;
+  const W = 320, PAD_X = 8, TOP = 8, BASE = 112, MAX = 30;
+  const stepX = (W - PAD_X * 2) / (N - 1);
+  const x = (i) => PAD_X + i * stepX;
+  const y = (v) => BASE - (v / MAX) * (BASE - TOP);
+
+  function smoothPath(points) {
+    let d = 'M ' + points[0][0] + ',' + points[0][1];
+    for (let i = 0; i < points.length - 1; i++) {
+      const mx = (points[i][0] + points[i + 1][0]) / 2;
+      const my = (points[i][1] + points[i + 1][1]) / 2;
+      d += ' Q ' + points[i][0] + ',' + points[i][1] + ' ' + mx + ',' + my;
+    }
+    const last = points[points.length - 1];
+    d += ' T ' + last[0] + ',' + last[1];
+    return d;
+  }
+
+  const NS = 'http://www.w3.org/2000/svg';
+  const defs = document.createElementNS(NS, 'defs');
+  svg.appendChild(defs);
+
+  SERIES.forEach((s, i) => {
+    const points = s.data.map((v, j) => [x(j), y(v)]);
+    const top = smoothPath(points);
+
+    const gradId = 'activity-grad-' + i;
+    const grad = document.createElementNS(NS, 'linearGradient');
+    grad.setAttribute('id', gradId);
+    grad.setAttribute('x1', '0'); grad.setAttribute('y1', '0');
+    grad.setAttribute('x2', '0'); grad.setAttribute('y2', '1');
+    const stopTop = document.createElementNS(NS, 'stop');
+    stopTop.setAttribute('offset', '0%'); stopTop.setAttribute('stop-color', s.hex); stopTop.setAttribute('stop-opacity', '0.35');
+    const stopBottom = document.createElementNS(NS, 'stop');
+    stopBottom.setAttribute('offset', '100%'); stopBottom.setAttribute('stop-color', s.hex); stopBottom.setAttribute('stop-opacity', '0');
+    grad.appendChild(stopTop); grad.appendChild(stopBottom);
+    defs.appendChild(grad);
+
+    const area = document.createElementNS(NS, 'path');
+    area.setAttribute('d', top + ' L ' + x(N - 1) + ',' + BASE + ' L ' + x(0) + ',' + BASE + ' Z');
+    area.setAttribute('fill', 'url(#' + gradId + ')');
+    svg.appendChild(area);
+
+    const line = document.createElementNS(NS, 'path');
+    line.setAttribute('d', top);
+    line.setAttribute('fill', 'none');
+    line.setAttribute('stroke', s.hex);
+    line.setAttribute('stroke-width', '2');
+    line.setAttribute('stroke-linecap', 'round');
+    svg.appendChild(line);
+  });
+})();

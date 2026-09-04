@@ -156,6 +156,45 @@ addEventListener('DOMContentLoaded', () => setTimeout(() => {
           <li><span class="now-date">Sep 10 – 11, 2026</span>REACT 2026 Project Showcase <span class="at">@ Southeast University, Dhaka</span></li>
         </ul>
       </div>
+
+      <!-- Real GitHub commit activity across active repos (Aug 29 - Sep 4,
+           2026), pulled once via `gh api` and hardcoded as an honest
+           snapshot, not a live-fetched dashboard. -->
+      <div class="now-card now-card-activity reveal-up">
+        <h3>This Week's Build Activity</h3>
+        <div class="activity-legend">
+          <span><i style="background:var(--gold)"></i>Livora</span>
+          <span><i style="background:#57c2a8"></i>Second Brain</span>
+          <span><i style="background:#c084e8"></i>Portfolio</span>
+        </div>
+        <svg class="activity-chart" id="activity-chart" viewBox="0 0 320 120" preserveAspectRatio="none" aria-hidden="true"></svg>
+        <div class="activity-dates">
+          <span>Aug 29</span><span>Aug 30</span><span>Aug 31</span><span>Sep 1</span><span>Sep 2</span><span>Sep 3</span><span>Sep 4</span>
+        </div>
+        <div class="activity-metrics">
+          <div class="activity-metric reveal-up" style="transition-delay:.05s">
+            <div class="activity-metric-label">
+              <svg width="18" height="18" viewBox="0 0 20 20" fill="none"><path d="M10 2a1 1 0 0 1 1 1v5.17a3 3 0 1 1-2 0V3a1 1 0 0 1 1-1Zm0 12.83a3 3 0 1 1 0 2.17v-2.17Zm-6-8a3 3 0 1 1 2 2.83V10a1 1 0 1 1-2 0V9.66a3 3 0 0 1 0-2.83Z" fill="var(--gold)"/></svg>
+              Commits This Week
+            </div>
+            <div class="activity-metric-value">74 <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 13V3M8 3 3.5 7.5M8 3l4.5 4.5" stroke="#57c2a8" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          </div>
+          <div class="activity-metric reveal-up" style="transition-delay:.1s">
+            <div class="activity-metric-label">
+              <svg width="18" height="18" viewBox="0 0 20 20" fill="none"><path d="M10 1.5s4 4.2 4 8a4 4 0 1 1-8 0c0-1.2.5-2.1 1-3 .1.7.5 1.3 1.1 1.3.6 0 .9-.6.7-1.2-.4-1.3-.3-3 1.2-5.1Z" fill="var(--gold)"/></svg>
+              Build Streak
+            </div>
+            <div class="activity-metric-value">3 Days <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 13V3M8 3 3.5 7.5M8 3l4.5 4.5" stroke="#57c2a8" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          </div>
+          <div class="activity-metric reveal-up" style="transition-delay:.15s">
+            <div class="activity-metric-label">
+              <svg width="18" height="18" viewBox="0 0 20 20" fill="none"><path d="M2.5 5A1.5 1.5 0 0 1 4 3.5h3.5L9 5h6.5A1.5 1.5 0 0 1 17 6.5v8A1.5 1.5 0 0 1 15.5 16h-11A1.5 1.5 0 0 1 3 14.5V5Z" fill="var(--gold)"/></svg>
+              Active Repos
+            </div>
+            <div class="activity-metric-value">3 <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 13V3M8 3 3.5 7.5M8 3l4.5 4.5" stroke="#57c2a8" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          </div>
+        </div>
+      </div>
     </div>
   </section>
 

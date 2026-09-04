@@ -88,11 +88,15 @@ main{position:relative;z-index:2;}
 .hero-card{
   position:relative;width:100%;max-width:1400px;margin:0 auto;
   border:1px solid rgba(201,162,39,.35);border-radius:20px;
-  background:linear-gradient(160deg,#161412,#0a0908);
+  background:linear-gradient(160deg,#161412,#0a0908); /* fallback if WebGL is unavailable */
   padding:clamp(20px,3vw,40px) clamp(20px,4vw,48px);
   display:flex;flex-direction:column;gap:clamp(16px,2.4vw,28px);
-  overflow:hidden;
+  overflow:hidden;isolation:isolate; /* confines .hero-topo's negative z-index to this card */
 }
+/* animated WebGL contour-line background, drawn behind everything else in
+   the card (see script.js); negative z-index needs isolation:isolate
+   above so it can't escape .hero-card onto the page behind it. */
+.hero-topo{position:absolute;inset:0;z-index:-1;width:100%;height:100%;display:block;opacity:.6;}
 .hero-ticker{
   display:flex;flex-wrap:wrap;justify-content:center;gap:8px 16px;
   padding-bottom:clamp(14px,2vw,22px);border-bottom:1px solid rgba(255,255,255,.12);

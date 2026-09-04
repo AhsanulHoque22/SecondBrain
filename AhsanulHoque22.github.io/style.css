@@ -255,7 +255,6 @@ main{position:relative;z-index:2;}
 }
 .drawer-3d{
   position:relative;width:min(820px,94vw);height:min(700px,88vh);
-  perspective:2200px;
 }
 /* cabinet housing: a metal drawer body sitting behind the folder stack so
    the stack reads as sitting inside an open drawer, not floating loose. */
@@ -281,23 +280,28 @@ main{position:relative;z-index:2;}
 }
 .drawer-rail-top{top:14px;}
 .drawer-rail-bottom{bottom:18px;}
-.folder-stack{position:absolute;inset:0;z-index:1;transform-style:preserve-3d;}
+.folder-stack{position:absolute;inset:0;z-index:1;}
+/* front card sits flush with the bottom of the drawer, like the closest
+   folder in an open cabinet; the rest of the stack queues upward behind
+   it and recedes into the dark, so the anchor and the transform pivot
+   are both the bottom edge, not the top. */
 .folder{
-  position:absolute;left:50%;top:0;width:100%;max-width:720px;
-  transform:translateX(-50%);transform-origin:center top;
+  position:absolute;left:50%;bottom:0;width:100%;max-width:720px;
+  transform:translateX(-50%);transform-origin:center bottom;
   background:#D8C2A3;border-radius:14px;overflow:hidden;cursor:pointer;
   box-shadow:0 18px 36px rgba(0,0,0,.5),inset 0 2px 0 rgba(255,255,255,.15);
   will-change:transform,opacity;
   transition:transform .6s cubic-bezier(.16,1,.3,1),opacity .5s ease;
 }
-/* stacked-pages cue: a couple of faint sheet edges behind each closed tab
-   so a single folder still reads as a card sitting on other cards, rather
-   than a flat strip, before the JS stack even cascades multiple together. */
+/* stacked-pages cue: a couple of faint sheet edges peeking above each
+   closed tab (the direction the rest of the stack recedes) so a single
+   folder still reads as a card sitting on other cards, rather than a
+   flat strip, before the JS stack even cascades multiple together. */
 .folder::before,.folder::after{
-  content:'';position:absolute;left:10px;right:10px;bottom:-7px;height:14px;
-  background:#c3ac89;border-radius:0 0 10px 10px;z-index:-1;
+  content:'';position:absolute;left:10px;right:10px;top:-7px;height:14px;
+  background:#c3ac89;border-radius:10px 10px 0 0;z-index:-1;
 }
-.folder::after{left:20px;right:20px;bottom:-13px;background:#b39d7c;}
+.folder::after{left:20px;right:20px;top:-13px;background:#b39d7c;}
 .folder.is-active{background:#E6D3B7;}
 .folder.is-active::before,.folder.is-active::after{background:transparent;}
 .folder-tab-row{display:flex;align-items:center;gap:18px;padding:24px 34px;}
@@ -396,7 +400,7 @@ footer{
   /* Mobile: drop the pinned/3D scroll rig, fall back to a plain vertical
      stack of folders that expand in place on tap. */
   .drawer-pin{position:static;height:auto;min-height:0;overflow:visible;padding:10px 0;}
-  .drawer-3d{position:static;width:100%;height:auto;perspective:none;}
+  .drawer-3d{position:static;width:100%;height:auto;}
   .drawer-cabinet{display:none;}
   .folder-stack{position:static;inset:auto;display:flex;flex-direction:column;gap:14px;}
   .folder{position:static;left:auto;top:auto;max-width:100%;transform:none !important;}

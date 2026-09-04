@@ -281,30 +281,30 @@ tick();
       const isExpanded = i === expandedIndex;
       const offset = i - centerIdx;
       const hovering = i === hoverIndex && !isExpanded && expandedIndex === null;
-      let ty, rx, rz, scale, opacity, z;
+      let ty, scale, opacity, z;
 
       if (isExpanded) {
-        ty = 0; rx = 0; rz = 0; scale = 1; opacity = 1; z = 200;
+        ty = 0; scale = 1; opacity = 1; z = 200;
       } else if (offset > 0) {
-        const k = Math.min(offset, 7);
-        ty = expandedH + (k - 1) * TAB_STEP + (hovering ? -10 : 0);
-        rx = -7 * k;
-        rz = (i % 2 === 0 ? 1 : -1) * Math.min(k * 0.5, 2);
-        scale = 1 - 0.045 * k;
-        opacity = k > 5 ? 0 : 1 - 0.15 * k;
+        /* not reached yet: queues up behind the front card, receding into
+           the cabinet and fading toward the top, only shrinking a little
+           so the far end of the stack still reads as folders, not dots. */
+        const k = Math.min(offset, 8);
+        ty = -(expandedH + (k - 1) * TAB_STEP) + (hovering ? 8 : 0);
+        scale = Math.max(0.8, 1 - 0.025 * k);
+        opacity = Math.max(0, 1 - 0.12 * k);
         z = 90 - k;
       } else {
-        const k = Math.min(-offset, 5);
-        ty = -k * TAB_STEP * 0.6;
-        rx = 8 * k;
-        rz = 0;
-        scale = 1 - 0.045 * k;
-        opacity = k > 4 ? 0 : 1 - 0.2 * k;
+        /* already shown: exits down past the front edge of the drawer. */
+        const k = Math.min(-offset, 3);
+        ty = k * TAB_STEP * 1.4;
+        scale = Math.max(0.85, 1 - 0.05 * k);
+        opacity = Math.max(0, 1 - 0.4 * k);
         z = 90 - k;
       }
 
       folder.style.transform =
-        'translateX(-50%) translateY(' + ty + 'px) rotateX(' + rx + 'deg) rotateZ(' + rz + 'deg) scale(' + scale + ')';
+        'translateX(-50%) translateY(' + ty + 'px) scale(' + scale + ')';
       folder.style.opacity = String(opacity);
       folder.style.zIndex = String(z);
       folder.classList.toggle('is-active', isExpanded);

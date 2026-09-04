@@ -180,6 +180,18 @@ main{position:relative;z-index:2;}
 .stat-num{font-family:var(--mono);font-size:3rem;font-weight:700;color:var(--cyan);}
 .stat-label{color:var(--ink-dim);font-size:.85rem;max-width:160px;}
 
+/* NOW */
+.now-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;}
+.now-card{background:var(--bg-elev);border:1px solid var(--line);border-radius:20px;padding:32px 34px;}
+.now-card h3{
+  font-family:var(--mono);font-size:.85rem;text-transform:uppercase;letter-spacing:.5px;
+  color:var(--cyan);margin-bottom:20px;
+}
+.now-card ul{list-style:none;display:flex;flex-direction:column;gap:16px;}
+.now-card li{color:var(--ink-dim);line-height:1.65;}
+.now-card li strong{color:var(--ink);}
+.now-date{display:block;font-family:var(--mono);font-size:.78rem;color:var(--cyan);margin-bottom:4px;}
+
 /* TIMELINE */
 .timeline{border-left:1px solid var(--line);}
 .timeline-item{
@@ -295,6 +307,7 @@ footer{
   .section{padding:90px 6vw;}
   .about-grid{grid-template-columns:1fr;}
   .about-photo{grid-row:auto;max-width:200px;margin:0 auto 10px;}
+  .now-grid{grid-template-columns:1fr;}
   .project-card{grid-template-columns:40px 1fr;padding:28px 20px;}
   .project-links{grid-column:2;text-align:left;}
   .skills-grid{grid-template-columns:1fr 1fr;}

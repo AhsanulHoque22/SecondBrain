@@ -4,7 +4,7 @@ tags:
   - applications
 company: AZNEO Limited
 role: Intern (target)
-status: preparing
+status: rejected
 ---
 
 # AZNEO Limited — Internship
@@ -27,5 +27,10 @@ Source: `Ahsanul_Hoque_Cover_Letter_AZNEO.tex`. Addressed to the Chairman. Writt
 
 ## Notes
 
-- Careers page (`/career`) had no listed openings at time of research (2026-07-27) — apply via direct outreach (`info@az-neo.com`) or LinkedIn.
-- Cover letter states the Livora/AZNEO conversation is informal and unformalized — keep that framing accurate if the deal status changes before this is actually sent.
+- Careers page (`/career`) had no listed openings at time of research (2026-07-27) — applied via direct outreach.
+- Cover letter states the Livora/AZNEO conversation is informal and unformalized — was accurate at time of sending.
+
+## Submission
+
+- Method: direct outreach.
+- Status: **rejected** 2026-09-04.

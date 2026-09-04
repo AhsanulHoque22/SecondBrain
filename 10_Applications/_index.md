@@ -16,7 +16,7 @@ Tracker for all job/program applications. Each application gets its own subfolde
 
 ## Applications
 
-- [[AZNEO_Intern/_application|AZNEO Limited — Intern]] — status: preparing (not yet sent). Chattogram BPO/software company (ERP/POS, Web App, eCommerce, IoT & AI Lab). CV projects reordered to lead with retail/e-commerce/IoT work. Not a LinkedIn posting — direct outreach (email or LinkedIn message).
+- [[AZNEO_Intern/_application|AZNEO Limited — Intern]] — status: **rejected** 2026-09-04. Chattogram BPO/software company (ERP/POS, Web App, eCommerce, IoT & AI Lab). CV projects reordered to lead with retail/e-commerce/IoT work.
 - [[GenAILabs_FullStackEngineer/_application|GenAILabs — Full Stack Engineer]] — status: **applied** (LinkedIn shows submitted ~2026-08-27; posting now closed). Remote, entry-level. CV reordered to lead with full-stack web + AI/ML work; added the Nascenia AI Hackathon project.
 - [[PENGroup_ReactAIDeveloper/_application|PEN Group — React & AI Application Developer]] — status: **applied** 2026-09-04 via LinkedIn Easy Apply. On-site, Chattogram. Strongest fit of the batch found via LinkedIn job notifications (2026-08-24) — React + multi-provider LLM/agent integration.
 - [[PENGroup_WebDeveloper/_application|PEN Group — Web Developer]] — status: **applied** 2026-09-04 via LinkedIn Easy Apply. On-site, Chattogram. React/TypeScript front-end role; honestly flagged no Next.js experience in the repo history.

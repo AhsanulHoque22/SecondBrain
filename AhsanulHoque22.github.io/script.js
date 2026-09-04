@@ -244,14 +244,14 @@ tick();
   let hoverIndex = -1;
   let expandedIndex = null;
   const TAB_H = folders[0].querySelector('.folder-tab-row').offsetHeight;
-  const TAB_STEP = 40; /* stagger between collapsed tabs */
+  const TAB_STEP = 54; /* stagger between collapsed tabs, sized for the bigger cards */
 
   function layout() {
     /* +40vh settle buffer at the end: without it, momentum scroll can carry
        a few pixels past the exact instant position:sticky releases while
        progress is still clamped to 1, leaving the last folder rendered as
        if still pinned even though its container already scrolled away. */
-    track.style.height = (140 + n * 18 + 40) + 'vh';
+    track.style.height = (150 + n * 20 + 40) + 'vh';
   }
 
   function scrollFloatIndex() {
@@ -268,8 +268,13 @@ tick();
   function render() {
     const centerIdx = expandedIndex !== null ? expandedIndex : scrollFloatIndex();
     const expandedFolder = expandedIndex !== null ? folders[expandedIndex] : null;
+    /* detail's visual max-height caps at min(520px,60vh), so clamp the raw
+       scrollHeight to that same cap; otherwise long descriptions would
+       reserve more offset for the folders below than the card actually
+       occupies on screen, leaving a gap. */
+    const detailCapPx = Math.min(520, window.innerHeight * 0.6);
     const expandedH = expandedFolder
-      ? TAB_H + expandedFolder.querySelector('.folder-detail').scrollHeight
+      ? TAB_H + Math.min(expandedFolder.querySelector('.folder-detail').scrollHeight, detailCapPx)
       : TAB_H;
 
     folders.forEach((folder, i) => {

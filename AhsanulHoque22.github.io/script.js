@@ -399,11 +399,13 @@ navLinks.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => 
    (force-graph, the vanilla engine behind react-force-graph; no React
    needed here). Category nodes ("Languages", "Web & Backend", ...) are
    hubs; every technology is a single node, home-linked to its primary
-   category. A technology actually used across more than one category
+   category, drawn with its real brand logo (Simple Icons CDN) where
+   one exists. A technology actually used across more than one category
    (per the Experience/Selected Work tags and a GitHub/LinkedIn audit,
    not just the Stack list) gets an extra link to that category instead
    of being listed twice, so the physics settle it as a bridge node
-   pulled between clusters. */
+   pulled between clusters. No click/scroll zoom: the graph only reacts
+   to hovering (link highlight) and cursor position (a subtle 3D tilt). */
 (function () {
   if (typeof ForceGraph === 'undefined') return;
   const container = document.getElementById('stack-graph');
@@ -411,76 +413,101 @@ navLinks.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => 
 
   const CATEGORIES = ['Languages', 'Web & Backend', 'AI / LLM', 'Data & Infra', 'Embedded & IoT', 'Other'];
 
-  /* [name, home category, extra categories it also bridges to] */
+  /* [name, home category, extra categories it also bridges to, Simple Icons slug or null] */
   const TECH = [
-    ['Python', 'Languages', ['AI / LLM', 'Data & Infra', 'Embedded & IoT', 'Other']],
-    ['C++', 'Languages', ['Embedded & IoT']],
-    ['TypeScript', 'Languages', ['Web & Backend']],
-    ['JavaScript', 'Languages', []],
-    ['SQL', 'Languages', ['Data & Infra']],
+    ['Python', 'Languages', ['AI / LLM', 'Data & Infra', 'Embedded & IoT', 'Other'], 'python'],
+    ['C++', 'Languages', ['Embedded & IoT'], 'cplusplus'],
+    ['TypeScript', 'Languages', ['Web & Backend'], 'typescript'],
+    ['JavaScript', 'Languages', [], 'javascript'],
+    ['SQL', 'Languages', ['Data & Infra'], null],
 
-    ['React', 'Web & Backend', []],
-    ['Node.js', 'Web & Backend', []],
-    ['Express', 'Web & Backend', []],
-    ['Prisma', 'Web & Backend', []],
-    ['Sequelize', 'Web & Backend', []],
-    ['REST APIs', 'Web & Backend', []],
-    ['Socket.IO', 'Web & Backend', []],
-    ['Telegram API', 'Web & Backend', ['AI / LLM']],
-    ['Playwright', 'Web & Backend', ['AI / LLM']],
+    ['React', 'Web & Backend', [], 'react'],
+    ['Node.js', 'Web & Backend', [], 'nodedotjs'],
+    ['Express', 'Web & Backend', [], 'express'],
+    ['Prisma', 'Web & Backend', [], 'prisma'],
+    ['Sequelize', 'Web & Backend', [], 'sequelize'],
+    ['REST APIs', 'Web & Backend', [], null],
+    ['Socket.IO', 'Web & Backend', [], 'socketdotio'],
+    ['Telegram API', 'Web & Backend', ['AI / LLM'], 'telegram'],
+    ['Playwright', 'Web & Backend', ['AI / LLM'], 'playwright'],
 
-    ['Gemini', 'AI / LLM', []],
-    ['RAG', 'AI / LLM', ['Web & Backend']],
-    ['Prompt-Injection Defense', 'AI / LLM', []],
-    ['Langfuse', 'AI / LLM', []],
-    ['OCR', 'AI / LLM', []],
-    ['Speech-to-Text', 'AI / LLM', []],
-    ['Claude Code', 'AI / LLM', []],
-    ['Multi-LLM', 'AI / LLM', []],
-    ['PyTorch', 'AI / LLM', []],
-    ['LoRA', 'AI / LLM', []],
-    ['NLP', 'AI / LLM', []],
+    ['Gemini', 'AI / LLM', [], 'googlegemini'],
+    ['RAG', 'AI / LLM', ['Web & Backend'], null],
+    ['Prompt-Injection Defense', 'AI / LLM', [], null],
+    ['Langfuse', 'AI / LLM', [], null],
+    ['OCR', 'AI / LLM', [], null],
+    ['Speech-to-Text', 'AI / LLM', [], null],
+    ['Claude Code', 'AI / LLM', [], 'claude'],
+    ['Multi-LLM', 'AI / LLM', [], null],
+    ['PyTorch', 'AI / LLM', [], 'pytorch'],
+    ['LoRA', 'AI / LLM', [], null],
+    ['NLP', 'AI / LLM', [], null],
 
-    ['PostgreSQL', 'Data & Infra', ['Web & Backend']],
-    ['MySQL', 'Data & Infra', ['Web & Backend']],
-    ['Redis', 'Data & Infra', []],
-    ['Docker', 'Data & Infra', ['Web & Backend']],
-    ['HL7/FHIR/DICOM', 'Data & Infra', []],
-    ['Sentry', 'Data & Infra', []],
-    ['Cron', 'Data & Infra', ['AI / LLM']],
-    ['ETL', 'Data & Infra', []],
+    ['PostgreSQL', 'Data & Infra', ['Web & Backend'], 'postgresql'],
+    ['MySQL', 'Data & Infra', ['Web & Backend'], 'mysql'],
+    ['Redis', 'Data & Infra', [], 'redis'],
+    ['Docker', 'Data & Infra', ['Web & Backend'], 'docker'],
+    ['HL7/FHIR/DICOM', 'Data & Infra', [], null],
+    ['Sentry', 'Data & Infra', [], 'sentry'],
+    ['Cron', 'Data & Infra', ['AI / LLM'], null],
+    ['ETL', 'Data & Infra', [], null],
 
-    ['ESP32', 'Embedded & IoT', []],
-    ['STM32', 'Embedded & IoT', []],
-    ['Arduino', 'Embedded & IoT', []],
-    ['FreeRTOS', 'Embedded & IoT', []],
-    ['LoRaWAN', 'Embedded & IoT', []],
-    ['Raspberry Pi', 'Embedded & IoT', []],
-    ['LoRa (SX1278)', 'Embedded & IoT', []],
-    ['GPS', 'Embedded & IoT', []],
-    ['ThingSpeak', 'Embedded & IoT', []],
+    ['ESP32', 'Embedded & IoT', [], 'espressif'],
+    ['STM32', 'Embedded & IoT', [], 'stmicroelectronics'],
+    ['Arduino', 'Embedded & IoT', [], 'arduino'],
+    ['FreeRTOS', 'Embedded & IoT', [], null],
+    ['LoRaWAN', 'Embedded & IoT', [], null],
+    ['Raspberry Pi', 'Embedded & IoT', [], 'raspberrypi'],
+    ['LoRa (SX1278)', 'Embedded & IoT', [], null],
+    ['GPS', 'Embedded & IoT', [], null],
+    ['ThingSpeak', 'Embedded & IoT', [], null],
 
-    ['DSA', 'Other', []],
-    ['Competitive Programming', 'Other', []],
-    ['Blockchain Fundamentals', 'Other', []],
-    ['PyBullet', 'Other', []],
-    ['A*/RRT*', 'Other', []],
-    ['PID Control', 'Other', []],
-    ['pytest', 'Other', ['AI / LLM']],
+    ['DSA', 'Other', [], null],
+    ['Competitive Programming', 'Other', [], null],
+    ['Blockchain Fundamentals', 'Other', [], null],
+    ['PyBullet', 'Other', [], null],
+    ['A*/RRT*', 'Other', [], null],
+    ['PID Control', 'Other', [], null],
+    ['pytest', 'Other', ['AI / LLM'], 'pytest'],
   ];
 
   const root = getComputedStyle(document.documentElement);
   const GOLD = root.getPropertyValue('--gold').trim() || '#c9a227';
   const INK = root.getPropertyValue('--ink').trim() || '#f5f5f7';
-  const INK_DIM = root.getPropertyValue('--ink-dim').trim() || '#86868b';
   const SANS = root.getPropertyValue('--sans').trim() || 'sans-serif';
 
-  const nodes = CATEGORIES.map((cat) => ({ id: cat, type: 'category' }));
+  /* fallback color for nodes with no brand logo (a technique/concept,
+     not a product), tinted by their home category so the graph still
+     reads as colorful and organized rather than falling back to gray */
+  const CATEGORY_FALLBACK = {
+    'Languages': '#e0c168',
+    'Web & Backend': '#5b9dd9',
+    'AI / LLM': '#c084e8',
+    'Data & Infra': '#57c2a8',
+    'Embedded & IoT': '#e8934a',
+    'Other': '#9aa5b7',
+  };
+
+  const nodes = CATEGORIES.map((cat, i) => {
+    const angle = i * (2 * Math.PI / CATEGORIES.length);
+    return { id: cat, type: 'category', x: 160 * Math.cos(angle), y: 160 * Math.sin(angle) };
+  });
   const links = [];
-  TECH.forEach(([name, home, extras]) => {
-    nodes.push({ id: name, type: 'tech', home });
+  const logoCache = {};
+  TECH.forEach(([name, home, extras, slug]) => {
+    nodes.push({ id: name, type: 'tech', home, color: CATEGORY_FALLBACK[home] });
     links.push({ source: name, target: home });
     extras.forEach((cat) => links.push({ source: name, target: cat }));
+    if (slug && !logoCache[slug]) {
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      img.onload = () => Graph.nodeColor(Graph.nodeColor());
+      img.src = 'https://cdn.simpleicons.org/' + slug;
+      logoCache[slug] = img;
+    }
+  });
+  TECH.forEach(([name, , , slug]) => {
+    if (slug) nodes.find((n) => n.id === name).logo = logoCache[slug];
   });
 
   const linksByNode = {};
@@ -498,34 +525,45 @@ navLinks.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => 
     .backgroundColor('rgba(0,0,0,0)')
     .width(container.clientWidth)
     .height(container.clientHeight)
-    .linkColor((l) => (highlightLinks.has(l) ? 'rgba(201,162,39,.9)' : 'rgba(255,255,255,.12)'))
-    .linkWidth((l) => (highlightLinks.has(l) ? 2 : 1))
+    .enableZoomPanInteraction(false)
+    .linkColor((l) => (highlightLinks.has(l) ? 'rgba(201,162,39,.9)' : 'rgba(255,255,255,.14)'))
+    .linkWidth((l) => (highlightLinks.has(l) ? 2.5 : 1))
     .nodeCanvasObject((node, ctx, globalScale) => {
       const isCategory = node.type === 'category';
       const isHighlighted = highlightNodes.has(node);
-      const r = isCategory ? 9 : 4;
+      const r = isCategory ? 17 : 11;
 
       ctx.beginPath();
       ctx.arc(node.x, node.y, r, 0, 2 * Math.PI);
-      ctx.fillStyle = isCategory ? GOLD : (isHighlighted ? INK : INK_DIM);
+      ctx.fillStyle = isCategory ? GOLD : node.color;
+      ctx.globalAlpha = isCategory || isHighlighted || !highlightNodes.size ? 1 : 0.35;
       ctx.fill();
-      if (isCategory) {
-        ctx.lineWidth = 1.5;
-        ctx.strokeStyle = 'rgba(0,0,0,.4)';
-        ctx.stroke();
-      }
+      ctx.lineWidth = isCategory ? 2 : 1;
+      ctx.strokeStyle = 'rgba(0,0,0,.45)';
+      ctx.stroke();
 
-      if (isCategory || isHighlighted || globalScale > 2.2) {
-        const fontSize = (isCategory ? 13 : 10) / globalScale;
-        ctx.font = (isCategory ? '700 ' : '500 ') + fontSize + 'px ' + SANS;
+      if (node.logo && node.logo.complete && node.logo.naturalWidth > 0) {
+        const s = r * 1.15;
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(node.x, node.y, r * 0.82, 0, 2 * Math.PI);
+        ctx.clip();
+        ctx.drawImage(node.logo, node.x - s / 2, node.y - s / 2, s, s);
+        ctx.restore();
+      }
+      ctx.globalAlpha = 1;
+
+      if (isCategory || isHighlighted || globalScale > 1.6) {
+        const fontSize = (isCategory ? 14 : 11) / globalScale;
+        ctx.font = (isCategory ? '700 ' : '600 ') + fontSize + 'px ' + SANS;
         ctx.textAlign = 'center';
         ctx.textBaseline = 'top';
-        ctx.fillStyle = isCategory ? INK : 'rgba(255,255,255,.6)';
-        ctx.fillText(node.id, node.x, node.y + r + 2);
+        ctx.fillStyle = isCategory ? INK : 'rgba(255,255,255,.85)';
+        ctx.fillText(node.id, node.x, node.y + r + 3);
       }
     })
     .nodePointerAreaPaint((node, color, ctx) => {
-      const r = (node.type === 'category' ? 9 : 4) + 4;
+      const r = (node.type === 'category' ? 17 : 11) + 4;
       ctx.fillStyle = color;
       ctx.beginPath();
       ctx.arc(node.x, node.y, r, 0, 2 * Math.PI);
@@ -544,18 +582,28 @@ navLinks.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => 
       container.style.cursor = node ? 'pointer' : 'grab';
       Graph.nodeColor(Graph.nodeColor()).linkColor(Graph.linkColor()).linkWidth(Graph.linkWidth());
     })
-    .onNodeClick((node) => {
-      Graph.centerAt(node.x, node.y, 600);
-      Graph.zoom(3, 600);
-    })
-    .onBackgroundClick(() => {
-      Graph.zoom(1.4, 400);
-    });
+    .onEngineStop(() => Graph.zoomToFit(400, 28));
 
-  Graph.d3Force('charge').strength(-90);
-  Graph.d3Force('link').distance(55);
+  Graph.d3Force('charge').strength(-180);
+  Graph.d3Force('link').distance(65);
 
   window.addEventListener('resize', () => {
     Graph.width(container.clientWidth).height(container.clientHeight);
+  });
+
+  /* subtle 3D tilt that follows the cursor instead of a zoom control */
+  const MAX_TILT = 6;
+  container.style.transition = 'transform .5s ease-out';
+  container.addEventListener('mousemove', (e) => {
+    const rect = container.getBoundingClientRect();
+    const px = (e.clientX - rect.left) / rect.width - 0.5;
+    const py = (e.clientY - rect.top) / rect.height - 0.5;
+    container.style.transition = 'transform .1s linear';
+    container.style.transform =
+      'perspective(1400px) rotateX(' + (-py * MAX_TILT) + 'deg) rotateY(' + (px * MAX_TILT) + 'deg)';
+  });
+  container.addEventListener('mouseleave', () => {
+    container.style.transition = 'transform .5s ease-out';
+    container.style.transform = 'perspective(1400px) rotateX(0deg) rotateY(0deg)';
   });
 })();

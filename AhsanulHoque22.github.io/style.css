@@ -488,8 +488,15 @@ footer{
   .stack-graph{height:70vh;}
   .awards-grid{grid-template-columns:1fr 1fr;}
   #hero{padding:30px 5vw 30px;}
-  .hero-tagline{text-align:left;}
+  .hero-tagline{text-align:left;font-size:.82rem;}
   .hero-stage{min-height:220px;}
+  /* the desktop clamp's floor (2rem) doesn't shrink below that no matter
+     how narrow the phone gets, so on a narrow enough screen the single-
+     line, nowrap name outgrows the card and clips at its edges; this
+     lets vw do the work down to a lower floor instead, and downsizes
+     the other gold hero text a bit too, as asked */
+  .hero-bigword{font-size:clamp(1.25rem,7.6vw,2.6rem);}
+  .hero-role-big{font-size:clamp(.95rem,4.4vw,1.7rem);}
   .hero-bottom-row{flex-direction:column;align-items:flex-start;}
   .contact-links{flex-wrap:wrap;gap:20px;}
   footer{flex-direction:column;gap:8px;text-align:center;}

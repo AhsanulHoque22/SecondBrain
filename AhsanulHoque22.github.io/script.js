@@ -1,4 +1,4 @@
-/* GSAP/ScrollTrigger/Lenis all load from CDN — if any of them fail (ad
+/* GSAP/ScrollTrigger/Lenis all load from CDN. If any of them fail (ad
    blocker, network), this whole block throws on the first line. Isolate it
    so a failure here can't take out the canvas background, mobile nav, and
    scroll reveals below, which don't depend on GSAP at all. */
@@ -29,7 +29,7 @@ try {
     .fromTo('.hero-title .line', { yPercent: 100, opacity: 0 }, { yPercent: 0, opacity: 1, duration: 1, stagger: 0.12 }, 0.1)
     .to('.reveal-line', { opacity: 1, y: 0, duration: 0.8, stagger: 0.1 }, 0.5);
 } catch (e) {
-  console.error('GSAP failed to load — animations disabled, rest of the page still works:', e);
+  console.error('GSAP failed to load. Animations disabled, rest of the page still works:', e);
 }
 
 /* ---------- Generic reveal-on-scroll (IntersectionObserver: no dependency
@@ -97,7 +97,7 @@ const canvas = document.getElementById('bg-canvas');
 const ctx = canvas.getContext('2d');
 /* named bgW/bgH, not w/h: Lenis's dist build isn't IIFE-wrapped and
    declares a top-level `function w(...)`, so a global `let w` here
-   collides with it — SyntaxError, and it takes this whole file down. */
+   collides with it, causing a SyntaxError that takes this whole file down. */
 let bgW, bgH, particles;
 const mouse = { x: -9999, y: -9999 };
 

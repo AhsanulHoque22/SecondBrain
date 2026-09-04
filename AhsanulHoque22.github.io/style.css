@@ -103,7 +103,7 @@ main{position:relative;z-index:2;}
 .hero-tagline{text-align:right;font-size:1rem;color:rgba(255,255,255,.85);line-height:1.55;}
 .hero-tagline span{display:block;}
 .hero-stage{
-  position:relative;flex:1;min-height:clamp(260px,34vw,440px);
+  position:relative;flex:1;min-height:clamp(320px,42vw,600px);
   display:flex;align-items:flex-end;justify-content:center;
 }
 /* left:0;right:0;text-align:center (rather than left:50% + translateX(-50%))
@@ -116,13 +116,12 @@ main{position:relative;z-index:2;}
   position:absolute;left:0;right:0;top:52%;transform:translateY(-50%);
   text-align:center;line-height:.95;
   font-family:var(--sans);font-weight:800;letter-spacing:-.02em;white-space:nowrap;
-  font-size:clamp(2.6rem,10vw,7rem);
-  background:linear-gradient(90deg,var(--gold) 30%,rgba(201,162,39,.12) 90%);
-  -webkit-background-clip:text;background-clip:text;color:transparent;
+  font-size:clamp(2rem,7.4vw,5.5rem);
+  color:var(--gold);
   user-select:none;z-index:0;
 }
 .hero-photo{
-  position:relative;z-index:1;height:100%;max-height:400px;display:block;
+  position:relative;z-index:1;height:100%;max-height:560px;display:block;
   filter:grayscale(.2) contrast(1.05) brightness(.96) drop-shadow(0 20px 30px rgba(0,0,0,.5));
 }
 .hero-role-big{

@@ -294,3 +294,103 @@ navLinks.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => 
     tl.to(el, { scale: targetScale, ease: 'none', duration: 1 - start }, start);
   });
 })();
+
+/* CIRCULAR GALLERY: a 3D ring of award cards built from the hidden
+   .awards-data figures (single source of truth). The ring rotates one
+   full turn across the track's scroll range, and drifts slowly on its
+   own whenever the user isn't actively scrolling. */
+(function () {
+  const track = document.getElementById('gallery-track');
+  const carousel = document.getElementById('gallery-carousel');
+  const figures = document.querySelectorAll('.awards-data .award-card');
+  if (!track || !carousel || !figures.length) return;
+
+  const n = figures.length;
+  const anglePerItem = 360 / n;
+  const AUTO_ROTATE_SPEED = 0.03;
+
+  figures.forEach((figure, i) => {
+    const img = figure.querySelector('img');
+    const year = figure.querySelector('.year');
+    const caption = figure.querySelector('figcaption');
+
+    let captionText = '';
+    if (caption) {
+      const clone = caption.cloneNode(true);
+      const y = clone.querySelector('.year');
+      if (y) y.remove();
+      captionText = clone.textContent.trim();
+    }
+
+    const card = document.createElement('div');
+    card.className = 'gallery-card';
+    card.style.transform = 'rotateY(' + (i * anglePerItem) + 'deg) translateZ(var(--radius))';
+
+    const photo = document.createElement('img');
+    photo.src = img.getAttribute('src');
+    photo.alt = img.getAttribute('alt') || '';
+    photo.loading = 'lazy';
+    card.appendChild(photo);
+
+    const scrim = document.createElement('div');
+    scrim.className = 'gallery-card-scrim';
+    card.appendChild(scrim);
+
+    const cap = document.createElement('div');
+    cap.className = 'gallery-card-cap';
+    cap.innerHTML =
+      (year ? '<span class="year">' + year.textContent.trim() + '</span>' : '') +
+      '<p>' + captionText + '</p>';
+    card.appendChild(cap);
+
+    carousel.appendChild(card);
+  });
+
+  const cards = Array.from(carousel.children);
+  let rotation = 0;
+  let isScrolling = false;
+  let scrollTimeout = null;
+
+  function layout() {
+    track.style.height = (100 + n * 40) + 'vh';
+  }
+
+  function scrollProgress() {
+    const rect = track.getBoundingClientRect();
+    const total = rect.height - window.innerHeight;
+    return total > 0 ? Math.min(1, Math.max(0, -rect.top / total)) : 0;
+  }
+
+  function render() {
+    carousel.style.transform = 'rotateY(' + rotation + 'deg)';
+    const totalRotation = ((rotation % 360) + 360) % 360;
+    cards.forEach((card, i) => {
+      const itemAngle = i * anglePerItem;
+      const relativeAngle = (itemAngle + totalRotation + 360) % 360;
+      const normalizedAngle = relativeAngle > 180 ? 360 - relativeAngle : relativeAngle;
+      card.style.opacity = String(Math.max(0.3, 1 - normalizedAngle / 180));
+    });
+  }
+
+  function onScroll() {
+    isScrolling = true;
+    if (scrollTimeout) clearTimeout(scrollTimeout);
+    rotation = scrollProgress() * 360;
+    render();
+    scrollTimeout = setTimeout(() => { isScrolling = false; }, 150);
+  }
+
+  function tick() {
+    if (!isScrolling) {
+      rotation += AUTO_ROTATE_SPEED;
+      render();
+    }
+    requestAnimationFrame(tick);
+  }
+
+  layout();
+  window.addEventListener('scroll', onScroll, { passive: true });
+  window.addEventListener('resize', layout);
+  render();
+  requestAnimationFrame(tick);
+})();

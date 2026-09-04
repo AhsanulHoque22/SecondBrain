@@ -306,14 +306,49 @@ main{position:relative;z-index:2;}
 .skills-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:40px;}
 .skill-group h3{font-family:var(--mono);color:var(--ink-dim);font-size:.85rem;margin-bottom:16px;text-transform:uppercase;letter-spacing:.5px;}
 
-/* AWARDS: photo grid, each a rounded iOS-style card */
-.awards-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;}
+/* AWARDS: iOS-style cards, kept as the hidden data source for the
+   circular gallery below (single source of truth, same pattern as
+   .project-data). */
+.awards-data{display:none;}
 .award-card{
   background:var(--panel-bg);border:1px solid var(--panel-border);border-radius:20px;overflow:hidden;
 }
 .award-card img{width:100%;aspect-ratio:4/3;object-fit:contain;background:var(--bg-elev);display:block;}
 .award-card figcaption{padding:16px 18px;font-size:.95rem;color:var(--ink-dim);line-height:1.5;}
 .award-card .year{font-family:var(--mono);color:var(--cyan);display:block;font-size:.8rem;margin-bottom:4px;}
+
+/* CIRCULAR GALLERY: a 3D ring of award cards that rotates as the section
+   scrolls (one full turn across the track's scroll range) and drifts
+   slowly on its own when the user isn't actively scrolling. Built from
+   the hidden .awards-data figures above. */
+.gallery-track{position:relative;}
+.gallery-stage{
+  position:sticky;top:0;height:100vh;min-height:560px;
+  display:flex;align-items:center;justify-content:center;overflow:hidden;
+}
+.gallery-viewport{position:relative;width:100%;height:100%;perspective:1600px;}
+.gallery-carousel{position:absolute;inset:0;transform-style:preserve-3d;will-change:transform;}
+.gallery-card{
+  --card-w:clamp(170px,20vw,280px);
+  --card-h:clamp(220px,26vw,360px);
+  --radius:clamp(220px,30vw,520px);
+  position:absolute;left:50%;top:50%;
+  width:var(--card-w);height:var(--card-h);
+  margin-left:calc(var(--card-w) * -0.5);margin-top:calc(var(--card-h) * -0.5);
+  border-radius:18px;overflow:hidden;backface-visibility:hidden;
+  border:1px solid var(--panel-border);background:var(--panel-bg);
+  box-shadow:0 30px 60px rgba(0,0,0,.5);
+  transition:opacity .3s linear;
+  display:flex;flex-direction:column;justify-content:flex-end;
+}
+.gallery-card img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;}
+.gallery-card-scrim{
+  position:absolute;inset:0;
+  background:linear-gradient(0deg,rgba(0,0,0,.85) 0%,rgba(0,0,0,.25) 55%,transparent 100%);
+}
+.gallery-card-cap{position:relative;z-index:1;padding:16px 18px;}
+.gallery-card-cap .year{font-family:var(--mono);color:var(--gold);display:block;font-size:.78rem;margin-bottom:6px;}
+.gallery-card-cap p{font-size:.82rem;line-height:1.5;color:rgba(255,255,255,.85);}
 
 /* CONTACT */
 .contact-section{text-align:center;}

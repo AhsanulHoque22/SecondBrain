@@ -143,19 +143,19 @@ function tick() {
 }
 tick();
 
-/* 3D FILE DRAWER: a physical-feeling stack of project folders.
-   Content is built once from the hidden .project-data cards (single
-   source of truth). Every folder is always fully open (title, image,
-   description, tags, link, all rendered all the time); there is no
-   expand/collapse state anywhere. Scrolling picks which folder sits at
-   the front of the drawer, and everything else is simply hidden behind
-   it. Clicking a folder pins it to the front (instead of scroll picking
-   one); clicking it again (or scrolling) releases the pin. */
+/* 3D FILE DRAWER: a physical-feeling stack of project folders, modeled on
+   a reference mockup. Content is built once from the hidden .project-data
+   cards (single source of truth). The stack cascades top to bottom inside
+   a drawer; scrolling bends the whole stack and moves a glowing "selected"
+   highlight through it; clicking a folder lifts it in place to reveal its
+   full project detail, while every other folder stays where it was
+   (later ones continuing right below its new, taller edge). */
 (function () {
   const track = document.getElementById('drawer-scroll-track');
+  const pin = document.querySelector('.drawer-pin');
   const stack = document.getElementById('folder-stack');
   const cards = document.querySelectorAll('.project-data .project-card');
-  if (!track || !stack || !cards.length) return;
+  if (!track || !pin || !stack || !cards.length) return;
 
   const n = cards.length;
 
@@ -227,17 +227,24 @@ tick();
   const folders = Array.from(stack.children);
   const isMobile = () => window.matchMedia('(max-width:860px)').matches;
 
-  /* ---- mobile: static list, no scroll rig. Every folder is already
-     fully open via CSS, so there is nothing left to wire up. ---- */
-  function wireMobile() {}
+  /* ---- mobile: plain tap-to-expand accordion, no scroll rig ---- */
+  function wireMobile() {
+    let openIndex = 0;
+    folders.forEach((f, i) => {
+      f.classList.toggle('is-expanded', i === openIndex);
+      f.onclick = () => {
+        openIndex = i;
+        folders.forEach((f2, j) => f2.classList.toggle('is-expanded', j === openIndex));
+      };
+    });
+  }
 
-  /* ---- desktop: scroll picks which folder sits at the front of the
-     drawer; everything else is hidden directly behind it. A click pins
-     a folder to the front (overriding scroll) until it, or another
-     folder, is clicked again. Every folder is always fully open: only
-     its position/scale/opacity change, never its content. ---- */
-  let pinnedIndex = null;
-  const TAB_STEP = 54; /* stagger between the folders queued behind the front one */
+  /* ---- desktop ---- */
+  const STEP = 48; /* vertical stagger between cascading folders */
+  const MAX_BEND = 3; /* degrees of extra lean per folder-from-bottom, at full scroll */
+  const LIFT = 14; /* small upward nudge for the expanded folder, like a lifted card */
+  let expandedIndex = null;
+  let hoverIndex = -1;
 
   function layout() {
     /* +40vh settle buffer at the end: without it, momentum scroll can carry
@@ -247,54 +254,68 @@ tick();
     track.style.height = (150 + n * 20 + 40) + 'vh';
   }
 
-  function scrollFloatIndex() {
+  function scrollProgress() {
     const trackRect = track.getBoundingClientRect();
     /* Subtract the settle buffer so progress reaches 1 a bit before the
        track's true end, leaving slack scroll room where the last folder
        stays fully settled (and the section still pinned) instead of
        sitting exactly on the position:sticky release boundary. */
     const total = trackRect.height - window.innerHeight - window.innerHeight * 0.4;
-    const progress = total > 0 ? Math.min(1, Math.max(0, -trackRect.top / total)) : 0;
-    return progress * (n - 1);
+    return total > 0 ? Math.min(1, Math.max(0, -trackRect.top / total)) : 0;
   }
 
   function render() {
-    const centerIdx = pinnedIndex !== null ? pinnedIndex : scrollFloatIndex();
-    /* Every folder is always rendered at full size, so the nearest one's
-       real height is just its own offsetHeight, no scrollHeight/class
-       gymnastics needed to know how tall it'll be. */
-    const frontH = folders[Math.round(centerIdx)].offsetHeight;
+    pin.classList.toggle('has-expanded', expandedIndex !== null);
+
+    if (expandedIndex !== null) {
+      /* Earlier folders stay exactly where they normally sit; the clicked
+         one grows to reveal its detail (a small lift, not a rise out of
+         the drawer); folders after it continue directly below its new,
+         taller bottom edge instead of being covered by it. */
+      folders.forEach((folder, i) => {
+        const isExpanded = i === expandedIndex;
+        folder.classList.toggle('is-expanded', isExpanded);
+        folder.classList.toggle('is-selected', isExpanded);
+      });
+      const expandedBaseTy = expandedIndex * STEP - LIFT;
+      const expandedH = folders[expandedIndex].offsetHeight;
+
+      folders.forEach((folder, i) => {
+        let ty;
+        if (i < expandedIndex) {
+          ty = i * STEP;
+        } else if (i === expandedIndex) {
+          ty = expandedBaseTy;
+        } else {
+          ty = expandedBaseTy + expandedH + (i - expandedIndex - 1) * STEP;
+        }
+        folder.style.transform = 'translateX(-50%) translateY(' + ty + 'px)';
+        folder.style.opacity = '1';
+        folder.style.zIndex = i === expandedIndex ? '300' : String(100 + i);
+      });
+      return;
+    }
+
+    const progress = scrollProgress();
+    const nearestIdx = Math.round(progress * (n - 1));
+    const selectedIdx = hoverIndex >= 0 ? hoverIndex : nearestIdx;
 
     folders.forEach((folder, i) => {
-      const isFront = i === pinnedIndex;
-      const offset = i - centerIdx;
-      let ty, scale, opacity, z;
+      const isSelected = i === selectedIdx;
+      /* folders further from the drawer floor (earlier in the list) bend
+         more, like a stack flexing under a scroll-driven force anchored
+         at the bottom, matching the reference's "smooth bending" cue. */
+      const bend = (n - 1 - i) * progress * MAX_BEND;
+      const ty = i * STEP + (isSelected ? -8 : 0);
+      const shiftX = -bend * 1.6;
 
-      if (isFront) {
-        ty = 0; scale = 1; opacity = 1; z = 200;
-      } else if (offset > 0) {
-        /* not reached yet: queues up behind the front card, receding into
-           the cabinet and fading toward the top, only shrinking a little
-           so the far end of the stack still reads as folders, not dots. */
-        const k = Math.min(offset, 8);
-        ty = -(frontH + (k - 1) * TAB_STEP);
-        scale = Math.max(0.8, 1 - 0.025 * k);
-        opacity = Math.max(0, 1 - 0.12 * k);
-        z = 90 - k;
-      } else {
-        /* already shown: exits down past the front edge of the drawer. */
-        const k = Math.min(-offset, 3);
-        ty = k * TAB_STEP * 1.4;
-        scale = Math.max(0.85, 1 - 0.05 * k);
-        opacity = Math.max(0, 1 - 0.4 * k);
-        z = 90 - k;
-      }
-
+      folder.classList.remove('is-expanded');
+      folder.classList.toggle('is-selected', isSelected);
       folder.style.transform =
-        'translateX(-50%) translateY(' + ty + 'px) scale(' + scale + ')';
-      folder.style.opacity = String(opacity);
-      folder.style.zIndex = String(z);
-      folder.classList.toggle('is-active', Math.abs(offset) < 0.001);
+        'translateX(calc(-50% + ' + shiftX + 'px)) translateY(' + ty + 'px) rotateZ(' + -bend + 'deg)' +
+        (isSelected ? ' scale(1.04)' : '');
+      folder.style.opacity = '1';
+      folder.style.zIndex = String(100 + i); /* later folders sit in front */
     });
   }
 
@@ -310,9 +331,11 @@ tick();
     window.addEventListener('resize', () => { layout(); render(); });
     folders.forEach((folder, i) => {
       folder.addEventListener('click', () => {
-        pinnedIndex = pinnedIndex === i ? null : i;
+        expandedIndex = expandedIndex === i ? null : i;
         render();
       });
+      folder.addEventListener('mouseenter', () => { hoverIndex = i; render(); });
+      folder.addEventListener('mouseleave', () => { hoverIndex = -1; render(); });
     });
     render();
   }
@@ -323,8 +346,12 @@ tick();
     const nowMobile = isMobile();
     if (nowMobile !== mobileMode) {
       mobileMode = nowMobile;
-      folders.forEach((f) => { f.style.transform = ''; f.style.opacity = ''; f.style.zIndex = ''; });
+      folders.forEach((f) => {
+        f.style.transform = ''; f.style.opacity = ''; f.style.zIndex = '';
+        f.classList.remove('is-expanded', 'is-selected');
+      });
       track.style.height = '';
+      pin.classList.remove('has-expanded');
       if (mobileMode) wireMobile(); else wireDesktop();
     }
   });

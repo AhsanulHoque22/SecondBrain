@@ -490,7 +490,9 @@ navLinks.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => 
 
   const nodes = CATEGORIES.map((cat, i) => {
     const angle = i * (2 * Math.PI / CATEGORIES.length);
-    return { id: cat, type: 'category', x: 160 * Math.cos(angle), y: 160 * Math.sin(angle) };
+    /* an ellipse, not a circle: the box is landscape, so spreading hubs
+       wider than they are tall uses more of it before zoomToFit scales in */
+    return { id: cat, type: 'category', x: 230 * Math.cos(angle), y: 150 * Math.sin(angle) };
   });
   const links = [];
   const logoCache = {};
@@ -531,7 +533,7 @@ navLinks.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => 
     .nodeCanvasObject((node, ctx, globalScale) => {
       const isCategory = node.type === 'category';
       const isHighlighted = highlightNodes.has(node);
-      const r = isCategory ? 17 : 11;
+      const r = isCategory ? 24 : 16;
 
       ctx.beginPath();
       ctx.arc(node.x, node.y, r, 0, 2 * Math.PI);
@@ -563,7 +565,7 @@ navLinks.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => 
       }
     })
     .nodePointerAreaPaint((node, color, ctx) => {
-      const r = (node.type === 'category' ? 17 : 11) + 4;
+      const r = (node.type === 'category' ? 24 : 16) + 4;
       ctx.fillStyle = color;
       ctx.beginPath();
       ctx.arc(node.x, node.y, r, 0, 2 * Math.PI);
@@ -582,10 +584,24 @@ navLinks.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => 
       container.style.cursor = node ? 'pointer' : 'grab';
       Graph.nodeColor(Graph.nodeColor()).linkColor(Graph.linkColor()).linkWidth(Graph.linkWidth());
     })
-    .onEngineStop(() => Graph.zoomToFit(400, 28));
+    .onEngineTick(() => {
+      /* hard-clamp every node to a fixed radius from the origin so the
+         layout can never drift past the container's edge, no matter how
+         the charge/link forces settle or a drag reheats the simulation */
+      const MAX_R = 270;
+      nodes.forEach((n) => {
+        const d = Math.sqrt(n.x * n.x + n.y * n.y);
+        if (d > MAX_R) {
+          const k = MAX_R / d;
+          n.x *= k;
+          n.y *= k;
+        }
+      });
+    })
+    .onEngineStop(() => Graph.zoomToFit(400, 55));
 
-  Graph.d3Force('charge').strength(-180);
-  Graph.d3Force('link').distance(65);
+  Graph.d3Force('charge').strength(-200);
+  Graph.d3Force('link').distance(78);
 
   window.addEventListener('resize', () => {
     Graph.width(container.clientWidth).height(container.clientHeight);

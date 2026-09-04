@@ -476,6 +476,14 @@ navLinks.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => 
   const INK = root.getPropertyValue('--ink').trim() || '#f5f5f7';
   const SANS = root.getPropertyValue('--sans').trim() || 'sans-serif';
 
+  function hexToRgba(hex, a) {
+    const h = hex.replace('#', '');
+    const r = parseInt(h.substring(0, 2), 16);
+    const g = parseInt(h.substring(2, 4), 16);
+    const b = parseInt(h.substring(4, 6), 16);
+    return 'rgba(' + r + ',' + g + ',' + b + ',' + a + ')';
+  }
+
   /* fallback color for nodes with no brand logo (a technique/concept,
      not a product), tinted by their home category so the graph still
      reads as colorful and organized rather than falling back to gray */
@@ -488,16 +496,19 @@ navLinks.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => 
     'Other': '#9aa5b7',
   };
 
+  const HUB_R = 24;
+  const TECH_R = 17;
+
   const nodes = CATEGORIES.map((cat, i) => {
     const angle = i * (2 * Math.PI / CATEGORIES.length);
     /* an ellipse, not a circle: the box is landscape, so spreading hubs
        wider than they are tall uses more of it before zoomToFit scales in */
-    return { id: cat, type: 'category', x: 230 * Math.cos(angle), y: 150 * Math.sin(angle) };
+    return { id: cat, type: 'category', r: HUB_R, x: 230 * Math.cos(angle), y: 150 * Math.sin(angle) };
   });
   const links = [];
   const logoCache = {};
   TECH.forEach(([name, home, extras, slug]) => {
-    nodes.push({ id: name, type: 'tech', home, color: CATEGORY_FALLBACK[home] });
+    nodes.push({ id: name, type: 'tech', home, r: TECH_R, color: CATEGORY_FALLBACK[home] });
     links.push({ source: name, target: home });
     extras.forEach((cat) => links.push({ source: name, target: cat }));
     if (slug && !logoCache[slug]) {
@@ -533,42 +544,77 @@ navLinks.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => 
     .nodeCanvasObject((node, ctx, globalScale) => {
       const isCategory = node.type === 'category';
       const isHighlighted = highlightNodes.has(node);
-      const r = isCategory ? 24 : 16;
+      const dim = !isCategory && highlightNodes.size && !isHighlighted;
+      const r = node.r;
+      const tint = isCategory ? GOLD : node.color;
 
+      ctx.globalAlpha = dim ? 0.35 : 1;
+
+      /* glass base: soft ambient shadow, then a tinted radial "frosted
+         glass" fill (bright near the top-left, fading toward the rim) */
+      ctx.save();
+      ctx.shadowColor = 'rgba(0,0,0,.55)';
+      ctx.shadowBlur = 14;
+      ctx.shadowOffsetY = 4;
       ctx.beginPath();
       ctx.arc(node.x, node.y, r, 0, 2 * Math.PI);
-      ctx.fillStyle = isCategory ? GOLD : node.color;
-      ctx.globalAlpha = isCategory || isHighlighted || !highlightNodes.size ? 1 : 0.35;
+      const glass = ctx.createRadialGradient(
+        node.x - r * 0.35, node.y - r * 0.35, r * 0.1,
+        node.x, node.y, r
+      );
+      glass.addColorStop(0, hexToRgba(tint, 0.55));
+      glass.addColorStop(0.65, hexToRgba(tint, 0.3));
+      glass.addColorStop(1, hexToRgba(tint, 0.16));
+      ctx.fillStyle = glass;
       ctx.fill();
-      ctx.lineWidth = isCategory ? 2 : 1;
-      ctx.strokeStyle = 'rgba(0,0,0,.45)';
+      ctx.restore();
+
+      /* glass edge: a bright, thin rim */
+      ctx.lineWidth = isCategory ? 1.6 : 1.1;
+      ctx.strokeStyle = isHighlighted ? 'rgba(255,255,255,.8)' : 'rgba(255,255,255,.4)';
       ctx.stroke();
 
+      /* glossy highlight crescent, top-left */
+      ctx.beginPath();
+      ctx.arc(node.x - r * 0.32, node.y - r * 0.35, r * 0.38, 0, 2 * Math.PI);
+      ctx.fillStyle = 'rgba(255,255,255,.22)';
+      ctx.fill();
+
       if (node.logo && node.logo.complete && node.logo.naturalWidth > 0) {
+        /* a bright backing disc makes any-color logo pop off the tinted
+           glass, plus its own small shadow to lift it off the surface */
+        ctx.save();
+        ctx.shadowColor = 'rgba(0,0,0,.4)';
+        ctx.shadowBlur = 5;
+        ctx.beginPath();
+        ctx.arc(node.x, node.y, r * 0.68, 0, 2 * Math.PI);
+        ctx.fillStyle = 'rgba(248,248,250,.94)';
+        ctx.fill();
+        ctx.restore();
+
         const s = r * 1.15;
         ctx.save();
         ctx.beginPath();
-        ctx.arc(node.x, node.y, r * 0.82, 0, 2 * Math.PI);
+        ctx.arc(node.x, node.y, r * 0.68, 0, 2 * Math.PI);
         ctx.clip();
         ctx.drawImage(node.logo, node.x - s / 2, node.y - s / 2, s, s);
         ctx.restore();
       }
-      ctx.globalAlpha = 1;
 
       if (isCategory || isHighlighted || globalScale > 1.6) {
         const fontSize = (isCategory ? 14 : 11) / globalScale;
         ctx.font = (isCategory ? '700 ' : '600 ') + fontSize + 'px ' + SANS;
         ctx.textAlign = 'center';
         ctx.textBaseline = 'top';
-        ctx.fillStyle = isCategory ? INK : 'rgba(255,255,255,.85)';
+        ctx.fillStyle = isCategory ? INK : 'rgba(255,255,255,.9)';
         ctx.fillText(node.id, node.x, node.y + r + 3);
       }
+      ctx.globalAlpha = 1;
     })
     .nodePointerAreaPaint((node, color, ctx) => {
-      const r = (node.type === 'category' ? 24 : 16) + 4;
       ctx.fillStyle = color;
       ctx.beginPath();
-      ctx.arc(node.x, node.y, r, 0, 2 * Math.PI);
+      ctx.arc(node.x, node.y, node.r + 4, 0, 2 * Math.PI);
       ctx.fill();
     })
     .onNodeHover((node) => {
@@ -597,6 +643,26 @@ navLinks.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => 
           n.y *= k;
         }
       });
+
+      /* manual collision pass: push any pair of circles apart so nodes
+         never render overlapping, regardless of how charge/link settle */
+      const GAP = 4;
+      for (let i = 0; i < nodes.length; i++) {
+        for (let j = i + 1; j < nodes.length; j++) {
+          const a = nodes[i], b = nodes[j];
+          const dx = b.x - a.x, dy = b.y - a.y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          const minDist = a.r + b.r + GAP;
+          if (dist > 0 && dist < minDist) {
+            const push = (minDist - dist) / 2;
+            const ux = dx / dist, uy = dy / dist;
+            a.x -= ux * push; a.y -= uy * push;
+            b.x += ux * push; b.y += uy * push;
+          } else if (dist === 0) {
+            a.x -= 0.5; b.x += 0.5;
+          }
+        }
+      }
     })
     .onEngineStop(() => Graph.zoomToFit(400, 55));
 

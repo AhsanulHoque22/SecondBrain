@@ -143,13 +143,12 @@ function tick() {
 }
 tick();
 
-/* 3D FILE DRAWER: a physical-feeling stack of project folders, modeled on
-   a reference mockup. Content is built once from the hidden .project-data
-   cards (single source of truth). The stack cascades top to bottom inside
-   a drawer; scrolling bends the whole stack and moves a glowing "selected"
-   highlight through it; clicking a folder lifts it in place to reveal its
-   full project detail, while every other folder stays where it was
-   (later ones continuing right below its new, taller edge). */
+/* FILE STACK: a cascading stack of manila-folder-shaped project files.
+   Content is built once from the hidden .project-data cards (single
+   source of truth). Every file is just a shape and a title, nothing
+   toggles open: scrolling bends the whole stack and moves a glowing
+   "selected" highlight through it, and clicking a file navigates
+   straight to its project link (same as clicking the link itself). */
 (function () {
   const track = document.getElementById('drawer-scroll-track');
   const pin = document.querySelector('.drawer-pin');
@@ -159,18 +158,17 @@ tick();
 
   const n = cards.length;
 
-  /* ---- build folders from the hidden data cards (no duplicated content) ---- */
+  /* ---- build files from the hidden data cards (no duplicated content) ---- */
   cards.forEach((card, i) => {
     const h3 = card.querySelector('.project-info h3');
-    const img = card.querySelector('.project-poster');
-    const p = card.querySelector('.project-info p');
-    const tags = card.querySelector('.tag-row');
     const link = card.querySelector('.project-links a');
-    const noLink = card.querySelector('.project-links .no-link');
 
     const folder = document.createElement('div');
     folder.className = 'folder';
     folder.dataset.index = String(i);
+    if (link) {
+      folder.title = 'Open ' + (h3 ? h3.textContent.trim() : 'project') + ' ↗';
+    }
 
     const tabRow = document.createElement('div');
     tabRow.className = 'folder-tab-row';
@@ -179,47 +177,11 @@ tick();
       '<span class="folder-title">' + (h3 ? h3.textContent.trim() : '') + '</span>';
     folder.appendChild(tabRow);
 
-    const detail = document.createElement('div');
-    detail.className = 'folder-detail';
-    if (img) {
-      const im = document.createElement('img');
-      im.className = 'folder-thumb';
-      im.src = img.getAttribute('src');
-      im.alt = img.getAttribute('alt') || '';
-      im.loading = 'lazy';
-      detail.appendChild(im);
-    }
-    if (p) {
-      const desc = document.createElement('p');
-      desc.className = 'folder-desc';
-      desc.textContent = p.textContent.replace(/\s+/g, ' ').trim();
-      detail.appendChild(desc);
-    }
-    if (tags) {
-      const row = document.createElement('div');
-      row.className = 'folder-tags';
-      row.innerHTML = tags.innerHTML;
-      detail.appendChild(row);
-    }
-    const actions = document.createElement('div');
-    actions.className = 'folder-actions';
     if (link) {
-      const a = document.createElement('a');
-      a.className = 'folder-btn folder-btn-primary';
-      a.href = link.href;
-      a.target = '_blank';
-      a.rel = 'noopener';
-      a.textContent = link.textContent.trim();
-      a.addEventListener('click', (e) => e.stopPropagation());
-      actions.appendChild(a);
-    } else if (noLink) {
-      const span = document.createElement('span');
-      span.className = 'folder-no-link';
-      span.textContent = noLink.textContent.trim();
-      actions.appendChild(span);
+      folder.addEventListener('click', () => window.open(link.href, '_blank', 'noopener'));
+    } else {
+      folder.style.cursor = 'default';
     }
-    detail.appendChild(actions);
-    folder.appendChild(detail);
 
     stack.appendChild(folder);
   });
@@ -227,29 +189,19 @@ tick();
   const folders = Array.from(stack.children);
   const isMobile = () => window.matchMedia('(max-width:860px)').matches;
 
-  /* ---- mobile: plain tap-to-expand accordion, no scroll rig ---- */
-  function wireMobile() {
-    let openIndex = 0;
-    folders.forEach((f, i) => {
-      f.classList.toggle('is-expanded', i === openIndex);
-      f.onclick = () => {
-        openIndex = i;
-        folders.forEach((f2, j) => f2.classList.toggle('is-expanded', j === openIndex));
-      };
-    });
-  }
+  /* ---- mobile: plain static stack, no scroll rig; click still opens
+     the project link the same as on desktop. ---- */
+  function wireMobile() {}
 
   /* ---- desktop ---- */
-  const STEP = 48; /* vertical stagger between cascading folders */
-  const MAX_BEND = 3; /* degrees of extra lean per folder-from-bottom, at full scroll */
-  const LIFT = 14; /* small upward nudge for the expanded folder, like a lifted card */
-  let expandedIndex = null;
+  const STEP = 48; /* vertical stagger between cascading files */
+  const MAX_BEND = 3; /* degrees of extra lean per file-from-bottom, at full scroll */
   let hoverIndex = -1;
 
   function layout() {
     /* +40vh settle buffer at the end: without it, momentum scroll can carry
        a few pixels past the exact instant position:sticky releases while
-       progress is still clamped to 1, leaving the last folder rendered as
+       progress is still clamped to 1, leaving the last file rendered as
        if still pinned even though its container already scrolled away. */
     track.style.height = (150 + n * 20 + 40) + 'vh';
   }
@@ -257,7 +209,7 @@ tick();
   function scrollProgress() {
     const trackRect = track.getBoundingClientRect();
     /* Subtract the settle buffer so progress reaches 1 a bit before the
-       track's true end, leaving slack scroll room where the last folder
+       track's true end, leaving slack scroll room where the last file
        stays fully settled (and the section still pinned) instead of
        sitting exactly on the position:sticky release boundary. */
     const total = trackRect.height - window.innerHeight - window.innerHeight * 0.4;
@@ -265,57 +217,24 @@ tick();
   }
 
   function render() {
-    pin.classList.toggle('has-expanded', expandedIndex !== null);
-
-    if (expandedIndex !== null) {
-      /* Earlier folders stay exactly where they normally sit; the clicked
-         one grows to reveal its detail (a small lift, not a rise out of
-         the drawer); folders after it continue directly below its new,
-         taller bottom edge instead of being covered by it. */
-      folders.forEach((folder, i) => {
-        const isExpanded = i === expandedIndex;
-        folder.classList.toggle('is-expanded', isExpanded);
-        folder.classList.toggle('is-selected', isExpanded);
-      });
-      const expandedBaseTy = expandedIndex * STEP - LIFT;
-      const expandedH = folders[expandedIndex].offsetHeight;
-
-      folders.forEach((folder, i) => {
-        let ty;
-        if (i < expandedIndex) {
-          ty = i * STEP;
-        } else if (i === expandedIndex) {
-          ty = expandedBaseTy;
-        } else {
-          ty = expandedBaseTy + expandedH + (i - expandedIndex - 1) * STEP;
-        }
-        folder.style.transform = 'translateX(-50%) translateY(' + ty + 'px)';
-        folder.style.opacity = '1';
-        folder.style.zIndex = i === expandedIndex ? '300' : String(100 + i);
-      });
-      return;
-    }
-
     const progress = scrollProgress();
     const nearestIdx = Math.round(progress * (n - 1));
     const selectedIdx = hoverIndex >= 0 ? hoverIndex : nearestIdx;
 
     folders.forEach((folder, i) => {
       const isSelected = i === selectedIdx;
-      /* folders further from the drawer floor (earlier in the list) bend
+      /* files further from the stack's floor (earlier in the list) bend
          more, like a stack flexing under a scroll-driven force anchored
-         at the bottom, matching the reference's "smooth bending" cue. */
+         at the bottom. */
       const bend = (n - 1 - i) * progress * MAX_BEND;
       const ty = i * STEP + (isSelected ? -8 : 0);
       const shiftX = -bend * 1.6;
 
-      folder.classList.remove('is-expanded');
       folder.classList.toggle('is-selected', isSelected);
       folder.style.transform =
         'translateX(calc(-50% + ' + shiftX + 'px)) translateY(' + ty + 'px) rotateZ(' + -bend + 'deg)' +
         (isSelected ? ' scale(1.04)' : '');
-      folder.style.opacity = '1';
-      folder.style.zIndex = String(100 + i); /* later folders sit in front */
+      folder.style.zIndex = String(100 + i); /* later files sit in front */
     });
   }
 
@@ -330,10 +249,6 @@ tick();
     window.addEventListener('scroll', onScroll, { passive: true });
     window.addEventListener('resize', () => { layout(); render(); });
     folders.forEach((folder, i) => {
-      folder.addEventListener('click', () => {
-        expandedIndex = expandedIndex === i ? null : i;
-        render();
-      });
       folder.addEventListener('mouseenter', () => { hoverIndex = i; render(); });
       folder.addEventListener('mouseleave', () => { hoverIndex = -1; render(); });
     });
@@ -347,11 +262,10 @@ tick();
     if (nowMobile !== mobileMode) {
       mobileMode = nowMobile;
       folders.forEach((f) => {
-        f.style.transform = ''; f.style.opacity = ''; f.style.zIndex = '';
-        f.classList.remove('is-expanded', 'is-selected');
+        f.style.transform = ''; f.style.zIndex = '';
+        f.classList.remove('is-selected');
       });
       track.style.height = '';
-      pin.classList.remove('has-expanded');
       if (mobileMode) wireMobile(); else wireDesktop();
     }
   });

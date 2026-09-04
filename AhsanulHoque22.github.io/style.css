@@ -244,103 +244,54 @@ main{position:relative;z-index:2;}
 
 .project-data{display:none;}
 
-/* 3D FILE DRAWER: physical filing-cabinet project picker, modeled on a
-   reference mockup: a stack of file cards sits in a drawer, the whole
-   stack bends smoothly with scroll, the nearest card lifts and glows,
-   and clicking one lifts it in place to reveal its project detail. */
+/* FILE STACK: a cascading stack of manila-folder-shaped project files.
+   Plain files, not a toggle: each one is just a shape + a title, and
+   clicking it navigates straight to the project's link. No box, no
+   expand/collapse, no detail panel. */
 .drawer-scroll-track{position:relative;}
 .drawer-pin{
-  position:sticky;top:0;height:100vh;min-height:680px;
+  position:sticky;top:0;height:100vh;min-height:600px;
   display:flex;align-items:center;justify-content:center;
   overflow:hidden;perspective:1400px;
 }
-.drawer-pin.has-expanded{overflow:visible;}
 .drawer-3d{
-  position:relative;width:min(680px,92vw);height:min(620px,82vh);
+  position:relative;width:min(620px,92vw);height:min(560px,78vh);
 }
-/* cabinet housing: a warm metal drawer body sitting behind the card
-   stack, with a nameplate up front, so the stack reads as sitting
-   inside an open drawer rather than floating loose on the page. */
-.drawer-cabinet{
-  position:absolute;inset:-26px -40px -86px -40px;z-index:0;
-  border-radius:14px 14px 8px 8px;
-  background:linear-gradient(180deg,#9c9384 0%,#7d7565 55%,#57503f 100%);
-  box-shadow:
-    inset 0 3px 0 rgba(255,255,255,.25),
-    inset 0 -50px 70px rgba(0,0,0,.4),
-    inset 0 0 0 1px rgba(0,0,0,.25),
-    0 40px 80px rgba(0,0,0,.6);
-}
-.drawer-cabinet::before,.drawer-cabinet::after{
-  content:'';position:absolute;top:0;bottom:0;width:20px;
-  background:linear-gradient(90deg,rgba(255,255,255,.15),rgba(0,0,0,.3));
-}
-.drawer-cabinet::before{left:0;border-radius:14px 0 0 8px;}
-.drawer-cabinet::after{right:0;border-radius:0 14px 8px 0;transform:scaleX(-1);}
-.drawer-rail{
-  position:absolute;left:6%;right:6%;height:5px;border-radius:3px;
-  background:linear-gradient(90deg,transparent,rgba(255,255,255,.25),transparent);
-}
-.drawer-rail-top{top:12px;}
-.drawer-label{
-  position:absolute;left:50%;bottom:26px;transform:translateX(-50%);
-  background:linear-gradient(180deg,#2f2820,#181410);
-  border:1px solid rgba(255,255,255,.15);border-radius:5px;
-  padding:9px 26px;box-shadow:inset 0 2px 4px rgba(0,0,0,.7),0 4px 10px rgba(0,0,0,.4);
-  font-family:var(--mono);letter-spacing:3px;font-weight:700;font-size:.8rem;
-  color:#d9c6a0;
-}
-.folder-stack{position:absolute;inset:14px 0 96px 0;z-index:1;transform-style:preserve-3d;}
-/* each card is anchored from the top and cascades downward, later
-   folders sitting in front of (and slightly overlapping) earlier ones,
-   like a fanned stack of index cards viewed from the front. */
+.folder-stack{position:absolute;inset:0;z-index:1;transform-style:preserve-3d;}
+/* each file is anchored from the top and cascades downward, later
+   files sitting in front of (and slightly overlapping) earlier ones.
+   The tab (::before) is the classic folder silhouette: a smaller flap
+   sitting above the left of the body, both outlined like a flat icon. */
 .folder{
-  position:absolute;left:50%;top:0;width:100%;max-width:600px;
+  position:absolute;left:50%;top:0;width:100%;max-width:560px;
   transform:translateX(-50%);transform-origin:center top;
-  background:linear-gradient(180deg,#ecdbb8,#dcc5a0);
-  border-radius:10px 10px 6px 6px;overflow:hidden;cursor:pointer;
-  box-shadow:0 10px 22px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.4);
+  background:linear-gradient(180deg,#f7d35a,#f0c419);
+  border:2px solid #211c10;border-radius:4px 14px 14px 14px;
+  cursor:pointer;
+  box-shadow:0 10px 22px rgba(0,0,0,.4);
   will-change:transform,opacity;
   transition:transform .5s cubic-bezier(.16,1,.3,1),box-shadow .35s ease,background .35s ease;
 }
+.folder::before{
+  content:'';position:absolute;left:-2px;top:-18px;width:40%;height:22px;
+  background:#e3b427;border:2px solid #211c10;border-bottom:none;
+  border-radius:10px 10px 0 0;
+}
 .folder.is-selected{
-  background:linear-gradient(180deg,#fbeecb,#f3dfae);
+  background:linear-gradient(180deg,#ffe07a,#f9cd2e);
   box-shadow:
     0 12px 28px rgba(0,0,0,.45),
-    inset 0 1px 0 rgba(255,255,255,.6),
-    0 0 0 1px rgba(255,200,110,.6),
-    0 0 34px 6px rgba(255,178,80,.45);
+    0 0 0 2px rgba(255,205,90,.7),
+    0 0 34px 6px rgba(255,178,80,.5);
 }
-.folder-tab-row{display:flex;align-items:center;gap:16px;padding:18px 28px;}
-.folder-num{font-family:var(--mono);font-size:.76rem;color:#8a7a5c;flex-shrink:0;}
+.folder-tab-row{position:relative;z-index:1;display:flex;align-items:center;gap:16px;padding:18px 28px;}
+.folder-num{font-family:var(--mono);font-size:.76rem;color:#7a6110;flex-shrink:0;}
 .folder-title{
-  font-family:var(--sans);font-weight:600;color:#3a3226;font-size:1.08rem;
+  font-family:var(--sans);font-weight:600;color:#2c2410;font-size:1.08rem;
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
-  transition:font-weight .2s ease,color .2s ease;
+  transition:font-weight .2s ease;
 }
-.folder.is-selected .folder-title{font-weight:800;color:#1c160f;}
-/* detail only exists for the expanded (clicked) card; every other card
-   just shows its tab. No transition on max-height here on purpose: the
-   content should already be in place the instant a card opens, so the
-   folders below it (see script.js render()) have a real, final height
-   to smoothly animate down against, rather than chasing a moving target. */
-.folder-detail{max-height:0;opacity:0;overflow:hidden;padding:0 28px;}
-.folder.is-expanded .folder-detail{
-  max-height:min(460px,58vh);opacity:1;padding:0 28px 28px;overflow-y:auto;
-  background:#faf5ea;
-}
-.folder-thumb{width:100%;max-height:220px;object-fit:cover;object-position:top;border-radius:10px;margin:16px 0;display:block;}
-.folder-desc{color:#4a4033;line-height:1.6;font-size:.96rem;margin-bottom:16px;}
-.folder-tags{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px;}
-.folder-tags span{font-family:var(--sans);font-size:.72rem;font-weight:600;padding:5px 12px;border-radius:980px;background:rgba(43,38,32,.12);color:#3a3226;}
-.folder-actions{display:flex;gap:12px;flex-wrap:wrap;}
-.folder-btn{
-  font-family:var(--sans);font-weight:600;font-size:.88rem;padding:11px 20px;border-radius:9px;
-  text-decoration:none;border:1px solid rgba(43,38,32,.3);color:#241f19;transition:transform .15s var(--ease);
-}
-.folder-btn:hover{transform:translateY(-2px);}
-.folder-btn-primary{background:#241f19;color:#f3e9d8;border-color:#241f19;}
-.folder-no-link{font-family:var(--mono);font-size:.8rem;color:#6b5d47;}
+.folder.is-selected .folder-title{font-weight:800;}
 .all-repos-link{
   display:inline-block;margin-top:40px;font-family:var(--mono);color:var(--violet);
   border-bottom:1px solid currentColor;
@@ -411,13 +362,11 @@ footer{
   .project-card{grid-template-columns:40px 1fr;padding:28px 20px;}
   .project-links{grid-column:2;text-align:left;}
   /* Mobile: drop the pinned/3D scroll rig, fall back to a plain vertical
-     stack of folders that expand in place on tap. */
+     stack of file cards (each still tap-through to its project link). */
   .drawer-pin{position:static;height:auto;min-height:0;overflow:visible;padding:10px 0;}
   .drawer-3d{position:static;width:100%;height:auto;}
-  .drawer-cabinet{display:none;}
-  .folder-stack{position:static;inset:auto;display:flex;flex-direction:column;gap:14px;}
+  .folder-stack{position:static;inset:auto;display:flex;flex-direction:column;gap:24px;}
   .folder{position:static;left:auto;top:auto;max-width:100%;transform:none !important;}
-  .folder::before,.folder::after{display:none;}
   .skills-grid{grid-template-columns:1fr 1fr;}
   .awards-grid{grid-template-columns:1fr 1fr;}
   .hero-meta{flex-direction:column;gap:6px;bottom:110px;}

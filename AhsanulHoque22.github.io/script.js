@@ -227,123 +227,85 @@ navLinks.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => 
   requestAnimationFrame(renderTopo);
 })();
 
-/* FILE STACK: a cascading stack of manila-folder-shaped project files.
-   Content is built once from the hidden .project-data cards (single
-   source of truth). Every file is just a shape and a title, nothing
-   toggles open: scrolling moves a glowing "selected" highlight through
-   the stack, and clicking a file navigates straight to its project
-   link (same as clicking the link itself). */
+/* STICKY STACK: cards are built once from the hidden .project-data
+   cards (single source of truth), then pin to the viewport top in
+   sequence. A single scrub timeline scales each card down over an
+   increasing share of the section's scroll range, so earlier cards
+   settle smaller as later ones stack on top of them. Clicking a card
+   navigates straight to its project link. */
 (function () {
-  const track = document.getElementById('drawer-scroll-track');
-  const pin = document.querySelector('.drawer-pin');
-  const stack = document.getElementById('folder-stack');
+  const track = document.getElementById('stack-track');
   const cards = document.querySelectorAll('.project-data .project-card');
-  if (!track || !pin || !stack || !cards.length) return;
+  if (!track || !cards.length) return;
 
   const n = cards.length;
+  const ACCENTS = ['var(--cyan)', 'var(--violet)', 'var(--gold)'];
+  const MIN_SCALE = 0.8;
 
-  /* ---- build files from the hidden data cards (no duplicated content) ---- */
   cards.forEach((card, i) => {
     const h3 = card.querySelector('.project-info h3');
+    const img = card.querySelector('.project-poster');
+    const desc = card.querySelector('.project-info p');
+    const tagRow = card.querySelector('.tag-row');
     const link = card.querySelector('.project-links a');
+    const noLink = card.querySelector('.no-link');
 
-    const folder = document.createElement('div');
-    folder.className = 'folder';
-    folder.dataset.index = String(i);
-    if (link) {
-      folder.title = 'Open ' + (h3 ? h3.textContent.trim() : 'project') + ' ↗';
+    const wrap = document.createElement('div');
+    wrap.className = 'stack-card-wrap';
+    wrap.style.zIndex = String(10 + i);
+    wrap.style.setProperty('--stack-top-step', (i * 16) + 'px');
+
+    const el = document.createElement('div');
+    el.className = 'stack-card' + (img ? '' : ' no-image');
+    el.style.setProperty('--accent', ACCENTS[i % ACCENTS.length]);
+
+    if (img) {
+      const bg = document.createElement('img');
+      bg.className = 'stack-card-img';
+      bg.src = img.getAttribute('src');
+      bg.alt = img.getAttribute('alt') || '';
+      bg.loading = 'lazy';
+      el.appendChild(bg);
+      const scrim = document.createElement('div');
+      scrim.className = 'stack-card-scrim';
+      el.appendChild(scrim);
     }
 
-    const tabRow = document.createElement('div');
-    tabRow.className = 'folder-tab-row';
-    tabRow.innerHTML =
-      '<span class="folder-num">' + String(i + 1).padStart(2, '0') + '</span>' +
-      '<span class="folder-title">' + (h3 ? h3.textContent.trim() : '') + '</span>';
-    folder.appendChild(tabRow);
+    const num = document.createElement('div');
+    num.className = 'stack-card-num';
+    num.textContent = String(i + 1).padStart(2, '0');
+    el.appendChild(num);
+
+    const body = document.createElement('div');
+    body.className = 'stack-card-body';
+    body.innerHTML =
+      '<h3>' + (h3 ? h3.innerHTML : '') + '</h3>' +
+      '<p>' + (desc ? desc.textContent.trim() : '') + '</p>' +
+      '<div class="stack-card-foot">' +
+        (tagRow ? tagRow.outerHTML : '') +
+        (link ? '<span class="stack-card-link">' + link.textContent.trim() + '</span>' : (noLink ? noLink.outerHTML : '')) +
+      '</div>';
+    el.appendChild(body);
 
     if (link) {
-      folder.addEventListener('click', () => window.open(link.href, '_blank', 'noopener'));
+      el.addEventListener('click', () => window.open(link.href, '_blank', 'noopener'));
     } else {
-      folder.style.cursor = 'default';
+      el.style.cursor = 'default';
     }
 
-    stack.appendChild(folder);
+    wrap.appendChild(el);
+    track.appendChild(wrap);
   });
 
-  const folders = Array.from(stack.children);
-  const isMobile = () => window.matchMedia('(max-width:860px)').matches;
+  const els = Array.from(track.children).map((wrap) => wrap.firstElementChild);
 
-  /* ---- mobile: plain static stack, no scroll rig; click still opens
-     the project link the same as on desktop. ---- */
-  function wireMobile() {}
-
-  /* ---- desktop ---- */
-  const STEP = 48; /* vertical stagger between cascading files */
-  let hoverIndex = -1;
-
-  function layout() {
-    /* +40vh settle buffer at the end: without it, momentum scroll can carry
-       a few pixels past the exact instant position:sticky releases while
-       progress is still clamped to 1, leaving the last file rendered as
-       if still pinned even though its container already scrolled away. */
-    track.style.height = (150 + n * 20 + 40) + 'vh';
-  }
-
-  function scrollProgress() {
-    const trackRect = track.getBoundingClientRect();
-    /* Subtract the settle buffer so progress reaches 1 a bit before the
-       track's true end, leaving slack scroll room where the last file
-       stays fully settled (and the section still pinned) instead of
-       sitting exactly on the position:sticky release boundary. */
-    const total = trackRect.height - window.innerHeight - window.innerHeight * 0.4;
-    return total > 0 ? Math.min(1, Math.max(0, -trackRect.top / total)) : 0;
-  }
-
-  function render() {
-    const progress = scrollProgress();
-    const nearestIdx = Math.round(progress * (n - 1));
-    const selectedIdx = hoverIndex >= 0 ? hoverIndex : nearestIdx;
-
-    folders.forEach((folder, i) => {
-      const isSelected = i === selectedIdx;
-      const ty = i * STEP + (isSelected ? -8 : 0);
-
-      folder.classList.toggle('is-selected', isSelected);
-      folder.style.transform =
-        'translateX(-50%) translateY(' + ty + 'px)' + (isSelected ? ' scale(1.04)' : '');
-      folder.style.zIndex = String(100 + i); /* later files sit in front */
-    });
-  }
-
-  function wireDesktop() {
-    layout();
-    let ticking = false;
-    const onScroll = () => {
-      if (ticking) return;
-      ticking = true;
-      requestAnimationFrame(() => { render(); ticking = false; });
-    };
-    window.addEventListener('scroll', onScroll, { passive: true });
-    window.addEventListener('resize', () => { layout(); render(); });
-    folders.forEach((folder, i) => {
-      folder.addEventListener('mouseenter', () => { hoverIndex = i; render(); });
-      folder.addEventListener('mouseleave', () => { hoverIndex = -1; render(); });
-    });
-    render();
-  }
-
-  let mobileMode = isMobile();
-  if (mobileMode) wireMobile(); else wireDesktop();
-  window.addEventListener('resize', () => {
-    const nowMobile = isMobile();
-    if (nowMobile !== mobileMode) {
-      mobileMode = nowMobile;
-      folders.forEach((f) => {
-        f.style.transform = ''; f.style.zIndex = '';
-        f.classList.remove('is-selected');
-      });
-      track.style.height = '';
-      if (mobileMode) wireMobile(); else wireDesktop();
-    }
+  const tl = gsap.timeline({
+    scrollTrigger: { trigger: track, start: 'top top', end: 'bottom bottom', scrub: 0.3 },
+  });
+  els.forEach((el, i) => {
+    if (i === n - 1) return; /* last card sits on top, never shrinks */
+    const targetScale = MIN_SCALE + (1 - MIN_SCALE) * (i / (n - 1));
+    const start = i / n;
+    tl.to(el, { scale: targetScale, ease: 'none', duration: 1 - start }, start);
   });
 })();

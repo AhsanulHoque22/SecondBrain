@@ -146,9 +146,9 @@ tick();
 /* FILE STACK: a cascading stack of manila-folder-shaped project files.
    Content is built once from the hidden .project-data cards (single
    source of truth). Every file is just a shape and a title, nothing
-   toggles open: scrolling bends the whole stack and moves a glowing
-   "selected" highlight through it, and clicking a file navigates
-   straight to its project link (same as clicking the link itself). */
+   toggles open: scrolling moves a glowing "selected" highlight through
+   the stack, and clicking a file navigates straight to its project
+   link (same as clicking the link itself). */
 (function () {
   const track = document.getElementById('drawer-scroll-track');
   const pin = document.querySelector('.drawer-pin');
@@ -195,7 +195,6 @@ tick();
 
   /* ---- desktop ---- */
   const STEP = 48; /* vertical stagger between cascading files */
-  const MAX_BEND = 3; /* degrees of extra lean per file-from-bottom, at full scroll */
   let hoverIndex = -1;
 
   function layout() {
@@ -223,17 +222,11 @@ tick();
 
     folders.forEach((folder, i) => {
       const isSelected = i === selectedIdx;
-      /* files further from the stack's floor (earlier in the list) bend
-         more, like a stack flexing under a scroll-driven force anchored
-         at the bottom. */
-      const bend = (n - 1 - i) * progress * MAX_BEND;
       const ty = i * STEP + (isSelected ? -8 : 0);
-      const shiftX = -bend * 1.6;
 
       folder.classList.toggle('is-selected', isSelected);
       folder.style.transform =
-        'translateX(calc(-50% + ' + shiftX + 'px)) translateY(' + ty + 'px) rotateZ(' + -bend + 'deg)' +
-        (isSelected ? ' scale(1.04)' : '');
+        'translateX(-50%) translateY(' + ty + 'px)' + (isSelected ? ' scale(1.04)' : '');
       folder.style.zIndex = String(100 + i); /* later files sit in front */
     });
   }

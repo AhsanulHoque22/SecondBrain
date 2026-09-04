@@ -145,9 +145,11 @@ tick();
 
 /* 3D FILE DRAWER: a physical-feeling stack of project folders.
    Content is built once from the hidden .project-data cards (single
-   source of truth), then rendered as absolutely-positioned folders whose
-   transform is driven by scroll position: the folder at the current
-   scroll "step" rises and expands, the rest arc away above/below it. */
+   source of truth). Scrolling only gives the collapsed stack a subtle
+   ambient riffle (perspective fade/shrink with distance); nothing opens
+   on its own. Clicking a folder is the only thing that expands it into
+   its full detail card, rising to the top; clicking it again (or another
+   folder) closes it. */
 (function () {
   const track = document.getElementById('drawer-scroll-track');
   const stack = document.getElementById('folder-stack');
@@ -236,45 +238,55 @@ tick();
     });
   }
 
-  /* ---- desktop: scroll-driven 3D stack ---- */
-  let activeIndex = 0;
+  /* ---- desktop: scroll gives a subtle ambient "riffle" through the
+     collapsed stack (nothing opens on its own); a click is the only
+     thing that expands a folder into its full detail card. ---- */
   let hoverIndex = -1;
+  let expandedIndex = null;
+  const TAB_H = folders[0].querySelector('.folder-tab-row').offsetHeight;
+  const TAB_STEP = 40; /* stagger between collapsed tabs */
 
   function layout() {
     track.style.height = (100 + (n - 1) * 60) + 'vh';
   }
 
-  function render() {
+  function scrollFloatIndex() {
     const trackRect = track.getBoundingClientRect();
     const total = trackRect.height - window.innerHeight;
     const progress = total > 0 ? Math.min(1, Math.max(0, -trackRect.top / total)) : 0;
-    activeIndex = Math.min(n - 1, Math.floor(progress * n));
+    return progress * (n - 1);
+  }
 
-    const ACTIVE_H = 490; /* reserved slot for the expanded active card */
-    const TAB_STEP = 48;  /* stagger between collapsed tabs beneath it */
+  function render() {
+    const centerIdx = expandedIndex !== null ? expandedIndex : scrollFloatIndex();
+    const expandedFolder = expandedIndex !== null ? folders[expandedIndex] : null;
+    const expandedH = expandedFolder
+      ? TAB_H + expandedFolder.querySelector('.folder-detail').scrollHeight
+      : TAB_H;
 
     folders.forEach((folder, i) => {
-      const offset = i - activeIndex;
-      const hovering = i === hoverIndex && offset !== 0;
+      const isExpanded = i === expandedIndex;
+      const offset = i - centerIdx;
+      const hovering = i === hoverIndex && !isExpanded && expandedIndex === null;
       let ty, rx, rz, scale, opacity, z;
 
-      if (offset === 0) {
-        ty = 0; rx = 0; rz = 0; scale = 1; opacity = 1; z = 100;
+      if (isExpanded) {
+        ty = 0; rx = 0; rz = 0; scale = 1; opacity = 1; z = 200;
       } else if (offset > 0) {
         const k = Math.min(offset, 7);
-        ty = ACTIVE_H + (k - 1) * TAB_STEP + (hovering ? -10 : 0);
-        rx = -6 * k;
+        ty = expandedH + (k - 1) * TAB_STEP + (hovering ? -10 : 0);
+        rx = -7 * k;
         rz = (i % 2 === 0 ? 1 : -1) * Math.min(k * 0.5, 2);
-        scale = 1 - 0.02 * k;
-        opacity = k > 6 ? 0 : 1 - 0.05 * k;
+        scale = 1 - 0.045 * k;
+        opacity = k > 5 ? 0 : 1 - 0.15 * k;
         z = 90 - k;
       } else {
-        const k = Math.min(-offset, 3);
-        ty = -50 - 70 * k;
-        rx = 10 * k;
+        const k = Math.min(-offset, 5);
+        ty = -k * TAB_STEP * 0.6;
+        rx = 8 * k;
         rz = 0;
-        scale = 1 - 0.04 * k;
-        opacity = k > 1 ? 0 : 1 - 0.6 * k;
+        scale = 1 - 0.045 * k;
+        opacity = k > 4 ? 0 : 1 - 0.2 * k;
         z = 90 - k;
       }
 
@@ -282,17 +294,8 @@ tick();
         'translateX(-50%) translateY(' + ty + 'px) rotateX(' + rx + 'deg) rotateZ(' + rz + 'deg) scale(' + scale + ')';
       folder.style.opacity = String(opacity);
       folder.style.zIndex = String(z);
-      folder.classList.toggle('is-active', offset === 0);
+      folder.classList.toggle('is-active', isExpanded);
     });
-  }
-
-  function scrollToIndex(i) {
-    const trackRect = track.getBoundingClientRect();
-    const total = trackRect.height - window.innerHeight;
-    const targetProgress = (i + 0.5) / n;
-    const targetY = window.scrollY + trackRect.top + targetProgress * total;
-    if (window.__lenis) window.__lenis.scrollTo(targetY, { duration: 1 });
-    else window.scrollTo({ top: targetY, behavior: 'smooth' });
   }
 
   function wireDesktop() {
@@ -306,7 +309,10 @@ tick();
     window.addEventListener('scroll', onScroll, { passive: true });
     window.addEventListener('resize', () => { layout(); render(); });
     folders.forEach((folder, i) => {
-      folder.addEventListener('click', () => scrollToIndex(i));
+      folder.addEventListener('click', () => {
+        expandedIndex = expandedIndex === i ? null : i;
+        render();
+      });
       folder.addEventListener('mouseenter', () => { hoverIndex = i; render(); });
       folder.addEventListener('mouseleave', () => { hoverIndex = -1; render(); });
     });

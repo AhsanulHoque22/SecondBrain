@@ -247,12 +247,20 @@ tick();
   const TAB_STEP = 40; /* stagger between collapsed tabs */
 
   function layout() {
-    track.style.height = (100 + (n - 1) * 60) + 'vh';
+    /* +40vh settle buffer at the end: without it, momentum scroll can carry
+       a few pixels past the exact instant position:sticky releases while
+       progress is still clamped to 1, leaving the last folder rendered as
+       if still pinned even though its container already scrolled away. */
+    track.style.height = (140 + n * 18 + 40) + 'vh';
   }
 
   function scrollFloatIndex() {
     const trackRect = track.getBoundingClientRect();
-    const total = trackRect.height - window.innerHeight;
+    /* Subtract the settle buffer so progress reaches 1 a bit before the
+       track's true end, leaving slack scroll room where the last folder
+       stays fully settled (and the section still pinned) instead of
+       sitting exactly on the position:sticky release boundary. */
+    const total = trackRect.height - window.innerHeight - window.innerHeight * 0.4;
     const progress = total > 0 ? Math.min(1, Math.max(0, -trackRect.top / total)) : 0;
     return progress * (n - 1);
   }

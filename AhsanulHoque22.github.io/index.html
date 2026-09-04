@@ -21,7 +21,7 @@ addEventListener('DOMContentLoaded', () => setTimeout(() => {
 </head>
 <body>
 
-<canvas id="bg-canvas"></canvas>
+<canvas id="topo-canvas"></canvas>
 <div class="grain"></div>
 
 <div id="progress-bar"></div>
@@ -47,7 +47,6 @@ addEventListener('DOMContentLoaded', () => setTimeout(() => {
   <!-- HERO -->
   <section id="hero">
     <div class="hero-card reveal-up">
-      <canvas id="topo-canvas" class="hero-topo"></canvas>
       <div class="hero-ticker" data-parallax-layer="1">
         <span>FULL-STACK DEVELOPMENT</span><span class="tick-dot">&bull;</span>
         <span>AI / LLM ENGINEERING</span><span class="tick-dot">&bull;</span>
@@ -62,7 +61,10 @@ addEventListener('DOMContentLoaded', () => setTimeout(() => {
 
       <div class="hero-stage">
         <span class="hero-bigword" aria-hidden="true" data-parallax-layer="2">AHSANUL HOQUE</span>
-        <img class="hero-photo" src="headshot-cutout.png" alt="Ahsanul Hoque" loading="lazy" data-parallax-layer="3">
+        <div class="hero-photo-wrap" data-parallax-layer="3">
+          <img class="hero-photo" src="headshot-cutout.png" alt="Ahsanul Hoque" loading="lazy">
+          <img class="hero-photo hero-photo-blur" src="headshot-cutout.png" alt="" aria-hidden="true">
+        </div>
         <span class="hero-role-big" data-parallax-layer="4">FULL-STACK<br>&amp; AI ENGINEER</span>
       </div>
 

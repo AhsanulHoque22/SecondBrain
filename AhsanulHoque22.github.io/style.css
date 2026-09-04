@@ -26,9 +26,10 @@ a{color:inherit;text-decoration:none;}
 ul{list-style:none;}
 ::selection{background:var(--cyan);color:#000;}
 
-#bg-canvas{
+#topo-canvas{
   position:fixed;inset:0;width:100%;height:100%;z-index:0;
   background:radial-gradient(ellipse at 50% 0%, #131316 0%, #000000 60%);
+  opacity:.5;
 }
 .grain{
   position:fixed;inset:0;z-index:1;pointer-events:none;opacity:.03;
@@ -88,15 +89,14 @@ main{position:relative;z-index:2;}
 .hero-card{
   position:relative;width:100%;max-width:1400px;margin:0 auto;
   border:1px solid rgba(201,162,39,.35);border-radius:20px;
-  background:linear-gradient(160deg,#161412,#0a0908); /* fallback if WebGL is unavailable */
+  /* semi-transparent, not opaque: #topo-canvas is now the whole page's fixed
+     background (see script.js/index.html), and the card should let it show
+     through rather than hide it behind a solid panel. */
+  background:rgba(9,8,7,.55);
   padding:clamp(20px,3vw,40px) clamp(20px,4vw,48px);
   display:flex;flex-direction:column;gap:clamp(16px,2.4vw,28px);
-  overflow:hidden;isolation:isolate; /* confines .hero-topo's negative z-index to this card */
+  overflow:hidden;
 }
-/* animated WebGL contour-line background, drawn behind everything else in
-   the card (see script.js); negative z-index needs isolation:isolate
-   above so it can't escape .hero-card onto the page behind it. */
-.hero-topo{position:absolute;inset:0;z-index:-1;width:100%;height:100%;display:block;opacity:.6;}
 .hero-ticker{
   display:flex;flex-wrap:wrap;justify-content:center;gap:8px 16px;
   padding-bottom:clamp(14px,2vw,22px);border-bottom:1px solid rgba(255,255,255,.12);
@@ -124,9 +124,27 @@ main{position:relative;z-index:2;}
   color:var(--gold);
   user-select:none;z-index:0;
 }
+/* align-self:stretch (not height:100%, which would override stretch since
+   stretch only applies to an auto cross-size) makes this item fill
+   .hero-stage's height despite its align-items:flex-end. */
+.hero-photo-wrap{position:relative;max-height:560px;align-self:stretch;}
+/* both images sit in the exact same spot (absolute, same left/bottom/
+   transform); the sharp one is the real photo, the second is an identical
+   copy that's blurred and masked to only show at the edges, so it reads
+   as a sharp portrait with a blurred rim rather than one uniformly soft
+   image. The edge-blur radius itself is driven by scroll (see script.js's
+   parallax timeline): 0 at rest, growing as the hero scrolls past. */
 .hero-photo{
-  position:relative;z-index:1;height:100%;max-height:560px;display:block;
+  position:absolute;left:50%;bottom:0;transform:translateX(-50%);
+  z-index:1;height:100%;max-height:560px;display:block;
   filter:grayscale(.2) contrast(1.05) brightness(.96) drop-shadow(0 20px 30px rgba(0,0,0,.5));
+}
+.hero-photo-blur{
+  z-index:2;pointer-events:none;
+  --edge-blur:0;
+  filter:blur(calc(var(--edge-blur) * 1px)) grayscale(.2) contrast(1.05) brightness(.96);
+  -webkit-mask-image:radial-gradient(ellipse 55% 62% at 50% 38%, transparent 55%, black 100%);
+  mask-image:radial-gradient(ellipse 55% 62% at 50% 38%, transparent 55%, black 100%);
 }
 .hero-role-big{
   position:absolute;right:0;bottom:4%;z-index:2;text-align:right;

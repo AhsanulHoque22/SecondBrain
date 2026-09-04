@@ -41,7 +41,10 @@ try {
       .to('[data-parallax-layer="1"]', { yPercent: -10, ease: 'none' }, 0) /* ticker: furthest back */
       .to('[data-parallax-layer="2"]', { yPercent: -20, ease: 'none' }, 0) /* big background word */
       .to('[data-parallax-layer="3"]', { yPercent: -35, ease: 'none' }, 0) /* portrait: closest */
-      .to('[data-parallax-layer="4"]', { yPercent: -15, ease: 'none' }, 0); /* role title */
+      .to('[data-parallax-layer="4"]', { yPercent: -15, ease: 'none' }, 0) /* role title */
+      /* sharp at rest; only picks up a blurred edge once you scroll (see
+         .hero-photo-blur's radial mask, which keeps the center sharp). */
+      .to('.hero-photo-blur', { '--edge-blur': 14, ease: 'none' }, 0);
   }
 } catch (e) {
   console.error('GSAP failed to load. Animations disabled, rest of the page still works:', e);
@@ -107,69 +110,21 @@ navLinks.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => 
   navToggle.classList.remove('active');
 }));
 
-/* ---------- Canvas: constellation / particle network background ---------- */
-const canvas = document.getElementById('bg-canvas');
-const ctx = canvas.getContext('2d');
-/* named bgW/bgH, not w/h: Lenis's dist build isn't IIFE-wrapped and
-   declares a top-level `function w(...)`, so a global `let w` here
-   collides with it, causing a SyntaxError that takes this whole file down. */
-let bgW, bgH, particles;
-const mouse = { x: -9999, y: -9999 };
-
-function resize() {
-  bgW = canvas.width = window.innerWidth;
-  bgH = canvas.height = window.innerHeight;
-  const count = Math.min(90, Math.floor((bgW * bgH) / 18000));
-  particles = Array.from({ length: count }, () => ({
-    x: Math.random() * bgW,
-    y: Math.random() * bgH,
-    vx: (Math.random() - 0.5) * 0.3,
-    vy: (Math.random() - 0.5) * 0.3,
-  }));
-}
-window.addEventListener('resize', resize);
-window.addEventListener('mousemove', (e) => { mouse.x = e.clientX; mouse.y = e.clientY; });
-resize();
-
-function tick() {
-  ctx.clearRect(0, 0, bgW, bgH);
-  for (const p of particles) {
-    p.x += p.vx; p.y += p.vy;
-    if (p.x < 0 || p.x > bgW) p.vx *= -1;
-    if (p.y < 0 || p.y > bgH) p.vy *= -1;
-    const dx = p.x - mouse.x, dy = p.y - mouse.y;
-    const dist = Math.sqrt(dx * dx + dy * dy);
-    if (dist < 140) { p.x += dx / dist * 0.6; p.y += dy / dist * 0.6; }
-  }
-  for (let i = 0; i < particles.length; i++) {
-    for (let j = i + 1; j < particles.length; j++) {
-      const a = particles[i], b = particles[j];
-      const d = Math.hypot(a.x - b.x, a.y - b.y);
-      if (d < 140) {
-        ctx.strokeStyle = `rgba(77,243,255,${0.12 * (1 - d / 140)})`;
-        ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
-      }
-    }
-    ctx.fillStyle = 'rgba(155,107,255,0.6)';
-    ctx.beginPath(); ctx.arc(particles[i].x, particles[i].y, 1.6, 0, Math.PI * 2); ctx.fill();
-  }
-  requestAnimationFrame(tick);
-}
-tick();
-
-/* ---------- Hero background: WebGL topographic contour field ----------
+/* ---------- Site background: WebGL topographic contour field ----------
    Adapted from a supplied React component (a shared effects file wrapping
    this shader in a sandboxed iframe with React props/state/light-dark
    theming). All of that machinery exists only to make the effect reusable
    as a packaged component across a design system; this site has one
    canvas in one place, so the shader runs directly against it with no
    iframe, no React, no build step, no new dependency, only the vertex/
-   fragment shaders and the render loop that actually draw the effect. */
+   fragment shaders and the render loop that actually draw the effect.
+   Replaces the old 2D particle-constellation canvas as the site's single
+   fixed full-page background, rather than running both at once. */
 (function () {
   const canvas = document.getElementById('topo-canvas');
   if (!canvas) return;
   const gl = canvas.getContext('webgl', { alpha: false, antialias: false, depth: false });
-  if (!gl) return; /* no WebGL: .hero-card's flat gradient background shows instead */
+  if (!gl) return; /* no WebGL: the page's plain black background shows instead */
 
   const vsSource = `
     attribute vec2 a_position;
@@ -252,13 +207,10 @@ tick();
   const timeLocation = gl.getUniformLocation(program, 'u_time');
   const dprLocation = gl.getUniformLocation(program, 'u_dpr');
 
-  /* sized to the canvas's own box (the hero card), not the window: this
-     is a background for one section, not the whole page. */
   function resizeTopo() {
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
-    const rect = canvas.getBoundingClientRect();
-    canvas.width = Math.max(1, Math.round(rect.width * dpr));
-    canvas.height = Math.max(1, Math.round(rect.height * dpr));
+    canvas.width = Math.round(window.innerWidth * dpr);
+    canvas.height = Math.round(window.innerHeight * dpr);
     gl.viewport(0, 0, canvas.width, canvas.height);
     gl.uniform2f(resolutionLocation, canvas.width, canvas.height);
     gl.uniform1f(dprLocation, dpr);

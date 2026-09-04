@@ -239,12 +239,10 @@ navLinks.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => 
   if (!track || !cards.length) return;
 
   const n = cards.length;
-  const ACCENTS = ['var(--cyan)', 'var(--violet)', 'var(--gold)'];
   const MIN_SCALE = 0.8;
 
   cards.forEach((card, i) => {
     const h3 = card.querySelector('.project-info h3');
-    const img = card.querySelector('.project-poster');
     const desc = card.querySelector('.project-info p');
     const tagRow = card.querySelector('.tag-row');
     const link = card.querySelector('.project-links a');
@@ -256,20 +254,7 @@ navLinks.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => 
     wrap.style.setProperty('--stack-top-step', (i * 16) + 'px');
 
     const el = document.createElement('div');
-    el.className = 'stack-card' + (img ? '' : ' no-image');
-    el.style.setProperty('--accent', ACCENTS[i % ACCENTS.length]);
-
-    if (img) {
-      const bg = document.createElement('img');
-      bg.className = 'stack-card-img';
-      bg.src = img.getAttribute('src');
-      bg.alt = img.getAttribute('alt') || '';
-      bg.loading = 'lazy';
-      el.appendChild(bg);
-      const scrim = document.createElement('div');
-      scrim.className = 'stack-card-scrim';
-      el.appendChild(scrim);
-    }
+    el.className = 'stack-card';
 
     const num = document.createElement('div');
     num.className = 'stack-card-num';

@@ -3,11 +3,15 @@
   --bg-elev:#1c1c1e;
   --ink:#f5f5f7;
   --ink-dim:#86868b;
-  --cyan:#0a84ff;
-  --violet:#bf5af2;
+  --cyan:#c9a227;
+  --violet:#8a6a1a;
   --gold:#c9a227;
   --line:rgba(255,255,255,0.14);
   --glass:rgba(255,255,255,0.08);
+  /* hero-style translucent "poster card" panel: lets the fixed WebGL
+     background show through, gold-tinted border instead of a neutral one. */
+  --panel-bg:rgba(9,8,7,.55);
+  --panel-border:rgba(201,162,39,.35);
   --mono:'SF Mono','SFMono-Regular','JetBrains Mono',ui-monospace,monospace;
   --sans:-apple-system,BlinkMacSystemFont,'SF Pro Display','SF Pro Text','Inter',sans-serif;
   --ease:cubic-bezier(.16,1,.3,1);
@@ -74,7 +78,7 @@ main{position:relative;z-index:2;}
   border:1px solid var(--line);color:var(--ink);
   padding:8px 18px;border-radius:980px;transition:background .25s var(--ease),transform .15s var(--ease);
 }
-.nav-cta:hover{background:rgba(10,132,255,.16);border-color:rgba(10,132,255,.4);color:var(--cyan);}
+.nav-cta:hover{background:rgba(201,162,39,.16);border-color:rgba(201,162,39,.4);color:var(--cyan);}
 .nav-cta:active{transform:scale(.94);}
 #nav-toggle{display:none;background:none;border:0;flex-direction:column;gap:5px;cursor:pointer;padding:8px;}
 #nav-toggle span{width:22px;height:2px;background:var(--ink);transition:transform .25s,opacity .25s;}
@@ -83,8 +87,9 @@ main{position:relative;z-index:2;}
 /* HERO: a framed "poster" card (gold-on-charcoal), modeled on a
    reference mockup: a top ticker of specialties, name + tagline on one
    row, a giant background word behind the portrait with the role title
-   beside it, and a bio + socials row along the bottom. Deliberately its
-   own gold palette, distinct from the rest of the site's cyan/violet. */
+   beside it, and a bio + socials row along the bottom. Its gold-on-
+   translucent-charcoal look is the site's shared palette (--panel-bg/
+   --panel-border, --cyan repointed to gold), not hero-only. */
 #hero{min-height:100svh;display:flex;align-items:center;padding:110px 5vw 40px;}
 .hero-card{
   position:relative;width:100%;max-width:1400px;margin:0 auto;
@@ -199,7 +204,7 @@ main{position:relative;z-index:2;}
 
 /* NOW */
 .now-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;}
-.now-card{background:var(--bg-elev);border:1px solid var(--line);border-radius:20px;padding:32px 34px;}
+.now-card{background:var(--panel-bg);border:1px solid var(--panel-border);border-radius:20px;padding:32px 34px;}
 .now-card h3{
   font-family:var(--mono);font-size:.85rem;text-transform:uppercase;letter-spacing:.5px;
   color:var(--cyan);margin-bottom:20px;
@@ -228,13 +233,13 @@ main{position:relative;z-index:2;}
 .tag-row{display:flex;gap:8px;flex-wrap:wrap;}
 .tag-row span{
   font-family:var(--sans);font-weight:590;font-size:.75rem;padding:6px 13px;border-radius:980px;
-  background:rgba(10,132,255,.14);color:#5eb3ff;
+  background:rgba(201,162,39,.14);color:#e0c168;
 }
 
 /* PROJECTS: iOS grouped-list card */
 .project-list{
   display:flex;flex-direction:column;
-  background:var(--bg-elev);border:1px solid var(--line);border-radius:24px;overflow:hidden;
+  background:var(--panel-bg);border:1px solid var(--panel-border);border-radius:24px;overflow:hidden;
 }
 .project-card{
   display:grid;grid-template-columns:80px 1fr 140px;gap:30px;align-items:center;
@@ -274,28 +279,18 @@ main{position:relative;z-index:2;}
 .stack-card{
   position:relative;width:min(900px,90vw);height:min(66vh,560px);
   border-radius:24px;overflow:hidden;transform-origin:50% 0%;
-  border:1px solid var(--line);cursor:pointer;
+  border:1px solid var(--panel-border);cursor:pointer;background:var(--panel-bg);
   box-shadow:0 30px 60px rgba(0,0,0,.5);
-  display:flex;flex-direction:column;justify-content:flex-end;
+  display:flex;flex-direction:column;justify-content:flex-start;
   will-change:transform;
 }
-.stack-card.no-image{background:linear-gradient(160deg,var(--bg-elev),#000);}
-.stack-card.no-image::before{
-  content:'';position:absolute;inset:0;z-index:0;opacity:.5;
-  background:radial-gradient(circle at 80% 0%,var(--accent,var(--cyan)) 0%,transparent 60%);
-}
 .stack-card-num{
-  position:absolute;top:22px;left:26px;font-family:var(--mono);
-  font-size:.8rem;color:rgba(255,255,255,.55);z-index:2;
-}
-.stack-card-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0;}
-.stack-card-scrim{
-  position:absolute;inset:0;z-index:1;
-  background:linear-gradient(0deg,rgba(0,0,0,.88) 0%,rgba(0,0,0,.35) 55%,rgba(0,0,0,.05) 100%);
+  position:absolute;top:22px;right:26px;font-family:var(--mono);
+  font-size:.8rem;color:var(--ink-dim);z-index:2;
 }
 .stack-card-body{position:relative;z-index:2;padding:clamp(20px,3vw,40px);}
-.stack-card-body h3{font-size:clamp(1.2rem,2.4vw,1.7rem);margin-bottom:10px;display:flex;align-items:center;gap:12px;color:var(--ink);}
-.stack-card-body p{color:rgba(255,255,255,.75);line-height:1.6;margin-bottom:16px;max-width:640px;font-size:.92rem;}
+.stack-card-body h3{font-size:clamp(1.2rem,2.4vw,1.7rem);margin-bottom:14px;display:flex;align-items:center;gap:12px;color:var(--ink);}
+.stack-card-body p{color:var(--ink-dim);line-height:1.65;margin-bottom:16px;max-width:640px;font-size:.92rem;}
 .stack-card-foot{display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap;}
 .stack-card-foot .tag-row{max-width:70%;}
 .stack-card-link{font-family:var(--mono);font-size:.85rem;color:var(--cyan);border-bottom:1px solid transparent;transition:.25s;white-space:nowrap;}
@@ -312,7 +307,7 @@ main{position:relative;z-index:2;}
 /* AWARDS: photo grid, each a rounded iOS-style card */
 .awards-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;}
 .award-card{
-  background:var(--bg-elev);border:1px solid var(--line);border-radius:20px;overflow:hidden;
+  background:var(--panel-bg);border:1px solid var(--panel-border);border-radius:20px;overflow:hidden;
 }
 .award-card img{width:100%;aspect-ratio:4/3;object-fit:contain;background:var(--bg-elev);display:block;}
 .award-card figcaption{padding:16px 18px;font-size:.95rem;color:var(--ink-dim);line-height:1.5;}

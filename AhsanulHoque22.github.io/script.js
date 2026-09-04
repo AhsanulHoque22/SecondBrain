@@ -574,52 +574,31 @@ navLinks.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => 
 
       ctx.globalAlpha = dim ? 0.35 : 1;
 
-      /* glass base: soft ambient shadow, then a tinted radial "frosted
-         glass" fill (bright near the top-left, fading toward the rim) */
+      /* flat panel-style base, matching the site's own cards: a solid
+         gold hub or a dark translucent tech node (same tone as
+         --panel-bg), a thin tinted rim (same idea as --panel-border),
+         and a small grounded shadow instead of a glossy 3D highlight */
       ctx.save();
-      ctx.shadowColor = 'rgba(0,0,0,.55)';
-      ctx.shadowBlur = 14;
-      ctx.shadowOffsetY = 4;
+      ctx.shadowColor = 'rgba(0,0,0,.45)';
+      ctx.shadowBlur = 6;
+      ctx.shadowOffsetY = 2;
       ctx.beginPath();
       ctx.arc(node.x, node.y, r, 0, 2 * Math.PI);
-      const glass = ctx.createRadialGradient(
-        node.x - r * 0.35, node.y - r * 0.35, r * 0.1,
-        node.x, node.y, r
-      );
-      glass.addColorStop(0, hexToRgba(tint, 0.55));
-      glass.addColorStop(0.65, hexToRgba(tint, 0.3));
-      glass.addColorStop(1, hexToRgba(tint, 0.16));
-      ctx.fillStyle = glass;
+      ctx.fillStyle = isCategory ? GOLD : 'rgba(17,15,13,.92)';
       ctx.fill();
       ctx.restore();
 
-      /* glass edge: a bright, thin rim */
-      ctx.lineWidth = isCategory ? 1.6 : 1.1;
-      ctx.strokeStyle = isHighlighted ? 'rgba(255,255,255,.8)' : 'rgba(255,255,255,.4)';
+      ctx.lineWidth = isCategory ? 1.5 : 1.3;
+      ctx.strokeStyle = isCategory
+        ? 'rgba(0,0,0,.35)'
+        : hexToRgba(tint, isHighlighted ? 0.9 : 0.55);
       ctx.stroke();
 
-      /* glossy highlight crescent, top-left */
-      ctx.beginPath();
-      ctx.arc(node.x - r * 0.32, node.y - r * 0.35, r * 0.38, 0, 2 * Math.PI);
-      ctx.fillStyle = 'rgba(255,255,255,.22)';
-      ctx.fill();
-
       if (node.logo && node.logo.complete && node.logo.naturalWidth > 0) {
-        /* a bright backing disc makes any-color logo pop off the tinted
-           glass, plus its own small shadow to lift it off the surface */
-        ctx.save();
-        ctx.shadowColor = 'rgba(0,0,0,.4)';
-        ctx.shadowBlur = 5;
-        ctx.beginPath();
-        ctx.arc(node.x, node.y, r * 0.68, 0, 2 * Math.PI);
-        ctx.fillStyle = 'rgba(248,248,250,.94)';
-        ctx.fill();
-        ctx.restore();
-
-        const s = r * 1.15;
+        const s = r * 1.3;
         ctx.save();
         ctx.beginPath();
-        ctx.arc(node.x, node.y, r * 0.68, 0, 2 * Math.PI);
+        ctx.arc(node.x, node.y, r * 0.78, 0, 2 * Math.PI);
         ctx.clip();
         ctx.drawImage(node.logo, node.x - s / 2, node.y - s / 2, s, s);
         ctx.restore();

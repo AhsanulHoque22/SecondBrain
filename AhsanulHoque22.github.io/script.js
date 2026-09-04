@@ -145,11 +145,12 @@ tick();
 
 /* 3D FILE DRAWER: a physical-feeling stack of project folders.
    Content is built once from the hidden .project-data cards (single
-   source of truth). Scrolling only gives the collapsed stack a subtle
-   ambient riffle (perspective fade/shrink with distance); nothing opens
-   on its own. Clicking a folder is the only thing that expands it into
-   its full detail card, rising to the top; clicking it again (or another
-   folder) closes it. */
+   source of truth). Every folder is always fully open (title, image,
+   description, tags, link, all rendered all the time); there is no
+   expand/collapse state anywhere. Scrolling picks which folder sits at
+   the front of the drawer, and everything else is simply hidden behind
+   it. Clicking a folder pins it to the front (instead of scroll picking
+   one); clicking it again (or scrolling) releases the pin. */
 (function () {
   const track = document.getElementById('drawer-scroll-track');
   const stack = document.getElementById('folder-stack');
@@ -226,25 +227,17 @@ tick();
   const folders = Array.from(stack.children);
   const isMobile = () => window.matchMedia('(max-width:860px)').matches;
 
-  /* ---- mobile: plain accordion, no scroll rig ---- */
-  function wireMobile() {
-    let openIndex = 0;
-    folders.forEach((f, i) => {
-      f.classList.toggle('is-active', i === openIndex);
-      f.onclick = () => {
-        openIndex = i;
-        folders.forEach((f2, j) => f2.classList.toggle('is-active', j === openIndex));
-      };
-    });
-  }
+  /* ---- mobile: static list, no scroll rig. Every folder is already
+     fully open via CSS, so there is nothing left to wire up. ---- */
+  function wireMobile() {}
 
-  /* ---- desktop: scroll gives a subtle ambient "riffle" through the
-     collapsed stack (nothing opens on its own); a click is the only
-     thing that expands a folder into its full detail card. ---- */
-  let hoverIndex = -1;
-  let expandedIndex = null;
-  const TAB_H = folders[0].querySelector('.folder-tab-row').offsetHeight;
-  const TAB_STEP = 54; /* stagger between collapsed tabs, sized for the bigger cards */
+  /* ---- desktop: scroll picks which folder sits at the front of the
+     drawer; everything else is hidden directly behind it. A click pins
+     a folder to the front (overriding scroll) until it, or another
+     folder, is clicked again. Every folder is always fully open: only
+     its position/scale/opacity change, never its content. ---- */
+  let pinnedIndex = null;
+  const TAB_STEP = 54; /* stagger between the folders queued behind the front one */
 
   function layout() {
     /* +40vh settle buffer at the end: without it, momentum scroll can carry
@@ -266,31 +259,25 @@ tick();
   }
 
   function render() {
-    const centerIdx = expandedIndex !== null ? expandedIndex : scrollFloatIndex();
-    const expandedFolder = expandedIndex !== null ? folders[expandedIndex] : null;
-    /* detail's visual max-height caps at min(520px,60vh), so clamp the raw
-       scrollHeight to that same cap; otherwise long descriptions would
-       reserve more offset for the folders below than the card actually
-       occupies on screen, leaving a gap. */
-    const detailCapPx = Math.min(520, window.innerHeight * 0.6);
-    const expandedH = expandedFolder
-      ? TAB_H + Math.min(expandedFolder.querySelector('.folder-detail').scrollHeight, detailCapPx)
-      : TAB_H;
+    const centerIdx = pinnedIndex !== null ? pinnedIndex : scrollFloatIndex();
+    /* Every folder is always rendered at full size, so the nearest one's
+       real height is just its own offsetHeight, no scrollHeight/class
+       gymnastics needed to know how tall it'll be. */
+    const frontH = folders[Math.round(centerIdx)].offsetHeight;
 
     folders.forEach((folder, i) => {
-      const isExpanded = i === expandedIndex;
+      const isFront = i === pinnedIndex;
       const offset = i - centerIdx;
-      const hovering = i === hoverIndex && !isExpanded && expandedIndex === null;
       let ty, scale, opacity, z;
 
-      if (isExpanded) {
+      if (isFront) {
         ty = 0; scale = 1; opacity = 1; z = 200;
       } else if (offset > 0) {
         /* not reached yet: queues up behind the front card, receding into
            the cabinet and fading toward the top, only shrinking a little
            so the far end of the stack still reads as folders, not dots. */
         const k = Math.min(offset, 8);
-        ty = -(expandedH + (k - 1) * TAB_STEP) + (hovering ? 8 : 0);
+        ty = -(frontH + (k - 1) * TAB_STEP);
         scale = Math.max(0.8, 1 - 0.025 * k);
         opacity = Math.max(0, 1 - 0.12 * k);
         z = 90 - k;
@@ -307,7 +294,7 @@ tick();
         'translateX(-50%) translateY(' + ty + 'px) scale(' + scale + ')';
       folder.style.opacity = String(opacity);
       folder.style.zIndex = String(z);
-      folder.classList.toggle('is-active', isExpanded);
+      folder.classList.toggle('is-active', Math.abs(offset) < 0.001);
     });
   }
 
@@ -323,11 +310,9 @@ tick();
     window.addEventListener('resize', () => { layout(); render(); });
     folders.forEach((folder, i) => {
       folder.addEventListener('click', () => {
-        expandedIndex = expandedIndex === i ? null : i;
+        pinnedIndex = pinnedIndex === i ? null : i;
         render();
       });
-      folder.addEventListener('mouseenter', () => { hoverIndex = i; render(); });
-      folder.addEventListener('mouseleave', () => { hoverIndex = -1; render(); });
     });
     render();
   }

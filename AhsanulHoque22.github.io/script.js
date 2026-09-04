@@ -352,7 +352,7 @@ navLinks.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => 
   let scrollTimeout = null;
 
   function layout() {
-    track.style.height = (100 + n * 40) + 'vh';
+    track.style.height = (60 + n * 26) + 'vh';
   }
 
   function scrollProgress() {

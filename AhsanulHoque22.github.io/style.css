@@ -296,7 +296,7 @@ main{position:relative;z-index:2;}
    down as later cards scroll over them, built from the hidden
    .project-data cards (single source of truth). Clicking a card
    navigates straight to its project link, same as the link itself. */
-.stack-track{position:relative;padding:6vh 0 90vh;}
+.stack-track{position:relative;padding:6vh 0 22vh;}
 .stack-card-wrap{
   position:sticky;top:calc(var(--stack-top-base,8vh) + var(--stack-top-step,0px));
   display:flex;align-items:center;justify-content:center;

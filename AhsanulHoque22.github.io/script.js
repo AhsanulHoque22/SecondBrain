@@ -141,3 +141,35 @@ function tick() {
   requestAnimationFrame(tick);
 }
 tick();
+
+/* FILE DRAWER: project tabs pop open a modal built from the hidden
+   .project-data cards, so project content lives in one place only. */
+(function () {
+  const tabs = document.querySelectorAll('.file-tab');
+  const cards = document.querySelectorAll('.project-data .project-card');
+  const overlay = document.getElementById('file-modal-overlay');
+  const modalBody = document.getElementById('file-modal-body');
+  const closeBtn = document.getElementById('file-modal-close');
+  if (!tabs.length || !overlay || !modalBody) return;
+
+  function openModal(i) {
+    const card = cards[i];
+    if (!card) return;
+    const info = card.querySelector('.project-info');
+    const links = card.querySelector('.project-links');
+    modalBody.innerHTML = '';
+    if (info) modalBody.appendChild(info.cloneNode(true));
+    if (links) modalBody.appendChild(links.cloneNode(true));
+    overlay.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeModal() {
+    overlay.classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  tabs.forEach((tab, i) => tab.addEventListener('click', () => openModal(i)));
+  closeBtn.addEventListener('click', closeModal);
+  overlay.addEventListener('click', (e) => { if (e.target === overlay) closeModal(); });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
+})();

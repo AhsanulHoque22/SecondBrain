@@ -217,7 +217,28 @@ addEventListener('DOMContentLoaded', () => setTimeout(() => {
       <span class="section-num">05</span>
       <h2 class="section-title reveal-up">Selected Work</h2>
     </div>
-    <div class="project-list" id="project-list">
+
+    <div class="file-drawer reveal-up" id="file-drawer">
+      <button type="button" class="file-tab"><span class="file-tab-num">01</span><span class="file-tab-name">Livora</span></button>
+      <button type="button" class="file-tab"><span class="file-tab-num">02</span><span class="file-tab-name">Second Brain</span></button>
+      <button type="button" class="file-tab"><span class="file-tab-num">03</span><span class="file-tab-name">Drone Navigation</span></button>
+      <button type="button" class="file-tab"><span class="file-tab-num">04</span><span class="file-tab-name">Scraper Pipeline</span></button>
+      <button type="button" class="file-tab"><span class="file-tab-num">05</span><span class="file-tab-name">Aurora Gadgets</span></button>
+      <button type="button" class="file-tab"><span class="file-tab-num">06</span><span class="file-tab-name">Medical Dialogue Gen</span></button>
+      <button type="button" class="file-tab"><span class="file-tab-num">07</span><span class="file-tab-name">ResCris</span></button>
+      <button type="button" class="file-tab"><span class="file-tab-num">08</span><span class="file-tab-name">AgroEdge AI</span></button>
+      <button type="button" class="file-tab"><span class="file-tab-num">09</span><span class="file-tab-name">WaifOS</span></button>
+      <button type="button" class="file-tab"><span class="file-tab-num">10</span><span class="file-tab-name">Sales Data Warehouse</span></button>
+    </div>
+
+    <div class="file-modal-overlay" id="file-modal-overlay">
+      <div class="file-modal">
+        <button type="button" class="file-modal-close" id="file-modal-close" aria-label="Close">&times;</button>
+        <div class="file-modal-body" id="file-modal-body"></div>
+      </div>
+    </div>
+
+    <div class="project-list project-data" id="project-list">
 
       <article class="project-card reveal-up">
         <div class="project-num">01</div>

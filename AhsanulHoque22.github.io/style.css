@@ -241,6 +241,56 @@ main{position:relative;z-index:2;}
 }
 .project-links a:hover{color:var(--cyan);border-color:var(--cyan);}
 .no-link{font-family:var(--mono);font-size:.78rem;color:var(--ink-dim);opacity:.6;}
+
+.project-data{display:none;}
+
+/* FILE DRAWER: stacked folder-tab picker for projects */
+.file-drawer{
+  display:flex;flex-direction:column;
+  background:var(--bg-elev);border:1px solid var(--line);
+  border-radius:16px;padding:28px 24px 40px;
+}
+.file-tab{
+  all:unset;box-sizing:border-box;
+  display:flex;align-items:center;justify-content:space-between;gap:16px;
+  width:100%;
+  background:var(--bg);border:1px solid var(--line);border-radius:12px 12px 0 0;
+  padding:16px 22px;margin-top:-14px;cursor:pointer;
+  font-family:var(--sans);
+  transition:transform .2s var(--ease),background .2s var(--ease),box-shadow .2s var(--ease),border-color .2s var(--ease);
+}
+.file-tab:first-child{margin-top:0;}
+.file-tab:nth-child(odd){margin-right:10%;}
+.file-tab:nth-child(even){margin-left:10%;}
+.file-tab:hover,.file-tab:focus-visible{
+  background:var(--bg-elev);transform:translateY(-6px);
+  box-shadow:0 16px 28px rgba(0,0,0,.4);border-color:var(--cyan);
+}
+.file-tab-num{font-family:var(--mono);font-size:.8rem;color:var(--cyan);}
+.file-tab-name{font-weight:590;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+
+/* FILE MODAL: project detail popup */
+.file-modal-overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,.65);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+  display:flex;align-items:center;justify-content:center;padding:24px;
+  opacity:0;pointer-events:none;transition:opacity .25s var(--ease);z-index:300;
+}
+.file-modal-overlay.open{opacity:1;pointer-events:auto;}
+.file-modal{
+  position:relative;background:var(--bg-elev);border:1px solid var(--line);border-radius:24px;
+  max-width:640px;width:100%;max-height:82vh;overflow-y:auto;padding:40px;
+  transform:translateY(24px) scale(.97);transition:transform .25s var(--ease);
+}
+.file-modal-overlay.open .file-modal{transform:translateY(0) scale(1);}
+.file-modal-close{
+  position:absolute;top:18px;right:18px;width:36px;height:36px;border-radius:50%;
+  background:var(--bg);border:1px solid var(--line);color:var(--ink-dim);
+  font-size:1.3rem;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;
+  transition:.2s;
+}
+.file-modal-close:hover{color:var(--ink);border-color:var(--cyan);}
+.file-modal-body .project-info h3{font-size:1.6rem;margin-bottom:14px;}
+.file-modal-body .project-links{text-align:left;margin-top:10px;}
 .all-repos-link{
   display:inline-block;margin-top:40px;font-family:var(--mono);color:var(--violet);
   border-bottom:1px solid currentColor;
@@ -310,6 +360,10 @@ footer{
   .now-grid{grid-template-columns:1fr;}
   .project-card{grid-template-columns:40px 1fr;padding:28px 20px;}
   .project-links{grid-column:2;text-align:left;}
+  .file-tab:nth-child(odd){margin-right:4%;}
+  .file-tab:nth-child(even){margin-left:4%;}
+  .file-tab-name{white-space:normal;}
+  .file-modal{padding:28px;}
   .skills-grid{grid-template-columns:1fr 1fr;}
   .awards-grid{grid-template-columns:1fr 1fr;}
   .hero-meta{flex-direction:column;gap:6px;bottom:110px;}

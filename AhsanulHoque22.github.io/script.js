@@ -25,10 +25,24 @@ try {
     onUpdate: (self) => document.getElementById('navbar').classList.toggle('scrolled', self.scroll() > 100)
   });
 
-  /* ---------- Hero entrance ---------- */
-  gsap.timeline({ defaults: { ease: 'power4.out' } })
-    .fromTo('.hero-title .line', { yPercent: 100, opacity: 0 }, { yPercent: 0, opacity: 1, duration: 1, stagger: 0.12 }, 0.1)
-    .to('.reveal-line', { opacity: 1, y: 0, duration: 0.8, stagger: 0.1 }, 0.5);
+  /* Hero entrance: the .hero-card itself is a .reveal-up element (see the
+     generic IntersectionObserver below), so it fades/slides in on load
+     without needing its own bespoke GSAP timeline. */
+
+  /* ---------- Hero parallax: each layer drifts upward at its own rate
+     as the hero scrolls past, background layers slower than foreground
+     ones, for a sense of depth. Scoped to #hero's own scroll range and
+     clipped by .hero-card's overflow:hidden, so nothing leaks into the
+     section below. ---------- */
+  if (document.getElementById('hero')) {
+    gsap.timeline({
+      scrollTrigger: { trigger: '#hero', start: 'top top', end: 'bottom top', scrub: 0.3 }
+    })
+      .to('[data-parallax-layer="1"]', { yPercent: -10, ease: 'none' }, 0) /* ticker: furthest back */
+      .to('[data-parallax-layer="2"]', { yPercent: -20, ease: 'none' }, 0) /* big background word */
+      .to('[data-parallax-layer="3"]', { yPercent: -35, ease: 'none' }, 0) /* portrait: closest */
+      .to('[data-parallax-layer="4"]', { yPercent: -15, ease: 'none' }, 0); /* role title */
+  }
 } catch (e) {
   console.error('GSAP failed to load. Animations disabled, rest of the page still works:', e);
 }

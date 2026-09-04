@@ -394,3 +394,168 @@ navLinks.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => 
   render();
   requestAnimationFrame(tick);
 })();
+
+/* STACK GRAPH: a force-directed knowledge graph of the real tech stack
+   (force-graph, the vanilla engine behind react-force-graph; no React
+   needed here). Category nodes ("Languages", "Web & Backend", ...) are
+   hubs; every technology is a single node, home-linked to its primary
+   category. A technology actually used across more than one category
+   (per the Experience/Selected Work tags and a GitHub/LinkedIn audit,
+   not just the Stack list) gets an extra link to that category instead
+   of being listed twice, so the physics settle it as a bridge node
+   pulled between clusters. */
+(function () {
+  if (typeof ForceGraph === 'undefined') return;
+  const container = document.getElementById('stack-graph');
+  if (!container) return;
+
+  const CATEGORIES = ['Languages', 'Web & Backend', 'AI / LLM', 'Data & Infra', 'Embedded & IoT', 'Other'];
+
+  /* [name, home category, extra categories it also bridges to] */
+  const TECH = [
+    ['Python', 'Languages', ['AI / LLM', 'Data & Infra', 'Embedded & IoT', 'Other']],
+    ['C++', 'Languages', ['Embedded & IoT']],
+    ['TypeScript', 'Languages', ['Web & Backend']],
+    ['JavaScript', 'Languages', []],
+    ['SQL', 'Languages', ['Data & Infra']],
+
+    ['React', 'Web & Backend', []],
+    ['Node.js', 'Web & Backend', []],
+    ['Express', 'Web & Backend', []],
+    ['Prisma', 'Web & Backend', []],
+    ['Sequelize', 'Web & Backend', []],
+    ['REST APIs', 'Web & Backend', []],
+    ['Socket.IO', 'Web & Backend', []],
+    ['Telegram API', 'Web & Backend', ['AI / LLM']],
+    ['Playwright', 'Web & Backend', ['AI / LLM']],
+
+    ['Gemini', 'AI / LLM', []],
+    ['RAG', 'AI / LLM', ['Web & Backend']],
+    ['Prompt-Injection Defense', 'AI / LLM', []],
+    ['Langfuse', 'AI / LLM', []],
+    ['OCR', 'AI / LLM', []],
+    ['Speech-to-Text', 'AI / LLM', []],
+    ['Claude Code', 'AI / LLM', []],
+    ['Multi-LLM', 'AI / LLM', []],
+    ['PyTorch', 'AI / LLM', []],
+    ['LoRA', 'AI / LLM', []],
+    ['NLP', 'AI / LLM', []],
+
+    ['PostgreSQL', 'Data & Infra', ['Web & Backend']],
+    ['MySQL', 'Data & Infra', ['Web & Backend']],
+    ['Redis', 'Data & Infra', []],
+    ['Docker', 'Data & Infra', ['Web & Backend']],
+    ['HL7/FHIR/DICOM', 'Data & Infra', []],
+    ['Sentry', 'Data & Infra', []],
+    ['Cron', 'Data & Infra', ['AI / LLM']],
+    ['ETL', 'Data & Infra', []],
+
+    ['ESP32', 'Embedded & IoT', []],
+    ['STM32', 'Embedded & IoT', []],
+    ['Arduino', 'Embedded & IoT', []],
+    ['FreeRTOS', 'Embedded & IoT', []],
+    ['LoRaWAN', 'Embedded & IoT', []],
+    ['Raspberry Pi', 'Embedded & IoT', []],
+    ['LoRa (SX1278)', 'Embedded & IoT', []],
+    ['GPS', 'Embedded & IoT', []],
+    ['ThingSpeak', 'Embedded & IoT', []],
+
+    ['DSA', 'Other', []],
+    ['Competitive Programming', 'Other', []],
+    ['Blockchain Fundamentals', 'Other', []],
+    ['PyBullet', 'Other', []],
+    ['A*/RRT*', 'Other', []],
+    ['PID Control', 'Other', []],
+    ['pytest', 'Other', ['AI / LLM']],
+  ];
+
+  const root = getComputedStyle(document.documentElement);
+  const GOLD = root.getPropertyValue('--gold').trim() || '#c9a227';
+  const INK = root.getPropertyValue('--ink').trim() || '#f5f5f7';
+  const INK_DIM = root.getPropertyValue('--ink-dim').trim() || '#86868b';
+  const SANS = root.getPropertyValue('--sans').trim() || 'sans-serif';
+
+  const nodes = CATEGORIES.map((cat) => ({ id: cat, type: 'category' }));
+  const links = [];
+  TECH.forEach(([name, home, extras]) => {
+    nodes.push({ id: name, type: 'tech', home });
+    links.push({ source: name, target: home });
+    extras.forEach((cat) => links.push({ source: name, target: cat }));
+  });
+
+  const linksByNode = {};
+  nodes.forEach((n) => { linksByNode[n.id] = []; });
+  links.forEach((l) => {
+    linksByNode[l.source].push(l);
+    linksByNode[l.target].push(l);
+  });
+
+  const highlightNodes = new Set();
+  const highlightLinks = new Set();
+
+  const Graph = ForceGraph()(container)
+    .graphData({ nodes, links })
+    .backgroundColor('rgba(0,0,0,0)')
+    .width(container.clientWidth)
+    .height(container.clientHeight)
+    .linkColor((l) => (highlightLinks.has(l) ? 'rgba(201,162,39,.9)' : 'rgba(255,255,255,.12)'))
+    .linkWidth((l) => (highlightLinks.has(l) ? 2 : 1))
+    .nodeCanvasObject((node, ctx, globalScale) => {
+      const isCategory = node.type === 'category';
+      const isHighlighted = highlightNodes.has(node);
+      const r = isCategory ? 9 : 4;
+
+      ctx.beginPath();
+      ctx.arc(node.x, node.y, r, 0, 2 * Math.PI);
+      ctx.fillStyle = isCategory ? GOLD : (isHighlighted ? INK : INK_DIM);
+      ctx.fill();
+      if (isCategory) {
+        ctx.lineWidth = 1.5;
+        ctx.strokeStyle = 'rgba(0,0,0,.4)';
+        ctx.stroke();
+      }
+
+      if (isCategory || isHighlighted || globalScale > 2.2) {
+        const fontSize = (isCategory ? 13 : 10) / globalScale;
+        ctx.font = (isCategory ? '700 ' : '500 ') + fontSize + 'px ' + SANS;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'top';
+        ctx.fillStyle = isCategory ? INK : 'rgba(255,255,255,.6)';
+        ctx.fillText(node.id, node.x, node.y + r + 2);
+      }
+    })
+    .nodePointerAreaPaint((node, color, ctx) => {
+      const r = (node.type === 'category' ? 9 : 4) + 4;
+      ctx.fillStyle = color;
+      ctx.beginPath();
+      ctx.arc(node.x, node.y, r, 0, 2 * Math.PI);
+      ctx.fill();
+    })
+    .onNodeHover((node) => {
+      highlightNodes.clear();
+      highlightLinks.clear();
+      if (node) {
+        highlightNodes.add(node);
+        linksByNode[node.id].forEach((l) => {
+          highlightLinks.add(l);
+          highlightNodes.add(l.source === node ? l.target : l.source);
+        });
+      }
+      container.style.cursor = node ? 'pointer' : 'grab';
+      Graph.nodeColor(Graph.nodeColor()).linkColor(Graph.linkColor()).linkWidth(Graph.linkWidth());
+    })
+    .onNodeClick((node) => {
+      Graph.centerAt(node.x, node.y, 600);
+      Graph.zoom(3, 600);
+    })
+    .onBackgroundClick(() => {
+      Graph.zoom(1.4, 400);
+    });
+
+  Graph.d3Force('charge').strength(-90);
+  Graph.d3Force('link').distance(55);
+
+  window.addEventListener('resize', () => {
+    Graph.width(container.clientWidth).height(container.clientHeight);
+  });
+})();

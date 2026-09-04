@@ -396,32 +396,39 @@ addEventListener('DOMContentLoaded', () => setTimeout(() => {
       <span class="section-num">06</span>
       <h2 class="section-title reveal-up">Stack</h2>
     </div>
-    <div class="skills-grid">
-      <div class="skill-group reveal-up">
+    <!-- kept as a hidden text fallback (SEO / no-JS) for the graph built
+         below; the graph's actual dataset (incl. cross-category links)
+         lives in script.js since it draws on project/experience tags
+         too, not just this list. -->
+    <div class="skills-grid skills-data">
+      <div class="skill-group">
         <h3>Languages</h3>
         <div class="tag-row"><span>Python</span><span>C++</span><span>TypeScript</span><span>JavaScript</span><span>SQL</span></div>
       </div>
-      <div class="skill-group reveal-up">
+      <div class="skill-group">
         <h3>Web &amp; Backend</h3>
         <div class="tag-row"><span>React</span><span>Node.js</span><span>Express</span><span>Prisma</span><span>Sequelize</span><span>REST APIs</span><span>Socket.IO</span></div>
       </div>
-      <div class="skill-group reveal-up">
+      <div class="skill-group">
         <h3>AI / LLM</h3>
         <div class="tag-row"><span>Gemini</span><span>RAG</span><span>Prompt-Injection Defense</span><span>Langfuse</span><span>OCR</span><span>Speech-to-Text</span></div>
       </div>
-      <div class="skill-group reveal-up">
+      <div class="skill-group">
         <h3>Data &amp; Infra</h3>
         <div class="tag-row"><span>PostgreSQL</span><span>MySQL</span><span>Redis</span><span>Docker</span><span>HL7/FHIR/DICOM</span><span>Sentry</span></div>
       </div>
-      <div class="skill-group reveal-up">
+      <div class="skill-group">
         <h3>Embedded &amp; IoT</h3>
         <div class="tag-row"><span>ESP32</span><span>STM32</span><span>Arduino</span><span>FreeRTOS</span><span>LoRaWAN</span><span>Raspberry Pi</span></div>
       </div>
-      <div class="skill-group reveal-up">
+      <div class="skill-group">
         <h3>Other</h3>
         <div class="tag-row"><span>DSA</span><span>Competitive Programming</span><span>Blockchain Fundamentals</span></div>
       </div>
     </div>
+
+    <p class="stack-graph-hint reveal-up">Drag, scroll to zoom, hover a node to trace its connections.</p>
+    <div class="stack-graph" id="stack-graph"></div>
   </section>
 
   <!-- AWARDS -->
@@ -500,6 +507,7 @@ addEventListener('DOMContentLoaded', () => setTimeout(() => {
 <script src="vendor/gsap.min.js"></script>
 <script src="vendor/ScrollTrigger.min.js"></script>
 <script src="vendor/lenis.min.js"></script>
+<script src="vendor/force-graph.min.js"></script>
 <script src="script.js"></script>
 </body>
 </html>

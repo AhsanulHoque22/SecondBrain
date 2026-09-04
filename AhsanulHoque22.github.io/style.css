@@ -303,8 +303,23 @@ main{position:relative;z-index:2;}
 }
 
 /* SKILLS */
-.skills-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:40px;}
+.skills-data{display:none;}
 .skill-group h3{font-family:var(--mono);color:var(--ink-dim);font-size:.85rem;margin-bottom:16px;text-transform:uppercase;letter-spacing:.5px;}
+
+/* STACK GRAPH: a force-directed knowledge graph (force-graph, vanilla,
+   no React) replacing the static skill grid above. Category nodes sit
+   at the center of their own cluster; a technology used across more
+   than one category becomes a bridge node pulled between clusters by
+   its extra link, instead of being listed twice. */
+.stack-graph-hint{
+  font-family:var(--mono);font-size:.8rem;color:var(--ink-dim);margin-bottom:16px;
+}
+.stack-graph{
+  width:100%;height:clamp(420px,58vw,640px);
+  border-radius:20px;border:1px solid var(--panel-border);background:var(--panel-bg);
+  overflow:hidden;position:relative;cursor:grab;
+}
+.stack-graph:active{cursor:grabbing;}
 
 /* AWARDS: iOS-style cards, kept as the hidden data source for the
    circular gallery below (single source of truth, same pattern as
@@ -402,7 +417,7 @@ footer{
   .project-links{grid-column:2;text-align:left;}
   .stack-card-wrap{--stack-top-base:6vh;padding-bottom:24px;}
   .stack-card{height:min(60vh,480px);}
-  .skills-grid{grid-template-columns:1fr 1fr;}
+  .stack-graph{height:70vh;}
   .awards-grid{grid-template-columns:1fr 1fr;}
   #hero{padding:100px 5vw 30px;}
   .hero-tagline{text-align:left;}
@@ -412,6 +427,5 @@ footer{
   footer{flex-direction:column;gap:8px;text-align:center;}
 }
 @media (max-width:520px){
-  .skills-grid{grid-template-columns:1fr;}
   .awards-grid{grid-template-columns:1fr;}
 }

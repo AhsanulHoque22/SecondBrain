@@ -704,16 +704,16 @@ navLinks.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => 
 
 /* BUILD ACTIVITY CHART: a small smoothed multi-series area chart drawn
    straight into the inline SVG, no charting library. Data is real GitHub
-   commit counts (Aug 29 - Sep 4, 2026) pulled once via `gh api` across
+   commit counts (Aug 31 - Sep 6, 2026) pulled once via `gh api` across
    the actively-developed repos, not a live-fetched dashboard. */
 (function () {
   const svg = document.getElementById('activity-chart');
   if (!svg) return;
 
   const SERIES = [
-    { hex: '#c9a227', data: [5, 0, 0, 0, 0, 0, 0] },   /* Livora */
-    { hex: '#57c2a8', data: [0, 0, 0, 0, 0, 14, 10] }, /* Second Brain */
-    { hex: '#c084e8', data: [0, 0, 0, 0, 6, 11, 27] }, /* Portfolio */
+    { hex: '#c9a227', data: [0,0,0,0,0,0,0] },   /* Livora */
+    { hex: '#57c2a8', data: [0,0,0,2,4,0,0] }, /* Second Brain */
+    { hex: '#c084e8', data: [0,0,6,11,30,0,0] }, /* Portfolio */
   ];
   const N = 7;
   const W = 320, PAD_X = 8, TOP = 8, BASE = 112, MAX = 30;

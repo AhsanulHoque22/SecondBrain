@@ -721,9 +721,7 @@ navLinks.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => 
   if (!svg) return;
 
   const SERIES = [
-    { hex: '#c9a227', data: [0,0,0,0,0,11,0] },   /* Livora */
-    { hex: '#57c2a8', data: [0,0,0,0,0,0,0] }, /* Second Brain */
-    { hex: '#c084e8', data: [0,0,0,0,0,0,0] }, /* Portfolio */
+
   ];
   const N = 7;
   const W = 320, PAD_X = 8, TOP = 8, BASE = 112, MAX = 30;

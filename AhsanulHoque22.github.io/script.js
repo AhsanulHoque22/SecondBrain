@@ -411,7 +411,7 @@ navLinks.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => 
   const container = document.getElementById('stack-graph');
   if (!container) return;
 
-  const CATEGORIES = ['Languages', 'Web & Backend', 'AI / LLM', 'Data & Infra', 'Embedded & IoT', 'Other'];
+  const CATEGORIES = ['Languages', 'Web & Backend', 'AI / LLM', 'Machine Learning', 'Data & Infra', 'Embedded & IoT', 'Other'];
 
   /* [name, home category, extra categories it also bridges to, Simple Icons slug or null] */
   const TECH = [
@@ -442,6 +442,15 @@ navLinks.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => 
     ['PyTorch', 'AI / LLM', [], 'pytorch'],
     ['LoRA', 'AI / LLM', [], null],
     ['NLP', 'AI / LLM', [], null],
+
+    ['LightGBM', 'Machine Learning', ['AI / LLM'], null],
+    ['XGBoost', 'Machine Learning', ['AI / LLM'], null],
+    ['CatBoost', 'Machine Learning', ['AI / LLM'], null],
+    ['Scikit-learn', 'Machine Learning', ['AI / LLM'], 'scikit-learn'],
+    ['Feature Engineering', 'Machine Learning', [], null],
+    ['Neural Networks', 'Machine Learning', ['AI / LLM'], null],
+    ['Ensemble Methods', 'Machine Learning', [], null],
+    ['Fraud Detection', 'Machine Learning', [], null],
 
     ['PostgreSQL', 'Data & Infra', ['Web & Backend'], 'postgresql'],
     ['MySQL', 'Data & Infra', ['Web & Backend'], 'mysql'],
@@ -491,6 +500,7 @@ navLinks.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => 
     'Languages': '#e0c168',
     'Web & Backend': '#5b9dd9',
     'AI / LLM': '#c084e8',
+    'Machine Learning': '#d67ba8',
     'Data & Infra': '#57c2a8',
     'Embedded & IoT': '#e8934a',
     'Other': '#9aa5b7',
@@ -704,16 +714,16 @@ navLinks.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => 
 
 /* BUILD ACTIVITY CHART: a small smoothed multi-series area chart drawn
    straight into the inline SVG, no charting library. Data is real GitHub
-   commit counts (Aug 31 - Sep 6, 2026) pulled once via `gh api` across
+   commit counts (Sep 6 - Sep 12, 2026) pulled once via `gh api` across
    the actively-developed repos, not a live-fetched dashboard. */
 (function () {
   const svg = document.getElementById('activity-chart');
   if (!svg) return;
 
   const SERIES = [
-    { hex: '#c9a227', data: [0,0,0,0,0,0,0] },   /* Livora */
-    { hex: '#57c2a8', data: [0,0,0,2,4,0,0] }, /* Second Brain */
-    { hex: '#c084e8', data: [0,0,6,11,30,0,0] }, /* Portfolio */
+    { hex: '#c9a227', data: [0,0,0,0,0,11,0] },   /* Livora */
+    { hex: '#57c2a8', data: [0,0,0,0,0,0,0] }, /* Second Brain */
+    { hex: '#c084e8', data: [0,0,0,0,0,0,0] }, /* Portfolio */
   ];
   const N = 7;
   const W = 320, PAD_X = 8, TOP = 8, BASE = 112, MAX = 30;
